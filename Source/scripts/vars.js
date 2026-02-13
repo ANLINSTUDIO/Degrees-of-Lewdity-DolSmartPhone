@@ -1,21 +1,20 @@
 window.PhoneMod = window.PhoneMod || {};
 
-PhoneMod.extraShowPhoneAreas = setup.majorAreas.slice();
-PhoneMod.extraShowPhoneAreas.push(
+PhoneMod.extraShowPhoneAreas = [
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops",
   "Shopping Centre Phone Shop"
-);
+];
 
 PhoneMod.events = [
   {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
-  {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Sneak Phone", chance: 1, position: "before"},
-  {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.1, position: "before", 
+  {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Sneak Phone", chance: 0.1, position: "before"},
+  {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
     replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.1, position: "before", 
+  {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
     replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.1, position: "before", 
+  {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
     replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.1, position: "before", 
+  {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
     replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
   {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
 ]

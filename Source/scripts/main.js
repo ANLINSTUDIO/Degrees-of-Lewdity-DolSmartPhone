@@ -404,9 +404,16 @@ PhoneMod.StolePhone = function() { // 盗窃一部手机
   V.PhoneOwned = V.PhoneOwned || []
   V.PhoneOwned.push(new PhoneMod.Phone().newStolen());
 }
+PhoneMod.CarryingStolenPhone = function() {
+  if (!V.PhoneOwned) return false;
+  for (let i = 0; i < V.PhoneOwned.length; i++) {
+    if (V.PhoneOwned[i].stolen) return true;
+  }
+  return false;
+}
 
 PhoneMod.ShowPhoneJournal = function() {
-  if (V.PhoneOwned) {
+  if (V.PhoneOwned && V.PhoneOwned.length > 0) {
     const Uls = document.getElementsByClassName("journal carry")
     if (Uls.length > 0) {
       let Ul = Uls[0];

@@ -14,6 +14,38 @@ PhoneMod.OnMacro = function(name, func) {
         });
     }
 }
+PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefault=false) {  // 遭遇战选项增加API
+  setTimeout(() => {
+    const actions = document.querySelector(`#${actionslot}.radioControl`)
+    if (actions) {
+      const thirdChild = actions.children[2];  // 加载第二个子项的后面，因为第二个子项是第一个选项的位置，这个不会改变
+      const newItem = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `radiobutton-${actionslot}`;
+      newItem.appendChild(input);
+      const span = document.createElement("span");
+      span.classList.add(actionColor);
+      span.textContent = ` ${actionName} `;
+      newItem.appendChild(span);
+      newItem.insertAdjacentHTML('beforeend', ' |&nbsp;');
+      if (thirdChild) {
+          actions.insertBefore(newItem, thirdChild);  // 在第三个子项之前插入，即第二个子项之后
+      } else {
+          actions.appendChild(newItem);  // 如果没有第三个子项，就追加到末尾
+      }
+      input.dataset.slot = actionslot;
+      input.dataset.action = actionName;
+      input.onclick = function() {
+        V[this.dataset.slot] = this.dataset.action;
+      }
+      if (actionDefault) {
+        input.checked = true;
+        V[actionslot] = actionName;
+      }
+    }
+  }, 10);
+};
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
@@ -53,7 +85,7 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
     if (V.event) return false;  // 活动中不可以操控手机
     if (V.phoneReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
-    if (!PhoneMod.extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域操控手机可能会破坏存档
+    if (!setup.majorAreas.includes(V.passage)) return false;  // 在非主要区域操控手机可能会破坏存档
 
     // 检查是否有可用的手机
     if (V.PhoneOwned) {
@@ -86,6 +118,22 @@ PhoneMod.getPhoneConditionInfo = function(condition) {
         value: condition,
         percentage: Math.round(condition * 100)
     };
+}
+
+PhoneMod.AddClothToPlayer = function(cloth, color="black") {
+    const item = setup.clothes.face.find(item => item.name === cloth);
+    if (item) {
+        const newItem = structuredClone(item);
+        newItem.integrity = newItem.integrity_max;
+        newItem.colour = color;
+        if (V.worn.face.name === "naked") {
+            V.worn.face = newItem;
+            return true;
+        } else {
+            V.wardrobe.face.push(newItem);
+            return false;
+        }
+    }
 }
 
 PhoneMod.shuffle = function(array) {

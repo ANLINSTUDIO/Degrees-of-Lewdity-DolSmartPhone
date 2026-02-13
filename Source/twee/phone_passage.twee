@@ -7,7 +7,7 @@
 “您好，欢迎光临，请问是需要购买手机还是出售二手机？”一名店员微笑着朝你走来
 <br><br>
 <<icon "phone/phone.png">><<link [[购买手机|Shopping Centre Phone Buy]]>><</link>><br>
-<<if $PhoneOwned>>
+<<if $PhoneOwned and $PhoneOwned.length > 0>>
     <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
 <</if>>
 <<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
@@ -25,8 +25,7 @@
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell
-
-
+<<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 
 :: Second Phone Shop Link
@@ -40,6 +39,12 @@
 <<set $PhoneMetFengOnce to 1>>
 <<set $PhoneOwnedTmp to $PhoneOwned>>
 <<set $PhoneOwned to []>>
+
+<<generateNPC 1 a m m 23>>
+<<set $NPCList[0].name to "老冯">>
+<<set $NPCList[0].fullDescription to "黑衣人">>
+<<person1>>
+
 你前脚刚踏入麋鹿街的地区，后脚就发现一个可疑的黑衣人从你身边几乎贴着你经过。<span class="red">他很可疑！</span><br>
 “喂！”你朝他大声呼喊，“你干了什么！”<br>
 黑衣人眼看着顿了一下，随即停下了脚步。<br>
@@ -56,27 +61,155 @@
 <<elkicon>><<link [[离开|Elk Street]]>><</link>>
 
 :: Second Phone Shop Meet Feng First 2
-“还我手机！”<br>
-“什么手机？”<br>
-“你他么装傻？绝对是你拿了我的手机！你从我身边经过我的手机就不见了！”<br>
-“什么手机？” 那人抬起头来，一副疑惑又无辜的表情，好像这件事真的与他无关。<br>
-遭遇战！
-<br><br>
-<<link [[胜利|Second Phone Shop]]>>
-    <<set $PhoneOwned to $PhoneOwnedTmp>>
-    <<unset $PhoneOwnedTmp>>
-<</link>><br>
-<<link [[失败|Second Phone Shop]]>><</link>>
+<<include "Second Phone Shop First">>
+你一眼就看到了刚才的黑衣人，他靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。<br><br>
+<<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>>
 
+:: Second Phone Shop Meet Feng First 3
+“喂！你刚刚干了什么？” 你捏住鼻子问到。<br>
+<span class="teal">黑衣人并没有理会你。</span><br>
+你皱起眉头，于是慢慢警惕地向他靠近。你极力想看清楚他到底在拆卸什么东西。<br><br>
+好像，要么是一块砖头……要么就是一部手机…………<br>
+一部……手机？<br>
+手……<br>
+你突然瞪大你的双眼，随即拍了拍口袋。<br>
+<span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
+在你的尖叫下，黑衣人终于意识到了你的存在，猛地抬起头看向你，并且偷偷地慢慢地将柜台上的手机挪向自己那边。<br><br>
+在盗贼面具下，你无法看清他的脸。但是你发觉到了满脸的青胡须，令你感到一阵恶心。
+<br><br>
+<<link [[抢夺手机|Feng Contend]]>><<set $molestationstart to 1>><<set $phase to 0>><</link>>
+
+:: Feng Contend
+<<if $molestationstart is 1>>
+    <<set $molestationstart to 0>>
+    <<controlloss>><br>
+    <<set $enemytype to "man">>
+    <<set $enemyno to 1>>
+    <<set $enemyname to "Feng">>
+
+    <<set $trust to 0>>
+    <<set $outraged to 1>> <<set $combat to 1>> <<set $enemytrust to 0>>
+    <<set $enemyhealth to 100>>
+    <<set $enemyarousal to 1>>
+    <<set $consensual to 0>>
+
+    <<set $leftaction to "hold">>
+    <<set $rightaction to "hold">>
+<<else>>
+    <<if $leftaction isnot "握紧手机" and $rightaction isnot "握紧手机">>
+        <<set $phoneStolen to 1>>
+        <<goto "Feng Contend Finish">>
+    <</if>>
+<</if>>
+<span class="gold">你必须要至少有一只手握住手机！！！否则它就会被抢走！</span><br><br>
+<<effects>>
+<<effectsman>>
+<<man>>
+<<switch random(1, 5)>>
+    <<case 1>>那人在争夺手机之余<span class="red">对你踢了狠狠的一脚</span>，你觉得腿上可能是已经破皮了，但你无暇去理会。<<gggpain>><<pain 30>>
+    <<case 2>>那人不断地对你言语攻击，骂你是个婊子，又说你是个妓女，你本来就非常着急地想抢回你的手机，现在心情万分悲伤。<<ggstress>><<ggtrauma>><<trauma 12>><<stress 24>>
+    <<case 3>>你被他掐住了喉咙，<span class="red">无法动弹</span>。<<llcontrol>><control -50>><br>你拼命地挣扎，他迫不得已放开了你。
+    <<case 4>>他的力气十分雄厚，你差点无法握紧你的手机。
+    <<case 5>>“妈的，你凭什么说这是你的手机！松手！” 他嘶吼着。
+<</switch>><br>
+<<stateman>>
+<br><br>
+<<pain 2>>
+<<stress 2>>
+
+<<actionsman>>
+<<run PhoneMod.actionsAdd("leftaction", "握紧手机", "gold", true)>>
+<<run PhoneMod.actionsAdd("rightaction", "握紧手机", "gold", true)>>
+
+<span id="next"><<link [[继续|Feng Contend]]>><</link>></span><<nexttext>>
+
+<<if $enemyhealth lte 0>>
+    <<goto "Feng Contend Finish">>
+<</if>>
+
+
+:: Feng Contend Finish
+<<endcombat>>
+<<if $enemyhealth lte 0>>
+    <<set $PhoneOwned to $PhoneOwnedTmp>>
+    你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
+    “敢偷我的手机？” 你放下狠话。<br>
+    “你他么牛逼，我服了，有必要么？”那人骂道。<br>
+    <<if PhoneMod.CarryingStolenPhone()>>
+        “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了他一番，说明了这部手机的来历后就准备离开。<br>
+    <<else>>
+        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了他一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
+        “庆幸我不会报警抓你吧。” 你实在无法忍受这里的气味了。<br>
+    <</if>><br>
+    “等一下！” 那人叫住了你，“我叫老冯，你下次还有手机就卖到我这吧。”<br>
+<<elseif $phoneStolen is 1>>
+    <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
+    “敢抢我的手机？” 那人放下狠话。<br>
+    <<if PhoneMod.CarryingStolenPhone()>>
+        “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。<br>
+    <<else>>
+        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！不像你只会偷只会抢！” 你羞辱了他一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
+        你实在无法忍受这里的气味了，转身朝门外走去：“我会记住你的。” <br>
+    <</if>><br>
+    “等一下！” 那人叫住了你，“你说你也干这行？我叫老冯，你下次有手机就卖到我这吧。”<br>
+<</if>><br>
+他叹了口气，说：“要不是他被抓了，我才不会自己做这种事。”<br>
+“他？谁，” 好奇心使你停下脚步，但还是将半个身子，特别是头部露在外边，“意思是你的扒手落网啦？哈哈哈哈哈。”<br><br>
+
+老冯脱下盗贼面具，点了一支烟，吐出一个烟圈，缓缓又叹了口气：“<span class="teal">哎，总之，你到我这里来，不管是买还是卖，绝对要比外面那些只会吃品牌饭的划算。</span>”<br>
+“你要看看吗？” 老冯用深邃而饱经风霜的双眸看向稚嫩的你， “<span class="gold">我也可以帮你把你搞到的货给解开</span>。来吧。”<br>
+
+<<if $phoneStolen is 1>>
+    <br>你挑了挑眉：“那你要不把我的手机还给我？”<br>
+    老冯扭过头去：“那不可能。”<br>
+    “那我走了，” 你转身又要离开，“你没有扒手了关我什么事，又没有我的好处。”<br>
+    “哎哎哎，你看看你，你又意气用事，”老冯伸出手挽留，“哎，我真的没什么好给你的，<<girl>>。如果你愿意帮我的忙……你不嫌弃的话，这个你就拿着吧”<br><br>
+    这是他的<<icon "clothes/skulduggery_mask.png">><span class="teal">盗贼面具</span>，它专为那些图谋不轨的人而打造。<br><br>
+    “这个面具可以隐藏你的身份，但是骗不到警察或认识你的人，也可以让你的犯罪行为更难被追踪，我希望它能够跟着你……过得更好。”<br>
+    <<if PhoneMod.AddClothToPlayer("skulduggery mask")>>
+        你虽然很不情愿，但是还是将它缓缓戴上：“这……那我就戴上试试看吧。”
+    <<else>>
+        你虽然很不情愿，但是还是随手揣进了口袋，“好吧好吧。”
+    <</if>>
+<</if>>
+
+<br><br><<link [[继续|Second Phone Shop]]>><</link>>
+<<endevent>>
+<<unset $PhoneOwnedTmp>>
+<<unset $phoneStolen>>
+
+:: Second Phone Shop First
+你踏进神秘的房子，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 10>><br><br>
+这里看起来像一个……废弃的工厂……然后才是手机店。这里不是很大，但是狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br>
 
 :: Second Phone Shop
 <<if $PhoneMetFengGiveup>>
-    “还我手机！”<br>
-    “什么手机？”<br>
-    “你他么装傻？绝对是你拿了我的手机！你从我身边经过我的手机就不见了！”<br>
-    “什么手机？” 那人抬起头来，一副疑惑又无辜的表情，好像这件事真的与他无关。<br>
+    <<include "Second Phone Shop First">><br><br>
+<<else>>
+    你在地下手机店里，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 2>><br>
+    狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br><br>
+<</if>>
+<<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
+<<if $PhoneOwned and $PhoneOwned.length > 0>>
+    <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
+    <<if PhoneMod.CarryingStolenPhone()>>
+        <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
+    <</if>>
 <</if>>
 <<elkicon>><<link [[离开|Elk Street]]>><</link>>
+
+
+:: Second Phone Buy
+<<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
+
+:: Second Phone Sell
+<<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
+
+:: Second Phone Crack
+<<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
+
+
+
 
 
 :: Spa Tired Steal Phone Text
