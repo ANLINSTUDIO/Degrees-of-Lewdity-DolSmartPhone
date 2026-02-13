@@ -1,9 +1,9 @@
 {
     "name": "SmartPhone Alpha",
-    "version": "Alpha.1.0",
+    "version": "Alpha.1.5",
     "styleFileList": ["style.css"],
-    "scriptFileList": ["script.js"],
-    "tweeFileList": ["phone.twee", "phone_call.twee", "phone_game.twee", "phone_passage.twee"],
+    "scriptFileList": ["scripts/vars.js", "scripts/api.js", "scripts/main.js"],
+    "tweeFileList": ["twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"],
     "imgFileList": [
         "img/misc/icon/phone/phone.png",
         "img/misc/icon/phone/phones.png"

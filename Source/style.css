@@ -25,6 +25,14 @@
     cursor: default;
 }
 
+/* 禁用状态 */
+#smart-phone-container.phone-disabled {
+    transform: translateY(40px);
+    background-color: #161616;
+    color: #939393;
+    cursor: not-allowed;
+}
+
 /* 息屏内容区 */
 .phone-screen-locked {
     display: flex;

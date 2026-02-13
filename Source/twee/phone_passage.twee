@@ -128,6 +128,4 @@
 <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
 <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
 <br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
-<<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">>
-<br>
-
+<<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
