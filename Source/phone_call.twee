@@ -1,0 +1,180 @@
+:: Phone Call Landry
+<div class="phone-call-overlay">
+    <h2>正在通话: 兰德里</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Landry>><<person1>>
+        <<if !$callLandry>>
+            <<set $callLandry to 1>>
+            “喂，兰德里？” 你拿起电话问到。<br><br>
+            “嗯，有什么事吗？” 等了许久，兰德里在电话那头问道，背景音听起来有些嘈杂。<br><br>
+        <<else>>
+            “还有什么事吗？” 兰德里在电话那头问道，背景音听起来有些嘈杂。<br><br>
+        <</if>>
+        
+        <<if crimeSumCurrent() gte 500>>
+            <<socialiseicon "ask">><<link [[请求消除你的犯罪记录 (£4000)|Phone Call Landry CrimeDown]]>><</link>><br>
+        <</if>>
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[没事了|Phone Call Landry Back]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Landry Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 兰德里</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Landry>><<person1>>
+        “没事了” 你在电话这边告知兰德里你已经没事找<<nnpc_him Landry>>，并且准备挂断电话。<br><br>
+
+        “嗯，<<girl>>，有任何事你也可以来酒吧找我，我一直都在。” 兰德里的声音仍然夹杂着嘈杂的背景音，<<nnpc_he Landry>>好像本来就不关心你的电话。<br><br>
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<unset $callLandry>><<endevent>><</link>>
+    </div>
+</div>
+
+:: Phone Call Landry CrimeDown
+<div class="phone-call-overlay">
+    <h2>正在通话: 兰德里</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Landry>><<person1>>
+        “额，可以麻烦你帮我消除一下我的犯罪记录吗？警察要来抓我了！我能够出点钱，只要能够让我别被抓到” 你慌忙地问到。<br><br>
+
+        “嗯……好吧，我不差这点钱，但是你，<<girl>>，你必须得付出点代价。”<br>
+
+        <<if !$pubtask>>
+            <<if $money gte 400000>>
+                “没问题，我会珍惜这次机会的。我现在就把<span class="gold">£4000</span>打到你的账户上” 你激动地说。<br><br>
+                “好吧，<<girl>>，我会保证你不被那些条子抓起来的” 兰德里叹了一口气。<br><br>
+                <span class="teal">你的犯罪记录被消除了</span><br><br>
+                <<money -400000 "phoneCrimeDown">>
+                <<crimeDown 10000>>
+            <<else>>
+                “不行，兰德里，我没有这么多钱给你” 你可怜地说。<br><br>
+                “那就别学人家去犯罪，你来酒吧找我吧，你帮我找个东西我也可以帮你的忙” 兰德里那边好像还在一边忙着自己的事情，对你好像漠不关心。<br><br>
+            <</if>>
+        <<else>>
+            “我不要你的钱，但是如果你能够帮我找到我要的东西，我就会履行我的承诺的” 兰德里叹了一口气。<br><br>
+            “可是你要的黑……” 你非常激动，但是话还没说完就被兰德里打断了。<br><br>
+            “宝贝，这个世界哪里都不安全，不论是你要去的地方，还是现在。”<br><br>
+            “好……好吧”<br><br>
+        <</if>>
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[继续|Phone Call Landry]]>><</link>>
+    </div>
+</div>
+
+
+:: Phone Call Whitney
+<div class="phone-call-overlay">
+    <h2>正在通话: 惠特尼</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Whitney>><<person1>>
+        ???
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[没事了|Phone Call Whitney Back]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Whitney Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 惠特尼</h2>
+    <hr>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+    </div>
+</div>
+
+
+:: Phone Call Alex
+<div class="phone-call-overlay">
+    <h2>正在通话: 艾利克斯</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Alex>><<person1>>
+        ???
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[没事了|Phone Call Alex Back]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Alex Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 艾利克斯</h2>
+    <hr>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+    </div>
+</div>
+
+
+:: Phone Call Avery
+<div class="phone-call-overlay">
+    <h2>正在通话: 艾弗里</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Avery>><<person1>>
+        ???
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[没事了|Phone Call Avery Back]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Avery Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 艾弗里</h2>
+    <hr>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+    </div>
+</div>
+
+
+:: Phone Call Bailey
+<div class="phone-call-overlay">
+    <h2>正在通话: 贝利</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<npc Bailey>><<person1>>
+        ???
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[没事了|Phone Call Bailey Back]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Bailey Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 贝利</h2>
+    <hr>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+    </div>
+</div>

@@ -1,0 +1,133 @@
+:: Shopping Centre Phone Shop Link
+<br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop]]>><<pass 1>><</link>>
+
+:: Shopping Centre Phone Shop
+你在手机店里。五颜六色，各种款式的手机陈列在柜台。
+<br><br>
+“您好，欢迎光临，请问是需要购买手机还是出售二手机？”一名店员微笑着朝你走来
+<br><br>
+<<icon "phone/phone.png">><<link [[购买手机|Shopping Centre Phone Buy]]>><</link>><br>
+<<if $PhoneOwned>>
+    <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
+<</if>>
+<<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
+
+:: Shopping Centre Phone Buy
+“这款新上市的A手机，原价<span class="red">£6999</span>，现在活动期间只要<span class="gold">£4999</span>！”<br>
+<<if $money gte 499900>>
+    <<icon "phone/phone.png">><<link [[确认购买A手机 (£4999)|Shopping Centre Phone Shop]]>>
+        <<run PhoneMod.BuyPhone(4999)>>
+        <<money -499900>>
+    <</link>><br>
+<<else>>
+    “啊！~要 <span class="gold">£4999</span> 吗？这么贵……我，我再逛逛吧…………” 你尴尬地说。<br><br>
+<</if>>
+<<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
+
+:: Shopping Centre Phone Sell
+
+
+
+
+:: Second Phone Shop Link
+<<if !$PhoneMetFengOnce and $PhoneOwned>>
+    <<goto "Second Phone Shop Meet Feng First">>
+<<else>>
+    <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+<</if>>
+
+:: Second Phone Shop Meet Feng First
+<<set $PhoneMetFengOnce to 1>>
+<<set $PhoneOwnedTmp to $PhoneOwned>>
+<<set $PhoneOwned to []>>
+你前脚刚踏入麋鹿街的地区，后脚就发现一个可疑的黑衣人从你身边几乎贴着你经过。<span class="red">他很可疑！</span><br>
+“喂！”你朝他大声呼喊，“你干了什么！”<br>
+黑衣人眼看着顿了一下，随即停下了脚步。<br>
+你决定上前查看，但你没走过几步，他便开始加速向麋鹿街的尽头那间<span class="teal">神秘的房子</span>走去。<br>
+他的步伐太快，你有点追不上了。<br><br>
+<<icon "unused_stonebuilding1.png">><<link [[追随神秘人的脚步进入神秘的房子 (0:01)|Second Phone Shop Meet Feng First 2]]>><<pass 1>><</link>><br>
+<<getouticon>><<link [[算了|Second Phone Shop Meet Feng First Finish]]>><</link>>
+
+:: Second Phone Shop Meet Feng First Finish
+<<set $PhoneMetFengGiveup to 1>>
+你拍了拍口袋，决定算了。心想也许是你自己太敏感了。<br>
+拍……拍了拍口袋？口袋？？？<br><br>
+<span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
+<<elkicon>><<link [[离开|Elk Street]]>><</link>>
+
+:: Second Phone Shop Meet Feng First 2
+“还我手机！”<br>
+“什么手机？”<br>
+“你他么装傻？绝对是你拿了我的手机！你从我身边经过我的手机就不见了！”<br>
+“什么手机？” 那人抬起头来，一副疑惑又无辜的表情，好像这件事真的与他无关。<br>
+遭遇战！
+<br><br>
+<<link [[胜利|Second Phone Shop]]>>
+    <<set $PhoneOwned to $PhoneOwnedTmp>>
+    <<unset $PhoneOwnedTmp>>
+<</link>><br>
+<<link [[失败|Second Phone Shop]]>><</link>>
+
+
+:: Second Phone Shop
+<<if $PhoneMetFengGiveup>>
+    “还我手机！”<br>
+    “什么手机？”<br>
+    “你他么装傻？绝对是你拿了我的手机！你从我身边经过我的手机就不见了！”<br>
+    “什么手机？” 那人抬起头来，一副疑惑又无辜的表情，好像这件事真的与他无关。<br>
+<</if>>
+<<elkicon>><<link [[离开|Elk Street]]>><</link>>
+
+
+:: Spa Tired Steal Phone Text
+<br>正当你在考虑是否动手时，你突然眼睛一亮！因为你看到了他的身下有闪闪发光的东西！<br>
+<span class="teal">是一部手机！</span><<icon "phone/phone.png">>
+<br>如果你要拿走它，那么你就要将顾客翻身，这真的会弄醒<<him>>！<br><br>
+
+:: Spa Tired Steal Phone Link
+<<set $skulduggerydifficulty to 700>>
+<<link [[趁顾客翻身拿走手机|Spa Tired Steal Phone]]>><<set $skulduggerydifficulty to 700>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
+<<link [[拿走赃物|Spa Tired Steal]]>><<set $skulduggerydifficulty to 500>><</link>>
+
+:: Spa Tired Steal Phone
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+    <<earnFeat "Idle Hands">>
+    你轻轻地将<<persons>>翻过身来，仿佛这就是项目的一部分。<br>
+    <span class="green">随后你泰然自若地迅速抽出了手机</span> 并且将它藏了起来。
+	<<crimeUp 200 "thievery">>
+    <<run PhoneMod.StolePhone()>>
+<<else>>
+    你尝试将<<persons>>翻过身来，仿佛这就是项目的一部分。随后你假装泰然自若地迅速抽出了手机，<span class="red">但是<<Him>>突然睁开眼睛警惕地看着你。</span><br>
+    <<if $spa.behaviour is "sophisticated">>
+		你迫不得已自然地将手机轻放在枕边，并说：“别担心，我们接下来要涂油了，不要让我们的精油弄脏您的手机哦。"
+	<<elseif $spa.behaviour is "cute">>
+		你迫不得已自然地将手机放在枕边，并说：“哎呀哎呀，我们接下来要涂油了，不要让我们的精油弄脏您的手机鸭！"
+	<<else>>
+		你迫不得已自然地将手机放在枕边，并说：“我们接下来要涂油了，不要让我们的精油弄脏您的手机哦。"
+	<</if>>
+    <br><<He>>怀疑地回头看了你一眼，并且不再打瞌睡了。<<body_tip hand 0.1>>
+<</if>>
+<br><br>
+<<skulduggeryuse>>
+你继续工作到结束，
+<<if $spa.behaviour is "sophisticated">>
+    你轻推了一下<<person>>，把<<He>>弄醒了。"谢谢惠顾，"你说。<<He>>昏昏沉沉地环顾四周。"希望您喜欢我们的服务。"
+<<elseif $spa.behaviour is "cute">>
+    你轻推了一下<<person>>，把<<He>>弄醒了。"起来吧懒虫，"你说。<<He>>昏昏沉沉地环顾四周。"希望您喜欢我的服务。"
+<<else>>
+    你抚摸<<person>>，直到<<he>>醒来。"按摩结束了，"你低声说道，"希望你能满意。"
+<</if>>
+<br><br>
+<<He>>点点头，半醒着，爬了起来。你把目光移开，递给<<his>>毛巾。<<tipreceive>><<pass 50>>
+<br><br>
+<<spa_end>>
+
+
+:: School Lockers Sneak Phone
+<br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
+<span class="teal">是一部手机！</span><<icon "phone/phone.png">>
+<br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
+<<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">>
+<br>
+

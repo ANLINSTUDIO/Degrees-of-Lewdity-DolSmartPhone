@@ -1,0 +1,170 @@
+:: Phone Game Finish
+<div class="phone-game-overlay">
+    <<pass 30>>
+    <<if $phone_game_passed>>
+        你成功通关了游戏！<br>手机屏幕上赫然显示着“恭喜”的字样，你很感到很满足。你在游戏世界找回了自我。
+        <<stress -12>><<llstress>>
+        <<trauma -18>><<lltrauma>>
+        <<control 35>><<ggcontrol>>
+    <<else>>
+        你失败了！<br>虽然手机屏幕上赫然显示着“继续努力”的字样，但是你仍然感到很满足。你在游戏世界找回了自我。
+        <<stress -6>><<lstress>>
+        <<control 15>><<gcontrol>>
+    <</if>>
+    <br>
+    <<link [[再玩一局 (0:30)|$phoneGameAgain]]>><</link>>
+    <br>
+    <<if !$phoneReturnPassage>>
+        <<link [[返回卧室|Bedroom]]>><</link>>
+    <<else>>
+        <<link [[退出游戏|Phone Back]]>><</link>>
+    <</if>>
+    <br><br>
+    <<scienceicon>><<link [[玩科学实验室 (0:30)|Phone Game Science]]>><</link>><<gscience>>
+    <br>
+    <<mathicon>><<link [[玩数字天堂 (0:30)|Phone Game Maths]]>><</link>><<gmaths>>
+    <br>
+    <<englishicon>><<link [[玩文悦 (0:30)|Phone Game English]]>><</link>><<genglish>>
+    <br>
+    <<historyicon>><<link [[玩古识今知 (0:30)|Phone Game History]]>><</link>><<ghistory>>
+</div>
+
+:: Phone Game Science
+<div class="phone-game-overlay">
+    <<set $phoneGameAgain to "Phone Game Science">>
+    <<scienceskill>>
+    你开始玩科学实验室
+    <<switch random(1,2)>>
+        <<case 1>>
+            <<tiredness 12>><<ggtiredness>>
+            <<set $phone_game_pass_chance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc($phone_game_pass_chance / 800 * 100)>>%</span><br>
+            <<if $phone_game_pass_chance gt random(1, 800)>>
+                你认为游戏中出现的各种实验内容和题目对你来说易如反掌，你很有通过的把握！<br>
+                <<set $phone_game_passed to 1>>
+            <<else>>
+                你对游戏中出现的各种实验内容和题目有点摸不着头脑，但是你仍然乐在其中。<br>
+                <<set $phone_game_passed to 0>>
+            <</if>>
+            <br>
+            <<link [[继续|Phone Game Finish]]>><</link>>
+        <<case 2>>
+            <<tiredness 6>><<gtiredness>>
+            <br><br>
+            <<set $phone_game_question to window.PhoneMod.getGameQuestion("Science")>>
+            <<print $phone_game_question.title>>
+            <br>
+            <<for _i, _question range $phone_game_question.options>>
+                <<if _question.isCorrect>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 1>><</link>><br>
+                <<else>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 0>><</link>><br>
+                <</if>>
+            <</for>>
+    <</switch>>
+</div>
+
+:: Phone Game Maths
+<div class="phone-game-overlay">
+    <<set $phoneGameAgain to "Phone Game Maths">>
+    <<mathsskill>>
+    你开始玩数字天堂
+    <<switch random(1,2)>>
+        <<case 1>>
+            <<tiredness 12>><<ggtiredness>>
+            <<set $phone_game_pass_chance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc($phone_game_pass_chance / 800 * 100)>>%</span><br>
+            <<if $phone_game_pass_chance gt random(1, 800)>>
+                你认为游戏中出现的各种方程和题目对你来说易如反掌，你很有通过的把握！<br>
+                <<set $phone_game_passed to 1>>
+            <<else>>
+                你对游戏中出现的各种方程和题目有点摸不着头脑，但是你仍然乐在其中。<br>
+                <<set $phone_game_passed to 0>>
+            <</if>>
+            <br>
+            <<link [[继续|Phone Game Finish]]>><</link>>
+        <<case 2>>
+            <<tiredness 6>><<gtiredness>>
+            <br><br>
+            <<set $phone_game_question to window.PhoneMod.getGameQuestion("Maths")>>
+            <<print $phone_game_question.title>>
+            <br>
+            <<for _i, _question range $phone_game_question.options>>
+                <<if _question.isCorrect>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 1>><</link>><br>
+                <<else>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 0>><</link>><br>
+                <</if>>
+            <</for>>
+    <</switch>>
+</div>
+
+:: Phone Game English
+<div class="phone-game-overlay">
+    <<set $phoneGameAgain to "Phone Game English">>
+    <<englishskill>>
+    你开始玩文悦
+    <<switch random(1,2)>>
+        <<case 1>>
+            <<tiredness 12>><<ggtiredness>>
+            <<set $phone_game_pass_chance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc($phone_game_pass_chance / 800 * 100)>>%</span><br>
+            <<if $phone_game_pass_chance gt random(1, 800)>>
+                你认为游戏中出现的各种诗词和文人对你来说易如反掌，你很有通过的把握！<br>
+                <<set $phone_game_passed to 1>>
+            <<else>>
+                你对游戏中出现的各种诗词和文人有点摸不着头脑，但是你仍然乐在其中。<br>
+                <<set $phone_game_passed to 0>>
+            <</if>>
+            <br>
+            <<link [[继续|Phone Game Finish]]>><</link>>
+        <<case 2>>
+            <<tiredness 6>><<gtiredness>>
+            <br><br>
+            <<set $phone_game_question to window.PhoneMod.getGameQuestion("English")>>
+            <<print $phone_game_question.title>>
+            <br>
+            <<for _i, _question range $phone_game_question.options>>
+                <<if _question.isCorrect>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 1>><</link>><br>
+                <<else>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 0>><</link>><br>
+                <</if>>
+            <</for>>
+    <</switch>>
+</div>
+
+:: Phone Game History
+<div class="phone-game-overlay">
+    <<set $phoneGameAgain to "Phone Game History">>
+    <<historyskill>>
+    你开始玩古识今知
+    <<switch random(1,2)>>
+        <<case 1>>
+            <<tiredness 12>><<ggtiredness>>
+            <<set $phone_game_pass_chance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc($phone_game_pass_chance / 800 * 100)>>%</span><br>
+            <<if $phone_game_pass_chance gt random(1, 800)>>
+                你认为游戏中出现的各种历史事件和年号、条约对你来说易如反掌，你很有通过的把握！<br>
+                <<set $phone_game_passed to 1>>
+            <<else>>
+                你对游戏中出现的各种历史事件和年号、条约有点摸不着头脑，但是你仍然乐在其中。<br>
+                <<set $phone_game_passed to 0>>
+            <</if>>
+            <br>
+            <<link [[继续|Phone Game Finish]]>><</link>>
+        <<case 2>>
+            <<tiredness 6>><<gtiredness>>
+            <br><br>
+            <<set $phone_game_question to window.PhoneMod.getGameQuestion("History")>>
+            <<print $phone_game_question.title>>
+            <br>
+            <<for _i, _question range $phone_game_question.options>>
+                <<if _question.isCorrect>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 1>><</link>><br>
+                <<else>>
+                    <<link [[_question.text|Phone Game Finish]]>><<set $phone_game_passed to 0>><</link>><br>
+                <</if>>
+            <</for>>
+    <</switch>>
+</div>

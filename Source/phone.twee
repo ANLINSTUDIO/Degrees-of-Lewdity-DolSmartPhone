@@ -1,0 +1,287 @@
+:: Phone Back
+<<set $phoneReturnPassageTmp to $phoneReturnPassage>>
+<<link [[Next|$phoneReturnPassage]]>><</link>>
+<<unset $phoneReturnPassage>>
+<<set $phoneReturnPassage to undefined>>
+<<goto $phoneReturnPassageTmp>>
+
+:: SmartPhoneWidgets [widget]
+<<widget "smartphone_render">>
+    <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">
+
+        <div class="phone-screen-locked">
+            <div style="font-size: 16px; font-weight: bold;">
+                <<print PhoneMod.getTimeString()>>
+            </div>
+        </div>
+        
+        <div class="phone-screen-unlocked" onclick="event.stopPropagation()">
+            <<if $phoneAlarmTriggered is true>>
+                <div class="phone-alarming">
+                    <<phone_wallpaper>>
+                    <div style="font-size: 32px; font-weight: bold;">
+                        <<if $phoneAlarmCurrent.hour < 10>>0<</if>>$phoneAlarmCurrent.hour:<<if $phoneAlarmCurrent.minute < 10>>0<</if>>$phoneAlarmCurrent.minute
+                    </div>
+                    <p>$phoneAlarmCurrent.msg</p>
+                    <<button "关闭闹钟">><<run PhoneMod.cancelAlarm()>><</button>>
+                </div>
+            <<else>>
+                <div class="phone-status-bar">
+                    <span><<print PhoneMod.getTimeString()>></span>
+                    <span style="flex-grow: 1;"></span>
+                    <<print Weather.toSelectedString(Weather.temperature, 1)>>
+                </div>
+                <div class="phone-content">
+                    <<if $phoneApp is "photo">> <<phone_app_photo>>
+                    <<elseif $phoneApp is "contacts">> <<phone_app_contacts>>
+                    <<elseif $phoneApp is "alarm">> <<phone_app_alarm>> <<run PhoneMod.initAlarm()>>
+                    <<elseif $phoneApp is "settings">> <<phone_app_settings>>
+                    <<elseif $phoneApp is "game">> <<phone_app_game>>
+                    <<elseif $phoneApp is "shop">> <<phone_app_shop>>
+                    <<elseif $phoneApp is "yebook">> <<phone_app_yebook>>
+                    <<else>>
+                        <div class="phone-desktop">
+                            <<phone_wallpaper>>
+                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('photo')">
+                                <img class="icon" src="img/misc/icon/camera.png">
+                                拍照
+                            </div>
+                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('contacts')">
+                                <img class="icon" src="img/misc/icon/assignment.png">
+                                通讯录
+                            </div>
+                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('alarm')">
+                                <img class="icon" src="img/misc/icon/birdTower/watch.png">
+                                闹钟
+                            </div>
+                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('settings')">
+                                <img class="icon" src="img/misc/icon/furniture/wallpaper_cow_girls.png">
+                                设置
+                            </div>
+                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('game')">
+                                <img class="icon" src="img/misc/icon/robin_controller.png">
+                                游戏
+                            </div>
+                            <<if !["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"].includes($passage)>>
+                                <div class="phone-app-icon" onclick="PhoneMod.toggleApp('shop')">
+                                    <img class="icon" src="img/misc/icon/shopping_centre.png">
+                                    网购
+                                </div>
+                            <</if>>
+                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('yebook')">
+                                <img class="icon" src="img/misc/icon/library.png">
+                                小黄书
+                            </div>
+                        </div>
+                    <</if>>
+                </div>
+                <div class="phone-tool-bar">
+                    <span onclick="PhoneMod.toggleApp('main')" style="cursor:pointer">
+                        <img class="icon" src="img/misc/icon/town_hall.png">
+                        主页
+                    </span>
+                    <span onclick="PhoneMod.togglePhone()" style="cursor:pointer">
+                        <img class="icon" src="img/misc/icon/padlock.png">
+                        锁屏
+                    </span>
+                </div>
+            <</if>>
+        </div>
+    </div>
+<</widget>>
+
+<<widget "phone_wallpaper">>
+    <<if $wallpaperPath>>
+        <<print `<img id="phone-wallpaper" src="`+$wallpaperPath+`">`>>
+        <<if $wallpaperBlur>>
+            <div id="phone-wallpaper-cover" class="blur"></div>
+        <</if>>
+        <<if $wallpaperBlack>>
+            <div id="phone-wallpaper-cover" class="black"></div>
+        <</if>>
+    <</if>>
+<</widget>>
+
+<<widget "phone_app_photo">>
+<</widget>>
+
+<<widget "phone_app_contacts">>
+    <h3>通讯录</h3>
+    <div class="app-content">
+        <<set $phoneNumbers to 
+        [
+            {name: "兰德里", call: "Phone Call Landry"},
+            {name: "惠特尼", call: "Phone Call Whitney"},
+            {name: "艾利克斯", call: "Phone Call Alex"},
+            {name: "艾弗里", call: "Phone Call Avery"},
+            {name: "贝利", call: "Phone Call Bailey"}
+        ]>>
+    
+        <<if $phoneNumbers>>
+            <div class="phone-contact-list">
+                <<for _i, _phone_number range $phoneNumbers>>
+                    <div class="phone-contact-item">
+                        <span style="white-space: nowrap; margin-right: 10px">_phone_number.name</span>
+                        <<button "呼叫 (0:05)" _phone_number.call>>
+                            <<run PhoneMod.PhoneTo()>>
+                            <<pass 5>>
+                        <</button>>
+                    </div>
+                <</for>>
+            </div>
+        <<else>>
+            <p style="font-size:12px; color:#666;">暂无联系人，你可以尝试去询问他们的电话号码。</p>
+        <</if>>
+    </div>
+<</widget>>
+
+<<widget "phone_app_alarm">>
+    <h3>设定闹钟</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+            <label>
+                <input type="radio" name="alarm-type" value="today" checked onclick="PhoneMod.toggleAlarmType('today')">仅限今天
+            </label>
+            <label>
+                <input type="radio" name="alarm-type" value="weekly" onclick="PhoneMod.toggleAlarmType('weekly')">每周重复
+            </label>
+            <label>
+                <input type="radio" name="alarm-type" value="date" onclick="PhoneMod.toggleAlarmType('date')">指定日期
+            </label>
+        </div>
+
+        <!-- 星期输入 -->
+        <div id="weekly-input" style="display: none;">
+            <div>星期: 
+                <div>
+                    <label><input type="checkbox" name="weekday" value="2"> 周一</label>
+                    <label><input type="checkbox" name="weekday" value="3"> 周二</label>
+                    <label><input type="checkbox" name="weekday" value="4"> 周三</label>
+                </div>
+                <div>
+                    <label><input type="checkbox" name="weekday" value="5"> 周四</label>
+                    <label><input type="checkbox" name="weekday" value="6"> 周五</label>
+                    <label><input type="checkbox" name="weekday" value="0"> 周六</label>
+                    <label><input type="checkbox" name="weekday" value="1"> 周日</label>
+                </div>
+            </div>
+        </div>
+        <!-- 日期输入 -->
+        <div id="phone-alarm-date" style="display: none;">
+            <div>日期: <input type="date" id="phone-alarm-date-input"></div>
+        </div>
+
+        <div>时间: <input type="time" id="phone-alarm-time"></div>
+        <input type="text" id="phone-alarm-msg" placeholder="备注">
+
+        <<button "确认">><<run PhoneMod.submitAlarm()>><</button>>
+    </div>
+
+    <div class="phone-alarm-list">
+        <<if $phoneAlarms>>
+            <hr>
+            <<for _i, _alarm range $phoneAlarms>>
+                <div class="phone-alarm-item">
+                    <<if _alarm.active>>
+                        <div>
+                            <div class="phone-alarm-display-time"><<if _alarm.hour < 10>>0<</if>>_alarm.hour:<<if _alarm.minute < 10>>0<</if>>_alarm.minute</div>
+                            <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>></div>
+                        </div>
+                    <<else>>
+                        <div style="color: gray">
+                            <div class="phone-alarm-display-time"><<if _alarm.hour < 10>>0<</if>>_alarm.hour:<<if _alarm.minute < 10>>0<</if>>_alarm.minute</div>
+                            <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg | 已失效<</if>></div>
+                        </div>
+                    <</if>>
+                    <<link "删除">><<run PhoneMod.deleteAlarm(_i)>><</link>>
+                </div>
+            <</for>>
+        <</if>>
+    </div>
+<</widget>>
+
+<<widget "phone_app_settings">>
+    <h3>系统设置</h3>
+    <hr>
+    <h2>壁纸设置</h2>
+    <<if $wallpaperPath eq undefined>>
+        <<set $wallpaperBlur to 1>>
+        <<set $wallpaperBlack to 1>>
+    <</if>>
+    <<if $wallpaperPath>>
+        壁纸图像  <<link "重置壁纸">><<run PhoneMod.resetWallpaper()>><</link>><br>
+        <<print `<img id="phone-wallpaper-preview" src="`+$wallpaperPath+`">`>>
+    <</if>>
+    <input type="file" 
+        id="phome-wallpaper-upload" 
+        accept="image/*,.gif,.jpg,.jpeg,.png,.webp"
+        onchange="PhoneMod.handleWallpaperUpload(this)"><br><br>
+    <<print `<input type="checkbox" id="wallpaper-blur" onclick="PhoneMod.toggleBlur(this.checked)" ` + ($wallpaperBlur ? "checked" : "") + `> 模糊效果     `>>
+    <<print `<input type="checkbox" id="wallpaper-darken" onclick="PhoneMod.toggleDarken(this.checked)" ` + ($wallpaperBlack ? "checked" : "") + `> 加黑效果`>>
+<</widget>>
+
+<<widget "phone_app_game">>
+    <<set $phoneReturnPassageTmp to passage()>>
+    玩家在非活动期间可以游玩游戏| 大幅消耗时间<<ggtiredness>><<llstress>><<lltrauma>><<ggcontrol>>
+    <br><br>
+    游戏分为科学、数学、语文和历史四类，对应着学校的四门学科，相应更高的成绩能够取得更好的治愈效果，而且不论怎样，都可以少量提高相应学科的进度。
+    <br><br>
+
+    <<scienceicon>><<link [[玩科学实验室 (0:30)|Phone Game Science]]>><<run PhoneMod.PhoneTo()>><</link>><<gscience>>
+    <br>
+    <<mathicon>><<link [[玩数字天堂 (0:30)|Phone Game Maths]]>><<run PhoneMod.PhoneTo()>><</link>><<gmaths>>
+    <br>
+    <<englishicon>><<link [[玩文悦 (0:30)|Phone Game English]]>><<run PhoneMod.PhoneTo()>><</link>><<genglish>>
+    <br>
+    <<historyicon>><<link [[玩古识今知 (0:30)|Phone Game History]]>><<run PhoneMod.PhoneTo()>><</link>><<ghistory>>
+<</widget>>
+
+<<widget "phone_app_shop">>
+    <<run PhoneMod.toggleApp('main')>>
+    <<run PhoneMod.PhoneTo()>>
+    <<set $phoneReturnWorn to $worn>>
+    <<goto 'Phone Shop'>>
+<</widget>>
+
+<<widget "phone_app_yebook">>
+<</widget>>
+
+
+:: Phone Shop
+<div class="phone-overlay">
+    你处于网购平台。
+
+    <div id="tryonstats-div"><<tryOnStats>></div>
+    <<unset $shopListStartCount>>
+    <<unset $clothes_choice>>
+    <<set $shopPage = 0>>
+
+    <span>保暖度：</span>
+    <<warmthscale>>
+    <div id="warmth-description">
+        <<warmth_description>>
+    </div>
+    <br><br>
+
+    <div id="clothingShop-div">
+        <<AllShop>>
+    </div>
+
+    <<getouticon>>
+    <<link [[退出网购商城|Phone Back]]>>
+        <<updatesidebarimg>>
+        <<updatesidebardescription>>
+        <<updateallure>>
+        <<updatewarmthscale>>
+        <<updatewarmthdescription>>
+        <<updateclothingshop>>
+        <<run updateMoment()>>
+        <<shopClothingFilterReset>>
+        <<ShowUnderEquip "normal">>
+        <<ShowUnderEquip "over">>
+        <<set $worn to $phoneReturnWorn>>
+        <<set $tryOn.autoReset to true>>
+        <<shopHoodCheck>>
+        <<shopCommandoCheck>>
+    <</link>>
+</div>

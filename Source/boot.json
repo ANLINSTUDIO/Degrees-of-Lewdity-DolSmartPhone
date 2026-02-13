@@ -1,0 +1,34 @@
+{
+    "name": "SmartPhone Alpha",
+    "version": "Alpha.1.0",
+    "styleFileList": ["style.css"],
+    "scriptFileList": ["script.js"],
+    "tweeFileList": ["phone.twee", "phone_call.twee", "phone_game.twee", "phone_passage.twee"],
+    "imgFileList": [
+        "img/misc/icon/phone/phone.png",
+        "img/misc/icon/phone/phones.png"
+    ],
+    "additionFile": [],
+    "addonPlugin": [
+        {
+            "modName": "ModLoader DoL ImageLoaderHook",
+            "addonName": "ImageLoaderAddon",
+            "modVersion": "^2.3.0",
+            "params": []
+        }
+    ],
+    "dependenceInfo": [
+        {
+            "modName": "ModLoader",
+            "version": "^2.31.2"
+        },
+        {
+            "modName": "GameVersion",
+            "version": "=0.5.7.9"
+        },
+        {
+            "modName": "ModLoader DoL ImageLoaderHook",
+            "version": "^2.3.0"
+        }
+    ]
+}
