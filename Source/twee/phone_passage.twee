@@ -41,18 +41,14 @@
     现在可以以<span class="gold">£_money</span>的价格在官方手机店
     <<print '<<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to "'+_i.id+'">> <</link>>'>>
     <br>
-<</for>>
-<br>
+<</for>><br>
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell Finish
-<<if !$SellPhone>>
-    你没有选择要卖的手机。<br>
-    <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
-<</if>>
 <<set _Phone to PhoneMod.getPhone($SellPhone)>>
 <<generate1>><<person1>>
 <<if _Phone.stolen>>
+    店员拿起手机，走到柜台后面，用你看不懂的仪器检查着手机。<br>
     <<switch random(1, 3)>>
         <<case 1>>
             “手机的密码是？”<br>
@@ -67,7 +63,6 @@
                 店员听了之后露出了一丝不屑的表情：“哦？你也不知道密码吗？那这部手机是怎么来的？”<br>
             <</if>>
         <<case 2>>
-            店员拿起手机，走到柜台后面，用你看不懂的仪器检查着手机。<br>
             突然，<<he>>皱起眉头，抬起头来向你问到：“这部手机是从哪里来的？”<br>
             你顿感不妙，“这是……是路上捡的”<br>
             “这部手机已经被联网系统标记为被盗窃，<<girl>>，你最好老实交代这部手机是怎么来的。” <<he>>的语气变得严厉了起来。<br>
@@ -75,7 +70,7 @@
             店员好像没有发现这部手机是你盗窃来的，也没有询问你密码。
             <<set _sold to 1>>
         <<if _sold>>
-            你把偷来的手机卖给了官方手机店，
+            你把偷来的手机卖给了官方手机店。
         <</if>>
     <</switch>><br>
 <<else>>
@@ -83,6 +78,7 @@
     你把手机卖给了官方手机店，虽然价格不太理想，但总比卖给老冯那里划算。<br>
 <</if>>
 <<if _sold>>
+    <<endevent>>
     <<set $PhoneSellMoney to PhoneMod.SellPhone($SellPhone)>>
     <<money $PhoneSellMoney>>
     你获得了<span class="gold">£<<print $PhoneSellMoney/100>></span>。<br><br>
@@ -94,9 +90,14 @@
     <<switch random(1, 3)>>
         <<case 1>>
             “你以为你能骗过我吗？这部手机是被盗的，我现在就要报警！” 店员一边说着，一边拿起电话准备报警。<br><br>
-            <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+            <<if random(1, 2) is 1>>
+                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+            <<else>>
+                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
+            <</if>>
         <<case 2>>
             “对不起，我们不能收购盗窃的手机。” 店员说完之后就把手机还给了你。<br><br>
+            <<endevent>>
             <<if $PhoneOwned and $PhoneOwned.length > 0>>
                 <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
             <</if>>
@@ -104,12 +105,12 @@
         <<case 3>>
             <<he>>冷冷地看了你一眼：“<<girl>>，<span class="gold">要是你肯付出些什么，我可以当做什么都没看见</span>。”<br><br>
             <<if $money gte 100000>>
-                <<link [[贿赂（£1000）|Shopping Centre Phone Shop]]>><<money -100000>><</link>><br>
+                <<link [[贿赂（£1000）|Shopping Centre Phone Shop]]>><<money -100000>><<endevent>><</link>><br>
             <</if>>
             <<if random(1, 2) is 1>>
                 <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
             <<else>>
-                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
             <</if>>
     <</switch>>
 <</if>>
@@ -135,7 +136,7 @@
 <<else>>
     你试图逃离购物中心，但<span class="red">没能</span>跑得过警察。你被警察按倒在地。
 	<br><br>
-	<<link [[继续|Shopping Centre Phone Sell Arrest Journey]]>><</link>>
+	<<link [[继续|Shopping Centre Phone Sell Arrest Journey]]>><<endevent>><</link>>
 <</if>><br>
 
 :: Shopping Centre Phone Sell Arrest Journey
@@ -144,7 +145,7 @@
 <<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
 <br><br>
 <<if crimeSumCurrent() gte 5000>>
-	坐在司机位的那个<<person1>><<person>>回头看向你，"你一定是个坏<<girl>>吧？不只是偷手机，你肯定还惹了各种各样的麻烦。"
+	坐在司机位的那个<<person1>><<person>>回头看向你，"你一定是个坏<<girl>>吧？不只是偷手机，你肯定还惹了各种各样的麻烦。"<br>
 	<br><br>
 	坐在<<His>>旁边的那个<<person2>><<person>>插话道，"注意看路。"
 	<br><br>
@@ -359,7 +360,7 @@
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
     <<if $PhoneOwned and $PhoneOwned.length > 0>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
-        <<if PhoneMod.isCarryingStolenPhone()>>
+        <<if PhoneMod.isCarryingStolenPhone(true)>>
             <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
@@ -380,9 +381,64 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Sell
+<<for _i range $PhoneOwned>>
+    <<set _info to PhoneMod.getPhoneConditionInfo(_i.newness)>>
+    <<set _money to PhoneMod.getSellPhonePrice(_i.id, true)>>
+    <<set _Phone to PhoneMod.getPhone(_i.id)>>
+    <<icon "phone/phone.png">>
+    一部<<print '<span style="color: '+_info.color+'">'+_info.text+'</span>'>>的手机，
+    <<if _Phone.stolen>>
+        <span class="red">由你盗窃而来，</span>
+        <<if _Phone.usable>>
+            <span class="green">但你已经破解了密码，</span>
+        <</if>>
+    <</if>>
+    官网售价为<span class="red">£_i.price</span>，
+    现在可以以<span class="gold">£_money</span>的价格在老冯这里
+    <<print '<<link [[出售|Second Phone Sell Finish]]>> <<set $SellPhone to "'+_i.id+'">> <</link>>'>>
+    <br>
+<</for>><br>
+<<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
+
+:: Second Phone Sell Finish
+<<set _Phone to PhoneMod.getPhone($SellPhone)>>
+<<if _Phone.stolen>>
+    “不错不错”<br>
+<<else>>
+    你把手机卖给了老冯，虽然到手的价格比官方店那边低了一点，但是你觉得老冯很开心。<br>
+<</if>>
+<<set $PhoneSellMoney to PhoneMod.SellPhone($SellPhone, true)>>
+<<money $PhoneSellMoney>>
+你获得了<span class="gold">£<<print $PhoneSellMoney/100>></span>。<br><br>
+<<if $PhoneOwned and $PhoneOwned.length > 0>>
+    <<highicon>><<link [[继续|Second Phone Sell]]>><</link>><br>
+<</if>>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack
+<<for _i range $PhoneOwned>>
+    <<set _Phone to PhoneMod.getPhone(_i.id)>>
+    <<if _Phone.stolen and !_Phone.usable>>
+        <<set _info to PhoneMod.getPhoneConditionInfo(_i.newness)>>
+        <<set _money to Math.round(PhoneMod.getSellPhonePrice(_i.id) * 0.2)>>
+        <<icon "phone/phone.png">>
+        一部<<print '<span style="color: '+_info.color+'">'+_info.text+'</span>'>>的手机，
+        <<if _Phone.stolen>>
+            <span class="red">由你盗窃而来，</span>
+        <</if>>
+        官网售价为<span class="red">£_i.price</span>，
+        现在你可以以<span class="gold">£_money</span>的价格在老冯这里
+        <<print '<<link [[破解密码|Second Phone Crack Finish]]>> <<set $SellPhone to "'+_i.id+'">> <</link>>'>>
+        <br>
+    <</if>>
+<</for>><br>
+<<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
+
+:: Second Phone Crack Finish
+<<set PhoneMod.getPhone($SellPhone).usable to true>>
+<<set _money to Math.round(PhoneMod.getSellPhonePrice($SellPhone) * 0.2)>>
+<<print '<<money -'+_money+'>>'>>
+“好了，这部手机已经被我破解了。不过我警告你，<<girl>>，它随时有可能被条子的网络给标记，这我不负责。” 老冯说完之后就把手机还给了你。<br><br>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 

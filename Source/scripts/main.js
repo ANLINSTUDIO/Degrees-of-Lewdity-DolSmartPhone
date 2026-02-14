@@ -463,7 +463,9 @@ PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
         let price = phone.price;
         price *= phone.newness; // 根据新旧程度调整价格
         if (feng) price *= 0.9;
-        return round(price, 2);
+        price = round(price, 2)
+        if (price <= 0) price = 1; // 最低售价为1
+        return price;
     }
 }
 PhoneMod.isUsable = function(phone) { // 检查是否有可用的手机
@@ -515,10 +517,10 @@ PhoneMod.ChangeUsingPhone = function(phone=null) { // 切换正在使用的手�
     }
     return V.UsingPhone;
 }
-PhoneMod.isCarryingStolenPhone = function() {
+PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
   if (!V.PhoneOwned) return false;
   for (let i = 0; i < V.PhoneOwned.length; i++) {
-    if (V.PhoneOwned[i].stolen) return true;
+    if (V.PhoneOwned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.PhoneOwned[i]))) return true;
   }
   return false;
 }
