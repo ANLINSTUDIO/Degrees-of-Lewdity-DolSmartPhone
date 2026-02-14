@@ -13,7 +13,7 @@
 <<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
 
 :: Shopping Centre Phone Buy
-“这款新上市的A手机，原价<span class="red">£6999</span>，现在活动期间只要<span class="gold">£4999</span>！”<br>
+“这款新上市的A手机，原价<span class="red"><del>£6999</del></span>，现在活动期间只要<span class="gold">£4999</span>！”<br>
 <<if $money gte 499900>>
     <<icon "phone/phone.png">><<link [[确认购买A手机 (£4999)|Shopping Centre Phone Shop]]>>
         <<run PhoneMod.BuyPhone(4999)>>
@@ -25,7 +25,154 @@
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell
+<<for _i range $PhoneOwned>>
+    <<set _info to PhoneMod.getPhoneConditionInfo(_i.newness)>>
+    <<set _money to PhoneMod.getSellPhonePrice(_i.id)>>
+    <<set _Phone to PhoneMod.getPhone(_i.id)>>
+    <<icon "phone/phone.png">>
+    一部<<print '<span style="color: '+_info.color+'">'+_info.text+'</span>'>>的手机，
+    <<if _Phone.stolen>>
+        <span class="red">由你盗窃而来，</span>
+        <<if _Phone.usable>>
+            <span class="green">但你已经破解了密码，</span>
+        <</if>>
+    <</if>>
+    官网售价为<span class="red">£_i.price</span>，
+    现在可以以<span class="gold">£_money</span>的价格在官方手机店
+    <<print '<<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to "'+_i.id+'">> <</link>>'>>
+    <br>
+<</for>>
+<br>
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
+
+:: Shopping Centre Phone Sell Finish
+<<if !$SellPhone>>
+    你没有选择要卖的手机。<br>
+    <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
+<</if>>
+<<set _Phone to PhoneMod.getPhone($SellPhone)>>
+<<generate1>><<person1>>
+<<if _Phone.stolen>>
+    <<switch random(1, 3)>>
+        <<case 1>>
+            “手机的密码是？”<br>
+            <<if _Phone.usable>>
+                “<<print PhoneMod.Phone.generatePassward()>>。”你在老冯那里破解了手机的密码，因此你对答如流，并且对此早有准备。
+                <<set _sold to 1>>
+            <<else>>
+                “啊？密……密码？” 你一时语塞，完全没有想到店员会问这个问题。<br>
+                你结结巴巴地说：“啊……啊……这个……你问这个干嘛……”<br>
+                <<he>>皱起眉头看着你：“我们肯定要解开手机才能帮你检测手机的状况啊，你不说密码的话我们怎么解开啊？”<br>
+                你感觉自己被店员看穿了，心里一阵慌乱，甚至有点想撒谎，但你又觉得撒谎可能会被店员看穿，最后你只能老实地说：“啊……我……我也不知道密码……”<br>
+                店员听了之后露出了一丝不屑的表情：“哦？你也不知道密码吗？那这部手机是怎么来的？”<br>
+            <</if>>
+        <<case 2>>
+            店员拿起手机，走到柜台后面，用你看不懂的仪器检查着手机。<br>
+            突然，<<he>>皱起眉头，抬起头来向你问到：“这部手机是从哪里来的？”<br>
+            你顿感不妙，“这是……是路上捡的”<br>
+            “这部手机已经被联网系统标记为被盗窃，<<girl>>，你最好老实交代这部手机是怎么来的。” <<he>>的语气变得严厉了起来。<br>
+        <<case 3>>
+            店员好像没有发现这部手机是你盗窃来的，也没有询问你密码。
+            <<set _sold to 1>>
+        <<if _sold>>
+            你把偷来的手机卖给了官方手机店，
+        <</if>>
+    <</switch>><br>
+<<else>>
+    <<set _sold to 1>>
+    你把手机卖给了官方手机店，虽然价格不太理想，但总比卖给老冯那里划算。<br>
+<</if>>
+<<if _sold>>
+    <<set $PhoneSellMoney to PhoneMod.SellPhone($SellPhone)>>
+    <<money $PhoneSellMoney>>
+    你获得了<span class="gold">£<<print $PhoneSellMoney/100>></span>。<br><br>
+    <<if $PhoneOwned and $PhoneOwned.length > 0>>
+        <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
+    <</if>>
+    <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
+<<else>>
+    <<switch random(1, 3)>>
+        <<case 1>>
+            “你以为你能骗过我吗？这部手机是被盗的，我现在就要报警！” 店员一边说着，一边拿起电话准备报警。<br><br>
+            <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+        <<case 2>>
+            “对不起，我们不能收购盗窃的手机。” 店员说完之后就把手机还给了你。<br><br>
+            <<if $PhoneOwned and $PhoneOwned.length > 0>>
+                <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
+            <</if>>
+            <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
+        <<case 3>>
+            <<he>>冷冷地看了你一眼：“<<girl>>，<span class="gold">要是你肯付出些什么，我可以当做什么都没看见</span>。”<br><br>
+            <<if $money gte 100000>>
+                <<link [[贿赂（£1000）|Shopping Centre Phone Shop]]>><<money -100000>><</link>><br>
+            <</if>>
+            <<if random(1, 2) is 1>>
+                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+            <<else>>
+                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+            <</if>>
+    <</switch>>
+<</if>>
+
+:: Shopping Centre Phone Sell Arrest
+<<effects>>
+<<generatePolice 1>><<generatePolice 2>>两名警察就正好在购物中心里。当你慌张地跑出手机店时，身后的店员朝他们叫喊，他们立刻向你喊话："你被捕了，停下脚步，老老实实地过来！"
+<br><br>
+<<link [[跑|Shopping Centre Phone Sell Arrest Run]]>><<crimeUp 100 "resisting">><</link>><<athleticsdifficulty 1 1000>><<crime "resisting">>
+<br>
+<<link [[乖乖过去|Shopping Centre Phone Sell Arrest Journey]]>><</link>>
+<br>
+
+:: Shopping Centre Phone Sell Arrest Run
+<<set $outside to 0>><<set $location to "town">><<effects>>
+你知道自己不能被捕，没有理会警察的话，直接转身跑出购物中心。
+<<gathletics>><<athletics 1>><<pass 10>>
+<br><br>
+<<if $athleticsSuccess>>
+    警察紧跟在你身后，你穿过街道与小巷一路狂奔，但他们依旧不依不饶。在<span class="green">成功</span>地甩开警察一段距离后，你发现自己拐进了死胡同。
+    <br><br>
+    <<link [[继续|Commercial Alleyways]]>><<endevent>><</link>>
+<<else>>
+    你试图逃离购物中心，但<span class="red">没能</span>跑得过警察。你被警察按倒在地。
+	<br><br>
+	<<link [[继续|Shopping Centre Phone Sell Arrest Journey]]>><</link>>
+<</if>><br>
+
+:: Shopping Centre Phone Sell Arrest Journey
+<<set $outside to 0>><<set $location to "town">><<effects>>
+警察给你戴上手铐，将你带到车旁。你被警察塞进了车后座，看着他们坐在了前排，随后驱车离开。
+<<set $leftarm to "bound">><<set $rightarm to "bound">><<handheldruined>>
+<br><br>
+<<if crimeSumCurrent() gte 5000>>
+	坐在司机位的那个<<person1>><<person>>回头看向你，"你一定是个坏<<girl>>吧？不只是偷手机，你肯定还惹了各种各样的麻烦。"
+	<br><br>
+	坐在<<His>>旁边的那个<<person2>><<person>>插话道，"注意看路。"
+	<br><br>
+	<<person1>><<person>>张了张嘴，但还是什么都没有说。<<he>>回头继续看着前方的道路，车内就这样保持着诡异的沉默。
+	<br><br>
+	<<if hasSexStat("promiscuity", 2)>>
+		<<link [[用身体换取放行|Hospital Arrest Offer]]>><</link>><<promiscuous2>>
+		<br>
+	<<elseif $uncomfortable.prostituting is false>>
+		<<link [[勉强献出身体换取放行|Hospital Arrest Offer]]>><<set $desperateaction to 2>><</link>><<promiscuous2>>
+		<br>
+	<</if>>
+	<<link [[静坐|Hospital Arrest]]>><</link>>
+	<br>
+<<else>>
+	坐在司机位的那个<<person1>><<person>>回头看向你，" 如果你愿意合作的话，那么一切都会好起来的。"
+	<br><br>
+	<<if hasSexStat("promiscuity", 2)>>
+		<<link [[用身体换取放行|Hospital Arrest Offer]]>><</link>><<promiscuous2>>
+		<br>
+	<<elseif $uncomfortable.prostituting is false>>
+		<<link [[勉强献出身体换取放行|Hospital Arrest Offer]]>><<set $desperateaction to 2>><</link>><<promiscuous2>>
+		<br>
+	<</if>>
+	<<link [[静坐|Hospital Arrest Sit]]>><</link>>
+	<br>
+<</if>>
+
 
 
 :: Second Phone Shop Link

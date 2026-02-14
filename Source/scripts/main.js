@@ -398,12 +398,10 @@ PhoneMod.Phone = class {
     this.usable = false;
     this.second = false;
   }
-
   generateId(){
     const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
     return uniqueId
   }
-
   return() {
     return {
         id: this.id,
@@ -414,29 +412,33 @@ PhoneMod.Phone = class {
         second: this.second
     }
   }
-
   generate() { // 生成一部手机
-    this.price = 4000 + (Math.random() * 3000 - 3000 / 2);
+    this.price = Math.round(4000 + (Math.random() * 3000 - 3000 / 2));
     this.newness = Math.random();
   }
-
   newBuy(price) {
     this.price = price;
     this.usable = true
     return this.return();
   }
-
   newBuySecond(price, newness) {
     this.newBuy(price, newness)
     this.second = true
     return this.return();
   }
-
   newStolen() {
     this.stolen = true;
     this.generate()
     return this.return();
   }
+}
+PhoneMod.generatePassward = function() {
+const chars = '0123456789';
+let password = '';
+for (let i = 0; i < 6; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+}
+return password;
 }
 
 PhoneMod.BuyPhone = function(price) { // 购买一部手机
@@ -453,29 +455,59 @@ PhoneMod.StolePhone = function() { // 盗窃一部手机
   V.PhoneOwned = V.PhoneOwned || []
   V.PhoneOwned.push(new PhoneMod.Phone().newStolen());
 }
+PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
+    if (!V.PhoneOwned) return;
+    const index = V.PhoneOwned.findIndex(p => p.id === id);
+    if (index !== -1) {
+        const phone = V.PhoneOwned[index];
+        let price = phone.price;
+        price *= phone.newness; // 根据新旧程度调整价格
+        if (feng) price *= 0.9;
+        return round(price, 2);
+    }
+}
+PhoneMod.isUsable = function(phone) { // 检查是否有可用的手机
+    return phone && phone.usable && phone.newness > 0;
+}
+PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
+    console.log("Attempting to sell phone with id:", id);
+    if (!V.PhoneOwned) return;
+    const index = V.PhoneOwned.findIndex(p => p.id === id);
+    if (index !== -1) {
+        const moneyEarned = PhoneMod.getSellPhonePrice(id, feng) * 100;  // DoL中money单位是分，所以乘以100
+        V.PhoneOwned.splice(index, 1);
+        PhoneMod.ChangeUsingPhone();
+        return moneyEarned;
+    }
+    return 0
+}
 PhoneMod.getUsingPhone = function() {
     if (!V.UsingPhone) return null;
-    return V.PhoneOwned.find(p => p.id === V.UsingPhone) || null;
+    return PhoneMod.getPhone(V.UsingPhone);
+}
+PhoneMod.getPhone = function(id) {
+    if (!V.PhoneOwned) return null;
+    return V.PhoneOwned.find(p => p.id === id) || null;
 }
 PhoneMod.ChangeUsingPhone = function(phone=null) { // 切换正在使用的手机
     if (phone === null) {
         if (V.UsingPhone) {
             const UsingPhone = V.PhoneOwned.find(p => p.id === V.UsingPhone)
-            if (UsingPhone && UsingPhone.usable && UsingPhone.newness > 0) return V.UsingPhone;
+            if (PhoneMod.isUsable(UsingPhone)) return V.UsingPhone;
         }
         if (!V.PhoneOwned || V.PhoneOwned.length === 0) {
             V.UsingPhone = null;
         } else {
             V.UsingPhone = null
             for (var i = 0; i < V.PhoneOwned.length; i++) {
-                if (V.PhoneOwned[i].usable && V.PhoneOwned[i].newness > 0) {
+                if (PhoneMod.isUsable(V.PhoneOwned[i])) {
                     V.UsingPhone = V.PhoneOwned[i].id;
                     break;
                 }
             }
         }
     } else {
-        if (phone.usable && phone.newness > 0) {
+        if (PhoneMod.isUsable(phone)) {
             V.UsingPhone = phone.id;
         } else {
             V.UsingPhone = null
@@ -545,7 +577,6 @@ PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
             })
         }}
 };
-
 PhoneMod.PhoneJournalChange = function(id) { // 日志中更新手机信息
     const phone = V.PhoneOwned.find(p => p.id === id);
     if (phone) {
