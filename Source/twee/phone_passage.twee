@@ -261,6 +261,10 @@
         <<set $phoneStolen to 1>>
         <<goto "Feng Contend Finish">>
     <</if>>
+    <<if $pain gte 100 or $stress gte $stressmax or $control lte 0 or $trauma gte $traumamax>>
+        <<set $phoneStolen to 1>>
+        <<goto "Feng Contend Finish">>
+    <</if>>
 <</if>>
 <span class="gold">你必须要至少有一只手握住手机！！！否则它就会被抢走！</span><br><br>
 <<effects>>
@@ -284,7 +288,7 @@
 
 <span id="next"><<link [[继续|Feng Contend]]>><</link>></span><<nexttext>>
 
-<<if $enemyhealth lte 0>>
+<<if $enemyhealth lte 0 or $enemyarousal gte $enemyarousalmax>>
     <<goto "Feng Contend Finish">>
 <</if>>
 
