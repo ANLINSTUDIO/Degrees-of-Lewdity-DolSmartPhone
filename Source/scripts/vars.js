@@ -18,6 +18,8 @@ PhoneMod.events = [
     {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
     {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
+
+    {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
 ]
 PhoneMod.phoneConditionLevels = [
     { threshold: 0.8, text: "崭新出厂", color: "#4CAF50" },
@@ -25,6 +27,14 @@ PhoneMod.phoneConditionLevels = [
     { threshold: 0.4, text: " 明显划痕", color: "#FFC107" },
     { threshold: 0.2, text: "严重磨损", color: "#FF9800" },
     { threshold: 0, text: "残破不堪", color: "#F44336" }
+];
+PhoneMod.Contacts = [
+    {name: "兰德里", call: "Phone Call Landry"},
+    {name: "惠特尼", call: "Phone Call Whitney"},
+    {name: "艾利克斯", call: "Phone Call Alex"},
+    {name: "艾弗里", call: "Phone Call Avery"},
+    {name: "贝利", call: "Phone Call Bailey"},
+    {name: "裁缝", call: "Phone Call Tailor"},
 ];
 PhoneMod.PhoneGameQuestions = {
   "Maths": [

@@ -1,9 +1,9 @@
 :: Phone Back
-<<set $phoneReturnPassageTmp to $phoneReturnPassage>>
-<<link [[Next|$phoneReturnPassage]]>><</link>>
-<<unset $phoneReturnPassage>>
-<<set $phoneReturnPassage to undefined>>
-<<goto $phoneReturnPassageTmp>>
+<<set $Phone.ReturnPassageTmp to $Phone.ReturnPassage>>
+<<link [[Next|$Phone.ReturnPassage]]>><</link>>
+<<unset $Phone.ReturnPassage>>
+<<set $Phone.ReturnPassage to undefined>>
+<<goto $Phone.ReturnPassageTmp>>
 
 :: SmartPhonePreviewWidgets [widget]
 <<widget "smartphone_render_preview">>
@@ -27,13 +27,13 @@
         </div>
         
         <div class="phone-screen-unlocked" onclick="event.stopPropagation()">
-            <<if $phoneAlarmTriggered is true>>
+            <<if $Phone.AlarmTriggered is true>>
                 <div class="phone-alarming">
                     <<phone_wallpaper>>
                     <div style="font-size: 32px; font-weight: bold;">
-                        <<if $phoneAlarmCurrent.hour < 10>>0<</if>>$phoneAlarmCurrent.hour:<<if $phoneAlarmCurrent.minute < 10>>0<</if>>$phoneAlarmCurrent.minute
+                        <<if $Phone.AlarmCurrent.hour < 10>>0<</if>>$Phone.AlarmCurrent.hour:<<if $Phone.AlarmCurrent.minute < 10>>0<</if>>$Phone.AlarmCurrent.minute
                     </div>
-                    <p>$phoneAlarmCurrent.msg</p>
+                    <p>$Phone.AlarmCurrent.msg</p>
                     <<button "关闭闹钟">><<run PhoneMod.cancelAlarm()>><</button>>
                 </div>
             <<else>>
@@ -43,13 +43,13 @@
                     <<print Weather.toSelectedString(Weather.temperature, 1)>>
                 </div>
                 <div class="phone-content">
-                    <<if $phoneApp is "photo">> <<phone_app_photo>>
-                    <<elseif $phoneApp is "contacts">> <<phone_app_contacts>>
-                    <<elseif $phoneApp is "alarm">> <<phone_app_alarm>> <<run PhoneMod.initAlarm()>>
-                    <<elseif $phoneApp is "settings">> <<phone_app_settings>>
-                    <<elseif $phoneApp is "game">> <<phone_app_game>>
-                    <<elseif $phoneApp is "shop">> <<phone_app_shop>>
-                    <<elseif $phoneApp is "yebook">> <<phone_app_yebook>>
+                    <<if $Phone.CurrentApp is "photo">> <<phone_app_photo>>
+                    <<elseif $Phone.CurrentApp is "contacts">> <<phone_app_contacts>>
+                    <<elseif $Phone.CurrentApp is "alarm">> <<phone_app_alarm>> <<run PhoneMod.initAlarm()>>
+                    <<elseif $Phone.CurrentApp is "settings">> <<phone_app_settings>>
+                    <<elseif $Phone.CurrentApp is "game">> <<phone_app_game>>
+                    <<elseif $Phone.CurrentApp is "shop">> <<phone_app_shop>>
+                    <<elseif $Phone.CurrentApp is "yebook">> <<phone_app_yebook>>
                     <<else>>
                         <div class="phone-desktop">
                             <<phone_wallpaper>>
@@ -102,12 +102,12 @@
 <</widget>>
 
 <<widget "phone_wallpaper">>
-    <<if $wallpaperPath>>
-        <<print `<img id="phone-wallpaper" src="`+$wallpaperPath+`">`>>
-        <<if $wallpaperBlur>>
+    <<if $Phone.SettingsWallpaperPath>>
+        <<print `<img id="phone-wallpaper" src="`+$Phone.SettingsWallpaperPath+`">`>>
+        <<if $Phone.SettingsWallpaperBlur>>
             <div id="phone-wallpaper-cover" class="blur"></div>
         <</if>>
-        <<if $wallpaperBlack>>
+        <<if $Phone.SettingsWallpaperBlack>>
             <div id="phone-wallpaper-cover" class="black"></div>
         <</if>>
     <</if>>
@@ -119,24 +119,18 @@
 <<widget "phone_app_contacts">>
     <h3>通讯录</h3>
     <div class="app-content">
-        <<set $phoneNumbers to 
-        [
-            {name: "兰德里", call: "Phone Call Landry"},
-            {name: "惠特尼", call: "Phone Call Whitney"},
-            {name: "艾利克斯", call: "Phone Call Alex"},
-            {name: "艾弗里", call: "Phone Call Avery"},
-            {name: "贝利", call: "Phone Call Bailey"}
-        ]>>
-    
-        <<if $phoneNumbers>>
+        <<if $Phone.KnownContacts && $Phone.KnownContacts.length > 0>>
             <div class="phone-contact-list">
-                <<for _i, _phone_number range $phoneNumbers>>
+                <<for _i range $Phone.KnownContacts>>
                     <div class="phone-contact-item">
-                        <span style="white-space: nowrap; margin-right: 10px">_phone_number.name</span>
-                        <<button "呼叫 (0:05)" _phone_number.call>>
-                            <<run PhoneMod.PhoneTo()>>
-                            <<pass 5>>
-                        <</button>>
+                        <<set _contact to PhoneMod.getContact(_i)>>
+                        <<if _contact>>
+                            <span style="white-space: nowrap; margin-right: 10px">_contact.name</span>
+                            <<button "呼叫 (0:05)" _contact.call>>
+                                <<run PhoneMod.PhoneTo()>>
+                                <<pass 5>>
+                            <</button>>
+                        <</if>>
                     </div>
                 <</for>>
             </div>
@@ -189,9 +183,9 @@
     </div>
 
     <div class="phone-alarm-list">
-        <<if $phoneAlarms>>
+        <<if $Phone.Alarms>>
             <hr>
-            <<for _i, _alarm range $phoneAlarms>>
+            <<for _i, _alarm range $Phone.Alarms>>
                 <div class="phone-alarm-item">
                     <<if _alarm.active>>
                         <div>
@@ -215,24 +209,24 @@
     <h3>系统设置</h3>
     <hr>
     <h2>壁纸设置</h2>
-    <<if $wallpaperPath eq undefined>>
-        <<set $wallpaperBlur to 1>>
-        <<set $wallpaperBlack to 1>>
+    <<if $Phone.SettingsWallpaperPath eq undefined>>
+        <<set $Phone.SettingsWallpaperBlur to 1>>
+        <<set $Phone.SettingsWallpaperBlack to 1>>
     <</if>>
-    <<if $wallpaperPath>>
+    <<if $Phone.SettingsWallpaperPath>>
         壁纸图像  <<link "重置壁纸">><<run PhoneMod.resetWallpaper()>><</link>><br>
-        <<print `<img id="phone-wallpaper-preview" src="`+$wallpaperPath+`">`>>
+        <<print `<img id="phone-wallpaper-preview" src="`+$Phone.SettingsWallpaperPath+`">`>>
     <</if>>
     <input type="file" 
         id="phome-wallpaper-upload" 
         accept="image/*,.gif,.jpg,.jpeg,.png,.webp"
         onchange="PhoneMod.handleWallpaperUpload(this)"><br><br>
-    <<print `<input type="checkbox" id="wallpaper-blur" onclick="PhoneMod.toggleBlur(this.checked)" ` + ($wallpaperBlur ? "checked" : "") + `> 模糊效果     `>>
-    <<print `<input type="checkbox" id="wallpaper-darken" onclick="PhoneMod.toggleDarken(this.checked)" ` + ($wallpaperBlack ? "checked" : "") + `> 加黑效果`>>
+    <<print `<input type="checkbox" id="wallpaper-blur" onclick="PhoneMod.toggleBlur(this.checked)" ` + ($Phone.SettingsWallpaperBlur ? "checked" : "") + `> 模糊效果     `>>
+    <<print `<input type="checkbox" id="wallpaper-darken" onclick="PhoneMod.toggleDarken(this.checked)" ` + ($Phone.SettingsWallpaperBlack ? "checked" : "") + `> 加黑效果`>>
 <</widget>>
 
 <<widget "phone_app_game">>
-    <<set $phoneReturnPassageTmp to passage()>>
+    <<set $Phone.ReturnPassageTmp to passage()>>
     玩家在非活动期间可以游玩游戏| 大幅消耗时间<<ggtiredness>><<llstress>><<lltrauma>><<ggcontrol>>
     <br><br>
     游戏分为科学、数学、语文和历史四类，对应着学校的四门学科，相应更高的成绩能够取得更好的治愈效果，而且不论怎样，都可以少量提高相应学科的进度。
@@ -250,7 +244,7 @@
 <<widget "phone_app_shop">>
     <<run PhoneMod.toggleApp('main')>>
     <<run PhoneMod.PhoneTo()>>
-    <<set $phoneReturnWorn to $worn>>
+    <<set $Phone.ReturnWorn to $worn>>
     <<goto 'Phone Shop'>>
 <</widget>>
 
@@ -290,7 +284,7 @@
         <<shopClothingFilterReset>>
         <<ShowUnderEquip "normal">>
         <<ShowUnderEquip "over">>
-        <<set $worn to $phoneReturnWorn>>
+        <<set $worn to $Phone.ReturnWorn>>
         <<set $tryOn.autoReset to true>>
         <<shopHoodCheck>>
         <<shopCommandoCheck>>

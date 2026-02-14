@@ -18,7 +18,7 @@ PhoneMod.togglePhone = function(forceOpen) {
         phone.classList.add("phone-open");
     } else {
         phone.classList.toggle("phone-open");
-        if (V.phoneAlarmTriggered && !phone.classList.contains("phone-open")) PhoneMod.cancelAlarm();
+        if (V.Phone.AlarmTriggered && !phone.classList.contains("phone-open")) PhoneMod.cancelAlarm();
     }
   }
 };
@@ -32,12 +32,12 @@ PhoneMod.toggleApp = function(AppName) {
             PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return;
         } else {
-            V.phoneApp = AppName;
+            V.Phone.CurrentApp = AppName;
             Engine.play(passage()); 
             PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
         }
     } else {
-        V.phoneApp = AppName;
+        V.Phone.CurrentApp = AppName;
         Engine.play(passage()); 
     }
     PhoneMod.togglePhone(true);
@@ -77,6 +77,7 @@ $(document).on(":passagerender", function (ev) {
   PhoneMod.eventsLoad(ev);
 });
 $(document).one(":passageinit", function () {
+  V.Phone = V.Phone || {};
   PhoneMod.OnMacro("journal", PhoneMod.ShowPhoneJournal)
 });
 
@@ -141,16 +142,15 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
     // 如果闹钟正在触发、未被关闭而切换了Passage，则仍然需要响铃
     let shouldTrigger = false;
 
-    if (V.phoneAlarmTriggered) {
+    if (V.Phone.AlarmTriggered) {
         setTimeout(() => PhoneMod.togglePhone(true), 10);
     }
     
-    if (!V.phoneAlarms || V.phoneAlarms.length === 0) return false;
+    if (!V.Phone.Alarms || V.Phone.Alarms.length === 0) return false;
     let now = PhoneMod.getAbsTime();
 
-    // 确保V.lastAlarmCheckTime存在
-    if (!V.lastAlarmCheckTime) {
-        V.lastAlarmCheckTime = {
+    if (!V.Phone.AlarmLastCheckTime) {
+        V.Phone.AlarmLastCheckTime = {
             year: now.year,
             month: now.month,
             day: now.day,
@@ -160,21 +160,21 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
     }
 
     // 遍历闹钟
-    for (let i = 0; i < V.phoneAlarms.length; i++) {
-        const alarm = V.phoneAlarms[i];
+    for (let i = 0; i < V.Phone.Alarms.length; i++) {
+        const alarm = V.Phone.Alarms[i];
         if (!alarm.active) continue;
         
         let shouldTrigger = false;
         
         if (alarm.type === "once") {
-            // 一次性闹钟：检查是否在V.lastAlarmCheckTime到now的时间段内
+            // 一次性闹钟：检查是否在V.Phone.AlarmLastCheckTime到now的时间段内
             const alarmDate = new Date(alarm.year, alarm.month - 1, alarm.day, alarm.hour, alarm.minute);
             const lastCheck = new Date(
-                V.lastAlarmCheckTime.year, 
-                V.lastAlarmCheckTime.month - 1, 
-                V.lastAlarmCheckTime.day, 
-                V.lastAlarmCheckTime.hour, 
-                V.lastAlarmCheckTime.minute
+                V.Phone.AlarmLastCheckTime.year, 
+                V.Phone.AlarmLastCheckTime.month - 1, 
+                V.Phone.AlarmLastCheckTime.day, 
+                V.Phone.AlarmLastCheckTime.hour, 
+                V.Phone.AlarmLastCheckTime.minute
             );
             const currentTime = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
             
@@ -185,11 +185,11 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
             // 周期闹钟：需要检查是否跨越了周边界
             // 计算从上次检查到当前时间之间的所有闹钟时间
             const lastCheck = new Date(
-                V.lastAlarmCheckTime.year, 
-                V.lastAlarmCheckTime.month - 1, 
-                V.lastAlarmCheckTime.day, 
-                V.lastAlarmCheckTime.hour, 
-                V.lastAlarmCheckTime.minute
+                V.Phone.AlarmLastCheckTime.year, 
+                V.Phone.AlarmLastCheckTime.month - 1, 
+                V.Phone.AlarmLastCheckTime.day, 
+                V.Phone.AlarmLastCheckTime.hour, 
+                V.Phone.AlarmLastCheckTime.minute
             );
             const currentTime = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
             
@@ -229,8 +229,8 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
         }
         
         if (shouldTrigger) {
-            V.phoneAlarmTriggered = true;
-            V.phoneAlarmCurrent = alarm;
+            V.Phone.AlarmTriggered = true;
+            V.Phone.AlarmCurrent = alarm;
             if (alarm.type === "once") alarm.active = false; // 一次性的关掉
             setTimeout(() => PhoneMod.togglePhone(true), 10);
             break; // 只触发一个闹钟，优先级按照数组顺序
@@ -238,7 +238,7 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
     }
 
     // 更新最后检查时间
-    V.lastAlarmCheckTime = {
+    V.Phone.AlarmLastCheckTime = {
         year: now.year,
         month: now.month,
         day: now.day,
@@ -248,15 +248,15 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
     return shouldTrigger
 };
 PhoneMod.cancelAlarm = function() { // 关闭闹钟
-    V.phoneAlarmTriggered = false;
-    V.phoneAlarmCurrent = undefined;
+    V.Phone.AlarmTriggered = false;
+    V.Phone.AlarmCurrent = undefined;
 
     const alarmTriggered = PhoneMod.checkAlarms();
     if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
     Engine.play(passage()); 
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
-    V.phoneAlarms.pop(index);
+    V.Phone.Alarms.pop(index);
     Engine.play(passage()); 
     PhoneMod.togglePhone(true);
 };
@@ -284,7 +284,7 @@ PhoneMod.submitAlarm = function() {
     
     if(t) {
         const timeParts = t.split(':');
-        if(!V.phoneAlarms) V.phoneAlarms = [];
+        if(!V.Phone.Alarms) V.Phone.Alarms = [];
         
         if(alarmType === 'date' | alarmType === 'today') {
             let d = "";
@@ -296,7 +296,7 @@ PhoneMod.submitAlarm = function() {
 
             if(d) {
                 const dateParts = d.split('-');
-                V.phoneAlarms.push({
+                V.Phone.Alarms.push({
                     type: "once",
                     year: parseInt(dateParts[0]),  // 添加年份以便更精确
                     month: parseInt(dateParts[1]),
@@ -314,7 +314,7 @@ PhoneMod.submitAlarm = function() {
                 selectedWeekdays.push(parseInt(checkbox.value));
             });
             
-            V.phoneAlarms.push({
+            V.Phone.Alarms.push({
                 type: "weekly",
                 weekDays: selectedWeekdays,
                 hour: parseInt(timeParts[0]),
@@ -373,20 +373,37 @@ PhoneMod.handleWallpaperUpload = function(input) {
     const reader = new FileReader();
     reader.onload = function(e) {
         // 保存到SugarCube变量
-        V.wallpaperPath = e.target.result;
+        V.Phone.SettingsWallpaperPath = e.target.result;
         Engine.play(passage())
     };
     reader.readAsDataURL(file);
 }
 PhoneMod.resetWallpaper = function() {
-    V.wallpaperPath = undefined
+    V.Phone.SettingsWallpaperPath = undefined
     Engine.play(passage())
 }
 PhoneMod.toggleBlur = function(checked) {
-    V.wallpaperBlur = checked;
+    V.Phone.SettingsWallpaperBlur = checked;
 };
 PhoneMod.toggleDarken = function(checked) {
-    V.wallpaperBlack = checked;
+    V.Phone.SettingsWallpaperBlack = checked;
+};
+// ==================== 电话实现 ====================
+PhoneMod.isContactKnown = function(name) {
+    V.Phone.KnownContacts = V.Phone.KnownContacts || [];
+    return V.Phone.KnownContacts.includes(name);
+};
+PhoneMod.addContact = function(name) {
+    V.Phone.KnownContacts = V.Phone.KnownContacts || [];
+    if (!V.Phone.KnownContacts.includes(name)) {
+        V.Phone.KnownContacts.push(name);
+    }
+};
+PhoneMod.getContact = function(name) {
+    console.log(name);
+    
+    if (!PhoneMod.isContactKnown(name)) return null;
+    return PhoneMod.Contacts.find(c => c.name === name);
 };
 
 
@@ -444,24 +461,24 @@ return password;
 }
 
 PhoneMod.BuyPhone = function(price) { // 购买一部手机
-  V.PhoneOwned = V.PhoneOwned || []
-  V.PhoneOwned.push(new PhoneMod.Phone().newBuy(price));
+  V.Phone.Owned = V.Phone.Owned || []
+  V.Phone.Owned.push(new PhoneMod.Phone().newBuy(price));
   PhoneMod.ChangeUsingPhone();
 }
 PhoneMod.BuySecondPhone = function(price, newness) { // 购买一部二手手机
-  V.PhoneOwned = V.PhoneOwned || []
-  V.PhoneOwned.push(new PhoneMod.Phone().newBuySecond(price, newness));
+  V.Phone.Owned = V.Phone.Owned || []
+  V.Phone.Owned.push(new PhoneMod.Phone().newBuySecond(price, newness));
   PhoneMod.ChangeUsingPhone();
 }
 PhoneMod.StolePhone = function() { // 盗窃一部手机
-  V.PhoneOwned = V.PhoneOwned || []
-  V.PhoneOwned.push(new PhoneMod.Phone().newStolen());
+  V.Phone.Owned = V.Phone.Owned || []
+  V.Phone.Owned.push(new PhoneMod.Phone().newStolen());
 }
 PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
-    if (!V.PhoneOwned) return;
-    const index = V.PhoneOwned.findIndex(p => p.id === id);
+    if (!V.Phone.Owned) return;
+    const index = V.Phone.Owned.findIndex(p => p.id === id);
     if (index !== -1) {
-        const phone = V.PhoneOwned[index];
+        const phone = V.Phone.Owned[index];
         let price = phone.price;
         price *= phone.newness; // 根据新旧程度调整价格
         if (feng) price *= 0.9;
@@ -475,60 +492,60 @@ PhoneMod.isUsable = function(phone) { // 检查是否有可用的手机
 }
 PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     console.log("Attempting to sell phone with id:", id);
-    if (!V.PhoneOwned) return;
-    const index = V.PhoneOwned.findIndex(p => p.id === id);
+    if (!V.Phone.Owned) return;
+    const index = V.Phone.Owned.findIndex(p => p.id === id);
     if (index !== -1) {
         const moneyEarned = PhoneMod.getSellPhonePrice(id, feng) * 100;  // DoL中money单位是分，所以乘以100
-        V.PhoneOwned.splice(index, 1);
+        V.Phone.Owned.splice(index, 1);
         PhoneMod.ChangeUsingPhone();
         return moneyEarned;
     }
     return 0
 }
 PhoneMod.getUsingPhone = function() {
-    if (!V.UsingPhone) return null;
-    return PhoneMod.getPhone(V.UsingPhone);
+    if (!V.Phone.Using) return null;
+    return PhoneMod.getPhone(V.Phone.Using);
 }
 PhoneMod.getPhone = function(id) {
-    if (!V.PhoneOwned) return null;
-    return V.PhoneOwned.find(p => p.id === id) || null;
+    if (!V.Phone.Owned) return null;
+    return V.Phone.Owned.find(p => p.id === id) || null;
 }
 PhoneMod.ChangeUsingPhone = function(phone=null) { // 切换正在使用的手机
     if (phone === null) {
-        if (V.UsingPhone) {
-            const UsingPhone = V.PhoneOwned.find(p => p.id === V.UsingPhone)
-            if (PhoneMod.isUsable(UsingPhone)) return V.UsingPhone;
+        if (V.Phone.Using) {
+            const PhoneUsing = V.Phone.Owned.find(p => p.id === V.Phone.Using)
+            if (PhoneMod.isUsable(PhoneUsing)) return V.Phone.Using;
         }
-        if (!V.PhoneOwned || V.PhoneOwned.length === 0) {
-            V.UsingPhone = null;
+        if (!V.Phone.Owned || V.Phone.Owned.length === 0) {
+            V.Phone.Using = null;
         } else {
-            V.UsingPhone = null
-            for (var i = 0; i < V.PhoneOwned.length; i++) {
-                if (PhoneMod.isUsable(V.PhoneOwned[i])) {
-                    V.UsingPhone = V.PhoneOwned[i].id;
+            V.Phone.Using = null
+            for (var i = 0; i < V.Phone.Owned.length; i++) {
+                if (PhoneMod.isUsable(V.Phone.Owned[i])) {
+                    V.Phone.Using = V.Phone.Owned[i].id;
                     break;
                 }
             }
         }
     } else {
         if (PhoneMod.isUsable(phone)) {
-            V.UsingPhone = phone.id;
+            V.Phone.Using = phone.id;
         } else {
-            V.UsingPhone = null
+            V.Phone.Using = null
         }
     }
-    return V.UsingPhone;
+    return V.Phone.Using;
 }
 PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
-  if (!V.PhoneOwned) return false;
-  for (let i = 0; i < V.PhoneOwned.length; i++) {
-    if (V.PhoneOwned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.PhoneOwned[i]))) return true;
+  if (!V.Phone.Owned) return false;
+  for (let i = 0; i < V.Phone.Owned.length; i++) {
+    if (V.Phone.Owned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.Phone.Owned[i]))) return true;
   }
   return false;
 }
 
 PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
-    if (V.PhoneOwned && V.PhoneOwned.length > 0) {
+    if (V.Phone.Owned && V.Phone.Owned.length > 0) {
         const Uls = document.getElementsByClassName("journal carry")
         if (Uls.length > 0) {
             let Ul = Uls[0];
@@ -541,12 +558,12 @@ PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
             new Wikifier(Li, `<<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。`);
             Div.appendChild(Li);
             
-            V.PhoneOwned.forEach(function(phone) {
+            V.Phone.Owned.forEach(function(phone) {
                 const Li = document.createElement("li");
                 let info = PhoneMod.getPhoneConditionInfo(phone.newness);
                 new Wikifier(Li, `
                     <span style="margin-right: 50px"></span>
-                    <<if $UsingPhone and "${phone.id}" eq $UsingPhone>>
+                    <<if $PhoneUsing and "${phone.id}" eq $PhoneUsing>>
                         <<icon "phone/phone.png">>
                         <span class='teal'>正在使用</span> | 
                     <<elseif ${phone.stolen && !phone.usable}>>
@@ -582,7 +599,7 @@ PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
         }}
 };
 PhoneMod.PhoneJournalChange = function(id) { // 日志中更新手机信息
-    const phone = V.PhoneOwned.find(p => p.id === id);
+    const phone = V.Phone.Owned.find(p => p.id === id);
     if (phone) {
         PhoneMod.ChangeUsingPhone(phone);
     }

@@ -55,6 +55,7 @@ PhoneMod.addStoryCaptionContent = function(content) {
             newCaption.innerHTML = content + "<br>";
             container.insertAdjacentElement('afterbegin', newCaption);
         }
+        document.getElementById("ui-bar").classList.remove("stowed");
     }, 10);
 }
 
@@ -88,24 +89,24 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
 
     // 检查是否有可用的手机
-    if (!V.PhoneOwned || V.PhoneOwned.length < 1) return false;  // 没有手机，不显示
+    if (!V.Phone.Owned || V.Phone.Owned.length < 1) return false;  // 没有手机，不显示
 
     return true;
 };
 PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
     if (V.event) return false;  // 活动中不可以操控手机
-    if (V.phoneReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
+    if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
     let extraShowPhoneAreas = PhoneMod.extraShowPhoneAreas.slice();
     extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
     if (!extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
 
-    if (V.UsingPhone) return true;  // 检查是否有可用的手机
+    if (V.Phone.Using) return true;  // 检查是否有可用的手机
     return false;
 };
 PhoneMod.PhoneTo =  function() {
-    if (!V.phoneReturnPassage) {
-        V.phoneReturnPassage = passage()
+    if (!V.Phone.ReturnPassage) {
+        V.Phone.ReturnPassage = passage()
     }
 }
 PhoneMod.getPhoneConditionInfo = function(condition) {

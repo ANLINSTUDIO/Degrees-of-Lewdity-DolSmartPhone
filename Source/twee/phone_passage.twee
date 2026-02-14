@@ -1,3 +1,4 @@
+:: ==== SC Phone Shop ====
 :: Shopping Centre Phone Shop Link
 <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop]]>><<pass 1>><</link>>
 
@@ -7,7 +8,7 @@
 “您好，欢迎光临，请问是需要购买手机还是出售二手机？”一名店员微笑着朝你走来
 <br><br>
 <<icon "phone/phone.png">><<link [[购买手机|Shopping Centre Phone Buy]]>><</link>><br>
-<<if $PhoneOwned and $PhoneOwned.length > 0>>
+<<if $Phone.Owned and $Phone.Owned.length > 0>>
     <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
 <</if>>
 <<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
@@ -25,7 +26,7 @@
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell
-<<for _i range $PhoneOwned>>
+<<for _i range $Phone.Owned>>
     <<set _info to PhoneMod.getPhoneConditionInfo(_i.newness)>>
     <<set _money to PhoneMod.getSellPhonePrice(_i.id)>>
     <<set _Phone to PhoneMod.getPhone(_i.id)>>
@@ -79,10 +80,10 @@
 <</if>>
 <<if _sold>>
     <<endevent>>
-    <<set $PhoneSellMoney to PhoneMod.SellPhone($SellPhone)>>
-    <<money $PhoneSellMoney>>
-    你获得了<span class="gold">£<<print $PhoneSellMoney/100>></span>。<br><br>
-    <<if $PhoneOwned and $PhoneOwned.length > 0>>
+    <<set $Phone.SellMoney to PhoneMod.SellPhone($SellPhone)>>
+    <<money $Phone.SellMoney>>
+    你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
+    <<if $Phone.Owned and $Phone.Owned.length > 0>>
         <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
     <</if>>
     <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
@@ -98,7 +99,7 @@
         <<case 2>>
             “对不起，我们不能收购盗窃的手机。” 店员说完之后就把手机还给了你。<br><br>
             <<endevent>>
-            <<if $PhoneOwned and $PhoneOwned.length > 0>>
+            <<if $Phone.Owned and $Phone.Owned.length > 0>>
                 <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
             <</if>>
             <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
@@ -183,11 +184,12 @@
 
 
 
+:: === Second Phone Shop ===
 :: Second Phone Shop Link
-<<if !$PhoneMetFengOnce and $PhoneOwned>>
+<<if !$Phone.MetFengOnce and $Phone.Owned>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
-    <<if $phoneSecondShopKnown>>
+    <<if $Phone.SecondShopKnown>>
         <br><<icon "unused_stonebuilding1.png">><<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
     <<else>>
         <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
@@ -195,9 +197,9 @@
 <</if>>
 
 :: Second Phone Shop Meet Feng First
-<<set $PhoneMetFengOnce to 1>>
-<<set $PhoneOwnedTmp to $PhoneOwned>>
-<<set $PhoneOwned to []>>
+<<set $Phone.MetFengOnce to 1>>
+<<set $Phone.OwnedTmp to $Phone.Owned>>
+<<set $Phone.Owned to []>>
 
 <<generateNPC 1 a m m 23>>
 <<set $NPCList[0].name to "老冯">>
@@ -213,7 +215,7 @@
 <<getouticon>><<link [[算了|Second Phone Shop Meet Feng First Finish]]>><</link>>
 
 :: Second Phone Shop Meet Feng First Finish
-<<set $PhoneMetFengGiveup to 1>>
+<<set $Phone.MetFengGiveup to 1>>
 你拍了拍口袋，决定算了。心想也许是你自己太敏感了。<br>
 拍……拍了拍口袋？口袋？？？<br><br>
 <span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
@@ -225,7 +227,7 @@
 <<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>>
 
 :: Second Phone Shop Meet Feng First 3
-<<if $PhoneMetFengGiveup>>
+<<if $Phone.MetFengGiveup>>
     “喂！你之前是不是对我干了什么？” 你捏住鼻子问到。<br>
 <<else>>
     “喂！你刚刚干了什么？” 你捏住鼻子问到。<br>
@@ -235,7 +237,7 @@
 好像，要么是一块砖头……要么就是一部手机…………<br>
 一部……手机？<br>
 手……<br>
-<<if $PhoneMetFengGiveup>>
+<<if $Phone.MetFengGiveup>>
     这不就是我的手机吗！<br>
     <span style="font-size: xxx-large">还我手机！！！</span><br><br>
 <<else>>
@@ -265,11 +267,11 @@
     <<set $rightaction to "hold">>
 <<else>>
     <<if $leftaction isnot "握紧手机" and $rightaction isnot "握紧手机">>
-        <<set $phoneStolen to 1>>
+        <<set $Phone.Stolen to 1>>
         <<goto "Feng Contend Finish">>
     <</if>>
     <<if $pain gte 100 or $stress gte $stressmax or $control lte 0 or $trauma gte $traumamax>>
-        <<set $phoneStolen to 1>>
+        <<set $Phone.Stolen to 1>>
         <<goto "Feng Contend Finish">>
     <</if>>
 <</if>>
@@ -303,7 +305,7 @@
 :: Feng Contend Finish
 <<endcombat>>
 <<if $enemyhealth lte 0>>
-    <<set $PhoneOwned to $PhoneOwnedTmp>>
+    <<set $Phone.Owned to $Phone.OwnedTmp>>
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
@@ -314,7 +316,7 @@
         “庆幸我不会报警抓你吧。” 你实在无法忍受这里的气味了。<br>
     <</if>><br>
     “等一下！” 那人叫住了你，“我叫老冯，你下次还有手机就卖到我这吧。”<br>
-<<elseif $phoneStolen is 1>>
+<<elseif $Phone.Stolen is 1>>
     <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
     “敢抢我的手机？” 那人放下狠话。<br>
     <<if PhoneMod.isCarryingStolenPhone()>>
@@ -331,7 +333,7 @@
 老冯脱下盗贼面具，点了一支烟，吐出一个烟圈，缓缓又叹了口气：“<span class="teal">哎，总之，你到我这里来，不管是买还是卖，绝对要比外面那些只会吃品牌饭的划算。</span>”<br>
 “你要看看吗？” 老冯用深邃而饱经风霜的双眸看向稚嫩的你， “<span class="gold">我也可以帮你把你搞到的货给解开</span>。来吧。”<br>
 
-<<if $phoneStolen is 1>>
+<<if $Phone.Stolen is 1>>
     <br>你挑了挑眉：“那你要不把我的手机还给我？”<br>
     老冯扭过头去：“那不可能。”<br>
     “那我走了，” 你转身又要离开，“你没有扒手了关我什么事，又没有我的好处。”<br>
@@ -347,17 +349,17 @@
 
 <br><br><<link [[继续|Second Phone Shop]]>><</link>>
 <<endevent>>
-<<set $phoneSecondShopKnown to 1>>
-<<unset $PhoneMetFengGiveup>>
-<<unset $PhoneOwnedTmp>>
-<<unset $phoneStolen>>
+<<set $Phone.SecondShopKnown to 1>>
+<<unset $Phone.MetFengGiveup>>
+<<unset $Phone.OwnedTmp>>
+<<unset $Phone.Stolen>>
 
 :: Second Phone Shop First
 你踏进神秘的房子，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 10>><br><br>
 这里看起来像一个……废弃的工厂……然后才是手机店。这里不是很大，但是狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br>
 
 :: Second Phone Shop
-<<if $PhoneMetFengGiveup>>
+<<if $Phone.MetFengGiveup>>
     <<generateNPC 1 a m m 23>>
     <<set $NPCList[0].name to "老冯">>
     <<set $NPCList[0].fullDescription to "黑衣人">>
@@ -369,7 +371,7 @@
     你在地下手机店里，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 2>><br>
     狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br><br>
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
-    <<if $PhoneOwned and $PhoneOwned.length > 0>>
+    <<if $Phone.Owned and $Phone.Owned.length > 0>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
         <<if PhoneMod.isCarryingStolenPhone(true)>>
             <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
@@ -392,7 +394,7 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Sell
-<<for _i range $PhoneOwned>>
+<<for _i range $Phone.Owned>>
     <<set _info to PhoneMod.getPhoneConditionInfo(_i.newness)>>
     <<set _money to PhoneMod.getSellPhonePrice(_i.id, true)>>
     <<set _Phone to PhoneMod.getPhone(_i.id)>>
@@ -418,16 +420,16 @@
 <<else>>
     你把手机卖给了老冯，虽然到手的价格比官方店那边低了一点，但是你觉得老冯很开心。<br>
 <</if>>
-<<set $PhoneSellMoney to PhoneMod.SellPhone($SellPhone, true)>>
-<<money $PhoneSellMoney>>
-你获得了<span class="gold">£<<print $PhoneSellMoney/100>></span>。<br><br>
-<<if $PhoneOwned and $PhoneOwned.length > 0>>
+<<set $Phone.SellMoney to PhoneMod.SellPhone($SellPhone, true)>>
+<<money $Phone.SellMoney>>
+你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
+<<if $Phone.Owned and $Phone.Owned.length > 0>>
     <<highicon>><<link [[继续|Second Phone Sell]]>><</link>><br>
 <</if>>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack
-<<for _i range $PhoneOwned>>
+<<for _i range $Phone.Owned>>
     <<set _Phone to PhoneMod.getPhone(_i.id)>>
     <<if _Phone.stolen and !_Phone.usable>>
         <<set _info to PhoneMod.getPhoneConditionInfo(_i.newness)>>
@@ -454,7 +456,7 @@
 
 
 
-
+:: ========StealPhone========
 :: Spa Tired Steal Phone Text
 <br>正当你在考虑是否动手时，你突然眼睛一亮！因为你看到了他的身下有闪闪发光的东西！<br>
 <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
@@ -505,3 +507,21 @@
 <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
 <br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
 <<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
+
+
+
+:: ==========AskTel==========
+:: Tailor AskTel Link
+<<if !PhoneMod.isContactKnown("裁缝")>>
+    <br><br><<icon "socialise_question.png">> <<link [[询问对方电话号码|Tailor AskTel]]>><</link>>
+<</if>>
+
+:: Tailor AskTel
+“你能告诉我你的电话号码吗？” 你问裁缝。<br>
+<<if random(1, 2) is 1>>
+    对方拒绝了你的请求
+<<else>>
+    对方同意了你的请求
+    <<run PhoneMod.addContact("裁缝")>>
+<</if>>
+<<link [[继续|Tailor Shop]]>><</link>>

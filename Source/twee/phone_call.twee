@@ -5,8 +5,8 @@
     
     <div id="phone-call-content">
         <<npc Landry>><<person1>>
-        <<if !$callLandry>>
-            <<set $callLandry to 1>>
+        <<if !$Phone.CallLandry>>
+            <<set $Phone.CallLandry to 1>>
             “喂，兰德里？” 你拿起电话问到。<br><br>
             “嗯，有什么事吗？” 等了许久，兰德里在电话那头问道，背景音听起来有些嘈杂。<br><br>
         <<else>>
@@ -36,7 +36,7 @@
     </div>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<unset $callLandry>><<endevent>><</link>>
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<unset $Phone.CallLandry>><<endevent>><</link>>
     </div>
 </div>
 
@@ -172,6 +172,32 @@
 :: Phone Call Bailey Back
 <div class="phone-call-overlay">
     <h2>正在通话: 贝利</h2>
+    <hr>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+    </div>
+</div>
+
+
+:: Phone Call Tailor
+<div class="phone-call-overlay">
+    <h2>正在通话: 裁缝</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<generate1>><<person1>>
+        ???
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[没事了|Phone Call Tailor Back]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Tailor Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 裁缝</h2>
     <hr>
 
     <div id="phone-call-hang-up">
