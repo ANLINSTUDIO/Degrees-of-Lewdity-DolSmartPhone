@@ -1,6 +1,6 @@
 {
     "name": "[SmartPhone Alpha] 万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.1.9",
+    "version": "Alpha.2.0",
     "styleFileList": ["style.css"],
     "scriptFileList": ["scripts/vars.js", "scripts/api.js", "scripts/main.js"],
     "tweeFileList": ["twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"],
@@ -11,7 +11,7 @@
         "img/misc/icon/phone/phone_forbid.png",
         "img/misc/icon/phone/phone_crack.png"
     ],
-    "additionFile": [],
+    "additionFile": ["README.md"],
     "addonPlugin": [
         {
             "modName": "ModLoader DoL ImageLoaderHook",
