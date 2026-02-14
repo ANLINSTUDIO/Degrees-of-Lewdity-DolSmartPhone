@@ -5,6 +5,17 @@
 <<set $phoneReturnPassage to undefined>>
 <<goto $phoneReturnPassageTmp>>
 
+:: SmartPhonePreviewWidgets [widget]
+<<widget "smartphone_render_preview">>
+    <div id="smart-phone-container" class="phone-main">
+        <div class="phone-screen-locked">
+            <div style="font-size: 16px; font-weight: bold;">
+                你好👋
+            </div>
+        </div>
+    </div>
+<</widget>>
+
 :: SmartPhoneWidgets [widget]
 <<widget "smartphone_render">>
     <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">

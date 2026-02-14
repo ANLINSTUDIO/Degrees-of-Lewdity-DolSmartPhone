@@ -2,7 +2,7 @@ window.PhoneMod = window.PhoneMod || {};
 
 PhoneMod.extraShowPhoneAreas = [
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops",
-  "Shopping Centre Phone Shop"
+  "Shopping Centre Phone Shop", "Second Phone Shop"
 ];
 
 PhoneMod.events = [

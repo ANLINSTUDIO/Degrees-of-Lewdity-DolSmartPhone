@@ -46,6 +46,17 @@ PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefaul
     }
   }, 10);
 };
+PhoneMod.addStoryCaptionContent = function(content) {
+    setTimeout(() => {
+        const container = document.getElementById("storyCaptionContent");
+        if (container) {
+            // 插入在第一个位置
+            const newCaption = document.createElement("div");
+            newCaption.innerHTML = content + "<br>";
+            container.insertAdjacentElement('afterbegin', newCaption);
+        }
+    }, 10);
+}
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
@@ -74,7 +85,7 @@ PhoneMod.getDateString = function() {
 PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示手机
     if (typeof V === 'undefined') return false;  // V是SugarCube的全局变量，包含了当前游戏状态的各种信息，如果没有定义，说明可能不在游戏环境中，不显示手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
-    if (["Start", "Start2", "Main Menu", "Credits"].includes(V.passage)) return false;  // 在这些特定页面不显示手机，如主菜单
+    if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
 
     // 检查是否有可用的手机
     if (!V.PhoneOwned || V.PhoneOwned.length < 1) return false;  // 没有手机，不显示
@@ -85,13 +96,11 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
     if (V.event) return false;  // 活动中不可以操控手机
     if (V.phoneReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
-    if (!setup.majorAreas.includes(V.passage)) return false;  // 在非主要区域操控手机可能会破坏存档
+    let extraShowPhoneAreas = PhoneMod.extraShowPhoneAreas.slice();
+    extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
+    if (!extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
 
-    // 检查是否有可用的手机
-    if (V.PhoneOwned) {
-      for (var i = 0; i < V.PhoneOwned.length; i++) {
-        if (V.PhoneOwned[i].usable) return true;
-      }}
+    if (V.UsingPhone) return true;  // 检查是否有可用的手机
     return false;
 };
 PhoneMod.PhoneTo =  function() {

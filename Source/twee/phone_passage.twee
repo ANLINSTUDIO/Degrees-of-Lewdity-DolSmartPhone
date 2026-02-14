@@ -32,7 +32,11 @@
 <<if !$PhoneMetFengOnce and $PhoneOwned>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
-    <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+    <<if $phoneSecondShopKnown>>
+        <br><<icon "unused_stonebuilding1.png">><<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+    <<else>>
+        <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+    <</if>>
 <</if>>
 
 :: Second Phone Shop Meet Feng First
@@ -66,14 +70,23 @@
 <<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>>
 
 :: Second Phone Shop Meet Feng First 3
-“喂！你刚刚干了什么？” 你捏住鼻子问到。<br>
+<<if $PhoneMetFengGiveup>>
+    “喂！你之前是不是对我干了什么？” 你捏住鼻子问到。<br>
+<<else>>
+    “喂！你刚刚干了什么？” 你捏住鼻子问到。<br>
+<</if>>
 <span class="teal">黑衣人并没有理会你。</span><br>
 你皱起眉头，于是慢慢警惕地向他靠近。你极力想看清楚他到底在拆卸什么东西。<br><br>
 好像，要么是一块砖头……要么就是一部手机…………<br>
 一部……手机？<br>
 手……<br>
-你突然瞪大你的双眼，随即拍了拍口袋。<br>
-<span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
+<<if $PhoneMetFengGiveup>>
+    这不就是我的手机吗！<br>
+    <span style="font-size: xxx-large">还我手机！！！</span><br><br>
+<<else>>
+    你突然瞪大你的双眼，随即拍了拍口袋。<br>
+    <span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
+<</if>>
 在你的尖叫下，黑衣人终于意识到了你的存在，猛地抬起头看向你，并且偷偷地慢慢地将柜台上的手机挪向自己那边。<br><br>
 在盗贼面具下，你无法看清他的脸。但是你发觉到了满脸的青胡须，令你感到一阵恶心。
 <br><br>
@@ -108,7 +121,7 @@
 <<switch random(1, 5)>>
     <<case 1>>那人在争夺手机之余<span class="red">对你踢了狠狠的一脚</span>，你觉得腿上可能是已经破皮了，但你无暇去理会。<<gggpain>><<pain 30>>
     <<case 2>>那人不断地对你言语攻击，骂你是个婊子，又说你是个妓女，你本来就非常着急地想抢回你的手机，现在心情万分悲伤。<<ggstress>><<ggtrauma>><<trauma 12>><<stress 24>>
-    <<case 3>>你被他掐住了喉咙，<span class="red">无法动弹</span>。<<llcontrol>><control -50>><br>你拼命地挣扎，他迫不得已放开了你。
+    <<case 3>>你被他掐住了喉咙，<span class="red">无法动弹</span>。<<llcontrol>><<control -50>><br>你拼命地挣扎，他迫不得已放开了你。
     <<case 4>>他的力气十分雄厚，你差点无法握紧你的手机。
     <<case 5>>“妈的，你凭什么说这是你的手机！松手！” 他嘶吼着。
 <</switch>><br>
@@ -135,7 +148,7 @@
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
-    <<if PhoneMod.CarryingStolenPhone()>>
+    <<if PhoneMod.isCarryingStolenPhone()>>
         “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了他一番，说明了这部手机的来历后就准备离开。<br>
     <<else>>
         “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了他一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
@@ -145,7 +158,7 @@
 <<elseif $phoneStolen is 1>>
     <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
     “敢抢我的手机？” 那人放下狠话。<br>
-    <<if PhoneMod.CarryingStolenPhone()>>
+    <<if PhoneMod.isCarryingStolenPhone()>>
         “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。<br>
     <<else>>
         “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！不像你只会偷只会抢！” 你羞辱了他一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
@@ -175,6 +188,8 @@
 
 <br><br><<link [[继续|Second Phone Shop]]>><</link>>
 <<endevent>>
+<<set $phoneSecondShopKnown to 1>>
+<<unset $PhoneMetFengGiveup>>
 <<unset $PhoneOwnedTmp>>
 <<unset $phoneStolen>>
 
@@ -184,22 +199,37 @@
 
 :: Second Phone Shop
 <<if $PhoneMetFengGiveup>>
+    <<generateNPC 1 a m m 23>>
+    <<set $NPCList[0].name to "老冯">>
+    <<set $NPCList[0].fullDescription to "黑衣人">>
+    <<person1>>
     <<include "Second Phone Shop First">><br><br>
+    一个黑衣人靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。 <span class="red">他看起来有点熟悉。</span><br><br>
+    <<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>><br>
 <<else>>
     你在地下手机店里，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 2>><br>
     狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br><br>
-<</if>>
-<<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
-<<if $PhoneOwned and $PhoneOwned.length > 0>>
-    <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
-    <<if PhoneMod.CarryingStolenPhone()>>
-        <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
+    <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
+    <<if $PhoneOwned and $PhoneOwned.length > 0>>
+        <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
+        <<if PhoneMod.isCarryingStolenPhone()>>
+            <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
+        <</if>>
     <</if>>
 <</if>>
 <<elkicon>><<link [[离开|Elk Street]]>><</link>>
 
 
 :: Second Phone Buy
+“这款新上市的A手机，外面原价卖<span class="red">£4999</span>，这个 <span class="gold">九成新</span> ，我这里<span class="gold">£2999</span>卖给你好吧。”<br>
+<<if $money gte 299900>>
+    <<icon "phone/phone.png">><<link [[确认购买A手机 (£2999)|Second Phone Shop]]>>
+        <<run PhoneMod.BuySecondPhone(2999, 0.81)>>
+        <<money -299900>>
+    <</link>><br>
+<<else>>
+    你摇了摇头：“还是太贵了， <span class="gold">£2999</span> 也不是我能付得起的价格”<br><br>
+<</if>>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Sell
@@ -207,7 +237,6 @@
 
 :: Second Phone Crack
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
-
 
 
 
@@ -233,11 +262,11 @@
 <<else>>
     你尝试将<<persons>>翻过身来，仿佛这就是项目的一部分。随后你假装泰然自若地迅速抽出了手机，<span class="red">但是<<Him>>突然睁开眼睛警惕地看着你。</span><br>
     <<if $spa.behaviour is "sophisticated">>
-		你迫不得已自然地将手机轻放在枕边，并说：“别担心，我们接下来要涂油了，不要让我们的精油弄脏您的手机哦。"
+		你迫不得已自然地将手机轻放在枕边，并说：“别担心，我们接下来要涂油了，不要让我们的精油弄脏您的手机哦。”
 	<<elseif $spa.behaviour is "cute">>
-		你迫不得已自然地将手机放在枕边，并说：“哎呀哎呀，我们接下来要涂油了，不要让我们的精油弄脏您的手机鸭！"
+		你迫不得已自然地将手机放在枕边，并说：“哎呀哎呀，我们接下来要涂油了，不要让我们的精油弄脏您的手机鸭！”
 	<<else>>
-		你迫不得已自然地将手机放在枕边，并说：“我们接下来要涂油了，不要让我们的精油弄脏您的手机哦。"
+		你迫不得已自然地将手机放在枕边，并说：“我们接下来要涂油了，不要让我们的精油弄脏您的手机哦。”
 	<</if>>
     <br><<He>>怀疑地回头看了你一眼，并且不再打瞌睡了。<<body_tip hand 0.1>>
 <</if>>
@@ -245,9 +274,9 @@
 <<skulduggeryuse>>
 你继续工作到结束，
 <<if $spa.behaviour is "sophisticated">>
-    你轻推了一下<<person>>，把<<He>>弄醒了。"谢谢惠顾，"你说。<<He>>昏昏沉沉地环顾四周。"希望您喜欢我们的服务。"
+    你轻推了一下<<person>>，把<<He>>弄醒了。“谢谢惠顾，”你说。<<He>>昏昏沉沉地环顾四周。“希望您喜欢我们的服务。”
 <<elseif $spa.behaviour is "cute">>
-    你轻推了一下<<person>>，把<<He>>弄醒了。"起来吧懒虫，"你说。<<He>>昏昏沉沉地环顾四周。"希望您喜欢我的服务。"
+    你轻推了一下<<person>>，把<<He>>弄醒了。“起来吧懒虫，”你说。<<He>>昏昏沉沉地环顾四周。“希望您喜欢我的服务。”
 <<else>>
     你抚摸<<person>>，直到<<he>>醒来。"按摩结束了，"你低声说道，"希望你能满意。"
 <</if>>

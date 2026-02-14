@@ -23,8 +23,23 @@ PhoneMod.togglePhone = function(forceOpen) {
   }
 };
 PhoneMod.toggleApp = function(AppName) {
-    V.phoneApp = AppName;
-    Engine.play(passage()); 
+    PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - 0.01, 3);
+    
+    if (PhoneMod.getUsingPhone().newness <= 0) {
+        PhoneMod.getUsingPhone().newness = 0;
+        if (!PhoneMod.ChangeUsingPhone()) {
+            Engine.play(passage()); 
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            return;
+        } else {
+            V.phoneApp = AppName;
+            Engine.play(passage()); 
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+        }
+    } else {
+        V.phoneApp = AppName;
+        Engine.play(passage()); 
+    }
     PhoneMod.togglePhone(true);
 };
 $(document).on("keyup", function(event) { // 监听 Control 键
@@ -35,15 +50,24 @@ $(document).on("keyup", function(event) { // 监听 Control 键
 PhoneMod.PhoneUIInit = function (ev) {
   if (!PhoneMod.shouldShowPhone()) return;
 
+  PhoneMod.ChangeUsingPhone()
+
   const phoneUI = document.createElement('div');
   phoneUI.id = "phone-wrapper";
   $(ev.content).append(phoneUI);
-  new Wikifier(phoneUI, "<<smartphone_render>>");
-
-  setTimeout(() => {
-    const alarmTriggered = PhoneMod.checkAlarms();
-    if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
-  }, 10);
+  if (V.passage === "Start") {
+    new Wikifier(phoneUI, "<<smartphone_render_preview>>");
+    setTimeout(() => {
+        const phone = document.getElementById("smart-phone-container");
+        phone.classList.add("phone-disabled");
+    }, 10);
+  } else {
+    new Wikifier(phoneUI, "<<smartphone_render>>");
+    setTimeout(() => {
+        const alarmTriggered = PhoneMod.checkAlarms();
+        if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
+    }, 10);
+  }
 };
 
 
@@ -367,10 +391,28 @@ PhoneMod.toggleDarken = function(checked) {
 // ================== 游戏内容 ==================
 PhoneMod.Phone = class {
   constructor() {
+    this.id = this.generateId();
     this.price = undefined;
-    this.newness = undefined;
+    this.newness = 1;
     this.stolen = false;
-    this.usable = false
+    this.usable = false;
+    this.second = false;
+  }
+
+  generateId(){
+    const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+    return uniqueId
+  }
+
+  return() {
+    return {
+        id: this.id,
+        price: this.price,
+        newness: this.newness,
+        stolen: this.stolen,
+        usable: this.usable,
+        second: this.second
+    }
   }
 
   generate() { // 生成一部手机
@@ -378,33 +420,70 @@ PhoneMod.Phone = class {
     this.newness = Math.random();
   }
 
-  newBuy(price, newness) {
+  newBuy(price) {
     this.price = price;
-    this.newness = newness;
     this.usable = true
-    return this
+    return this.return();
+  }
+
+  newBuySecond(price, newness) {
+    this.newBuy(price, newness)
+    this.second = true
+    return this.return();
   }
 
   newStolen() {
     this.stolen = true;
     this.generate()
-    return this
+    return this.return();
   }
 }
 
 PhoneMod.BuyPhone = function(price) { // 购买一部手机
   V.PhoneOwned = V.PhoneOwned || []
-  V.PhoneOwned.push(new PhoneMod.Phone().newBuy(price, 1));
+  V.PhoneOwned.push(new PhoneMod.Phone().newBuy(price));
+  PhoneMod.ChangeUsingPhone();
 }
 PhoneMod.BuySecondPhone = function(price, newness) { // 购买一部二手手机
   V.PhoneOwned = V.PhoneOwned || []
-  V.PhoneOwned.push(new PhoneMod.Phone().newBuy(price, newness));
+  V.PhoneOwned.push(new PhoneMod.Phone().newBuySecond(price, newness));
+  PhoneMod.ChangeUsingPhone();
 }
 PhoneMod.StolePhone = function() { // 盗窃一部手机
   V.PhoneOwned = V.PhoneOwned || []
   V.PhoneOwned.push(new PhoneMod.Phone().newStolen());
 }
-PhoneMod.CarryingStolenPhone = function() {
+PhoneMod.getUsingPhone = function() {
+    if (!V.UsingPhone) return null;
+    return V.PhoneOwned.find(p => p.id === V.UsingPhone) || null;
+}
+PhoneMod.ChangeUsingPhone = function(phone=null) { // 切换正在使用的手机
+    if (phone === null) {
+        if (V.UsingPhone) {
+            const UsingPhone = V.PhoneOwned.find(p => p.id === V.UsingPhone)
+            if (UsingPhone && UsingPhone.usable && UsingPhone.newness > 0) return V.UsingPhone;
+        }
+        if (!V.PhoneOwned || V.PhoneOwned.length === 0) {
+            V.UsingPhone = null;
+        } else {
+            V.UsingPhone = null
+            for (var i = 0; i < V.PhoneOwned.length; i++) {
+                if (V.PhoneOwned[i].usable && V.PhoneOwned[i].newness > 0) {
+                    V.UsingPhone = V.PhoneOwned[i].id;
+                    break;
+                }
+            }
+        }
+    } else {
+        if (phone.usable && phone.newness > 0) {
+            V.UsingPhone = phone.id;
+        } else {
+            V.UsingPhone = null
+        }
+    }
+    return V.UsingPhone;
+}
+PhoneMod.isCarryingStolenPhone = function() {
   if (!V.PhoneOwned) return false;
   for (let i = 0; i < V.PhoneOwned.length; i++) {
     if (V.PhoneOwned[i].stolen) return true;
@@ -412,34 +491,69 @@ PhoneMod.CarryingStolenPhone = function() {
   return false;
 }
 
-PhoneMod.ShowPhoneJournal = function() {
-  if (V.PhoneOwned && V.PhoneOwned.length > 0) {
-    const Uls = document.getElementsByClassName("journal carry")
-    if (Uls.length > 0) {
-      let Ul = Uls[0];
-      if (Uls.length > 1) Ul = Uls[1];
-      const Li = document.createElement("li");
-      new Wikifier(Li, `<<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。`);
-      Ul.appendChild(Li);
-      V.PhoneOwned.forEach(function(phone) {
-        const Li = document.createElement("li");
-        let info = PhoneMod.getPhoneConditionInfo(phone.newness);
-        new Wikifier(Li, `<span style="margin-right: 50px"></span><<icon "phone/phone.png">>
-          一部
-          <span style='color: ${info.color}'>${info.text}</span>
-          的手机，官网售价为
-          <span class='gold'>£${Math.round(phone.price)}</span>。
-          <<if ${phone.stolen}>>
-            <span class='red'>盗窃得来</span>
-            <<if ${phone.usable}>>
-              <span class='yellow'密码已重置</span>
-            <<else>>
-              <span class='red'>因为密码未知而无法使用</span>
-            <</if>>
-          <<else>>
-            <span class='green'>官方渠道购买</span>
-          <</if>>`);
-        Ul.appendChild(Li)
-      })
-  }}
-}; 
+PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
+    if (V.PhoneOwned && V.PhoneOwned.length > 0) {
+        const Uls = document.getElementsByClassName("journal carry")
+        if (Uls.length > 0) {
+            let Ul = Uls[0];
+            if (Uls.length > 1) Ul = Uls[1];
+            const Div = document.createElement("div");
+            Div.id = "phone-journal";
+            Ul.appendChild(Div);
+            
+            const Li = document.createElement("li");
+            new Wikifier(Li, `<<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。`);
+            Div.appendChild(Li);
+            
+            V.PhoneOwned.forEach(function(phone) {
+                const Li = document.createElement("li");
+                let info = PhoneMod.getPhoneConditionInfo(phone.newness);
+                new Wikifier(Li, `
+                    <span style="margin-right: 50px"></span>
+                    <<if $UsingPhone and "${phone.id}" eq $UsingPhone>>
+                        <<icon "phone/phone.png">>
+                        <span class='teal'>正在使用</span> | 
+                    <<elseif ${phone.stolen && !phone.usable}>>
+                        <<icon "phone/phone_forbid.png">>
+                    <<else>>
+                        <<icon "phone/phone_disabled.png">> 
+                        <<if ${phone.newness > 0}>>
+                            <<link "切换到">> <<run PhoneMod.PhoneJournalChange("${phone.id}")>> <</link>> | 
+                        <<else>>
+                            <span class='red'>已损坏</span> |
+                        <</if>>
+                    <</if>>
+                    一部
+                    <span style='color: ${info.color}'>${info.text}</span>
+                    的手机，官网售价为
+                    <span class='gold'>£${Math.round(phone.price)}</span>。
+                    <<if ${phone.stolen}>>
+                        <span class='red'>盗窃得来</span>
+                        <<if ${phone.usable}>>
+                            <span class='yellow'>密码已重置</span>
+                        <<else>>
+                            <span class='red'>因为密码未知而无法使用</span>
+                        <</if>>
+                    <<else>>
+                        <<if ${phone.second}>>
+                            <span class='yellow'>地下手机店购买</span>
+                        <<else>>
+                            <span class='green'>官方渠道购买</span>
+                        <</if>>
+                    <</if>>`);
+                Div.appendChild(Li)
+            })
+        }}
+};
+
+PhoneMod.PhoneJournalChange = function(id) { // 日志中更新手机信息
+    const phone = V.PhoneOwned.find(p => p.id === id);
+    if (phone) {
+        PhoneMod.ChangeUsingPhone(phone);
+    }
+    const Div = document.getElementById("phone-journal");
+    if (Div) {
+        Div.remove();
+        PhoneMod.ShowPhoneJournal();
+    }
+}
