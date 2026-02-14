@@ -201,7 +201,7 @@
                     <<else>>
                         <div style="color: gray">
                             <div class="phone-alarm-display-time"><<if _alarm.hour < 10>>0<</if>>_alarm.hour:<<if _alarm.minute < 10>>0<</if>>_alarm.minute</div>
-                            <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg | 已失效<</if>></div>
+                            <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>> | 已失效</div>
                         </div>
                     <</if>>
                     <<link "删除">><<run PhoneMod.deleteAlarm(_i)>><</link>>

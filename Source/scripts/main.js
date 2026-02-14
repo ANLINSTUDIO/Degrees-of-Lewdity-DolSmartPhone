@@ -62,9 +62,9 @@ PhoneMod.PhoneUIInit = function (ev) {
         phone.classList.add("phone-disabled");
     }, 10);
   } else {
+    const alarmTriggered = PhoneMod.checkAlarms();
     new Wikifier(phoneUI, "<<smartphone_render>>");
     setTimeout(() => {
-        const alarmTriggered = PhoneMod.checkAlarms();
         if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
     }, 10);
   }
@@ -233,6 +233,7 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
             V.phoneAlarmCurrent = alarm;
             if (alarm.type === "once") alarm.active = false; // 一次性的关掉
             setTimeout(() => PhoneMod.togglePhone(true), 10);
+            break; // 只触发一个闹钟，优先级按照数组顺序
         }
     }
 
@@ -252,6 +253,7 @@ PhoneMod.cancelAlarm = function() { // 关闭闹钟
 
     const alarmTriggered = PhoneMod.checkAlarms();
     if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
+    Engine.play(passage()); 
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
     V.phoneAlarms.pop(index);

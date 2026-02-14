@@ -6,17 +6,18 @@ PhoneMod.extraShowPhoneAreas = [
 ];
 
 PhoneMod.events = [
-  {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
-  {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Sneak Phone", chance: 0.1, position: "before"},
-  {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-    replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-    replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-    replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-    replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-  {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
+    {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
+    {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
+    {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Sneak Phone", chance: 0.1, position: "before"},
+    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
+        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
+    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
+        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
+    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
+        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
+    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
+        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
+    {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
 ]
 PhoneMod.phoneConditionLevels = [
     { threshold: 0.8, text: "崭新出厂", color: "#4CAF50" },
