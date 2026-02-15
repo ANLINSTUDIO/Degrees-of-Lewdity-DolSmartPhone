@@ -291,7 +291,7 @@
         “没事了，” 你说， “下次我再找你。”<br><br>
         “好的<<if $player.gender_appearance is "m">>先生<<else>>女士<</if>>，如果你需要我们的服务随时给我打电话，” 裁缝在电话那边说
         <<if $tailorMonthlyService is "repair">>
-            ，“但是你这之后你要等待一周才能再次使用我们的服务。”
+            ，“但是在这之后你要等待一周才能再次使用我们的服务。”
         <<else>>
             。
         <</if>>

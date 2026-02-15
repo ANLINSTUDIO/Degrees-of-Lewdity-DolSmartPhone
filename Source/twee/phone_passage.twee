@@ -511,6 +511,20 @@
 
 
 :: ==========AskTel==========
+:: Landry AskTel Link
+<<if !PhoneMod.isContactKnown("兰德里")>>
+    <br><br><<icon "socialise_question.png">> <<link [[询问对方电话号码|Landry AskTel]]>><</link>>
+<</if>>
+
+:: Landry AskTel
+“你能告诉我你的电话号码吗？” 你问兰德里。<br>
+兰德里看了你一眼，沉默了几秒钟，似乎在考虑是否要告诉你。<br><br>
+“我相信你是个好<<girl>>， 我可以告诉你我的电话号码。” 兰德里说。<br>
+<<run PhoneMod.addContact("兰德里")>><br><br>
+<span class="teal">你现在可以在  手机 | 联系人  找到「兰德里」</span><br><br>
+<<link [[继续|Pub Landry]]>><</link>>
+
+
 :: Tailor AskTel Link
 <<if !PhoneMod.isContactKnown("裁缝")>>
     <br><br><<icon "socialise_question.png">> <<link [[询问对方电话号码|Tailor AskTel]]>><</link>>
@@ -518,10 +532,8 @@
 
 :: Tailor AskTel
 “你能告诉我你的电话号码吗？” 你问裁缝。<br>
-<<if random(1, 2) is 1>>
-    对方拒绝了你的请求
-<<else>>
-    对方同意了你的请求
-    <<run PhoneMod.addContact("裁缝")>>
-<</if>>
+裁缝看了你一眼，沉默了几秒钟，似乎在考虑是否要告诉你。<br><br>
+“我相信你是个好<<girl>>， 我可以告诉你我的电话号码。” 裁缝说。<br>
+<<run PhoneMod.addContact("裁缝")>><br><br>
+<span class="teal">你现在可以在  手机 | 联系人  找到「裁缝」</span><br><br>
 <<link [[继续|Tailor Shop]]>><</link>>

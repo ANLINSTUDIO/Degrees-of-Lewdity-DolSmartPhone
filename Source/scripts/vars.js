@@ -19,6 +19,7 @@ PhoneMod.events = [
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
     {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
 
+    {passage: "Pub Landry", target: "Pub Sell", event: "Landry AskTel Link"},
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
 ]
 PhoneMod.phoneConditionLevels = [
