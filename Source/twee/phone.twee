@@ -288,6 +288,7 @@
 <</widget>>
 
 <<widget "smartphone_debug">> <div id="smart-phone-debug-container">
+    <br><br>
     <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>><br>
     <h3 class="teal">变量 V.Phone</h3>
@@ -306,8 +307,11 @@
 
 :: Phone Shop
 <div class="phone-overlay">
+    <<effects>>
     你处于网购平台。
 
+    <<if $tryOn.autoReset isnot false>><<tryOnReset>><</if>>
+    <<set $shopName = "clothing">>
     <div id="tryonstats-div"><<tryOnStats>></div>
     <<unset $shopListStartCount>>
     <<unset $clothes_choice>>
@@ -323,6 +327,7 @@
     <<set _outside to $outside>>
     <div id="clothingShop-div">
         <<AllShop>>
+        <<run linkifyDivs('.button-back-to-shop')>>
     </div>
     <<set $outside to _outside>>
 
