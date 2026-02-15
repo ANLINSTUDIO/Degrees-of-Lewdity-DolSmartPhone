@@ -1,3 +1,41 @@
+/* DEBUG：固定在右下角 */
+#smart-phone-debug-switch {
+    position: fixed;
+    right: -15px;
+    bottom: 120px;
+    width: 30px;
+    height: 30px;
+    background-color: #1a1a1a;
+    border: 2px solid #444;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+#smart-phone-debug-switch.active {
+    right: 15px;
+    background-color: #fff;
+}
+
+#smart-phone-debug-container {
+    position: fixed;
+    padding: 10px;
+    right: 15px;
+    bottom: 20px;
+    width: 300px;
+    height: 500px;
+    background-color: #1a1a1a;
+    border: 2px solid #444;
+    border-radius: 15px;
+    color: white;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+
+
 /* 手机容器：固定在右下角 */
 #smart-phone-container {
     position: fixed;

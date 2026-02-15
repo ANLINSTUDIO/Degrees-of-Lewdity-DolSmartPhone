@@ -1,5 +1,6 @@
-window.PhoneMod = window.PhoneMod || {};
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
+
+window.PhoneMod = window.PhoneMod || {};
 
 
 PhoneMod.extraShowPhoneAreas = [
@@ -23,6 +24,10 @@ PhoneMod.events = [
 
     {passage: "Pub Landry", target: "Pub Sell", event: "Landry AskTel Link"},
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
+];
+PhoneMod.events_on_macro = [
+    {macro: "journal", function: PhoneMod.ShowPhoneJournal},
+    {macro: "orgasm", function: PhoneMod.EnableToTakePhoto},
 ]
 PhoneMod.phoneConditionLevels = [
     { threshold: 0.8, text: "崭新出厂", color: "#4CAF50" },
@@ -41,12 +46,53 @@ PhoneMod.Contacts = [
 ];
 setup.LocationImages.phone = {
   folder: "phone",
-  base: {
-			default: {
-				image: "base.png",
-			}
-		},
+  base: {default: {image: "base.png"}}
 }
+PhoneMod.PhoneFilters = {
+    // 基础滤镜
+    normal: 'none',
+    grayscale: 'grayscale(100%)',
+    
+    // === 胶片感滤镜 ===
+    
+    // 经典胶片 - 轻微偏黄，高对比
+    classicFilm: 'contrast(1.1) brightness(0.95) saturate(1.1) sepia(0.2)',
+    
+    // 复古胶片 - 暖色调，轻微褪色
+    retroFilm: 'sepia(0.3) contrast(1.05) brightness(0.98) saturate(0.9)',
+    
+    // 电影感 - 冷色调，高对比
+    cinematic: 'contrast(1.2) brightness(0.95) saturate(1.2) hue-rotate(-5deg)',
+    
+    // 日系清新 - 高亮度，低对比，偏蓝
+    japanese: 'brightness(1.1) contrast(0.9) saturate(0.9) hue-rotate(5deg)',
+    
+    // 拍立得 - 偏暖，轻微褪色
+    polaroid: 'brightness(1.05) contrast(1.1) saturate(0.95) sepia(0.15)',
+    
+    // === 颗粒感滤镜（需要配合Canvas实现真实颗粒）===
+    
+    // 注意：真实的颗粒感需要Canvas像素操作，这里先用CSS模拟
+    grainyLight: 'contrast(1.1) brightness(0.95)', // 基础，颗粒通过JS添加
+    grainyDark: 'contrast(1.2) brightness(0.85)',
+    
+    // === 其他常用滤镜 ===
+    
+    // 黑白胶片
+    bwFilm: 'grayscale(100%) contrast(1.2) brightness(0.95)',
+    
+    // 褪色复古
+    faded: 'sepia(0.2) saturate(0.8) contrast(0.95) brightness(1.05)',
+    
+    // 暖阳滤镜
+    warmSun: 'sepia(0.25) saturate(1.2) brightness(1.05) hue-rotate(5deg)',
+    
+    // 冷色调
+    coolTone: 'hue-rotate(20deg) saturate(1.1) brightness(0.98)',
+    
+    // 高对比黑白
+    highContrastBW: 'grayscale(100%) contrast(1.5) brightness(0.9)',
+};
 PhoneMod.PhoneGameQuestions = {
   "Maths": [
     {

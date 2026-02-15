@@ -1,90 +1,31 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：main.js");
 
-// =================== 操控手机 =====================
-PhoneMod.checkPhoneDisabled = function() {
-  const phone = document.getElementById("smart-phone-container");
-  if (!phone) return;
-  if (PhoneMod.shouldUsePhone()) {
-    phone.classList.remove("phone-disabled");
-  } else {
-    phone.classList.add("phone-disabled");
-  }
-}
-PhoneMod.togglePhone = function(forceOpen) {
-  const phone = document.getElementById("smart-phone-container");
-  if (!phone) return;
-  if (PhoneMod.shouldUsePhone()) {
-    if (forceOpen === true) {
-        phone.classList.add("phone-open");
-    } else {
-        phone.classList.toggle("phone-open");
-        if (V.Phone.AlarmTriggered && !phone.classList.contains("phone-open")) PhoneMod.cancelAlarm();
-    }
-  }
-};
-PhoneMod.toggleApp = function(AppName, replay=true) {
-    PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - 0.01, 3);
-    
-    if (PhoneMod.getUsingPhone().newness <= 0) {
-        PhoneMod.getUsingPhone().newness = 0;
-        if (!PhoneMod.ChangeUsingPhone()) {
-            Engine.play(passage()); 
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
-            return;
-        } else {
-            V.Phone.CurrentApp = AppName;
-            if (replay) Engine.play(passage()); 
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
-        }
-    } else {
-        V.Phone.CurrentApp = AppName;
-        if (replay) Engine.play(passage()); 
-    }
-    if (replay) PhoneMod.togglePhone(true);
-};
-$(document).on("keyup", function(event) { // 监听 Control 键
-    if (event.key === "Control") {
-        PhoneMod.togglePhone();
-    }
-});
-PhoneMod.PhoneUIInit = function (ev) {
-  if (!PhoneMod.shouldShowPhone()) return;
-
-  PhoneMod.ChangeUsingPhone()
-
-  const phoneUI = document.createElement('div');
-  phoneUI.id = "phone-wrapper";
-  $(ev.content).append(phoneUI);
-  if (V.passage === "Start") {
-    new Wikifier(phoneUI, "<<smartphone_render_preview>>");
-  } else {
-    const alarmTriggered = PhoneMod.checkAlarms();
-    new Wikifier(phoneUI, "<<smartphone_render>>");
-    setTimeout(() => {
-        if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
-    }, 10);
-  }
-};
-
 
 // ================== passage 注入 ==================
 $(document).on(":passagerender", function (ev) {
-    console.log(V);
-    
     V.Phone = V.Phone || {}
     V.Phone.photography = V.Phone.photography || 0
-    PhoneMod.PhoneUIInit(ev);
-    PhoneMod.eventsLoad(ev);
+    V.Phone.enableToDo = null
+    PhoneMod.ev = ev
+
+    const phoneDebugSwitchUI = document.createElement('div');
+    phoneDebugSwitchUI.id = "smartphone_debug_switch"
+    new Wikifier(phoneDebugSwitchUI, "<<smartphone_debug_switch>>");
+    $(PhoneMod.ev.content).append(phoneDebugSwitchUI);
+
+    PhoneMod.PhoneUIInit();
+    PhoneMod.eventsLoad();
 });
 $(document).one(":passageinit", function () {
-    PhoneMod.OnMacro("journal", PhoneMod.ShowPhoneJournal)
+    PhoneMod.events_on_macro.forEach(function(event) {
+        PhoneMod.OnMacro(event.macro, event.function)
+    })
 });
-
-PhoneMod.eventsLoad = function(ev) {
+PhoneMod.eventsLoad = function() {
   PhoneMod.events.forEach(function(event) {
     if (V.passage === event.passage) {
       if (event.chance === undefined || Math.random() < event.chance) {
-        const $target = $(ev.content).find(`a[data-passage="${event.target}"]`);
+        const $target = $(PhoneMod.ev.content).find(`a[data-passage="${event.target}"]`);
         if ($target.length > 0) {
             if (event.goto === true) {
               new Wikifier(null, `<<goto "${event.event}">>`);
@@ -102,7 +43,7 @@ PhoneMod.eventsLoad = function(ev) {
             }
         }
         if (event.replace_target) {
-          const $replaceTarget = $(ev.content).find(`a[data-passage="${event.replace_target}"]`);
+          const $replaceTarget = $(PhoneMod.ev.content).find(`a[data-passage="${event.replace_target}"]`);
           if ($replaceTarget.length > 0) {
             const Div = document.createElement("div");
             Div.style.display = "inline";
@@ -111,6 +52,146 @@ PhoneMod.eventsLoad = function(ev) {
           }
         }
   }}})
+}
+
+
+
+// =================== 操控手机 =====================
+PhoneMod.checkPhoneDisabled = function() {
+  const phone = document.getElementById("smart-phone-container");
+  if (!phone) return;
+  if (PhoneMod.shouldUsePhone()) {
+    phone.classList.remove("phone-disabled");
+  } else {
+    phone.classList.add("phone-disabled");
+  }
+}
+PhoneMod.togglePhone = function(forceOpen) {
+    const phone = document.getElementById("smart-phone-container");
+    if (!phone) return;
+    if (V.Phone.enableToDo) {
+        const enableToDo = V.Phone.enableToDo
+        V.Phone.enableToDo = null
+        enableToDo()
+    } else {
+        if (PhoneMod.shouldUsePhone()) {
+            if (forceOpen === true) {
+                phone.classList.add("phone-open");
+            } else {
+                phone.classList.toggle("phone-open");
+                if (V.Phone.AlarmTriggered && !phone.classList.contains("phone-open")) PhoneMod.cancelAlarm();
+            }
+        }
+    }
+};
+PhoneMod.toggleApp = function(AppName, replay=true) {
+    if (!PhoneMod.PhoneWaer(0.01)) return;
+
+    V.Phone.CurrentApp = AppName;
+    if (replay) PhoneMod.PhoneUIInit(true);
+
+    if (AppName === "photo") PhoneMod.initPhoto();
+};
+$(document).on("keyup", function(event) { // 监听 Control 键
+    if (event.key === "Control") {
+        PhoneMod.togglePhone();
+    }
+});
+$(document).on("mousedown", function(event) {
+    if (event.button === 3 || event.button === 4) {
+        event.preventDefault();  // 防止触发浏览器历史导航
+        event.stopPropagation(); // 防止事件冒泡
+        PhoneMod.togglePhone();
+    }
+});
+PhoneMod.PhoneUIInit = function (open=false) {
+    if (!PhoneMod.shouldShowPhone()) return;
+
+    PhoneMod.ChangeUsingPhone()
+
+    PhoneMod.PhoneSafeClose();
+    const phoneUI = document.createElement('div');
+    phoneUI.id = "phone-wrapper";
+    $(PhoneMod.ev.content).append(phoneUI);
+    if (V.passage === "Start") {
+        new Wikifier(phoneUI, "<<smartphone_render_preview>>");
+    } else {
+        const alarmTriggered = PhoneMod.checkAlarms();
+        new Wikifier(phoneUI, "<<smartphone_render>>");
+        setTimeout(() => {
+            if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
+        }, 10);
+    }
+
+    if (open) {
+        PhoneMod.togglePhone(true)
+    }
+};
+PhoneMod.PhoneSafeClose = function () {
+    const phoneUIOld = document.getElementById("phone-wrapper")
+    if (phoneUIOld) {
+        phoneUIOld.remove()
+    }
+};
+PhoneMod.PhoneWaer = function(value) {
+    PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - value, 3);
+    return PhoneMod.PhoneCheckNewness()
+}
+PhoneMod.PhoneCheckNewness = function () {
+    if (PhoneMod.getUsingPhone().newness <= 0) {
+        PhoneMod.getUsingPhone().newness = 0;
+        if (!PhoneMod.ChangeUsingPhone()) {
+            PhoneMod.PhoneSafeClose()
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            return false;
+        } else {
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            return true;
+        }
+    }
+    return true;
+}
+
+
+// ==================== DEBUG ======================
+PhoneMod.toggleDebug = function(reload = false) {
+    const phoneDebugSwitchUIOld = document.getElementById("smart-phone-debug-switch")
+    const phoneDebugUIOld = document.getElementById("smartphone_debug")
+    if (phoneDebugUIOld) {
+        phoneDebugSwitchUIOld.classList.remove("active")
+        phoneDebugUIOld.remove()
+        if (!reload) return
+    }
+    phoneDebugSwitchUIOld.classList.add("active")
+    const phoneDebugUI = document.createElement('div');
+    phoneDebugUI.id = "smartphone_debug"
+    new Wikifier(phoneDebugUI, "<<smartphone_debug>>");
+    $(PhoneMod.ev.content).append(phoneDebugUI);
+    document.getElementById('excute-js').addEventListener('keydown', function(event) {
+        event.stopImmediatePropagation();
+    }, true);
+}
+PhoneMod.DebugShowMsg = function(content) {
+    const phoneDebugUI = document.getElementById("smart-phone-debug-container")
+    if (phoneDebugUI) {
+        const element = document.createElement("div")
+        element.class = "red"
+        element.innerHTML = content + "<br><br>"
+        phoneDebugUI.insertAdjacentElement('afterbegin', element);
+        phoneDebugUI.scrollTo(0, 0)
+    }
+}
+PhoneMod.DebugExcuteJs = function() {
+    setTimeout(() => {
+        const input = document.getElementById("excute-js")
+        if (input) {
+            const command = input.value
+            if (command) {
+                PhoneMod.DebugShowMsg(eval(command))
+            }
+        }
+    }, 1)
+    
 }
 
 
@@ -252,12 +333,11 @@ PhoneMod.cancelAlarm = function() { // 关闭闹钟
 
     const alarmTriggered = PhoneMod.checkAlarms();
     if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
-    Engine.play(passage()); 
+    PhoneMod.PhoneUIInit(true);
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
     V.Phone.Alarms.pop(index);
-    Engine.play(passage()); 
-    PhoneMod.togglePhone(true);
+    PhoneMod.PhoneUIInit(true);
 };
 PhoneMod.toggleAlarmType = function(type) {
     document.getElementById('weekly-input').style.display = 'none';
@@ -373,13 +453,13 @@ PhoneMod.handleWallpaperUpload = function(input) {
     reader.onload = function(e) {
         // 保存到SugarCube变量
         V.Phone.SettingsWallpaperPath = e.target.result;
-        Engine.play(passage())
+        PhoneMod.PhoneUIInit(true);
     };
     reader.readAsDataURL(file);
 }
 PhoneMod.resetWallpaper = function() {
     V.Phone.SettingsWallpaperPath = undefined
-    Engine.play(passage())
+    PhoneMod.PhoneUIInit(true);
 }
 PhoneMod.toggleBlur = function(checked) {
     V.Phone.SettingsWallpaperBlur = checked;
@@ -404,6 +484,216 @@ PhoneMod.getContact = function(name) {
     if (!PhoneMod.isContactKnown(name)) return null;
     return PhoneMod.Contacts.find(c => c.name === name);
 };
+// ==================== 相机实现 ====================
+PhoneMod.initPhoto = function() {
+    console.log("| [SmartPhone] 拍照！");
+    
+    setTimeout(() => {
+        PhoneMod.PhotoDraw()
+    }, 10)
+}
+PhoneMod.PhotoDraw = function() {
+    // 获取原始画布
+    const charSourceCanvas = document.querySelector(".mainCanvas");
+    const bgSourceCanvas = document.getElementById("canvasSkybox").firstChild;
+    
+    // 获取目标画布
+    const charCanvas = document.getElementById("char_canvas");
+    const bgCanvas = document.getElementById("bg_canvas");
+    
+    // 获取上下文
+    const charCtx = charCanvas.getContext('2d');
+    const bgCtx = bgCanvas.getContext('2d');
+
+    // 背景模糊
+    bgCtx.filter = "blur(10px)";
+    
+    // 计算基础偏移
+    const baseY = charSourceCanvas.height * 0.7;
+    
+    // 设置人物画布尺寸
+    charCanvas.width = charSourceCanvas.width;
+    charCanvas.height = baseY + charSourceCanvas.height;
+    
+    // 绘制人物
+    charCtx.drawImage(charSourceCanvas, 0, baseY);
+    
+    // 设置背景画布
+    const scaleFactor = 4;
+    bgCanvas.width = charCanvas.width;
+    bgCanvas.height = charCanvas.height;
+    
+    // 计算背景位置和尺寸
+    const bgWidth = bgSourceCanvas.width * scaleFactor;
+    const bgHeight = bgSourceCanvas.height * scaleFactor;
+    const bgX = (bgCanvas.width - bgWidth) / 2;
+    const bgY = -bgSourceCanvas.height * (scaleFactor - 1) + baseY;
+    
+    // 绘制背景
+    bgCtx.drawImage(
+        bgSourceCanvas, 
+        0, 0, bgSourceCanvas.width, bgSourceCanvas.height,
+        bgX, bgY, bgWidth, bgHeight
+    );
+
+    // 设置图片高度
+    const resultCanvas = document.getElementById('result_canvas');
+    resultCanvas.height = bgSourceCanvas.height * scaleFactor + bgY
+
+    PhoneMod.PhotoApplyFilter();
+}
+PhoneMod.PhotoApplyFilter = function(filter="normal") {
+    // 获取目标画布
+    const charCanvas = document.getElementById("char_canvas");
+    const bgCanvas = document.getElementById("bg_canvas");
+    const resultCanvas = document.getElementById('result_canvas');
+    
+    // 获取上下文
+    const resultCtx = resultCanvas.getContext('2d');
+
+    resultCanvas.width = charCanvas.width;
+    resultCtx.filter = PhoneMod.PhoneFilters[filter];
+    resultCtx.drawImage(bgCanvas, 0, 0);
+    resultCtx.drawImage(charCanvas, 0, 0);
+};
+PhoneMod.PhotoApplyGrain = function (intensity = 1) {  // 应用颗粒感
+    const resultCanvas = document.getElementById('result_canvas');
+    const resultCtx = resultCanvas.getContext('2d');
+    const width = resultCanvas.width;
+    const height = resultCanvas.height;
+    
+    const grainCanvas = document.createElement('canvas');
+    grainCanvas.width = width;
+    grainCanvas.height = height;
+    const grainCtx = grainCanvas.getContext('2d');
+    const imageData = grainCtx.createImageData(width, height);
+    const data = imageData.data;
+    
+    for (let i = 0; i < data.length; i += 4) {
+        const grain = Math.random() * 255 * intensity;
+        data[i] = grain;     // R
+        data[i + 1] = grain; // G
+        data[i + 2] = grain; // B
+        data[i + 3] = Math.random() * 0.3 * 255; // Alpha - 控制颗粒透明度
+    }
+    
+    grainCtx.putImageData(imageData, 0, 0);
+    
+    // 使用混合模式叠加颗粒
+    resultCtx.save();
+    resultCtx.globalCompositeOperation = 'overlay';
+    resultCtx.globalAlpha = 0.3;
+    resultCtx.drawImage(grainCanvas, 0, 0);
+    resultCtx.restore();
+}
+PhoneMod.PhotoApplyScratches = function() {  // 应用胶片划痕效果
+    const resultCanvas = document.getElementById('result_canvas');
+    const resultCtx = resultCanvas.getContext('2d');
+    const width = resultCanvas.width;
+    const height = resultCanvas.height;
+    
+    // 随机添加一些划痕
+    resultCtx.save();
+    resultCtx.globalAlpha = 0.1;
+    resultCtx.strokeStyle = 'white';
+    resultCtx.lineWidth = 1;
+    
+    for (let i = 0; i < 3; i++) {
+        if (Math.random() > 0.7) {
+            const x = Math.random() * width;
+            const y = Math.random() * height;
+            resultCtx.beginPath();
+            resultCtx.moveTo(x, y);
+            resultCtx.lineTo(x + 50, y + 30);
+            resultCtx.stroke();
+        }
+    }
+    
+    resultCtx.restore();
+};
+PhoneMod.PhotoApplyVignette = function(intensity = 0.3) {  // 应用暗角效果
+    const resultCanvas = document.getElementById('result_canvas');
+    const resultCtx = resultCanvas.getContext('2d');
+    const width = resultCanvas.width;
+    const height = resultCanvas.height;
+    
+    // 创建径向渐变暗角
+    const gradient = resultCtx.createRadialGradient(
+        width / 2, height / 2, 0,
+        width / 2, height / 2, Math.max(width, height) / 1.5
+    );
+    
+    gradient.addColorStop(0, 'rgba(0,0,0,0)');
+    gradient.addColorStop(1, `rgba(0,0,0,${intensity})`);
+    
+    resultCtx.fillStyle = gradient;
+    resultCtx.globalCompositeOperation = 'multiply';
+    resultCtx.fillRect(0, 0, width, height);
+    resultCtx.globalCompositeOperation = 'source-over';
+};
+PhoneMod.PhotoCheckQuality = function() {
+    let allure = 0
+    const arousal_k = V.arousal / V.arousalmax
+    const allure_k = V.allure / 8000
+
+    let quality = 0
+    const photography_k = V.Phone.photography / 1000
+    `提升诱惑的因素：
+    服装：不同相关服装（例如项圈和贞操带增加1000点）会增加+0~1000
+    裸装：上装、下装、内衣（上装）、内衣（下装）之中每有一处会增加+1000
+    容貌：+~476/级（在容貌满级时增加3333点诱惑）
+    任意转化：+500（除去狐化，它增加+750）
+    头发长度：在满级时+250
+    性相关声望：每种会在声名狼藉级别时+100，在满点时+200
+    每种可见的体液（精液、粘液、花蜜）：+500 每种
+    精液和/或粘液：+50玩家身上或体内每有一处
+    血月期间：+2000诱惑
+    耳中史莱姆信息素：当耳中史莱姆的成长度达到50后，+10每1成长
+
+    倍乘诱惑的因素：
+    夜晚：+50%
+    赤裸上身（非男性）或赤裸下体：+20%
+    同时赤裸上身（非男性）和下体：+40%`
+}
+PhoneMod.PhotoFlash = function(charCanvas, duration = 100) {
+    return new Promise(resolve => {
+        // 创建闪白层
+        const flashCanvas = document.createElement('canvas');
+        flashCanvas.width = charCanvas.width;
+        flashCanvas.height = charCanvas.height;
+        flashCanvas.style.position = 'absolute';
+        flashCanvas.style.top = charCanvas.offsetTop + 'px';
+        flashCanvas.style.left = charCanvas.offsetLeft + 'px';
+        flashCanvas.style.pointerEvents = 'none';
+        flashCanvas.style.transition = `opacity ${duration}ms ease-out`;
+        
+        const flashCtx = flashCanvas.getContext('2d');
+        
+        // 填充白色
+        flashCtx.fillStyle = 'white';
+        flashCtx.fillRect(0, 0, flashCanvas.width, flashCanvas.height);
+        
+        // 添加到DOM
+        document.getElementById('photo').appendChild(flashCanvas);
+        
+        // 淡出效果
+        requestAnimationFrame(() => {
+            flashCanvas.style.opacity = '0';
+        });
+        
+        // 移除元素
+        setTimeout(() => {
+            flashCanvas.remove();
+            resolve();
+        }, duration);
+    });
+};
+PhoneMod.EnableToTakePhoto = function() {
+    PhoneMod.setEnableToDo(PhoneMod.ToTakePhoto)
+}
+PhoneMod.ToTakePhoto = function() {
+    PhoneMod.toggleApp("photo")
+}
 
 
 // ================== 游戏内容 ==================
@@ -542,7 +832,6 @@ PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否
   }
   return false;
 }
-
 PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
     if (V.Phone.Owned && V.Phone.Owned.length > 0) {
         const Uls = document.getElementsByClassName("journal carry")
@@ -562,7 +851,7 @@ PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
                 let info = PhoneMod.getPhoneConditionInfo(phone.newness);
                 new Wikifier(Li, `
                     <span style="margin-right: 50px"></span>
-                    <<if $Phone.PhoneUsing and "${phone.id}" eq $Phone.PhoneUsing>>
+                    <<if $Phone.Using and "${phone.id}" eq $Phone.Using>>
                         <<icon "phone/phone.png">>
                         <span class='teal'>正在使用</span> | 
                     <<elseif ${phone.stolen && !phone.usable}>>

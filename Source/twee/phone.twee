@@ -137,7 +137,13 @@
 <</widget>>
 
 <<widget "phone_app_photo">>
-
+    <div class="app-content" style="overflow-y: hidden">
+        <div id="photo" style="display: flex; justify-content: space-evenly;"> 
+            <canvas id="bg_canvas" style="position: absolute;"></canvas>
+            <canvas id="char_canvas" style="position: absolute;"></canvas>
+            <canvas id="result_canvas" style="position: absolute;"></canvas>
+        </div>
+    </div>
 <</widget>>
 
 <<widget "phone_app_contacts">>
@@ -274,6 +280,28 @@
 
 <<widget "phone_app_yebook">>
 <</widget>>
+
+
+:: Smartphone Debug [widget]
+<<widget "smartphone_debug_switch">>
+    <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()"><<icon "phone/phone.png">></div>
+<</widget>>
+
+<<widget "smartphone_debug">> <div id="smart-phone-debug-container">
+    <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
+    <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>><br>
+    <h3 class="teal">变量 V.Phone</h3>
+    <<for _key, _value range $Phone>>
+        <<if ["SettingsWallpaperPath"].contains(_key)>>
+            <<print "<b class='teal'>"+_key+"</b> <span class='green'>已设置</span>">><br>
+        <<else>>
+            <<print "<b class='teal'>"+_key+"</b> "+JSON.stringify(_value)>><br>
+        <</if>>
+    <</for>>
+    <h3 class="gold">获取手机</h3>
+    <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone(4999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
+    <<link "通过老冯购买手机">><<run PhoneMod.BuySecondPhone(2999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
+</div> <</widget>>
 
 
 :: Phone Shop
