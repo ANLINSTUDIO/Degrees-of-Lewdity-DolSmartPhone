@@ -1,9 +1,9 @@
 :: Phone Back
-<<set $Phone.ReturnPassageTmp to $Phone.ReturnPassage>>
-<<link [[Next|$Phone.ReturnPassage]]>><</link>>
-<<unset $Phone.ReturnPassage>>
-<<set $Phone.ReturnPassage to undefined>>
-<<goto $Phone.ReturnPassageTmp>>
+你放下了手机。<br><br>
+<<link [[继续|$Phone.ReturnPassage]]>>
+    <<run PhoneMod.PhoneBack()>>
+<</link>>
+<<print '<<goto "'+PhoneMod.PhoneBack()+'">>'>>
 
 :: SmartPhonePreviewWidgets [widget]
 <<widget "smartphone_render_preview">>
@@ -137,6 +137,7 @@
 <</widget>>
 
 <<widget "phone_app_photo">>
+
 <</widget>>
 
 <<widget "phone_app_contacts">>
@@ -265,8 +266,8 @@
 <</widget>>
 
 <<widget "phone_app_shop">>
-    <<run PhoneMod.toggleApp('main')>>
     <<run PhoneMod.PhoneTo()>>
+    <<run PhoneMod.toggleApp('main', false)>>
     <<set $Phone.ReturnWorn to $worn>>
     <<goto 'Phone Shop'>>
 <</widget>>
@@ -291,12 +292,16 @@
     </div>
     <br><br>
 
+    <<set _outside to $outside>>
     <div id="clothingShop-div">
         <<AllShop>>
     </div>
+    <<set $outside to _outside>>
 
     <<getouticon>>
     <<link [[退出网购商城|Phone Back]]>>
+        <<set $worn to $Phone.ReturnWorn>>
+        <<unset $Phone.ReturnWorn>>
         <<updatesidebarimg>>
         <<updatesidebardescription>>
         <<updateallure>>
@@ -307,9 +312,6 @@
         <<shopClothingFilterReset>>
         <<ShowUnderEquip "normal">>
         <<ShowUnderEquip "over">>
-        <<set $worn to $Phone.ReturnWorn>>
         <<set $tryOn.autoReset to true>>
-        <<shopHoodCheck>>
-        <<shopCommandoCheck>>
     <</link>>
 </div>

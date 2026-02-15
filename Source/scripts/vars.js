@@ -1,4 +1,6 @@
 window.PhoneMod = window.PhoneMod || {};
+console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
+
 
 PhoneMod.extraShowPhoneAreas = [
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops",
@@ -37,6 +39,14 @@ PhoneMod.Contacts = [
     {name: "贝利", call: "Phone Call Bailey"},
     {name: "裁缝", call: "Phone Call Tailor"},
 ];
+setup.LocationImages.phone = {
+  folder: "phone",
+  base: {
+			default: {
+				image: "base.png",
+			}
+		},
+}
 PhoneMod.PhoneGameQuestions = {
   "Maths": [
     {

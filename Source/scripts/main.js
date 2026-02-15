@@ -1,4 +1,4 @@
-window.PhoneMod = window.PhoneMod || {};
+console.log("| [SmartPhone] DoL万能的智能手机 正在加载：main.js");
 
 // =================== 操控手机 =====================
 PhoneMod.checkPhoneDisabled = function() {
@@ -22,7 +22,7 @@ PhoneMod.togglePhone = function(forceOpen) {
     }
   }
 };
-PhoneMod.toggleApp = function(AppName) {
+PhoneMod.toggleApp = function(AppName, replay=true) {
     PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - 0.01, 3);
     
     if (PhoneMod.getUsingPhone().newness <= 0) {
@@ -33,14 +33,14 @@ PhoneMod.toggleApp = function(AppName) {
             return;
         } else {
             V.Phone.CurrentApp = AppName;
-            Engine.play(passage()); 
+            if (replay) Engine.play(passage()); 
             PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
         }
     } else {
         V.Phone.CurrentApp = AppName;
-        Engine.play(passage()); 
+        if (replay) Engine.play(passage()); 
     }
-    PhoneMod.togglePhone(true);
+    if (replay) PhoneMod.togglePhone(true);
 };
 $(document).on("keyup", function(event) { // 监听 Control 键
     if (event.key === "Control") {
@@ -69,12 +69,15 @@ PhoneMod.PhoneUIInit = function (ev) {
 
 // ================== passage 注入 ==================
 $(document).on(":passagerender", function (ev) {
-  PhoneMod.PhoneUIInit(ev);
-  PhoneMod.eventsLoad(ev);
+    console.log(V);
+    
+    V.Phone = V.Phone || {}
+    V.Phone.photography = V.Phone.photography || 0
+    PhoneMod.PhoneUIInit(ev);
+    PhoneMod.eventsLoad(ev);
 });
 $(document).one(":passageinit", function () {
-  V.Phone = V.Phone || {};
-  PhoneMod.OnMacro("journal", PhoneMod.ShowPhoneJournal)
+    PhoneMod.OnMacro("journal", PhoneMod.ShowPhoneJournal)
 });
 
 PhoneMod.eventsLoad = function(ev) {
@@ -559,7 +562,7 @@ PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
                 let info = PhoneMod.getPhoneConditionInfo(phone.newness);
                 new Wikifier(Li, `
                     <span style="margin-right: 50px"></span>
-                    <<if $PhoneUsing and "${phone.id}" eq $PhoneUsing>>
+                    <<if $Phone.PhoneUsing and "${phone.id}" eq $Phone.PhoneUsing>>
                         <<icon "phone/phone.png">>
                         <span class='teal'>正在使用</span> | 
                     <<elseif ${phone.stolen && !phone.usable}>>

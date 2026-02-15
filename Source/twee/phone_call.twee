@@ -239,8 +239,8 @@
     <hr>
     
     <div id="phone-call-content">
-        "当然，<<if $player.gender_appearance is "m">>先生<<else>>女士<</if>>，我们会让人把箱子送来。你准备好要修补衣服的时候，就把衣服装进去。<br>
-        请记住，修补需要<span class="gold">一天时间</span>。修好后我们会把衣服送还给你。"<br><br>
+        "当然，<<if $player.gender_appearance is "m">>先生<<else>>女士<</if>>，我们会让人把箱子送来。你准备好要修补衣服的时候，就把衣服装进去。"<br>
+        "请记住，修补需要<span class="gold">一天时间</span>。修好后我们会把衣服送还给你。"<br><br>
         "请确保在送来后不要买太多新衣服，否则我们的司机将不得不把它们当作捐赠收回。"
         <br><br>
 

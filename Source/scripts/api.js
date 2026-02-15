@@ -1,4 +1,4 @@
-window.PhoneMod = window.PhoneMod || {};
+console.log("| [SmartPhone] DoL万能的智能手机 正在加载：api.js");
 
 // ==================== 这是提供给其他模块调用的API，工具函数 ====================
 PhoneMod.OnMacro = function(name, func) {
@@ -9,7 +9,7 @@ PhoneMod.OnMacro = function(name, func) {
         Macro.add(name, {
             handler: function () {
                 oldHandler.apply(this, arguments);
-                setTimeout(func, 50);
+                setTimeout(func, 10);
             }
         });
     }
@@ -108,8 +108,23 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
 };
 PhoneMod.PhoneTo =  function() {
     if (!V.Phone.ReturnPassage) {
-        V.Phone.ReturnPassage = passage()
+        V.Phone.ReturnPassage = V.passage;
+        V.Phone.ReturnOutside = V.outside;
+        V.Phone.ReturnLocation = V.location;
+        V.location = "phone";
     }
+}
+PhoneMod.PhoneBack =  function() {
+    if (V.Phone.ReturnLocation) {
+        const passage = V.Phone.ReturnPassage
+        V.outside = V.Phone.ReturnOutside;
+        V.location = V.Phone.ReturnLocation;
+        V.Phone.ReturnPassage = undefined;
+        V.Phone.ReturnOutside = undefined;
+        V.Phone.ReturnLocation = undefined
+        return passage
+    } 
+    return V.safePassage  // 没有passage保存
 }
 PhoneMod.getPhoneConditionInfo = function(condition) {
     condition = Math.max(0, Math.min(1, condition)); // 限制在0-1范围内
