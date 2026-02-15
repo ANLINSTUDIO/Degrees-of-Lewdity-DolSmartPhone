@@ -187,20 +187,115 @@
     
     <div id="phone-call-content">
         <<generate1>><<person1>>
-        ???
+        <<if !$Phone.CallTailor>>
+            “喂，你好，” 你拨打了裁缝的电话
+            <<if $wardrobeRepair isnot undefined>>
+                ， “我的送过去补的衣服怎么样了？”<br>
+                裁缝在电话那边说：“
+                <<if $wardrobeRepair.timeLeft is 0>>
+                    啊，应该已经寄送过去了啊。你要不去衣柜看看？
+                <<else>>
+                    哦，刚拿到你的衣服，你再等<<print '<span class="gold">'+$wardrobeRepair.timeLeft+'天</span>'>>，我把它们补好就寄送给你
+                <</if>>
+                。”<br>
+            <<elseif $tailorMonthlyService is undefined>>
+                。<br>
+                裁缝在电话那边说：“啊，如果你打电话过来是需要我们的每月服务的话，那你就很幸运了。我们刚好有一个空位，只要是在本地，衣服都能送到。”
+            <<elseif $tailorMonthlyService gt 0>>
+                ， “我想问一下我上次订购的服务什么时候能再次使用？”<br>
+                裁缝在电话那边说：“哦，你上次订购的服务还需要<<print '<span class="gold">'+$tailorMonthlyService+'天</span>'>>才能再次使用哦。”<br>
+            <<else>>
+                。<br>
+            <</if>>
+        <<else>>
+            “还有什么事吗？” 裁缝在电话那边问道。
+        <</if>>
+        <br><br>
+        <<if $wardrobeRepair isnot undefined>>
+            <span class="teal">你需要访问衣柜收集修复过的衣服。</span>
+        <<elseif $tailorMonthlyService is undefined>>
+            <<socialiseicon "ask">><<link [[询问对方修复所有衣服的费用|Phone Call Tailor Monthly Repair]]>><</link>>
+        <<elseif $tailorMonthlyService is "repair">>
+            <span class="teal">你向裁缝订购了一个板条箱，访问衣柜向<<him>>寄送要修复的衣服。</span>
+        <<elseif $tailorMonthlyService is "discard">>
+            <span class="teal">你向裁缝订购了一个板条箱，访问衣柜向<<him>>寄送要出售的衣服。</span>
+        <<elseif $tailorMonthlyService gt 0>>
+            <span class="teal">你最近使用了这项服务，必须等待</span>
+            <span class="green">$tailorMonthlyService</span>
+            <span class="teal">天后才能再次使用。</span>
+        <</if>>
     </div>
+
+    <<set $Phone.CallTailor to 1>>
 
     <div id="phone-call-hang-up">
         <<getouticon>><<link [[没事了|Phone Call Tailor Back]]>><</link>>
     </div>
 </div>
 
-:: Phone Call Tailor Back
+:: Phone Call Tailor Monthly Repair
 <div class="phone-call-overlay">
     <h2>正在通话: 裁缝</h2>
     <hr>
+    
+    <div id="phone-call-content">
+        "当然，<<if $player.gender_appearance is "m">>先生<<else>>女士<</if>>，我们会让人把箱子送来。你准备好要修补衣服的时候，就把衣服装进去。<br>
+        请记住，修补需要<span class="gold">一天时间</span>。修好后我们会把衣服送还给你。"<br><br>
+        "请确保在送来后不要买太多新衣服，否则我们的司机将不得不把它们当作捐赠收回。"
+        <br><br>
 
+        <<set _value to 0>>
+        <<for _label, _items range $wardrobe>>
+            <<for _i to 0; _i lt _items.length; _i++>>
+                <<set _value += Math.floor(tailorClothingCost(_items[_i],_label) * (1 - (_items[_i].integrity / clothingData(_label,_items[_i],'integrity_max'))) * 1.25,_label)>>
+            <</for>>
+        <</for>>
+        押金降低了成本，你预计需要花
+        <<if _value gt 5000>>
+            <<printmoney `_value - 5000`>>
+        <<else>>
+            £0，也就是免费
+        <</if>>
+        。
+
+        <br><br>
+        <<if $money gte 5000>>
+            <<shopicon "tailor">><<link [[确认修补并支付定金£50|Phone Call Tailor Monthly Driver]]>>
+                <<money -5000 "tailor">>
+                <<set $tailorMonthlyService to "repair">>
+            <</link>>
+        <<else>>
+            你付不起定金。
+        <</if>>
+        <br>
+    </div>
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+        <<getouticon>><<link [[不用了|Phone Call Tailor]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Tailor Monthly Driver
+<div class="phone-call-overlay">
+    <h2>正在通话: 裁缝</h2> <hr>
+    <div id="phone-call-content">
+        “没问题，现在我就准备派司机给你送过去。”
+    </div> <div id="phone-call-hang-up">
+        <<getouticon>><<link [[继续|Phone Call Tailor]]>><</link>>
+    </div>
+</div>
+
+:: Phone Call Tailor Back
+<div class="phone-call-overlay">
+    <h2>正在通话: 裁缝</h2> <hr>
+    <div id="phone-call-content">
+        “没事了，” 你说， “下次我再找你。”<br><br>
+        “好的<<if $player.gender_appearance is "m">>先生<<else>>女士<</if>>，如果你需要我们的服务随时给我打电话，” 裁缝在电话那边说
+        <<if $tailorMonthlyService is "repair">>
+            ，“但是你这之后你要等待一周才能再次使用我们的服务。”
+        <<else>>
+            。
+        <</if>>
+    </div> <div id="phone-call-hang-up">
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<unset $Phone.CallTailor>><<endevent>><</link>>
     </div>
 </div>
