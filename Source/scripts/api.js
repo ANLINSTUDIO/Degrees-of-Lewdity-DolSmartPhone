@@ -94,6 +94,8 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
     return true;
 };
 PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
+    if (!V.passage) return false;  // 没有当前页面信息，不显示手机
+    if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
     if (V.event) return false;  // 活动中不可以操控手机
     if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面

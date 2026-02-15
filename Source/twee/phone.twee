@@ -7,10 +7,33 @@
 
 :: SmartPhonePreviewWidgets [widget]
 <<widget "smartphone_render_preview">>
-    <div id="smart-phone-container" class="phone-main">
+    <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">
         <div class="phone-screen-locked">
             <div style="font-size: 16px; font-weight: bold;">
                 你好👋
+            </div>
+        </div>
+
+        <div class="phone-screen-unlocked" onclick="event.stopPropagation()">
+            <div class="phone-content">
+                <h1>万能的智能手机 <span class="teal">尝鲜版</span></h1>
+                <h3>你好丫~ 感谢<b style="color: pink;">聪明可爱又大方</b>的你的支持哦</h3>
+                <hr>
+                <div>
+                    我是<a href="https://alseece.top/5420/" class="gold" target="_blank">𝑨𝑵𝑳𝑰𝑵. STUDIO</a>👋，温馨提示你：<br>
+                    本模组完全免费，且开源于<a href="https://github.com/ANLINSTUDIO/Degrees-of-Lewdity-DolSmartPhone" target="_blank">GitHub</a>。如果你是通过付费渠道下载的此版本，请立刻举报。⚠️⚠️⚠️<br>
+                    当前处于<span class="teal">尝鲜版本</span>，各种剧情和设定不够完善。如果你有任何意见和建议，或者想要参与到开发中来，欢迎在<a href="https://tieba.baidu.com/p/10483351324">我的贴子</a>下面留言！<br>
+                    <br>
+                    在此模组中，玩家一旦拥有智能手机，便可以设定定时闹钟提醒、拨打部分角色的电话、玩游戏、开通社交账号发布照片、网购、拍摄进攻者的照片进行勒索等以及触发更多有关手机的随机事件。<br>
+                    <br>
+                    更多功能，请参阅<a href="https://github.com/ANLINSTUDIO/Degrees-of-Lewdity-DolSmartPhone?tab=readme-ov-file#readme" target="_blank">GitHub上的说明文档</a>。
+                </div>
+            </div>
+            <div class="phone-tool-bar">
+                <span onclick="PhoneMod.togglePhone()" style="cursor:pointer">
+                    <img class="icon" src="img/misc/icon/padlock.png">
+                    锁屏
+                </span>
             </div>
         </div>
     </div>

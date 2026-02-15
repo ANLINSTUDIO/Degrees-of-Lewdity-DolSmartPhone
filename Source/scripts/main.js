@@ -57,10 +57,6 @@ PhoneMod.PhoneUIInit = function (ev) {
   $(ev.content).append(phoneUI);
   if (V.passage === "Start") {
     new Wikifier(phoneUI, "<<smartphone_render_preview>>");
-    setTimeout(() => {
-        const phone = document.getElementById("smart-phone-container");
-        phone.classList.add("phone-disabled");
-    }, 10);
   } else {
     const alarmTriggered = PhoneMod.checkAlarms();
     new Wikifier(phoneUI, "<<smartphone_render>>");
