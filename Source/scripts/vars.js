@@ -1,6 +1,37 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 
 window.PhoneMod = window.PhoneMod || {};
+PhoneMod.currentVersion = "v.alpha.2.7"
+PhoneMod.latestVersion = null
+PhoneMod.latestVersionDesc = null
+
+async function getLastedVersion() {
+  console.log(`| [SmartPhone] 正在取求最新版本号`)
+  try {
+      const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion`, {
+          mode: 'cors',  // 明确指定 cors 模式
+          credentials: 'omit'  // 不发送凭据
+      });
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.error) {
+          console.error('| [SmartPhone] 获取最新版本失败:', data.error);
+      } else {
+          PhoneMod.latestVersion = data.value;
+          console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`)
+          if (V.passage === "Start") {
+              if (!PhoneMod.getIsLatestVersion()) {
+                  PhoneMod.PhoneUIInit()
+              }
+          }
+      }
+  } catch (error) {
+      console.error('| [SmartPhone] 请求最新版本出错:', error);
+  }
+}
+getLastedVersion()
 
 
 PhoneMod.extraShowPhoneAreas = [

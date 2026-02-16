@@ -18,7 +18,7 @@ $(document).on(":passagerender", function (ev) {
 });
 $(document).one(":passageinit", function () {
     PhoneMod.events_on_macro.forEach(function(event) {
-        PhoneMod.OnMacro(event.macro, PhoneMod[event.func])
+        PhoneMod.onMacro(event.macro, PhoneMod[event.func])
     })
 });
 PhoneMod.eventsLoad = function() {
@@ -133,6 +133,11 @@ PhoneMod.PhoneUIInit = function (open=false) {
     $(PhoneMod.ev.content).append(phoneUI);
     if (V.passage === "Start") {
         new Wikifier(phoneUI, "<<smartphone_render_preview>>");
+        if (V.passage === "Start") {
+            if (!PhoneMod.getIsLatestVersion()) {
+                PhoneMod.togglePhone(true)
+            }
+        }
     } else {
         const alarmTriggered = PhoneMod.checkAlarms();
         new Wikifier(phoneUI, "<<smartphone_render>>");

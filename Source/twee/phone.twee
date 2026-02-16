@@ -16,6 +16,14 @@
 
         <div class="phone-screen-unlocked" onclick="event.stopPropagation()">
             <div class="phone-content">
+                <<if PhoneMod.getIsLatestVersion()>>
+                    <h2 class="green" style="display: inline-block">已是最新版本🥳</h2><<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>>
+                <<else>>
+                    <h2 class="pink" style="display: inline-block">
+                    <a class="pink" href="https://sb.alseece.top/2?=DoL-SmartPhone">更新到最新版本😘</a></h2> 
+                    <<print '<span class="hypno-text hypno">'+PhoneMod.latestVersion+' 贴近你的耳边对你说：“来呀~来呀~”</span>'>>
+                    <hr>
+                <</if>>
                 <h1>万能的智能手机 <span class="teal">尝鲜版</span></h1>
                 <h3>你好丫~ 感谢<b style="color: pink;">聪明可爱又大方</b>的你的支持哦</h3>
                 <hr>

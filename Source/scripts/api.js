@@ -1,7 +1,7 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：api.js");
 
 // ==================== 这是提供给其他模块调用的API，工具函数 ====================
-PhoneMod.OnMacro = function(name, func) {
+PhoneMod.onMacro = function(name, func) {
   let originalMacro = Macro.get(name);
     if (originalMacro) {
         let oldHandler = originalMacro.handler;
@@ -60,8 +60,11 @@ PhoneMod.addStoryCaptionContent = function(content) {
 }
 
 // ==================== 下面是关于手机使用的工具函数 ====================
-// 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
-PhoneMod.getAbsTime = function() {
+PhoneMod.getIsLatestVersion = function() {
+    console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`)
+    return PhoneMod.latestVersion === null || PhoneMod.currentVersion === PhoneMod.latestVersion
+};
+PhoneMod.getAbsTime = function() {  // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
     return {
         year: Time.date.year,
         day: Time.date.day,
