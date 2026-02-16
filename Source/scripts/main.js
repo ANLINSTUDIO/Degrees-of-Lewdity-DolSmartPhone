@@ -18,7 +18,7 @@ $(document).on(":passagerender", function (ev) {
 });
 $(document).one(":passageinit", function () {
     PhoneMod.events_on_macro.forEach(function(event) {
-        PhoneMod.OnMacro(event.macro, event.function)
+        PhoneMod.OnMacro(event.macro, PhoneMod[event.func])
     })
 });
 PhoneMod.eventsLoad = function() {

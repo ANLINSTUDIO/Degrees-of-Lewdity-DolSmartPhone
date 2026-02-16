@@ -1,6 +1,6 @@
 {
     "name": "[SmartPhone Alpha] 万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.2.1",
+    "version": "Alpha.2.6",
     "styleFileList": ["style.css"],
     "scriptFileList": ["scripts/vars.js", "scripts/api.js", "scripts/main.js"],
     "tweeFileList": ["twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"],
@@ -26,14 +26,25 @@
             "modVersion": "1.0.0",
             "params": [
                 {
-                "passage": "Characteristics",
-                "findString": "<<set _skulduggeryConfig =",
-                "replace": "<<set _photographyConfig =\t{ name : \"Photography\", cn_name:\"摄像\", displayType : \"grade\",\tcurrentValue : $Phone.photography,\t\tmodifier: 100, modTypes: { good: [], bad: [] },\t\tstates : _detailedSkillGrades}>>\n<<set _skulduggeryConfig ="
+                    "passage": "Characteristics",
+                    "findString": "<<set _skulduggeryConfig =",
+                    "replace": "<<set _photographyConfig =\t{ name : \"Photography\", cn_name:\"摄像\", displayType : \"grade\",\tcurrentValue : $Phone.photography,\t\tmodifier: 100, modTypes: { good: [], bad: [] },\t\tstates : _detailedSkillGrades}>>\n<<set _skulduggeryConfig ="
                 },
                 {
-                "passage": "Characteristics",
-                "findString": "<<characteristic-box _housekeepingConfig>>",
-                "replace": "<<characteristic-box _housekeepingConfig>>\n<<characteristic-box _photographyConfig>>"
+                    "passage": "Characteristics",
+                    "findString": "<<characteristic-box _housekeepingConfig>>",
+                    "replace": "<<characteristic-box _housekeepingConfig>>\n<<characteristic-box _photographyConfig>>"
+                },
+                {
+                    "passage": "Widgets Journal",
+                    "findString": "<<if _carrying or _hasProduce>>",
+                    "replace": "<<if _carrying or _hasProduce or $Phone.Owned>>",
+                    "all": true
+                },
+                {
+                    "passage": "Clothing Shop v2 Widgets",
+                    "findString": "<<elseif (Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride>>",
+                    "replace": "<<elseif $location isnot \"phone\" and ((Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride)>>"
                 }
             ]
         }

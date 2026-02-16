@@ -26,8 +26,8 @@ PhoneMod.events = [
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
 ];
 PhoneMod.events_on_macro = [
-    {macro: "journal", function: PhoneMod.ShowPhoneJournal},
-    {macro: "orgasm", function: PhoneMod.EnableToTakePhoto},
+    {macro: "journal", func: "ShowPhoneJournal"},
+    {macro: "orgasm", func: "EnableToTakePhoto"},
 ]
 PhoneMod.phoneConditionLevels = [
     { threshold: 0.8, text: "崭新出厂", color: "#4CAF50" },
