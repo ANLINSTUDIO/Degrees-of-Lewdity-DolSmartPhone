@@ -22,38 +22,56 @@ $(document).one(":passageinit", function () {
     })
 });
 PhoneMod.eventsLoad = function() {
-  PhoneMod.events.forEach(function(event) {
-    if (V.passage === event.passage) {
-      if (event.chance === undefined || Math.random() < event.chance) {
-        const $target = $(PhoneMod.ev.content).find(`a[data-passage="${event.target}"]`);
-        if ($target.length > 0) {
+    PhoneMod.events.forEach(function(event) {
+        if (V.passage === event.passage) {
+        if (event.chance === undefined || Math.random() < event.chance) {
             if (event.goto === true) {
-              new Wikifier(null, `<<goto "${event.event}">>`);
+                new Wikifier(null, `<<goto "${event.event}">>`);
             } else {
-              const Div = document.createElement("div");
-              Div.style.display = "inline";
-              new Wikifier(Div, `<<include "${event.event}">>`);
-              if (event.position === "replace") {
-                $target.first().replaceWith(Div);
-              } else if (event.position === "before") {
-                $target.first().before(Div);
-              } else {
-                $target.first().after(Div);
-              }
+                PhoneMod.eventsLoadInclude_(event.target, event.event, event.position, event.offset)
+            }
+            if (event.replace_target) {
+                PhoneMod.eventsLoadInclude_(event.replace_target, event.replace_event, "replace", 0)
+            }
+    }}})
+}
+PhoneMod.eventsLoadInclude_ = function(data_passage, include, position, offset) {
+    const $target = $(PhoneMod.ev.content).find(`a[data-passage="${data_passage}"]`);
+    if ($target.length > 0) {
+        const Div = document.createElement("div");
+        Div.style.display = "inline";
+        new Wikifier(Div, `<<include "${include}">>`);
+        if (position === "replace") {
+            $target.first().replaceWith(Div);
+        } else{
+            PhoneMod.eventsLoadInsert_($target, Div, position, offset ?? 0)
+        }
+    }
+}
+PhoneMod.eventsLoadInsert_ = function(target, insert_target, position, offset) {
+    let insertTarget = target.first();
+    if (position === "before") {
+        // 遍历前两个兄弟节点
+        for (let i = 0; i < offset; i++) {
+            if (insertTarget.prev().length > 0) {
+                insertTarget = insertTarget.prev();
+            } else {
+                break; // 如果没有足够的前一个兄弟节点，则跳出循环
             }
         }
-        if (event.replace_target) {
-          const $replaceTarget = $(PhoneMod.ev.content).find(`a[data-passage="${event.replace_target}"]`);
-          if ($replaceTarget.length > 0) {
-            const Div = document.createElement("div");
-            Div.style.display = "inline";
-            new Wikifier(Div, `<<include "${event.replace_event}">>`);
-            $replaceTarget.first().replaceWith(Div);
-          }
+        insertTarget.before(insert_target);
+    } else if (position === "after") {
+        // 遍历后两个兄弟节点
+        for (let i = 0; i < offset; i++) {
+            if (insertTarget.next().length > 0) {
+                insertTarget = insertTarget.next();
+            } else {
+                break; // 如果没有足够的后一个兄弟节点，则跳出循环
+            }
         }
-  }}})
+        insertTarget.after(insert_target);
+    }
 }
-
 
 
 // =================== 操控手机 =====================
@@ -176,7 +194,7 @@ PhoneMod.DebugShowMsg = function(content) {
     if (phoneDebugUI) {
         const element = document.createElement("div")
         element.class = "red"
-        element.innerHTML = content + "<br><br>"
+        element.innerHTML = content + "<br>"
         phoneDebugUI.insertAdjacentElement('afterbegin', element);
         phoneDebugUI.scrollTo(0, 0)
     }
@@ -504,9 +522,6 @@ PhoneMod.PhotoDraw = function() {
     // 获取上下文
     const charCtx = charCanvas.getContext('2d');
     const bgCtx = bgCanvas.getContext('2d');
-
-    // 背景模糊
-    bgCtx.filter = "blur(10px)";
     
     // 计算基础偏移
     const baseY = charSourceCanvas.height * 0.7;
@@ -865,7 +880,7 @@ PhoneMod.ShowPhoneJournal = function() {  // 日志中显示手机信息
                         <</if>>
                     <</if>>
                     一部
-                    <span style='color: ${info.color}'>${info.text}</span>
+                    <span class='${info.color}'>${info.text}</span>
                     的手机，官网售价为
                     <span class='gold'>£${Math.round(phone.price)}</span>。
                     <<if ${phone.stolen}>>

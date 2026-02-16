@@ -17,7 +17,6 @@
     right: 15px;
     background-color: #fff;
 }
-
 #smart-phone-debug-container {
     position: fixed;
     padding: 10px;
@@ -32,6 +31,7 @@
     overflow-y: auto;
     overflow-wrap: anywhere;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    z-index: 998;
 }
 
 

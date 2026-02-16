@@ -513,7 +513,7 @@
 :: ==========AskTel==========
 :: Landry AskTel Link
 <<if !PhoneMod.isContactKnown("兰德里")>>
-    <br><br><<icon "socialise_question.png">> <<link [[询问对方电话号码|Landry AskTel]]>><</link>>
+    <<icon "socialise_question.png">> <<link [[询问对方电话号码|Landry AskTel]]>><</link>><br><br>
 <</if>>
 
 :: Landry AskTel

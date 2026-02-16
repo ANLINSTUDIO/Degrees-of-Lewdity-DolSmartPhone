@@ -22,7 +22,7 @@ PhoneMod.events = [
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
     {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
 
-    {passage: "Pub Landry", target: "Pub Sell", event: "Landry AskTel Link"},
+    {passage: "Pub Landry", target: "Pub", event: "Landry AskTel Link", position: "before", offset: 1},
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
 ];
 PhoneMod.events_on_macro = [
@@ -30,11 +30,11 @@ PhoneMod.events_on_macro = [
     {macro: "orgasm", func: "EnableToTakePhoto"},
 ]
 PhoneMod.phoneConditionLevels = [
-    { threshold: 0.8, text: "崭新出厂", color: "#4CAF50" },
-    { threshold: 0.6, text: "略有磨损", color: "#8BC34A" },
-    { threshold: 0.4, text: " 明显划痕", color: "#FFC107" },
-    { threshold: 0.2, text: "严重磨损", color: "#FF9800" },
-    { threshold: 0, text: "残破不堪", color: "#F44336" }
+    { threshold: 0.8, text: "崭新出厂", color: "green" },
+    { threshold: 0.6, text: "略有磨损", color: "teal" },
+    { threshold: 0.4, text: " 明显划痕", color: "blue" },
+    { threshold: 0.2, text: "严重磨损", color: "purple" },
+    { threshold: 0, text: "残破不堪", color: "pink" }
 ];
 PhoneMod.Contacts = [
     {name: "兰德里", call: "Phone Call Landry"},

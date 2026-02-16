@@ -143,6 +143,11 @@
             <canvas id="char_canvas" style="position: absolute;"></canvas>
             <canvas id="result_canvas" style="position: absolute;"></canvas>
         </div>
+        <div id="photo_ui" style="display: flex; justify-content: space-evenly;"> 
+            <div id="photo_take_button_outline" style="position: absolute; bottom: 50px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #d8d8d8;; border-radius: 50%;">
+                <div id="photo_take_button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background-color: #d8d8d8; border-radius: 50%;"> </div>
+            </div>
+        </div>
     </div>
 <</widget>>
 
@@ -293,7 +298,7 @@
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>><br>
     <h3 class="teal">变量 V.Phone</h3>
     <<for _key, _value range $Phone>>
-        <<if ["SettingsWallpaperPath"].contains(_key)>>
+        <<if ["SettingsWallpaperPath", "ReturnWorn"].contains(_key)>>
             <<print "<b class='teal'>"+_key+"</b> <span class='green'>已设置</span>">><br>
         <<else>>
             <<print "<b class='teal'>"+_key+"</b> "+JSON.stringify(_value)>><br>
