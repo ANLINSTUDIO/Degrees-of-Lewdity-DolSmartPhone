@@ -61,8 +61,37 @@ PhoneMod.addStoryCaptionContent = function(content) {
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 PhoneMod.getIsLatestVersion = function() {
-    console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`)
-    return PhoneMod.latestVersion === null || PhoneMod.currentVersion === PhoneMod.latestVersion
+    console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`);
+    const isLatestVersion = PhoneMod.currentVersion === PhoneMod.latestVersion;
+    if (!isLatestVersion) PhoneMod.getNotice();
+    return PhoneMod.latestVersion === null || isLatestVersion
+};
+PhoneMod.getNotice = async function() {
+    console.log(`| [SmartPhone] 正在取求公告`)
+    try {
+        const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice`, {
+            mode: 'cors',  // 明确指定 cors 模式
+            credentials: 'omit'  // 不发送凭据
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.error) {
+            console.error('| [SmartPhone] 获取公告失败:', data.error);
+        } else {
+            PhoneMod.notice = data.value;
+            console.log(`| [SmartPhone] 更新公告 ${PhoneMod.notice}`)
+            if (V.passage === "Start") {
+                const phone_notice = document.getElementById("phone-notice")
+                if (phone_notice) {
+                    phone_notice.innerText = PhoneMod.notice
+                }
+            }
+        }
+    } catch (error) {
+        console.error('| [SmartPhone] 请求公告出错:', error);
+    }
 };
 PhoneMod.getAbsTime = function() {  // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
     return {

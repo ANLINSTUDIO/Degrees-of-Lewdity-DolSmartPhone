@@ -37,7 +37,7 @@
 
 
 /* 手机容器：固定在右下角 */
-#smart-phone-container {
+.phone-main {
     position: fixed;
     right: 20px;
     bottom: 20px;
@@ -48,29 +48,26 @@
     border-radius: 10px;
     color: white;
     font-size: 12px;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease, background-color 0.4s ease;
     overflow: hidden;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
-
 /* 亮屏状态：变大 */
-#smart-phone-container.phone-open {
+.phone-main.phone-open {
     width: 300px;
     height: 500px;
     background-color: #1a1a1a;
     color: #fff;
     cursor: default;
 }
-
 /* 禁用状态 */
-#smart-phone-container.phone-disabled {
+.phone-main.phone-disabled {
     transform: translateY(40px);
     background-color: #161616;
     color: #939393;
     cursor: not-allowed;
 }
-
 /* 息屏内容区 */
 .phone-screen-locked {
     display: flex;
@@ -80,7 +77,6 @@
     flex-direction: column;
     pointer-events: none; /* 让点击穿透到容器 */
 }
-
 /* 亮屏内容区 */
 .phone-screen-unlocked {
     display: none;
@@ -88,29 +84,44 @@
     height: calc(100% - 20px);
     flex-direction: column;
 }
-
 /* 状态切换辅助类 */
-#smart-phone-container.phone-open .phone-screen-locked {
+.phone-main.phone-open .phone-screen-locked {
     display: none;
 }
-#smart-phone-container.phone-open .phone-screen-unlocked {
+.phone-main.phone-open .phone-screen-unlocked {
     display: flex;
 }
-
-/* 简单的按钮样式 */
-.phone-btn {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    width: 100%;
+/* 手机APP切换动画 */
+.phone-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+    transition: all 0.4s ease;
+    opacity: 0;
+    scale: 0;
+    transform: translateY(200px);
 }
-.phone-btn:hover { background: #555; }
-
+.phone-content.phone-content-open {
+    opacity: 1;
+    scale: initial;
+    transform: translateY(0);
+}
+.phone-content.phone-content-desktop {
+    background-color: transparent;
+    transition: none;
+    scale: unset;
+    transform: unset;
+}
+#smart-phone-container-old {
+    transition: none;
+    background-color: transparent;
+}
+#smart-phone-container-old > .phone-screen-unlocked > * {
+    visibility: hidden;
+}
+#smart-phone-container-old > .phone-screen-unlocked > .phone-content {
+    visibility: visible;
+}
 /* 顶部状态栏 */
 .phone-status-bar {
     background: #1a1a1a78;
@@ -121,18 +132,6 @@
     backdrop-filter: blur(10px);
     border-radius: 10px;
 }
-
-.phone-tool-bar {
-    background: #1a1a1a78;
-    color: white;
-    padding: 2px 5px;
-    font-size: 12px;
-    display: flex;
-    justify-content: space-evenly;
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-}
-
 #battery {
     display: flex;
     justify-content: center;
@@ -154,14 +153,24 @@
     font-weight: bold;
     margin-right: 4px;
 }
-
+/* 底部状态栏 */
+.phone-tool-bar {
+    background: #1a1a1a78;
+    color: white;
+    padding: 2px 5px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-evenly;
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+}
+/* 桌面 */
 .phone-desktop {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     padding: 20px;
 }
-
 #phone-wallpaper {
     position: absolute; 
     top: 0; 
@@ -172,7 +181,6 @@
     z-index: -2;
     -webkit-user-drag: none;
 }
-
 #phone-wallpaper-cover {
     position: absolute; 
     top: 0; 
@@ -182,20 +190,13 @@
     object-fit: cover; 
     z-index: -1;
 }
-
 #phone-wallpaper-cover.blur {
     backdrop-filter: blur(2px);
 }
-
 #phone-wallpaper-cover.black {
     background: #1a1a1a78;
 }
-
-.phone-content {
-    flex-grow: 1;
-    overflow-y: auto;
-}
-
+/* 桌面APP图标 */
 .phone-app-icon {
     width: 60px;
     height: 60px;
@@ -209,7 +210,6 @@
     cursor: pointer;
     box-shadow: 6px 6px 4px rgb(0 0 0 / 78%);
 }
-
 .phone-app-overlay {
     position: absolute;
     top: 40px;
@@ -221,6 +221,20 @@
     padding: 10px;
     border-radius: 10px;
 }
+/* 简单的按钮样式 */
+.phone-btn {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+.phone-btn:hover { background: #555; }
+
 
 
 /*==================== 闹钟实现 ====================*/
@@ -291,15 +305,15 @@
     padding: 20px;
     border: 5px solid #444;
     border-radius: 10px;
-    width: 400px;
-    height: 700px;
+    width: calc(500px * 0.8);
+    aspect-ratio: 9 / 16;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
 }
 @media (max-width: 500px) {
     .phone-call-overlay {
-        width: 300px;
+        width: 80%;
     }
 }
 

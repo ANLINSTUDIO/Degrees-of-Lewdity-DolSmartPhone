@@ -1,7 +1,7 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 
 window.PhoneMod = window.PhoneMod || {};
-PhoneMod.currentVersion = "v.alpha.2.86"
+PhoneMod.currentVersion = "v.alpha.2.91"
 PhoneMod.latestVersion = null
 PhoneMod.latestVersionDesc = null
 
@@ -20,11 +20,8 @@ async function getLastedVersion() {
           console.error('| [SmartPhone] 获取最新版本失败:', data.error);
       } else {
           PhoneMod.latestVersion = data.value;
-          console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`)
           if (V.passage === "Start") {
-              if (!PhoneMod.getIsLatestVersion()) {
-                  PhoneMod.PhoneUIInit()
-              }
+              PhoneMod.PhoneUIInit()
           }
       }
   } catch (error) {

@@ -7,6 +7,7 @@ $(document).on(":passagerender", function (ev) {
     V.Phone.photography = V.Phone.photography || 0
     V.Phone.enableToDo = null
     PhoneMod.ev = ev
+    V.Phone.CurrentApp = V.Phone.CurrentApp || "main"
 
     const phoneDebugSwitchUI = document.createElement('div');
     phoneDebugSwitchUI.id = "smartphone_debug_switch"
@@ -15,6 +16,7 @@ $(document).on(":passagerender", function (ev) {
 
     PhoneMod.PhoneUIInit();
     PhoneMod.eventsLoad();
+    PhoneMod.appInit();
 });
 $(document).one(":passageinit", function () {
     PhoneMod.events_on_macro.forEach(function(event) {
@@ -107,14 +109,32 @@ PhoneMod.togglePhone = function(force=null) {
             }
         }
     }
+
+    if (phone.classList.contains("phone-open")) {
+        // 防止空手机
+        const phoneContent = document.getElementById("phone-content")
+        if (phoneContent) {
+            if (!phoneContent.classList.contains("phone-content-open")) {
+                PhoneMod.PhoneSafeOpen()
+            }
+        }
+        // 初始化应用
+        PhoneMod.appInit()
+    }
 };
 PhoneMod.toggleApp = function(AppName, replay=true) {
     if (!PhoneMod.PhoneWaer(0.01)) return;
-
     V.Phone.CurrentApp = AppName;
     if (replay) PhoneMod.PhoneUIInit(true);
-
-    if (AppName === "photo") PhoneMod.initPhoto();
+    PhoneMod.appInit()
+};
+PhoneMod.appInit = function(whileRenderPassage=false){
+    const AppName = V.Phone.CurrentApp
+    if (whileRenderPassage) {
+        if (AppName === "alarm") PhoneMod.initAlarm();
+    } else {
+        if (AppName === "photo") PhoneMod.initPhoto();
+    }
 };
 $(document).on("keyup", function(event) { // 监听 Control 键
     if (event.key === "Control") {
@@ -147,6 +167,7 @@ PhoneMod.PhoneUIInit = function (open=false) {
     } else {
         PhoneMod.checkAlarms();
         new Wikifier(phoneUI, "<<smartphone_render>>");
+        PhoneMod.PhoneSafeOpen();
         PhoneMod.checkPhoneDisabled();
     }
 
@@ -154,10 +175,41 @@ PhoneMod.PhoneUIInit = function (open=false) {
         PhoneMod.togglePhone(true)
     }
 };
+PhoneMod.PhoneSafeOpen = function () {
+    const phone = document.getElementById("smart-phone-container");
+    const phoneContent = document.getElementById("phone-content")
+    if (phoneContent) {
+        if (V.Phone.CurrentApp !== "main") {
+            phone.style.transition = "all 0.3s ease, background-color 0s ease";
+            phone.style.backgroundColor = "transparent";
+        }
+        setTimeout(() => {
+            if (V.Phone.CurrentApp === "main") {
+                phoneContent.classList.add("phone-content-desktop")
+            } else {
+                phone.style.transition = "";
+                phone.style.backgroundColor = "";
+            }
+            phoneContent.classList.add("phone-content-open")
+        }, 1)
+    }
+};
 PhoneMod.PhoneSafeClose = function () {
     const phoneUIOld = document.getElementById("phone-wrapper")
+    const phoneContainerOld = document.getElementById("smart-phone-container")
+    const phoneContentOld = document.getElementById("phone-content")
     if (phoneUIOld) {
-        phoneUIOld.remove()
+        phoneContentOld.id = "phone-content-old"
+        if (V.Phone.CurrentApp === "main") {
+            phoneContainerOld.style.zIndex = 1
+            phoneContentOld.classList.remove("phone-content-open")
+            phoneContainerOld.id = "smart-phone-container-old"
+        } else {
+            phoneContainerOld.id = "smart-phone-container-old-desktop"
+        }
+        setTimeout(() => {
+            phoneUIOld.remove()
+        }, 400)
     }
 };
 PhoneMod.PhoneWaer = function(value) {
@@ -505,8 +557,6 @@ PhoneMod.addContact = function(name) {
     }
 };
 PhoneMod.getContact = function(name) {
-    console.log(name);
-    
     if (!PhoneMod.isContactKnown(name)) return null;
     return PhoneMod.Contacts.find(c => c.name === name);
 };
@@ -516,7 +566,7 @@ PhoneMod.initPhoto = function() {
     
     setTimeout(() => {
         PhoneMod.PhotoDraw()
-    }, 10)
+    }, 500)
 }
 PhoneMod.PhotoDraw = function() {
     // 获取原始画布
@@ -561,9 +611,13 @@ PhoneMod.PhotoDraw = function() {
 
     // 设置图片高度
     const resultCanvas = document.getElementById('result_canvas');
+    const resultCtx = resultCanvas.getContext('2d');
+    resultCanvas.width = charCanvas.width;
     resultCanvas.height = bgSourceCanvas.height * scaleFactor + bgY
+    resultCtx.fillStyle = "white";
+    resultCtx.fillRect(0, 0, resultCanvas.width, resultCanvas.height)
 
-    PhoneMod.PhotoApplyFilter();
+    setTimeout(PhoneMod.PhotoApplyFilter, 100)
 }
 PhoneMod.PhotoApplyFilter = function(filter="normal") {
     // 获取目标画布
