@@ -78,15 +78,17 @@ PhoneMod.eventsLoadInsert_ = function(target, insert_target, position, offset) {
 
 // =================== 操控手机 =====================
 PhoneMod.checkPhoneDisabled = function() {
-  const phone = document.getElementById("smart-phone-container");
-  if (!phone) return;
-  if (PhoneMod.shouldUsePhone()) {
-    phone.classList.remove("phone-disabled");
-  } else {
-    phone.classList.add("phone-disabled");
-  }
+    setTimeout(() => {
+        const phone = document.getElementById("smart-phone-container");
+        if (!phone) return;
+        if (PhoneMod.shouldUsePhone()) {
+            phone.classList.remove("phone-disabled");
+        } else {
+            phone.classList.add("phone-disabled");
+        }
+    }, 10)
 }
-PhoneMod.togglePhone = function(forceOpen) {
+PhoneMod.togglePhone = function(force=null) {
     const phone = document.getElementById("smart-phone-container");
     if (!phone) return;
     if (V.Phone.enableToDo) {
@@ -94,12 +96,14 @@ PhoneMod.togglePhone = function(forceOpen) {
         V.Phone.enableToDo = null
         enableToDo()
     } else {
-        if (PhoneMod.shouldUsePhone()) {
-            if (forceOpen === true) {
-                phone.classList.add("phone-open");
-            } else {
+        if (force === true) {
+            phone.classList.add("phone-open");
+        }
+        else if (force === false) {
+            phone.classList.remove("phone-open");
+        } else {
+            if (PhoneMod.shouldUsePhone()) {
                 phone.classList.toggle("phone-open");
-                if (V.Phone.AlarmTriggered && !phone.classList.contains("phone-open")) PhoneMod.cancelAlarm();
             }
         }
     }
@@ -141,11 +145,9 @@ PhoneMod.PhoneUIInit = function (open=false) {
             }
         }
     } else {
-        const alarmTriggered = PhoneMod.checkAlarms();
+        PhoneMod.checkAlarms();
         new Wikifier(phoneUI, "<<smartphone_render>>");
-        setTimeout(() => {
-            if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
-        }, 10);
+        PhoneMod.checkPhoneDisabled();
     }
 
     if (open) {
@@ -338,7 +340,7 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
             V.Phone.AlarmCurrent = alarm;
             if (alarm.type === "once") alarm.active = false; // 一次性的关掉
             setTimeout(() => PhoneMod.togglePhone(true), 10);
-            break; // 只触发一个闹钟，优先级按照数组顺序
+            return true
         }
     }
 
@@ -356,9 +358,8 @@ PhoneMod.cancelAlarm = function() { // 关闭闹钟
     V.Phone.AlarmTriggered = false;
     V.Phone.AlarmCurrent = undefined;
 
-    const alarmTriggered = PhoneMod.checkAlarms();
-    if (!alarmTriggered) PhoneMod.checkPhoneDisabled();
-    PhoneMod.PhoneUIInit(true);
+    PhoneMod.togglePhone(false);
+    PhoneMod.PhoneUIInit();
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
     V.Phone.Alarms.pop(index);

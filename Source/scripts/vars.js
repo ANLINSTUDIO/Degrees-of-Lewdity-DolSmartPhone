@@ -1,7 +1,7 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 
 window.PhoneMod = window.PhoneMod || {};
-PhoneMod.currentVersion = "v.alpha.2.8"
+PhoneMod.currentVersion = "v.alpha.2.86"
 PhoneMod.latestVersion = null
 PhoneMod.latestVersionDesc = null
 

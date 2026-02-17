@@ -21,7 +21,7 @@
                 <<else>>
                     <h2 class="pink" style="display: inline-block">
                     <a class="link-external pink" href="https://sb.alseece.top/2?=DoL-SmartPhone" target="_blank">更新到最新版本😘</a>
-                    </h2> 
+                    </h2> <<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>>
                     <<print '<span class="hypno-text hypno">'+PhoneMod.latestVersion+' 贴近你的耳边对你说：“来呀~来呀~”</span>'>>
                     <hr>
                 <</if>>
@@ -73,7 +73,12 @@
                     <span><<print PhoneMod.getTimeString()>></span>
                     <span style="flex-grow: 1;"></span>
                     <<print Weather.toSelectedString(Weather.temperature, 1)>>
-                    <<print Math.round(PhoneMod.getUsingPhone().newness * 100) + "%">>
+                    <div id="battery">
+                        <<set _battery to Math.round(PhoneMod.getUsingPhone().newness * 100)>>
+                        <img id="battery_bg" src="img/ui/phone/battery_bg.png">
+                        <<print '<img id="battery_cover" src="img/ui/phone/battery.png" style="clip-path: inset(0 '+(100 - _battery)+'% 0 0);">'>>
+                        <<print '<span id="battery_value">'+_battery+'</span>'>>
+                    </div>
                 </div>
                 <div class="phone-content">
                     <<if $Phone.CurrentApp is "photo">> <<phone_app_photo>>
@@ -305,7 +310,8 @@
 <<widget "smartphone_debug">> <div id="smart-phone-debug-container">
     <br><br>
     <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
-    <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>><br>
+    <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>>
+    <hr>
     <h3 class="teal">变量 V.Phone</h3>
     <<for _key, _value range $Phone>>
         <<if ["SettingsWallpaperPath", "ReturnWorn"].contains(_key)>>
@@ -314,9 +320,16 @@
             <<print "<b class='teal'>"+_key+"</b> "+JSON.stringify(_value)>><br>
         <</if>>
     <</for>>
+    <hr>
     <h3 class="gold">获取手机</h3>
     <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone(4999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
-    <<link "通过老冯购买手机">><<run PhoneMod.BuySecondPhone(2999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
+    <<link "通过老冯购买手机">><<run PhoneMod.BuySecondPhone(2999)>><<run PhoneMod.toggleDebug(true)>><</link>>
+    <hr>
+    <h3 class="gold">调试对话</h3><span class="red">注意！这可能会破坏你的存档 至少会改变你的位置</span><br>
+    <<link [[进入官方店|Shopping Centre Phone Shop]]>><</link>><br>
+    <<link [[进入地下手机店|Second Phone Shop]]>><</link>><br>
+    <<link [[触发老冯初见面对话|Second Phone Shop Meet Feng First]]>><</link>><br>
+    <br><br>
 </div> <</widget>>
 
 
