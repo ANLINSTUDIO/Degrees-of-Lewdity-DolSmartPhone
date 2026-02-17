@@ -36,6 +36,8 @@ PhoneMod.eventsLoad = function() {
     }}})
 }
 PhoneMod.eventsLoadInclude_ = function(data_passage, include, position, offset) {
+    console.log(data_passage, include, position, offset);
+    
     const $target = $(PhoneMod.ev.content).find(`a[data-passage="${data_passage}"]`);
     if ($target.length > 0) {
         const Div = document.createElement("div");
@@ -60,7 +62,7 @@ PhoneMod.eventsLoadInsert_ = function(target, insert_target, position, offset) {
             }
         }
         insertTarget.before(insert_target);
-    } else if (position === "after") {
+    } else {  //  默认向后 elif (position === "after")
         // 遍历后两个兄弟节点
         for (let i = 0; i < offset; i++) {
             if (insertTarget.next().length > 0) {

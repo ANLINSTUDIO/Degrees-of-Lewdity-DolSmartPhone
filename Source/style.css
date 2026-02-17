@@ -285,6 +285,11 @@
     display: flex;
     flex-direction: column;
 }
+@media (max-width: 500px) {
+    .phone-call-overlay {
+        width: 300px;
+    }
+}
 
 #phone-call-content {
     flex-grow: 1;

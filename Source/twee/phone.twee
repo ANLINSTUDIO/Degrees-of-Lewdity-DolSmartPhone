@@ -73,6 +73,7 @@
                     <span><<print PhoneMod.getTimeString()>></span>
                     <span style="flex-grow: 1;"></span>
                     <<print Weather.toSelectedString(Weather.temperature, 1)>>
+                    <<print Math.round(PhoneMod.getUsingPhone().newness * 100) + "%">>
                 </div>
                 <div class="phone-content">
                     <<if $Phone.CurrentApp is "photo">> <<phone_app_photo>>
