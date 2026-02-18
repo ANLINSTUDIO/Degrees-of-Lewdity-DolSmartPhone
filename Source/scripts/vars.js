@@ -3,35 +3,73 @@ console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 window.PhoneMod = window.PhoneMod || {};
 PhoneMod.currentVersion = "v.alpha.2.91"
 PhoneMod.latestVersion = null
-PhoneMod.latestVersionDesc = null
+PhoneMod.notice = ""
 
 async function getLastedVersion() {
   console.log(`| [SmartPhone] 正在取求最新版本号`)
   try {
-      const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion`, {
-          mode: 'cors',  // 明确指定 cors 模式
-          credentials: 'omit'  // 不发送凭据
-      });
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion`, {
+      mode: 'cors',  // 明确指定 cors 模式
+      credentials: 'omit'  // 不发送凭据
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.error) {
+      console.error('| [SmartPhone] 获取最新版本失败:', data.error);
+    } else {
+      PhoneMod.latestVersion = data.value;
+      if (V.passage === "Start") {
+        PhoneMod.PhoneUIInit()
       }
-      const data = await response.json();
-      if (data.error) {
-          console.error('| [SmartPhone] 获取最新版本失败:', data.error);
-      } else {
-          PhoneMod.latestVersion = data.value;
-          if (V.passage === "Start") {
-              PhoneMod.PhoneUIInit()
-          }
-      }
+    }
   } catch (error) {
-      console.error('| [SmartPhone] 请求最新版本出错:', error);
+    console.error('| [SmartPhone] 请求最新版本出错:', error);
   }
 }
+async function getNotice() {
+  console.log(`| [SmartPhone] 正在取求公告`)
+  try {
+    const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice`, {
+      mode: 'cors',  // 明确指定 cors 模式
+      credentials: 'omit'  // 不发送凭据
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.error) {
+      console.error('| [SmartPhone] 获取公告失败:', data.error);
+    } else {
+      PhoneMod.notice = data.value;
+      console.log(`| [SmartPhone] 更新公告 =====\n${PhoneMod.notice}\n===============`)
+      const observer = new MutationObserver((mutations) => {
+        const phone_notice = document.getElementById("phone-notice");
+        if (phone_notice) {
+          setTimeout(() => {
+            const phone_notice = document.getElementById("phone-notice");
+            phone_notice.innerText = PhoneMod.notice;
+          }, 1000)
+          observer.disconnect(); // 找到后停止观察
+        }
+      });
+
+      // 开始观察整个文档
+      observer.observe(document.body, {
+        childList: true,      // 监听子节点变化
+        subtree: true         // 监听所有后代节点
+      });
+    }
+  } catch (error) {
+    console.error('| [SmartPhone] 请求公告出错:', error);
+  }
+};
 getLastedVersion()
+getNotice()
 
 
-PhoneMod.extraShowPhoneAreas = [
+PhoneMod.extraUsePhoneAreas = [
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops",
   "Shopping Centre Phone Shop", "Second Phone Shop"
 ];
@@ -39,6 +77,9 @@ PhoneMod.extraShowPhoneAreas = [
 PhoneMod.events = [
     {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
     {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
+    {passage: "Elk Street", target: "Nightingale Street", event: "Second Phone Shop Link", position: "before", offset: 4},
+    {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
+    // 盗窃手机
     {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Sneak Phone", chance: 0.1, position: "before"},
     {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
@@ -48,14 +89,13 @@ PhoneMod.events = [
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
     {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-    {passage: "Elk Street", target: "Dilapidated Shop", event: "Second Phone Shop Link"},
-
+    // 询问电话
     {passage: "Pub Landry", target: "Pub", event: "Landry AskTel Link", position: "before", offset: 1},
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
 ];
 PhoneMod.events_on_macro = [
-    {macro: "journal", func: "ShowPhoneJournal"},
-    {macro: "orgasm", func: "EnableToTakePhoto"},
+    {macro: "journal", func: "showPhoneJournal"},
+    {macro: "orgasm", func: "havingOrgasm"},
 ]
 PhoneMod.phoneConditionLevels = [
     { threshold: 0.8, text: "崭新出厂", color: "green" },
@@ -72,6 +112,15 @@ PhoneMod.Contacts = [
     {name: "贝利", call: "Phone Call Bailey"},
     {name: "裁缝", call: "Phone Call Tailor"},
 ];
+PhoneMod.Apps = {
+    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", init: "initPhoto"},
+    contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts"},
+    alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
+    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
+    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
+    shop: {display_name: "网购", icon: "img/misc/icon/shopping_centre.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"]},
+    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote"},
+};
 setup.LocationImages.phone = {
   folder: "phone",
   base: {default: {image: "base.png"}}
@@ -330,4 +379,4 @@ PhoneMod.PhoneGameQuestions = {
       "w": ["夜盲症", "坏血病", "佝偻病", "贫血", "糖尿病", "高血压", "脚气病", "白化病", "色盲", "哮喘"]
     }
   ]
-}
+} 

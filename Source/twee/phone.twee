@@ -17,17 +17,18 @@
         <div class="phone-screen-unlocked" onclick="event.stopPropagation()">
             <div id="phone-content" class="phone-content phone-content-open">
                 <<if PhoneMod.getIsLatestVersion()>>
-                    <h2 class="green" style="display: inline-block">已是最新版本🥳</h2>
-                    <<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>>
+                    <h2 class="green">已是最新版本🥳</h2>
+                    <<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>><br>
+                    <<print '<span id="phone-notice" class="black">'+PhoneMod.notice+'</span>'>>
                 <<else>>
                     <div>
-                        <h2 class="pink" style="margin: auto"><a class="link-external pink" href="https://sb.alseece.top/2?=DoL-SmartPhone" target="_blank">点我更新到最新版本😘</a></h2>
+                        <h2 class="pink"><a class="link-external pink" href="https://sb.alseece.top/2?=DoL-SmartPhone" target="_blank">点我更新到最新版本😘</a></h2>
                         <<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>><br>
                         <<print '<span class="hypno-text hypno">'+PhoneMod.latestVersion+' 贴近你的耳边对你说：“来呀~来呀~”</span>'>><br>
-                        <span id="phone-notice" class="jitter-text jitter-1"></span>
+                        <<print '<span id="phone-notice" class="jitter-text jitter-1">'+PhoneMod.notice+'</span>'>>
                     </div>
-                    <hr>
                 <</if>>
+                <hr>
                 <h1>万能的智能手机 <span class="teal">尝鲜版</span></h1>
                 <h3>你好丫~ 感谢<b style="color: pink;">聪明可爱又大方</b>的你的支持哦</h3>
                 <hr>
@@ -90,40 +91,27 @@
                     <<elseif $Phone.CurrentApp is "settings">> <<phone_app_settings>>
                     <<elseif $Phone.CurrentApp is "game">> <<phone_app_game>>
                     <<elseif $Phone.CurrentApp is "shop">> <<phone_app_shop>>
-                    <<elseif $Phone.CurrentApp is "yebook">> <<phone_app_yebook>>
+                    <<elseif $Phone.CurrentApp is "yenote">> <<phone_app_yenote>>
                     <<else>>
                         <div class="phone-desktop">
                             <<phone_wallpaper>>
-                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('photo')">
-                                <img class="icon" src="img/misc/icon/camera.png">
-                                拍照
-                            </div>
-                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('contacts')">
-                                <img class="icon" src="img/misc/icon/assignment.png">
-                                通讯录
-                            </div>
-                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('alarm')">
-                                <img class="icon" src="img/misc/icon/birdTower/watch.png">
-                                闹钟
-                            </div>
-                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('settings')">
-                                <img class="icon" src="img/misc/icon/furniture/wallpaper_cow_girls.png">
-                                设置
-                            </div>
-                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('game')">
-                                <img class="icon" src="img/misc/icon/robin_controller.png">
-                                游戏
-                            </div>
-                            <<if !["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"].includes($passage)>>
-                                <div class="phone-app-icon" onclick="PhoneMod.toggleApp('shop')">
-                                    <img class="icon" src="img/misc/icon/shopping_centre.png">
-                                    网购
-                                </div>
-                            <</if>>
-                            <div class="phone-app-icon" onclick="PhoneMod.toggleApp('yebook')">
-                                <img class="icon" src="img/misc/icon/library.png">
-                                小黄书
-                            </div>
+                            <<for _app_name, _app range PhoneMod.Apps>>
+                                <<if _app.disable and _app.disable.includes($passage)>>
+                                    <<print `
+                                    <div class="phone-app-icon phone-app-icon-disabled">
+                                        <img class="icon" src=`+_app.icon+`>
+                                        `+_app.display_name+`
+                                    </div>
+                                    `>>
+                                <<else>>
+                                    <<print `
+                                    <div class="phone-app-icon" onclick="PhoneMod.toggleApp('`+_app_name+`')">
+                                        <img class="icon" src=`+_app.icon+`>
+                                        `+_app.display_name+`
+                                    </div>
+                                    `>>
+                                <</if>>
+                            <</for>>
                         </div>
                     <</if>>
                 </div>
@@ -143,29 +131,33 @@
 <</widget>>
 
 <<widget "phone_wallpaper">>
-    <<if $Phone.SettingsWallpaperPath>>
-        <<print `<img id="phone-wallpaper" src="`+$Phone.SettingsWallpaperPath+`">`>>
-        <<if $Phone.SettingsWallpaperBlur>>
+    <<if $Phone.Settings.WallpaperPath>>
+        <<print `<img id="phone-wallpaper" src="`+$Phone.Settings.WallpaperPath+`">`>>
+        <<if $Phone.Settings.WallpaperBlur>>
             <div id="phone-wallpaper-cover" class="blur"></div>
         <</if>>
-        <<if $Phone.SettingsWallpaperBlack>>
+        <<if $Phone.Settings.WallpaperBlack>>
             <div id="phone-wallpaper-cover" class="black"></div>
         <</if>>
     <</if>>
 <</widget>>
 
+
+:: SmartPhoneAppWidgets [widget]
 <<widget "phone_app_photo">>
     <div class="app-content" style="overflow-y: hidden">
         <div id="photo" style="display: flex; justify-content: space-evenly;"> 
             <canvas id="bg_canvas" style="position: absolute; display: none" width="0" height="0"></canvas>
             <canvas id="char_canvas" style="position: absolute; display: none" width="0" height="0"></canvas>
-            <canvas id="result_canvas" style="position: absolute;" width="0" height="0"></canvas>
+            <canvas id="result_canvas" width="0" height="0"></canvas>
         </div>
         <div id="photo_ui" style="display: flex; justify-content: space-evenly;"> 
-            <div id="photo_take_button_outline" style="position: absolute; bottom: 50px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #d8d8d8;; border-radius: 50%;">
-                <div id="photo_take_button" onclick="PhoneMod.PhotoDraw()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background-color: #d8d8d8; border-radius: 50%;"> </div>
+            <div id="photo_take_button_outline" style="position: absolute; bottom: 40px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #fff;; border-radius: 50%;">
+                <div id="photo_take_button" onclick="PhoneMod.PhotoDraw()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background-color: #fff; border-radius: 50%;"> </div>
             </div>
         </div>
+        <hr>
+        <<faceVariantOptions>>
     </div>
 <</widget>>
 
@@ -259,23 +251,32 @@
 <</widget>>
 
 <<widget "phone_app_settings">>
-    <h3>系统设置</h3>
+    <h2>系统设置</h2>
     <hr>
-    <h2>壁纸设置</h2>
-    <<if $Phone.SettingsWallpaperPath eq undefined>>
-        <<set $Phone.SettingsWallpaperBlur to 1>>
-        <<set $Phone.SettingsWallpaperBlack to 1>>
+    <h3>壁纸设置</h3>
+    <<if $Phone.Settings.WallpaperPath eq undefined>>
+        <<set $Phone.Settings.WallpaperBlur to 1>>
+        <<set $Phone.Settings.WallpaperBlack to 1>>
     <</if>>
-    <<if $Phone.SettingsWallpaperPath>>
+    <<if $Phone.Settings.WallpaperPath>>
         壁纸图像  <<link "重置壁纸">><<run PhoneMod.resetWallpaper()>><</link>><br>
-        <<print `<img id="phone-wallpaper-preview" src="`+$Phone.SettingsWallpaperPath+`">`>>
+        <<print `<img id="phone-wallpaper-preview" src="`+$Phone.Settings.WallpaperPath+`">`>>
     <</if>>
     <input type="file" 
         id="phome-wallpaper-upload" 
         accept="image/*,.gif,.jpg,.jpeg,.png,.webp"
         onchange="PhoneMod.handleWallpaperUpload(this)"><br><br>
-    <<print `<input type="checkbox" id="wallpaper-blur" onclick="PhoneMod.toggleBlur(this.checked)" ` + ($Phone.SettingsWallpaperBlur ? "checked" : "") + `> 模糊效果     `>>
-    <<print `<input type="checkbox" id="wallpaper-darken" onclick="PhoneMod.toggleDarken(this.checked)" ` + ($Phone.SettingsWallpaperBlack ? "checked" : "") + `> 加黑效果`>>
+    <<print `<input type="checkbox" onclick="V.Phone.Settings.WallpaperBlur = this.checked" ` + ($Phone.Settings.WallpaperBlur ? "checked" : "") + `> 模糊效果`>>
+    <span style="margin-right: 30px"></span>
+    <<print `<input type="checkbox" onclick="V.Phone.Settings.WallpaperBlack = this.checked" ` + ($Phone.Settings.WallpaperBlack ? "checked" : "") + `> 加黑效果`>>
+    <hr>
+    <h3>使用设置</h3>
+    <<print `<input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInAllAreas = this.checked" ` + ($Phone.Settings.CanUsePhoneInAllAreas ? "checked" : "") + `> 可以在非主要区域中使用`>><br>
+    <span class="black" style="font-size: small">【实验性！】主要区域是指DoL原版指定的最安全的区域，在这些区域，不会拥有<b class="red">存档破坏性事件</b>。而当玩家处于某些非主要区域时，一旦玩家在执行某一项活动中，<b class="teal">使用游戏、网购等跳转页面的功能时</b>，可能会破坏当前上下文，导致你的存档被破坏。<br>
+    当然，开启此选项的风险并不大，但仍然建议谨慎使用。</span><br>
+    <<print `<input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInEvent = this.checked" ` + ($Phone.Settings.CanUsePhoneInEvent ? "checked" : "") + `> 可以在事件中使用`>><br>
+    <span class="black" style="font-size: small">【实验性！】DoL中的事件貌似判定为只要有NPC出现就属于事件，<b class="teal">当你使用游戏、网购等跳转页面的功能时</b>，非常有可能会触发endevent！一旦如此，那么你正在触发的事件的<b class="red">NPC都会被清除</b>，正常剧情也会报错！</span><br>
+
 <</widget>>
 
 <<widget "phone_app_game">>
@@ -301,7 +302,7 @@
     <<goto 'Phone Shop'>>
 <</widget>>
 
-<<widget "phone_app_yebook">>
+<<widget "phone_app_yenote">>
 <</widget>>
 
 

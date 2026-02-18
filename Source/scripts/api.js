@@ -63,35 +63,7 @@ PhoneMod.addStoryCaptionContent = function(content) {
 PhoneMod.getIsLatestVersion = function() {
     console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`);
     const isLatestVersion = PhoneMod.currentVersion === PhoneMod.latestVersion;
-    if (!isLatestVersion) PhoneMod.getNotice();
     return PhoneMod.latestVersion === null || isLatestVersion
-};
-PhoneMod.getNotice = async function() {
-    console.log(`| [SmartPhone] 正在取求公告`)
-    try {
-        const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice`, {
-            mode: 'cors',  // 明确指定 cors 模式
-            credentials: 'omit'  // 不发送凭据
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (data.error) {
-            console.error('| [SmartPhone] 获取公告失败:', data.error);
-        } else {
-            PhoneMod.notice = data.value;
-            console.log(`| [SmartPhone] 更新公告 ${PhoneMod.notice}`)
-            if (V.passage === "Start") {
-                const phone_notice = document.getElementById("phone-notice")
-                if (phone_notice) {
-                    phone_notice.innerText = PhoneMod.notice
-                }
-            }
-        }
-    } catch (error) {
-        console.error('| [SmartPhone] 请求公告出错:', error);
-    }
 };
 PhoneMod.getAbsTime = function() {  // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
     return {
@@ -121,28 +93,27 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
 
     // 检查是否有可用的手机
-    if (!V.Phone.Owned || V.Phone.Owned.length < 1) return false;  // 没有手机，不显示
+    if (V.Phone.Owned) {
+        V.Phone.Owned.forEach(phone => {
+            if (phone.usable) return true;
+        });
+    }
 
-    return true;
+    return false;
 };
 PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
-    if (V.Phone.enableToDo) return true;
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
-    if (V.event) return false;  // 活动中不可以操控手机
+    if (!V.Phone.Settings.CanUsePhoneInEvent && V.event) return false;  // 活动中不可以操控手机
     if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
-    let extraShowPhoneAreas = PhoneMod.extraShowPhoneAreas.slice();
+    let extraShowPhoneAreas = PhoneMod.extraUsePhoneAreas.slice();
     extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
-    if (!extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
+    if (!V.Phone.Settings.CanUsePhoneInAllAreas && !extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
 
     if (V.Phone.Using) return true;  // 检查是否有可用的手机
     return false;
 };
-PhoneMod.setEnableToDo = function(to_do_function) {
-    V.Phone.enableToDo = to_do_function;
-    PhoneMod.checkPhoneDisabled()
-}
 PhoneMod.PhoneTo =  function() {
     if (!V.Phone.ReturnPassage) {
         V.Phone.ReturnPassage = V.passage;
@@ -184,6 +155,7 @@ PhoneMod.getPhoneConditionInfo = function(condition) {
     };
 }
 
+// ==================== 下面是关于玩家的工具函数 ====================
 PhoneMod.AddClothToPlayer = function(cloth, color="black") {
     const item = setup.clothes.face.find(item => item.name === cloth);
     if (item) {
@@ -199,7 +171,9 @@ PhoneMod.AddClothToPlayer = function(cloth, color="black") {
         }
     }
 }
-
+PhoneMod.havingOrgasm = function() {
+    V.Phone.havingOrgasm = true
+}
 PhoneMod.shuffle = function(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));

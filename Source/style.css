@@ -36,6 +36,9 @@
 
 
 
+#phone-wrapper * {
+    -webkit-tap-highlight-color: transparent;
+}
 /* 手机容器：固定在右下角 */
 .phone-main {
     position: fixed;
@@ -208,7 +211,13 @@
     align-items: center;
     font-size: 10px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
     box-shadow: 6px 6px 4px rgb(0 0 0 / 78%);
+}
+.phone-app-icon.phone-app-icon-disabled {
+    background: #4e4e4e;
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 .phone-app-overlay {
     position: absolute;

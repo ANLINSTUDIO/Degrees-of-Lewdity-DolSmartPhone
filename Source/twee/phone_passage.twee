@@ -537,3 +537,32 @@
 <<run PhoneMod.addContact("裁缝")>><br><br>
 <span class="teal">你现在可以在  手机 | 联系人  找到「裁缝」</span><br><br>
 <<link [[继续|Tailor Shop]]>><</link>>
+
+
+
+:: ===========LIVE===========
+:: Live Bedroom Link
+<br><br>
+一个看起来还算干净的角落，从这里正好可以看到你的床。<br>
+<<if PhoneMod.getUsingPhone()>>
+    <<icon "phone/live.png">><<link [[直播|Live Bedroom]]>><</link>>
+<<else>>
+    <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
+<</if>>
+
+:: Live Bedroom
+正在开发！敬请期待！
+<!-- <<effects>>
+<<if $masturbationstart is 1>>
+	/* clear soap prop and any reequipped handheld items */
+	<<handheldon>><<handheldstrip>>
+	<<set $masturbationstart to 0>>
+	<<set $masturbationstat += 1>>
+	<<masturbationstart>>
+<</if>>
+<<masturbationeffects>>
+<<masturbationactions>>
+<<masturbationControls>> -->
+
+:: Live Bedroom Finish
+<<link [[继续|Bedroom]]>><</link>>
