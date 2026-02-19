@@ -44,8 +44,7 @@
             </div>
             <div class="phone-tool-bar">
                 <span onclick="PhoneMod.togglePhone()" style="cursor:pointer">
-                    <img class="icon" src="img/misc/icon/padlock.png">
-                    锁屏
+                    <img class="toolbar-icon" src="img/ui/phone/lock.png">
                 </span>
             </div>
         </div>
@@ -117,12 +116,10 @@
                 </div>
                 <div class="phone-tool-bar">
                     <span onclick="PhoneMod.toggleApp('main')" style="cursor:pointer">
-                        <img class="icon" src="img/misc/icon/town_hall.png">
-                        主页
+                        <img class="toolbar-icon" src="img/ui/phone/home.png">
                     </span>
                     <span onclick="PhoneMod.togglePhone()" style="cursor:pointer">
-                        <img class="icon" src="img/misc/icon/padlock.png">
-                        锁屏
+                        <img class="toolbar-icon" src="img/ui/phone/lock.png">
                     </span>
                 </div>
             <</if>>

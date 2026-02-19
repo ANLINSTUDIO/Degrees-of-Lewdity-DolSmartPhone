@@ -1,7 +1,7 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 
 window.PhoneMod = window.PhoneMod || {};
-PhoneMod.currentVersion = "v.alpha.2.96"
+PhoneMod.currentVersion = "v.alpha.2.97"
 PhoneMod.latestVersion = null
 PhoneMod.notice = ""
 
@@ -80,7 +80,7 @@ PhoneMod.events = [
     {passage: "Elk Street", target: "Nightingale Street", event: "Second Phone Shop Link", position: "before", offset: 4},
     {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
     // 盗窃手机
-    {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Sneak Phone", chance: 0.1, position: "before"},
+    {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Steal Phone", chance: 0.1, position: "before"},
     {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
     {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
@@ -89,6 +89,7 @@ PhoneMod.events = [
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
     {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
         replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
+    {passage: "Pub Drink", target: "Pub Seduce", event: "Pub Drink Steal Phone Link", chance: 0.7, position: "before"},
     // 询问电话
     {passage: "Pub Landry", target: "Pub", event: "Landry AskTel Link", position: "before", offset: 1},
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},

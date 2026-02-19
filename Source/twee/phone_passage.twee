@@ -510,11 +510,36 @@
 <<spa_end>>
 
 
-:: School Lockers Sneak Phone
+:: School Lockers Steal Phone
 <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
 <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
 <br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
 <<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
+
+:: Pub Drink Steal Phone Link
+眼前的<<person>>看起来已经醉了，<<he>>的目光几乎全部放在了手上的酒杯上。你注意到<<his>>手边<span class="teal">有一台发着光的手机</span><<icon "phone/phone.png">>，就在靠向你的这边！<br>
+你四周看了看，酒保也没有看向你这边，没有人注意到你！如果处理得当，这台手机就不再属于<<he>>。
+<br><br>
+<<set $skulduggerydifficulty to 500>>
+<<link [[偷走<<his>>的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
+
+:: Pub Drink Steal Phone
+<<set $skulduggerydifficulty to 500>>
+<<skulduggerycheck>>
+<<pass 5>>
+<<if $skulduggerysuccess is 1>>
+    <span class="green">随后你泰然自若地趁<<he>>不注意，迅速抽出了手机</span> 并且将它塞进你的口袋。
+	<<crimeUp 200 "thievery">>
+    <<run PhoneMod.StolePhone()>><br><br>
+    <<skulduggeryuse>>
+    <<link [[若无其事地离开|Pub]]>><<endevent>><</link>>
+<<else>>
+    正当你准备趁<<he>>不注意抽出手机时，
+    <span class="red"><<Him>>突然看向你</span>，你只能假装抬手点一杯酒。| <span class="gold">-£5</span><<money -500 "pub">><<ggalcohol>><<alcohol 200>><br>
+    并且继续和他有一句没一句地聊天。 <<pass 20>><br><br>
+    <<skulduggeryuse>>
+    <<link [[离开|Pub]]>><<endevent>><</link>>
+<</if>>
 
 
 
@@ -574,3 +599,13 @@
 
 :: Live Bedroom Finish
 <<link [[继续|Bedroom]]>><</link>>
+
+
+:: ==========PHOTO===========
+<<widget "combatphotographyskilluse">>
+	<<if $statFreeze isnot true and $Phone.photography lt 1000>>
+		<span class="gold">你学到了一些摄影上的技巧。</span>
+		<<set $Phone.photography += 3>>
+		<<set $Phone.photography to Math.clamp($Phone.photography, 0, 1000)>>
+	<</if>>
+<</widget>>

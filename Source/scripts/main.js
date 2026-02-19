@@ -119,10 +119,10 @@ PhoneMod.togglePhone = function(force=null) {
         PhoneMod.appInit()
     }
 };
-PhoneMod.toggleApp = function(AppName, replay=true) {
+PhoneMod.toggleApp = function(AppName) {
     if (!PhoneMod.PhoneWaer(0.01)) return;
     V.Phone.CurrentApp = AppName;
-    if (replay) PhoneMod.PhoneUIInit(true);
+    PhoneMod.PhoneUIInit(true);
     PhoneMod.appInit()
 };
 PhoneMod.appInit = function(){
@@ -144,12 +144,12 @@ $(document).on("mousedown", function(event) {
         PhoneMod.togglePhone();
     }
 });
-PhoneMod.PhoneUIInit = function (open=false) {
+PhoneMod.PhoneUIInit = function (open=false, anim=true) {
     if (!PhoneMod.shouldShowPhone()) return;
 
     PhoneMod.changeUsingPhone()
 
-    PhoneMod.PhoneSafeClose();
+    PhoneMod.PhoneSafeClose(anim);
     const phoneUI = document.createElement('div');
     phoneUI.id = "phone-wrapper";
     $(PhoneMod.ev.content).append(phoneUI);
@@ -163,7 +163,7 @@ PhoneMod.PhoneUIInit = function (open=false) {
     } else {
         PhoneMod.checkAlarms();
         new Wikifier(phoneUI, "<<smartphone_render>>");
-        PhoneMod.PhoneSafeOpen();
+        PhoneMod.PhoneSafeOpen(anim);
         PhoneMod.checkPhoneDisabled();
     }
 
@@ -171,15 +171,26 @@ PhoneMod.PhoneUIInit = function (open=false) {
         PhoneMod.togglePhone(true)
     }
 };
-PhoneMod.PhoneSafeOpen = function () {
+PhoneMod.PhoneSafeOpen = function (anim=true) {
     const phone = document.getElementById("smart-phone-container");
     const phoneContent = document.getElementById("phone-content")
     if (phone && phoneContent) {
-        if (V.Phone.CurrentApp !== "main") {
-            phone.style.transition = "all 0.3s ease, background-color 0s ease";
-            phone.style.backgroundColor = "transparent";
-        }
-        setTimeout(() => {
+        if (anim) {
+            if (V.Phone.CurrentApp !== "main") {
+                phone.style.transition = "all 0.3s ease, background-color 0s ease";
+                phone.style.backgroundColor = "transparent";
+            }
+            setTimeout(() => {
+                if (V.Phone.CurrentApp === "main") {
+                    phoneContent.classList.add("phone-content-desktop")
+                } else {
+                    phone.style.transition = "";
+                    phone.style.backgroundColor = "";
+                }
+                phoneContent.classList.add("phone-content-open")
+            }, 1)
+        } else {
+            phone.style.transition = "";
             if (V.Phone.CurrentApp === "main") {
                 phoneContent.classList.add("phone-content-desktop")
             } else {
@@ -187,15 +198,15 @@ PhoneMod.PhoneSafeOpen = function () {
                 phone.style.backgroundColor = "";
             }
             phoneContent.classList.add("phone-content-open")
-        }, 1)
+        }
     }
 };
-PhoneMod.PhoneSafeClose = function () {
+PhoneMod.PhoneSafeClose = function (anim=true) {
     const phoneUIOld = document.getElementById("phone-wrapper")
     const phoneContainerOld = document.getElementById("smart-phone-container")
     const phoneContentOld = document.getElementById("phone-content")
     if (phoneUIOld) {
-        if (phoneContainerOld && phoneContentOld) {
+        if (anim && phoneContainerOld && phoneContentOld) {
             phoneContentOld.id = "phone-content-old"
             if (V.Phone.CurrentApp === "main") {
                 phoneContainerOld.style.zIndex = 1

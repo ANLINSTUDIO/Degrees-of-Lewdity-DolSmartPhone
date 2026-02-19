@@ -230,19 +230,9 @@
     padding: 10px;
     border-radius: 10px;
 }
-/* 简单的按钮样式 */
-.phone-btn {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    width: 100%;
+.toolbar-icon {
+    width: 30px;
 }
-.phone-btn:hover { background: #555; }
 
 
 

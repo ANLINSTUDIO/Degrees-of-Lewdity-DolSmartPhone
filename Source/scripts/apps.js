@@ -24,9 +24,10 @@ PhoneMod.initAlarm = function() {
     }, 10);
 };
 PhoneMod.checkAlarms = function() { // 闹钟检查
-    // 如果闹钟正在触发、未被关闭而切换了Passage，则仍然需要响铃
+    V.Phone.AlarmsToTrigger = V.Phone.AlarmsToTrigger || []
     let shouldTrigger = false;
 
+    // 如果闹钟正在触发、未被关闭而切换了Passage，则仍然需要响铃
     if (V.Phone.AlarmTriggered) {
         setTimeout(() => PhoneMod.togglePhone(true), 10);
     }
@@ -114,14 +115,9 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
         }
         
         if (shouldTrigger) {
-            V.Phone.AlarmTriggered = true;
-            V.Phone.AlarmCurrent = alarm;
-            if (alarm.type === "once") alarm.active = false; // 一次性的关掉
-            setTimeout(() => PhoneMod.togglePhone(true), 10);
-            return true
+            V.Phone.AlarmsToTrigger.push(alarm)
         }
     }
-
     // 更新最后检查时间
     V.Phone.AlarmLastCheckTime = {
         year: now.year,
@@ -130,7 +126,14 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
         hour: now.hour,
         minute: now.minute
     };
-    return shouldTrigger
+    if (V.Phone.AlarmsToTrigger && V.Phone.AlarmsToTrigger.length > 0) {
+        V.Phone.AlarmTriggered = true;
+        let alarm = V.Phone.AlarmsToTrigger.shift();
+        V.Phone.AlarmCurrent = alarm;
+        if (alarm.type === "once") alarm.active = false; // 一次性的关掉
+        setTimeout(() => PhoneMod.togglePhone(true), 10);
+    }
+    return shouldTrigger;
 };
 PhoneMod.cancelAlarm = function() { // 关闭闹钟
     V.Phone.AlarmTriggered = false;
@@ -141,7 +144,7 @@ PhoneMod.cancelAlarm = function() { // 关闭闹钟
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
     V.Phone.Alarms.pop(index);
-    PhoneMod.PhoneUIInit(true);
+    PhoneMod.PhoneUIInit(true, false);
 };
 PhoneMod.toggleAlarmType = function(type) {
     document.getElementById('weekly-input').style.display = 'none';
@@ -207,7 +210,7 @@ PhoneMod.submitAlarm = function() {
             });
         }
     };
-    PhoneMod.toggleApp('alarm')
+    PhoneMod.PhoneUIInit(true, false);
 }
 PhoneMod.getAlarmDesc = function(alarm) {
     if (alarm.type === "once") {
@@ -257,13 +260,13 @@ PhoneMod.handleWallpaperUpload = function(input) {
     reader.onload = function(e) {
         // 保存到SugarCube变量
         V.Phone.Settings.WallpaperPath = e.target.result;
-        PhoneMod.PhoneUIInit(true);
+        PhoneMod.PhoneUIInit(true, false);
     };
     reader.readAsDataURL(file);
 }
 PhoneMod.resetWallpaper = function() {
     V.Phone.Settings.WallpaperPath = undefined
-    PhoneMod.PhoneUIInit(true);
+    PhoneMod.PhoneUIInit(true, false);
 }
 // ==================== 电话实现 ====================
 PhoneMod.isContactKnown = function(name) {
@@ -285,7 +288,7 @@ PhoneMod.initPhoto = function() {
     console.log("| [SmartPhone] 拍照！");
     
     setTimeout(() => {
-        PhoneMod.PhotoDraw()
+        PhoneMod.PhotoDraw();
     }, 500)
 }
 PhoneMod.PhotoDraw = function() {
@@ -430,11 +433,18 @@ PhoneMod.PhotoApplyVignette = function(intensity = 0.3) {  // 应用暗角效果
 };
 PhoneMod.PhotoCheckQuality = function() {
     let allure = 0
-    const arousal_k = V.arousal / V.arousalmax
-    const allure_k = V.allure / 8000
+    const arousal_k = V.arousal / V.arousalmax  // 性奋
+    const allure_k = V.allure / 8000  // 诱惑
+    allure = arousal_k * 0.3 + allure_k * 0.7
 
     let quality = 0
     const photography_k = V.Phone.photography / 1000
+    quality = photography_k * 0.8 + Math.random() * 0.2
+
+    V.Phone.photoallure = allure
+    V.Phone.photoquality = quality
+
+
     `提升诱惑的因素：
     服装：不同相关服装（例如项圈和贞操带增加1000点）会增加+0~1000
     裸装：上装、下装、内衣（上装）、内衣（下装）之中每有一处会增加+1000
