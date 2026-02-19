@@ -93,10 +93,8 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
 
     // 检查是否有可用的手机
-    if (V.Phone.Owned) {
-        V.Phone.Owned.forEach(phone => {
-            if (phone.usable) return true;
-        });
+    if (V.Phone && V.Phone.Owned && Array.isArray(V.Phone.Owned)) {
+        return V.Phone.Owned.some(phone => phone.usable);
     }
 
     return false;

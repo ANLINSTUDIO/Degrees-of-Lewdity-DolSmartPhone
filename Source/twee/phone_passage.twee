@@ -192,8 +192,16 @@
     <<if $Phone.SecondShopKnown>>
         <br><<icon "unused_stonebuilding1.png">><<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
     <<else>>
-        <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+        <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
     <</if>>
+<</if>>
+
+:: Second Phone Shop Unknown
+<<if $Phone.MetFengOnce>>
+    <<include "Second Phone Shop">>
+<<else>>
+    这个神秘的房子就这么屹立在这里。大门紧锁，严丝合缝。你无法透过那扇老旧的木门看到里面的任何东西。<br><br>
+    <<elkicon>><<link [[离开|Elk Street]]>><</link>>
 <</if>>
 
 :: Second Phone Shop Meet Feng First
