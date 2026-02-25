@@ -58,6 +58,13 @@ PhoneMod.addStoryCaptionContent = function(content) {
         document.getElementById("ui-bar").classList.remove("stowed");
     }, 10);
 }
+window.validArray = function(dict) {
+    if (dict instanceof Object) {
+        return dict && Object.keys(dict).length > 0
+    } else {
+        return dict && dict.length > 0
+    }
+}
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 PhoneMod.getIsLatestVersion = function() {
@@ -102,6 +109,7 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
 PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
+    if (V.Phone.PhotoCurrent) return true;  // 
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
     if (!V.Phone.Settings.CanUsePhoneInEvent && V.event) return false;  // 活动中不可以操控手机
     if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
@@ -125,9 +133,9 @@ PhoneMod.PhoneBack =  function() {
         const passage = V.Phone.ReturnPassage
         V.outside = V.Phone.ReturnOutside;
         V.location = V.Phone.ReturnLocation;
-        V.Phone.ReturnPassage = undefined;
-        V.Phone.ReturnOutside = undefined;
-        V.Phone.ReturnLocation = undefined
+        delete V.Phone.ReturnPassage;
+        delete V.Phone.ReturnOutside;
+        delete V.Phone.ReturnLocation;
         return passage
     } 
     return V.safePassage  // 没有passage保存
@@ -152,6 +160,15 @@ PhoneMod.getPhoneConditionInfo = function(condition) {
         percentage: Math.round(condition * 100)
     };
 }
+PhoneMod.setPhoneBeating = function(shouldBeat) {
+    const phoneContainer = document.getElementById('smart-phone-container');
+    
+    if (shouldBeat) {
+        phoneContainer.classList.add('beating');
+    } else {
+        phoneContainer.classList.remove('beating');
+    }
+}
 
 // ==================== 下面是关于玩家的工具函数 ====================
 PhoneMod.AddClothToPlayer = function(cloth, color="black") {
@@ -169,8 +186,11 @@ PhoneMod.AddClothToPlayer = function(cloth, color="black") {
         }
     }
 }
+PhoneMod.getFaceVariant = function(value) {
+    return Object.keys(setup.faceVariantOptions.default).find(key => setup.faceVariantOptions.default[key] === value);
+}
 PhoneMod.havingOrgasm = function() {
-    V.Phone.havingOrgasm = true
+    V.Phone.havingOrgasm = true;
 }
 PhoneMod.shuffle = function(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -178,4 +198,13 @@ PhoneMod.shuffle = function(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+PhoneMod.getStarRating = function(value) {
+    const fullStars = Math.floor(value / 20);
+    const emptyStars = value % 20 > 0 ? 1 : 0;
+    let stars = '★'.repeat(fullStars);
+    if (emptyStars) {
+        stars += '☆';
+    }
+    return stars;
 }

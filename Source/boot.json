@@ -1,9 +1,19 @@
 {
-    "name": "[SmartPhone Alpha] 万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.2.97",
-    "styleFileList": ["style.css"],
-    "scriptFileList": ["scripts/vars.js", "scripts/api.js", "scripts/apps.js", "scripts/main.js"],
-    "tweeFileList": ["twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"],
+    "name": "SmartPhone Alpha",
+    "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
+    "version": "Alpha.3.0",
+    "styleFileList": [
+        "styles/main.css", 
+        "styles/guide.css", 
+
+        "styles/apps/yenote.css",
+        "styles/apps/memo.css"
+    ],
+    "scriptFileList": ["scripts/patch.js", "scripts/guide.js", "scripts/vars.js", "scripts/api.js", "scripts/apps.js", "scripts/main.js"],
+    "tweeFileList": [
+        "twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee", 
+        "twee/apps/yenote.twee"
+    ],
     "imgFileList": [
         "img/misc/icon/phone/phone.png",
         "img/misc/icon/phone/phones.png",
@@ -16,7 +26,42 @@
         "img/ui/phone/battery_bg.png",
         "img/ui/phone/home.png",
         "img/ui/phone/lock.png",
-        "img/misc/icon/phone/app/yenote.png"
+
+        "img/ui/phone/app/avatar.png",
+        "img/ui/phone/app/add.png",
+        "img/ui/phone/app/correct.png",
+        "img/ui/phone/app/photo.png",
+        "img/ui/phone/app/premium.png",
+        
+        "img/misc/icon/phone/app/yenote.png",
+        "img/misc/icon/phone/app/yenote_text.png",
+        "img/misc/icon/phone/app/yenote_text_full.png",
+        "img/misc/icon/phone/app/album.png",
+        "img/misc/icon/phone/app/memo.png",
+        
+        "img/photo/6583d16f-7c3f-4f18-b980-c41f2be40241.png",
+        "img/photo/44a3e666-7253-40a7-911b-8e0da7a65f7c.png",
+        "img/photo/31d15586-9bb9-432e-a336-bb52006f0304.png",
+        "img/photo/07363819-aebb-4e32-be7e-240d665c7731.png",
+        "img/photo/4c5fcd71-92b5-4974-badd-6a1b2de9d8b6.png",
+
+        "img/guide/intro/1.png",
+        "img/guide/photo/1.png",
+        "img/guide/photo/2.png",
+        "img/guide/photo/3.png",
+        "img/guide/photo/4.png",
+        "img/guide/photo/5.png",
+        "img/guide/photo/6.png",
+        "img/guide/yenote/1.png",
+        "img/guide/yenote/2.png",
+        "img/guide/yenote/3.png",
+        "img/guide/yenote/4.png",
+        "img/guide/memo/1.png",
+        "img/guide/contacts/1.png",
+        "img/guide/contacts/2.png",
+        "img/guide/contacts/3.png",
+        "img/guide/contacts/4.png",
+        "img/guide/secondphoneshop/1.png"
     ],
     "additionFile": ["README.md"],
     "addonPlugin": [
@@ -34,7 +79,7 @@
                 {
                     "passage": "Characteristics",
                     "findString": "<<set _skulduggeryConfig =",
-                    "replace": "<<set _photographyConfig =\t{ name : \"Photography\", cn_name:\"摄像\", displayType : \"grade\",\tcurrentValue : $Phone.photography,\t\tmodifier: 100, modTypes: { good: [], bad: [] },\t\tstates : _detailedSkillGrades}>>\n<<set _skulduggeryConfig ="
+                    "replace": "<<set _photographyConfig =\t{ name : \"Photography\", cn_name:\"摄影\", displayType : \"grade\",\tcurrentValue : $Phone.photography,\t\tmodifier: 100, modTypes: { good: [], bad: [] },\t\tstates : _detailedSkillGrades}>>\n<<set _skulduggeryConfig ="
                 },
                 {
                     "passage": "Characteristics",

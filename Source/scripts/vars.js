@@ -1,7 +1,6 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 
-window.PhoneMod = window.PhoneMod || {};
-PhoneMod.currentVersion = "v.alpha.2.97"
+PhoneMod.currentVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.version
 PhoneMod.latestVersion = null
 PhoneMod.notice = ""
 
@@ -69,9 +68,20 @@ getLastedVersion()
 getNotice()
 
 
+PhoneMod.热度衰减系数 = 0.1;  // 衰减系数 0.1 控制热度下降速度（可根据需求调整，如每天衰减一半则系数约为 0.03）。
+PhoneMod.点赞概率百分之 = 50;
+PhoneMod.评论概率百分之 = 5;
+PhoneMod.打赏概率百分之 = 10;
+
+
+PhoneMod.debugBlackVPhone = [
+  "Settings", "ReturnWorn", "Album"
+]
+
+
 PhoneMod.extraUsePhoneAreas = [
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops",
-  "Shopping Centre Phone Shop", "Second Phone Shop"
+  "Shopping Centre Phone Shop", "Second Phone Shop",
 ];
 
 PhoneMod.events = [
@@ -114,62 +124,155 @@ PhoneMod.Contacts = [
     {name: "裁缝", call: "Phone Call Tailor"},
 ];
 PhoneMod.Apps = {
-    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", init: "initPhoto"},
-    contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts"},
     alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
-    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
-    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
+    memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: PhoneMod.Guide.memo},
     shop: {display_name: "网购", icon: "img/misc/icon/shopping_centre.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"]},
-    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote"},
+
+    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: PhoneMod.Guide.photo},
+    album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: PhoneMod.Guide.photo},
+    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", toggle: "toggleYenote", guide: PhoneMod.Guide.yenote},
+
+    contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: PhoneMod.Guide.contacts},
+    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
+    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
 };
 setup.LocationImages.phone = {
   folder: "phone",
   base: {default: {image: "base.png"}}
 }
-PhoneMod.PhoneFilters = {
-    // 基础滤镜
-    normal: 'none',
-    grayscale: 'grayscale(100%)',
+PhoneMod.PhonePhotos = {
+    "6583d16f-7c3f-4f18-b980-c41f2be40241": {
+        msg: "洗澡~洗澡~洗澡澡❤️",
+        taskDesc: "在家里洗澡时<span class='pink'>自慰达到高潮</span>",
+        risk: 1,
+        fames: ["sex"],
+        conditions: {
+          passage: "Bath Masturbation",
+          Phone_havingOrgasm: true
+        },
+        comments: {
+          "洗完澡都是香香的哦": `<<llstress>><<stress -24>>`,
+          "我愿意高价购买这位女士的洗澡水，有人与我竞价吗": "<<ltrauma>><<trauma -6>><<lcontrol>><<control -12>>",
+
+          "洗澡还要发情，你真是没救了": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>"
+        }
+    }, 
+    "44a3e666-7253-40a7-911b-8e0da7a65f7c": {
+        msg: "我又来咯~洗澡~洗澡~我又洗澡澡❤️",
+        taskDesc: "在家里洗澡时<span class='pink'>自慰达到高潮</span>且<span class='teal'>上一次洗澡的文章得到了500的阅读量</span>",
+        risk: 1,
+        fames: ["sex"],
+        conditions: {
+          passage: "Bath Masturbation",
+          Phone_havingOrgasm: true,
+          _: () => {
+            const yenote = V.Phone.Yenotes.find(item => item.id === "6583d16f-7c3f-4f18-b980-c41f2be40241")
+            if (yenote) {
+              return yenote.view >= 500
+            }
+            return false;
+          },
+        },
+        comments: {
+            "出浴美人！爱爱爱❤️": "<<llstress>><<stress -24>>",
+            "上次没抢到，这次的洗澡水一定是我的！": "<<ltrauma>><<trauma -6>><<lcontrol>><<control -12>>",
+
+            "你再发这种骚图我找人弄你": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
+        }
+    },
+    "31d15586-9bb9-432e-a336-bb52006f0304": {
+        msg: "不想上学呀~想上你❤️",
+        taskDesc: "穿着<span class='teal'>校服裙且不穿内裤</span>在<span class='gold'>学校</span>登上天台",
+        risk: 20,
+        fames: ["exhibitionism"],
+        conditions: {
+          passage: "School Roof",
+          _: () => {
+            return V.worn.lower.name === "school skirt" && V.worn.under_lower.name === "naked"
+          },
+        },
+        comments: {
+          "这是我们学校吗？": "<<garousal>><<arousal 100>>",
+          "我出一块赌她没有穿内裤": "<<garousal>><<arousal 100>>",
+          "就是这个校服最对味！": "<<llstress>><<stress -24>>",
+
+          "婊子，不要在我的学校发骚": "<<gstress>><<stress 12>>",
+
+          "逆天文案": "<<garousal>><<arousal 50>>"
+        }
+    },
+    "07363819-aebb-4e32-be7e-240d665c7731": {
+        msg: "哎呀哎呀，要被这么多人一起上了哦~",
+        taskDesc: "在<span class='gold'>妓院</span>跳脱衣舞<span class='teal'>被观众群奸</span>",
+        risk: 100,
+        fames: ["exhibitionism", "prostitution", "sex"],
+        conditions: {
+          passage: "Brothel Dance Rape"
+        },
+        comments: {
+          "我去，这是哪里？我也要去": "<<garousal>><<arousal 100>>",
+          "不得了不得了，你一定是一个很欠肏的婊子": "<<garousal>><<arousal 100>><<gstress>><<stress 6>>"
+        }
+    },
+    "4c5fcd71-92b5-4974-badd-6a1b2de9d8b6": {
+        msg: "wataa",
+        taskDesc: "在<span class='gold'>宅邸街</span>进行<span class='teal'>等级为2的露出活动</span>",
+        risk: 60,
+        fames: ["exhibitionism"],
+        conditions: {
+          passage: "Domus Street",
+          exposed: 2
+        },
+        comments: {
+          "尺度有点大啊！！😱 ": "<<garousal>><<arousal 100>>",
+          "这么刺激吗": "<<garousal>><<arousal 100>><<lstress>><<stress -6>><<gcontrol>><<control 6>>"
+        }
+    },
+}
+PhoneMod.Comments = {
+    "你真美~": `<<lstress>><<stress -12>>`,
+    "每次看到好看的人都觉得和你有点神似，我想这世间但凡称得上美的人，都得有几分像你，不过她们又都只能像你，因为你的可爱她们学也学不来！": `<<llstress>><<stress -24>>`,
+    "你是与众不同的可爱，表里如一的可爱": `<<lstress>><<stress -12>>`,
+    "不知道为啥你要隔三差五发张自拍，要发就天天发，这是在拯救世界O(∩_∩)O": `<<llstress>><<stress -24>>`,
+    "不要以为自己有几分姿色就了不起，像你这种人，我见一个爱一个": `<<lstress>><<stress -6>><<ltrauma>><<trauma -6>>`,
+    "知道恐龙为什么灭绝吗？因为它们的前肢太短，无法为你的美貌鼓掌": `<<lstress>><<stress -6>><<ltrauma>><<trauma -6>>`,
+    "你在我面前永远都闪闪发光，就像整个宇宙的星光都洒在你身上": `<<llstress>><<stress -24>>`,
+    "我常常感到庆幸又快乐，因为我所生活的这个世界上，有像你这么好的人存在着": `<<llstress>><<stress -24>>`,
+    "手如柔荑，肤如凝脂，领如蝤蛴，齿如瓠犀，螓首蛾眉，巧笑倩兮，美目盼兮": `<<llstress>><<stress -24>>`,
+    "你的照片真棒，我不是在夸你的美貌，我只是在提醒你，多发点，我内存够用": `<<llstress>><<stress -24>>`,
+    "你简直是大陆颜值的标杆，即使是后脑勺也是惊人的美貌，连风和阳光都会嫉妒吧": `<<llstress>><<stress -24>>`,
+    "你的眼像是一望无际的星辰，一定是在你出生那天上帝把月亮捏碎了，放进了你的眼里": `<<llstress>><<stress -24>>`,
+    "除了窒息我没有什么要表演的": `<<llstress>><<stress -24>><<ltrauma>><<trauma -6>>`,
+    "看完照片后，我不敢轻易评论，我担心我庸俗不堪的语言会玷污了这世间少有的美感。但我还是评论了，我觉得如果不能在这样有美感的照片后面留下评论，那将会是一生的遗憾": `<<lstress>><<stress -12>>`,
+
+    "这么小的奶子你敢发我都不敢看": `<<insecurity "breasts_small" 1>><<ginsecurity "breasts_small">>`,
+    "你在勾引谁呢，臭婊子": `<<ggstress>><<stress 24>><<gtrauma>><<trauma 12>>`,
+    "粉粉嫩嫩的小骚逼，给我吃两口": "<<gstress>><<stress 12>><<lcontrol>><<control -12>>",
+    "你怎么这么骚啊，贱货": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
+    "别发骚了，等肏呢？": "<<gstress>><<stress 12>><<lcontrol>><<control -12>>",
+
+    "牛逼": "<<garousal>><<arousal 100>>",
+}
+PhoneMod.NicknameGenerator = {
+    // 前缀库
+    prefixes: [
+        '可爱的', '帅气的', '迷人的', '疯狂的', '安静的', '暴躁的',
+        '忧郁的', '开心的', '神秘的', '单纯的', '傲娇的', '温柔的',
+        '冷酷的', '热心的', '迷糊的', '精明的', '天真的', '成熟的'
+    ],
     
-    // === 胶片感滤镜 ===
+    // 后缀库
+    suffixes: [
+        '酱', '君', '桑', '殿下', '大人', '同学', '前辈', '后辈',
+        '喵', '汪', '嗷', '咩', '哞', '咕', '哒', '哟'
+    ],
     
-    // 经典胶片 - 轻微偏黄，高对比
-    classicFilm: 'contrast(1.1) brightness(0.95) saturate(1.1) sepia(0.2)',
+    // 特殊符号
+    symbols: ['☆', '★', '❤', '♡', '✦', '✧', '※', '〆', '°', '‧'],
     
-    // 复古胶片 - 暖色调，轻微褪色
-    retroFilm: 'sepia(0.3) contrast(1.05) brightness(0.98) saturate(0.9)',
-    
-    // 电影感 - 冷色调，高对比
-    cinematic: 'contrast(1.2) brightness(0.95) saturate(1.2) hue-rotate(-5deg)',
-    
-    // 日系清新 - 高亮度，低对比，偏蓝
-    japanese: 'brightness(1.1) contrast(0.9) saturate(0.9) hue-rotate(5deg)',
-    
-    // 拍立得 - 偏暖，轻微褪色
-    polaroid: 'brightness(1.05) contrast(1.1) saturate(0.95) sepia(0.15)',
-    
-    // === 颗粒感滤镜（需要配合Canvas实现真实颗粒）===
-    
-    // 注意：真实的颗粒感需要Canvas像素操作，这里先用CSS模拟
-    grainyLight: 'contrast(1.1) brightness(0.95)', // 基础，颗粒通过JS添加
-    grainyDark: 'contrast(1.2) brightness(0.85)',
-    
-    // === 其他常用滤镜 ===
-    
-    // 黑白胶片
-    bwFilm: 'grayscale(100%) contrast(1.2) brightness(0.95)',
-    
-    // 褪色复古
-    faded: 'sepia(0.2) saturate(0.8) contrast(0.95) brightness(1.05)',
-    
-    // 暖阳滤镜
-    warmSun: 'sepia(0.25) saturate(1.2) brightness(1.05) hue-rotate(5deg)',
-    
-    // 冷色调
-    coolTone: 'hue-rotate(20deg) saturate(1.1) brightness(0.98)',
-    
-    // 高对比黑白
-    highContrastBW: 'grayscale(100%) contrast(1.5) brightness(0.9)',
+    // 数字组合
+    numbers: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
+              '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
 };
 PhoneMod.PhoneGameQuestions = {
   "Maths": [
@@ -380,4 +483,19 @@ PhoneMod.PhoneGameQuestions = {
       "w": ["夜盲症", "坏血病", "佝偻病", "贫血", "糖尿病", "高血压", "脚气病", "白化病", "色盲", "哮喘"]
     }
   ]
-} 
+}
+PhoneMod.Fames = {
+  bestiality:"人外" ,
+  business:"商业" ,
+  exhibitionism:"露出" ,
+  good:"善良" ,
+  impreg: "授孕" ,
+  model:"模特" ,
+  pimp:"皮条客" ,
+  pregnancy:"怀孕" ,
+  prostitution:"卖淫" ,
+  rape:"强暴" ,
+  scrap:"战斗" ,
+  sex:"淫乱" ,
+  social:"社交" ,
+}

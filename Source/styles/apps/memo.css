@@ -1,0 +1,240 @@
+/* 待办列表 — 移除默认列表样式 */
+.todo-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    padding-bottom: 10px;
+}
+
+/* 每一个待办项 */
+.todo-item {
+    background: #2d2d2d;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 20, 30, 0.08);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(160, 190, 220, 0.3);
+}
+
+.todo-item:hover {
+    box-shadow: 0 8px 18px rgba(20, 80, 120, 0.12);
+    border-color: rgba(80, 160, 230, 0.5);
+}
+
+/* 隐藏原生复选框 — 彻底隐藏，不占位 */
+.todo-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+/* 标签成为整个可点击区域 */
+.todo-item label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: inherit;      /* 继承父级圆角，让点击区域也圆润 */
+    background: transparent;
+    transition: background 0.15s;
+}
+
+.todo-item label:active {
+    background: rgba(100, 180, 250, 0.08);
+}
+
+/* ----- 自定义圆角勾选框 (左侧) ----- */
+.custom-checkbox {
+    flex-shrink: 0;              /* 防止被文字挤压 */
+    width: 15px;
+    height: 15px;
+    border-radius: 5px;          /* 关键: 圆角勾选框！既不完全是圆也不完全是方，温和圆角 */
+    background: transparent;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* 打钩图标 — 用纯CSS画一个勾，不用字体图标 */
+.custom-checkbox .checkmark {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: white;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 勾的SVG简单路径 (用内联svg绘制) */
+.checkmark-svg {
+    width: 80%;
+    height: 80%;
+    display: block;
+}
+
+.checkmark-svg polyline {
+    fill: none;
+    stroke: white;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    transition: stroke-dashoffset 0.25s ease;
+}
+
+/* 当复选框被选中时，改变自定义框样式，并显示勾 */
+.todo-item input[type="checkbox"]:checked + label .custom-checkbox {
+    background: #757575;
+    border-color: #757575;
+}
+
+.todo-item input[type="checkbox"]:checked + label .custom-checkbox .checkmark-svg polyline {
+    stroke-dashoffset: 0;
+}
+
+/* 也可以做一个优雅的脉冲反馈 */
+.todo-item input[type="checkbox"]:checked + label .custom-checkbox {
+    animation: pop 0.2s ease;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* 待办文本 */
+.todo-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+    flex: 1;
+    transition: color 0.2s, text-decoration 0.2s;
+    letter-spacing: -0.01em;
+}
+
+/* 当复选框选中时，文字有完成效果 */
+.todo-item input[type="checkbox"]:checked + label .todo-text {
+    color: #6f8a9c;
+    text-decoration: line-through;
+    text-decoration-color: #96b4cb;
+    text-decoration-thickness: 2px;
+    opacity: 0.8;
+}
+
+/* 优先级点 */
+.priority-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 20px;
+    background: #ffb347;
+    margin-right: 5px;
+    box-shadow: 0 0 0 2px rgba(255,180,70,0.3);
+    cursor: crosshair;
+    transition: all 0.2s ease;
+}
+
+.priority-dot.disabled {
+    box-shadow: 0 0 0 2px rgb(255 255 255 / 30%);
+}
+
+.todo-item:has(.priority-dot:not(.disabled)) {
+    background-color: #bf7400;
+}
+
+.priority-dot:hover {
+    transform: scale(1.2);
+}
+
+.priority-dot.disabled:hover {
+    transform: scale(1.2);
+    background: #ffb347;  /* 悬停时提示可以变为重要 */
+    opacity: 0.8;
+}
+
+.todo-item input[type="checkbox"]:checked + label .priority-dot {
+    background: #a00000 !important;
+    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.3) !important;
+}
+
+.todo-item input[type="checkbox"]:checked + label .priority-dot:hover {
+    background: #ff0000 !important;
+}
+
+/* 底部操作栏 */
+.footer-actions {
+    margin-top: -15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-actions button {
+    background: transparent;
+    border: 1.5px solid white;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.footer-actions button:hover {
+    background: white;
+    border-color: #a4a4a4;
+    color: #1a1a1a;
+}
+
+.footer-actions button#memo_enable_sort.active{
+    background: green !important;
+    border-color: #a4a4a4 !important;
+    color: white !important;
+}
+
+.footer-actions input.active ~ button#memo_enable_sort {
+    display: none;
+}
+
+.footer-actions input.active + button {
+    border: 1.5px solid green !important;
+    color: green !important;
+}
+
+.footer-actions input.active + button:hover {
+    background: green !important;
+    border-color: #a4a4a4 !important;
+    color: white !important;
+}
+
+.footer-actions input {
+    background: transparent;
+    border: 1.5px solid white;
+    color: white;
+    padding: 0 0 0 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: text;
+    min-width: 0;
+    transition: 0.2s;
+    display: none;
+    width: 0;
+}
+
+.footer-actions input.active {
+    display: inline;
+    width: auto;
+}

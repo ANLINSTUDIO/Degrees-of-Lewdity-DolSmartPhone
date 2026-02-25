@@ -2,28 +2,37 @@ console.log("| [SmartPhone] DoL万能的智能手机 正在加载：main.js");
 
 
 // ================== passage 注入 ==================
-$(document).on(":passagerender", function (ev) {
-    V.Phone = V.Phone || {}
-    V.Phone.Settings = V.Phone.Settings || {}
-    V.Phone.photography = V.Phone.photography || 0
+$(document).one(":passageinit", function () {
+    PhoneMod.events_on_macro.forEach(function(event) {
+        PhoneMod.onMacro(event.macro, PhoneMod[event.func])
+    })
+});
+$(document).on(":passagerender", function (ev) {PhoneMod.onPassageRender(ev)});
+PhoneMod.onPassageRender = function (ev) {
     PhoneMod.ev = ev
-    V.Phone.CurrentApp = V.Phone.CurrentApp || "main"
+    V.Phone.open = false
     V.Phone.havingOrgasm = false
+    delete V.Phone.yenotePosting
 
     const phoneDebugSwitchUI = document.createElement('div');
     phoneDebugSwitchUI.id = "smartphone_debug_switch"
     new Wikifier(phoneDebugSwitchUI, "<<smartphone_debug_switch>>");
     $(PhoneMod.ev.content).append(phoneDebugSwitchUI);
 
-    PhoneMod.PhoneUIInit();
+    PhoneMod.yenotesCheck()
+
+    const phoneUI = document.createElement('div');
+    phoneUI.id = "phone-wrapper";
+    $(PhoneMod.ev.content).append(phoneUI);
+    setTimeout(PhoneMod.PhoneUIInit, 10);
+    PhoneMod.PhonePopupInit();
+
+    setTimeout(PhoneMod.appInit, 100);
     PhoneMod.eventsLoad();
-    PhoneMod.appInit();
-});
-$(document).one(":passageinit", function () {
-    PhoneMod.events_on_macro.forEach(function(event) {
-        PhoneMod.onMacro(event.macro, PhoneMod[event.func])
-    })
-});
+
+    PhoneMod.photoFinish();
+    PhoneMod.photoCheck();  // 检测完成任务并执行拍照
+}
 PhoneMod.eventsLoad = function() {
     PhoneMod.events.forEach(function(event) {
         if (V.passage === event.passage) {
@@ -39,8 +48,6 @@ PhoneMod.eventsLoad = function() {
     }}})
 }
 PhoneMod.eventsLoadInclude_ = function(data_passage, include, position, offset) {
-    console.log(data_passage, include, position, offset);
-    
     const $target = $(PhoneMod.ev.content).find(`a[data-passage="${data_passage}"]`);
     if ($target.length > 0) {
         const Div = document.createElement("div");
@@ -84,30 +91,54 @@ PhoneMod.checkPhoneDisabled = function() {
     setTimeout(() => {
         const phone = document.getElementById("smart-phone-container");
         if (!phone) return;
-        if (PhoneMod.shouldUsePhone()) {
+        if (V.Phone.TakingPhotoWill) {  // 完成任务时显示手机
             phone.classList.remove("phone-disabled");
+            PhoneMod.setPhoneBeating(true);
+            PhoneMod.togglePhone(false);
         } else {
-            phone.classList.add("phone-disabled");
+            if (PhoneMod.shouldUsePhone()) {
+                phone.classList.remove("phone-disabled");
+            } else {
+                phone.classList.add("phone-disabled");
+            }
         }
     }, 10)
 }
 PhoneMod.togglePhone = function(force=null) {
     const phone = document.getElementById("smart-phone-container");
     if (!phone) return;
+
     if (force === true) {
         phone.classList.add("phone-open");
+        V.Phone.open = true
     }
     else if (force === false) {
         phone.classList.remove("phone-open");
+        V.Phone.open = false
     } else {
-        if (PhoneMod.shouldUsePhone()) {
+
+        if (V.Phone.PhotoCurrent) {  // 在触发任务时点击
+            phone.classList.remove("phone-open");
+            V.Phone.open = false
+            PhoneMod.photoFinish();
+            PhoneMod.toggleApp("main", false);
+            return;
+        }
+
+        if (PhoneMod.shouldUsePhone() || V.Phone.TakingPhotoWill) {
             phone.classList.toggle("phone-open");
+            V.Phone.open = phone.classList.contains("phone-open");
         } else {
             phone.classList.remove("phone-open");
+            V.Phone.open = false
         }
     }
 
     if (phone.classList.contains("phone-open")) {
+        if (V.Phone.TakingPhotoWill) {
+            PhoneMod.photoTake()
+        }
+
         // 防止空手机
         const phoneContent = document.getElementById("phone-content")
         if (phoneContent) {
@@ -115,25 +146,50 @@ PhoneMod.togglePhone = function(force=null) {
                 PhoneMod.PhoneSafeOpen()
             }
         }
-        // 初始化应用
-        PhoneMod.appInit()
     }
+
+    PhoneMod.appInit(true)
 };
-PhoneMod.toggleApp = function(AppName) {
-    if (!PhoneMod.PhoneWaer(0.01)) return;
+PhoneMod.toggleApp = function(AppName, open=true) {
+    if (!PhoneMod.PhoneWaer(0.001)) return;
     V.Phone.CurrentApp = AppName;
-    PhoneMod.PhoneUIInit(true);
-    PhoneMod.appInit()
+    PhoneMod.PhoneUIInit(open);
+    PhoneMod.appInit();
 };
-PhoneMod.appInit = function(){
+PhoneMod.appInit = function(togglePhone=false){
     const AppName = V.Phone.CurrentApp
     const app = PhoneMod.Apps[AppName]
-    if (!V.Phone.AlarmTriggered && app && app.init) {
-        PhoneMod[app.init]()
+    if (!V.Phone.AlarmTriggered && app) {
+        if (app.guide) {
+            PhoneMod.Guide.startTutorial(app.guide);
+        }
+        if (togglePhone) {
+            if (app.toggle) {
+                PhoneMod[app.toggle](V.Phone.open)
+            }
+        } else {
+            if (app.init) {
+                PhoneMod[app.init]()
+            }
+        }
+    }
+    if (V.Phone.MsgApp && V.Phone.open && V.Phone.MsgApp === AppName) {
+        PhoneMod.msgClose()
     }
 };
-$(document).on("keyup", function(event) { // 监听 Control 键
-    if (event.key === "Control") {
+$(document).on("keyup", function(event) { // 监听键
+    const target = event.target;
+    const isInput = target.tagName === 'INPUT' || 
+                    target.tagName === 'TEXTAREA' || 
+                    target.isContentEditable ||  // 可编辑的div等
+                    target.tagName === 'SELECT';
+
+    // 如果当前在输入框中，不触发空格切换
+    if (isInput) {
+        return; // 允许输入空格，不触发切换
+    }
+
+    if (event.key === " ") {
         PhoneMod.togglePhone();
     }
 });
@@ -144,15 +200,13 @@ $(document).on("mousedown", function(event) {
         PhoneMod.togglePhone();
     }
 });
-PhoneMod.PhoneUIInit = function (open=false, anim=true) {
+PhoneMod.PhoneUIInit = function (open=false, reload=false) {
     if (!PhoneMod.shouldShowPhone()) return;
 
     PhoneMod.changeUsingPhone()
 
-    PhoneMod.PhoneSafeClose(anim);
-    const phoneUI = document.createElement('div');
-    phoneUI.id = "phone-wrapper";
-    $(PhoneMod.ev.content).append(phoneUI);
+    PhoneMod.PhoneSafeClose(!reload);
+    const phoneUI = document.getElementById('phone-wrapper');
     if (V.passage === "Start") {
         new Wikifier(phoneUI, "<<smartphone_render_preview>>");
         if (V.passage === "Start") {
@@ -163,14 +217,21 @@ PhoneMod.PhoneUIInit = function (open=false, anim=true) {
     } else {
         PhoneMod.checkAlarms();
         new Wikifier(phoneUI, "<<smartphone_render>>");
-        PhoneMod.PhoneSafeOpen(anim);
+        PhoneMod.PhoneSafeOpen(!reload);
         PhoneMod.checkPhoneDisabled();
     }
 
     if (open) {
         PhoneMod.togglePhone(true)
     }
+
+    if (reload) {
+        PhoneMod.appInit()
+    }
 };
+PhoneMod.PhonePopupInit = function() {
+    new Wikifier(PhoneMod.ev.content, "<<smartphone_popup>>");
+}
 PhoneMod.PhoneSafeOpen = function (anim=true) {
     const phone = document.getElementById("smart-phone-container");
     const phoneContent = document.getElementById("phone-content")
@@ -202,11 +263,10 @@ PhoneMod.PhoneSafeOpen = function (anim=true) {
     }
 };
 PhoneMod.PhoneSafeClose = function (anim=true) {
-    const phoneUIOld = document.getElementById("phone-wrapper")
     const phoneContainerOld = document.getElementById("smart-phone-container")
     const phoneContentOld = document.getElementById("phone-content")
-    if (phoneUIOld) {
-        if (anim && phoneContainerOld && phoneContentOld) {
+    if (phoneContainerOld) {
+        if (anim && phoneContainerOld && phoneContentOld && phoneContainerOld.classList.contains("phone-open")) {
             phoneContentOld.id = "phone-content-old"
             if (V.Phone.CurrentApp === "main") {
                 phoneContainerOld.style.zIndex = 1
@@ -216,17 +276,17 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
                 phoneContainerOld.id = "smart-phone-container-old-desktop"
             }
             setTimeout(() => {
-                phoneUIOld.remove()
+                phoneContainerOld.remove()
             }, 400)
         } else {
-            phoneUIOld.remove()
+            phoneContainerOld.remove()
         }
     } else {
         console.log("SafeCloseError");
     }
 };
 PhoneMod.PhoneWaer = function(value) {
-    PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - value, 3);
+    PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - value, 4);
     return PhoneMod.PhoneCheckNewness()
 }
 PhoneMod.PhoneCheckNewness = function () {
@@ -242,6 +302,36 @@ PhoneMod.PhoneCheckNewness = function () {
         }
     }
     return true;
+}
+
+
+// =================== 弹窗信息 =====================
+PhoneMod.msgSend = function (msg, app=null, func=null) {
+    const phone_popup = document.querySelector(".phone-popup")
+    if (phone_popup) {
+        const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
+        new Wikifier(phone_popup_content, `${phone_popup_content.innerHTML? '<br>': ''}${msg}`);
+        phone_popup.classList.add("active")
+        V.Phone.MsgApp = app
+        V.Phone.MsgFunc = func
+    }
+}
+PhoneMod.msgClose = function () {
+    const phone_popup = document.querySelector(".phone-popup")
+    if (phone_popup) {
+        phone_popup.classList.remove("active")
+        const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
+        setTimeout(() => {
+            phone_popup_content.innerHTML = ""
+        }, 200)
+    }
+    delete V.Phone.MsgApp
+    delete V.Phone.MsgFunc
+}
+PhoneMod.msgClick = function (event) {
+    event.stopPropagation()
+    if (V.Phone.MsgFunc) V.Phone.MsgFunc()
+    PhoneMod.msgClose()
 }
 
 
@@ -283,7 +373,22 @@ PhoneMod.DebugExcuteJs = function() {
             }
         }
     }, 1)
-    
+}
+PhoneMod.DebugExcuteSugerCube = function() {
+    setTimeout(() => {
+        const input = document.getElementById("excute-sugercube")
+        const path_input = document.getElementById("excute-sugercube-path")
+        if (input) {
+            const command = input.value
+            let path = "null"
+            if (path_input && path_input.value) {
+                path = `document.querySelector("${path_input.value}")`
+            }
+            if (command) {
+                PhoneMod.DebugShowMsg(eval(`new wikifier(${path}, "${command}")`))
+            }
+        }
+    }, 1)
 }
 
 
@@ -342,17 +447,14 @@ return password;
 }
 
 PhoneMod.BuyPhone = function(price) { // 购买一部手机
-  V.Phone.Owned = V.Phone.Owned || []
   V.Phone.Owned.push(new PhoneMod.Phone().newBuy(price));
   PhoneMod.changeUsingPhone();
 }
 PhoneMod.BuySecondPhone = function(price, newness) { // 购买一部二手手机
-  V.Phone.Owned = V.Phone.Owned || []
   V.Phone.Owned.push(new PhoneMod.Phone().newBuySecond(price, newness));
   PhoneMod.changeUsingPhone();
 }
 PhoneMod.StolePhone = function() { // 盗窃一部手机
-  V.Phone.Owned = V.Phone.Owned || []
   V.Phone.Owned.push(new PhoneMod.Phone().newStolen());
 }
 PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机

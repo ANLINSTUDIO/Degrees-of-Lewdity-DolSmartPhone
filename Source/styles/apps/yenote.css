@@ -1,0 +1,138 @@
+.yenote-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: solid 2px #ff0;
+    padding-bottom: 6px;
+}
+
+.yenote-avatar {
+    border-radius: 50%;
+    background: rgb(0, 0, 0);
+    height: 25px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+.yenote-avatar.yenote-note {
+    height: 30px;
+}
+.yenote-title, .yenote-add {
+    height: 15px;
+}
+.yenote-content {
+    display: flex;
+    flex-direction: row;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+.note-title, .note-passage {
+    line-height: normal;
+}
+#price_input {
+    width: 90%;
+}
+.note-comment-foldable[open] summary::before {
+    content: "▼ 折叠";
+    margin-right: 5px;
+  }
+
+.note-comment-foldable:not([open]) summary::before {
+    content: "▶ 展开";
+    margin-right: 5px;
+  }
+.note-comments-name{
+    line-height: normal;
+    color: #888;
+    margin-top: 5px;
+}
+.note-passage {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+.note-image-container {
+    position: relative;
+}
+.note-image {
+    width: 100%;
+    border-radius: 10px;
+    transition: filter 0.3s ease-out;
+}
+.note-image.locked {
+    filter: blur(8px);
+}
+.note-premium {
+    height: 15px;
+}
+.note-locked-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px); /* 毛玻璃效果 */
+
+    transition: opacity 0.3s ease-out;
+    opacity: 0;
+}
+.note-image.locked + .note-locked-text {
+    opacity: 1;
+}
+.note-info {
+    color: #9c9c9c
+}
+
+
+.note-rename {
+    margin-top: 50%;
+    transform: translateY(-50%);
+}
+
+.note-rename-actions {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 8px;
+}
+
+.note-rename-actions button {
+    background: transparent;
+    border: 1.5px solid white;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.note-rename-actions button:hover {
+    background: white;
+    border-color: #a4a4a4;
+    color: #1a1a1a;
+}
+
+.note-rename-actions input {
+    background: transparent;
+    border: 1.5px solid white;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: text;
+    transition: 0.2s;
+    display: inline;
+    width: auto;
+}

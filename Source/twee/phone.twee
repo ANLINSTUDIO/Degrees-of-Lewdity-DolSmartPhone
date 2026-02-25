@@ -54,7 +54,6 @@
 :: SmartPhoneWidgets [widget]
 <<widget "smartphone_render">>
     <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">
-
         <div class="phone-screen-locked">
             <div style="font-size: 16px; font-weight: bold;">
                 <<print PhoneMod.getTimeString()>>
@@ -84,14 +83,15 @@
                     </div>
                 </div>
                 <div id="phone-content" class="phone-content">
-                    <<if $Phone.CurrentApp is "photo">> <<phone_app_photo>>
-                    <<elseif $Phone.CurrentApp is "contacts">> <<phone_app_contacts>>
-                    <<elseif $Phone.CurrentApp is "alarm">> <<phone_app_alarm>>
-                    <<elseif $Phone.CurrentApp is "settings">> <<phone_app_settings>>
-                    <<elseif $Phone.CurrentApp is "game">> <<phone_app_game>>
-                    <<elseif $Phone.CurrentApp is "shop">> <<phone_app_shop>>
-                    <<elseif $Phone.CurrentApp is "yenote">> <<phone_app_yenote>>
-                    <<else>>
+                    <<set _break to 0>>
+                    <<for _app_name, _app range PhoneMod.Apps>>
+                        <<if $Phone.CurrentApp is _app_name>>
+                            <<print '<<'+_app.app_widget+'>>'>>
+                            <<set _break to 1>>
+                            <<break>>
+                        <</if>>
+                    <</for>>
+                    <<if !_break>>
                         <div class="phone-desktop">
                             <<phone_wallpaper>>
                             <<for _app_name, _app range PhoneMod.Apps>>
@@ -115,9 +115,11 @@
                     <</if>>
                 </div>
                 <div class="phone-tool-bar">
-                    <span onclick="PhoneMod.toggleApp('main')" style="cursor:pointer">
-                        <img class="toolbar-icon" src="img/ui/phone/home.png">
-                    </span>
+                    <<if !$Phone.PhotoCurrent>>
+                        <span onclick="PhoneMod.toggleApp('main')" style="cursor:pointer">
+                            <img class="toolbar-icon" src="img/ui/phone/home.png">
+                        </span>
+                    <</if>>
                     <span onclick="PhoneMod.togglePhone()" style="cursor:pointer">
                         <img class="toolbar-icon" src="img/ui/phone/lock.png">
                     </span>
@@ -127,9 +129,17 @@
     </div>
 <</widget>>
 
+<<widget "smartphone_popup">>
+    <div class="phone-popup" onclick="PhoneMod.msgClick(event)">
+        <div class="phone-popup-content"></div>
+        <div class="customOverlayClose" onclick="PhoneMod.msgClose()">
+        </div>
+    </div>
+<</widget>>
+
 <<widget "phone_wallpaper">>
     <<if $Phone.Settings.WallpaperPath>>
-        <<print `<img id="phone-wallpaper" src="`+$Phone.Settings.WallpaperPath+`">`>>
+        <img id="phone-wallpaper" @src=$Phone.Settings.WallpaperPath>
         <<if $Phone.Settings.WallpaperBlur>>
             <div id="phone-wallpaper-cover" class="blur"></div>
         <</if>>
@@ -142,26 +152,35 @@
 
 :: SmartPhoneAppWidgets [widget]
 <<widget "phone_app_photo">>
-    <div class="app-content" style="overflow-y: hidden">
-        <div id="photo" style="display: flex; justify-content: space-evenly;"> 
-            <canvas id="bg_canvas" style="position: absolute; display: none" width="0" height="0"></canvas>
-            <canvas id="char_canvas" style="position: absolute; display: none" width="0" height="0"></canvas>
-            <canvas id="result_canvas" width="0" height="0"></canvas>
-        </div>
-        <div id="photo_ui" style="display: flex; justify-content: space-evenly;"> 
-            <div id="photo_take_button_outline" style="position: absolute; bottom: 40px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #fff;; border-radius: 50%;">
-                <div id="photo_take_button" onclick="PhoneMod.PhotoDraw()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background-color: #fff; border-radius: 50%;"> </div>
+    <<if $Phone.PhotoCurrent>>
+        <div class="app-content" style="overflow-y: hidden">
+            <div id="photo" style="display: flex; justify-content: space-evenly;"> 
+                <img class="photo-image" @src=$Phone.PhotoCurrent.img>
+            </div>
+            <div id="photo_ui" style="display: flex; justify-content: space-evenly;"> 
+                <div id="photo_take_button_outline" style="position: absolute; bottom: 40px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #fff; border-radius: 50%;">
+                    <div id="photo_take_button" onclick="PhoneMod.photoSubmit()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background-color: #fff; border-radius: 50%;"> </div>
+                </div>
             </div>
         </div>
-        <hr>
-        <<faceVariantOptions>>
+    <<else>>
+        <h3>摄像</h3>
+        <p style="font-size:12px; color:#666;">得找点什么拍，尝试去做一点有“意义”的事情吧！</p>
+        <<link 前往相册>><<run PhoneMod.toggleApp("album")>><</link>><span style="font-size:12px; color:#666;">查看值得拍照的事件</span>
+    <</if>>
+<</widget>>
+
+<<widget "phone_app_album">>
+    <h3>相册</h3>
+    <div class="album-content-container">
+        <ul class="todo-list"></ul>
     </div>
 <</widget>>
 
 <<widget "phone_app_contacts">>
     <h3>通讯录</h3>
     <div class="app-content">
-        <<if $Phone.KnownContacts && $Phone.KnownContacts.length > 0>>
+        <<if validArray($Phone.KnownContacts)>>
             <div class="phone-contact-list">
                 <<for _i range $Phone.KnownContacts>>
                     <div class="phone-contact-item">
@@ -273,7 +292,19 @@
     当然，开启此选项的风险并不大，但仍然建议谨慎使用。</span><br>
     <<print `<input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInEvent = this.checked" ` + ($Phone.Settings.CanUsePhoneInEvent ? "checked" : "") + `> 可以在事件中使用`>><br>
     <span class="black" style="font-size: small">【实验性！】DoL中的事件貌似判定为只要有NPC出现就属于事件，<b class="teal">当你使用游戏、网购等跳转页面的功能时</b>，非常有可能会触发endevent！一旦如此，那么你正在触发的事件的<b class="red">NPC都会被清除</b>，正常剧情也会报错！</span><br>
+    <hr>
+    <h3>其他设置</h3>
+    <<link "重置教程进度">><<run PhoneMod.Guide.resetGuide()>><</link>><br>
+<</widget>>
 
+<<widget "phone_app_memo">>
+    <h2>备忘录</h2>
+    <div class="footer-actions">
+        <input type="text" id="new_task_text" placeholder="输入任务文本" onkeydown="if (event.keyCode === 13) {PhoneMod.addNewMemoTask()}">
+        <button onclick="PhoneMod.addNewMemoTask()">+ 新建任务</button>
+        <button id="memo_enable_sort" onclick="PhoneMod.memoToggleEnableSort()">自动排序</button>
+    </div>
+    <ul class="todo-list" style="overflow: hidden;"></ul>
 <</widget>>
 
 <<widget "phone_app_game">>
@@ -299,9 +330,6 @@
     <<goto 'Phone Shop'>>
 <</widget>>
 
-<<widget "phone_app_yenote">>
-<</widget>>
-
 
 :: Smartphone Debug [widget]
 <<widget "smartphone_debug_switch">>
@@ -309,18 +337,12 @@
 <</widget>>
 
 <<widget "smartphone_debug">> <div id="smart-phone-debug-container">
-    <br><br>
+    <br><br><br>
     <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>>
     <hr>
-    <h3 class="teal">变量 V.Phone</h3>
-    <<for _key, _value range $Phone>>
-        <<if ["SettingsWallpaperPath", "ReturnWorn"].contains(_key)>>
-            <<print "<b class='teal'>"+_key+"</b> <span class='green'>已设置</span>">><br>
-        <<else>>
-            <<print "<b class='teal'>"+_key+"</b> "+JSON.stringify(_value)>><br>
-        <</if>>
-    <</for>>
+    <input type="text" id="excute-sugercube-path" placeholder="执行SugerCube位置">
+    <input type="text" id="excute-sugercube" placeholder="执行SugerCube命令"><<link "执行">><<run PhoneMod.DebugExcuteSugerCube()>><</link>>
     <hr>
     <h3 class="gold">获取手机</h3>
     <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone(4999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
@@ -331,7 +353,53 @@
     <<link [[进入官方店|Shopping Centre Phone Shop]]>><</link>><br>
     <<link [[进入地下手机店|Second Phone Shop]]>><</link>><br>
     <<link [[触发老冯初见面对话|Second Phone Shop Meet Feng First]]>><</link>><br>
-    <br><br>
+    <hr>
+    <h3 class="teal">变量 V.Phone</h3>
+    <<for _key, _value range $Phone>>
+        <<if PhoneMod.debugBlackVPhone.contains(_key)>>
+            <<print "<b class='teal'>"+_key+"</b> <span class='green'>已设置</span>">><br>
+        <<else>>
+            <<print "<b class='teal'>"+_key+"</b> "+JSON.stringify(_value)>><br>
+        <</if>>
+    <</for>>
+    <hr>
+    <br><br><br>
+</div> <</widget>>
+
+:: Smartphone Guide [widget]
+<<widget "smartphone_guide">> <div id="smartphone_guide">
+    <div id="tutorial-overlay" class="tutorial-overlay hidden">
+        <div class="tutorial-container">
+            <!-- 关闭按钮 -->
+            <button class="tutorial-close" onclick="PhoneMod.Guide.closeTutorial()">✕</button>
+            
+            <!-- 教程内容区域 -->
+            <div class="tutorial-content" id="tutorialContent">
+                <!-- 步骤指示器 -->
+                <div id="tutorialSteps" class="tutorial-steps">
+                </div>
+                
+                <!-- 图片区域 -->
+                <div class="tutorial-image-container">
+                    <img id="tutorialImage" class="tutorial-image" src="" alt="教程图片">
+                </div>
+                
+                <!-- 文字区域 -->
+                <div id="tutorialText" class="tutorial-text">
+                    <!-- 动态填充内容 -->
+                </div>
+                
+                <!-- 导航按钮 -->
+                <div class="tutorial-nav">
+                    <button id="prevBtn" class="tutorial-btn prev-btn" onclick="PhoneMod.Guide.prevStep()" disabled>上一步</button>
+                    <div class="tutorial-progress">
+                        <span id="currentStep">1</span>/<span id="totalSteps">-</span>
+                    </div>
+                    <button id="nextBtn" class="tutorial-btn next-btn" onclick="PhoneMod.Guide.nextStep()">下一步</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div> <</widget>>
 
 

@@ -1,0 +1,124 @@
+:: SmartPhoneAppYenote [widget]
+<<widget "phone_app_yenote">>
+    <div class="yenote-status-bar">
+        <img class="yenote-avatar" src="img/ui/phone/app/avatar.png" onclick="PhoneMod.yenoteRename()">
+        <img class="yenote-title" src="img/misc/icon/phone/app/yenote_text_full.png">
+        <img class="yenote-add" src="img/ui/phone/app/add.png" onclick="PhoneMod.toggleApp('album')" style="cursor: pointer;">
+    </div>
+    <<if !$Phone.yenoteUsername>>
+        <div class="note-rename">
+            <b>开始你的旅途；记录性福生活。欢迎来到「小黄书」，告诉我们你的名字吧：</b>
+            <div class="note-rename-actions">
+                <input type="text" id="new_yenote_username" 
+                       placeholder="输入你的名字" @value=PhoneMod.generateNickname()
+                       onkeydown="if (event.keyCode === 13) {PhoneMod.yenoteSetNewName()}">
+                <button onclick="PhoneMod.yenoteSetNewName()">确定</button>
+            </div>
+        </div>
+    <<elseif $Phone.yenotePosting>>
+        <<set _note to $Phone.yenotePosting>>
+        <h3>发布你的文章</h3>
+        <div class="note-content">
+            <div class="note-title">
+                <div>
+                    吸引度：<<print Math.round(_note.attract*100)>>%
+                </div>
+                <div class="meter">
+                    <<set _percent to _note.attract * 100>>
+                    <<if _percent gte 90>>
+                        <<set _statColor to "greenbar">>
+                    <<elseif _percent gte 80>>
+                        <<set _statColor to "tealbar">>
+                    <<elseif _percent gte 60>>
+                        <<set _statColor to "lbluebar">>
+                    <<elseif _percent gte 40>>
+                        <<set _statColor to "bluebar">>
+                    <<elseif _percent gte 20>>
+                        <<set _statColor to "purplebar">>
+                    <<elseif _percent gte 10>>
+                        <<set _statColor to "pinkbar">>
+                    <<else>>
+                        <<set _statColor to "redbar">>
+                    <</if>>
+                    <div @class="_statColor" @style="'width:' + _percent + '%'"></div>
+                </div>
+                <div id="yenote_heat">
+                </div>
+                <div>
+                    定价：<span id="price_text" class="gold">免费</span>
+                </div>
+                <input type="range" id="price_input" value="0" min="0" @max="_note.attract*100" step="1" onchange="PhoneMod.yenoteChangePrice()">
+                <<run setTimeout(PhoneMod.yenoteChangePrice, 10)>>
+            </div>
+            <br>
+            <div class="note-passage">
+                <<print _note.msg>>
+            </div>
+            <br>
+            <div class="note-image-container">
+                <img class="note-image" @src=_note.img>
+            </div>
+        </div>
+        <div class="note-rename-actions">
+            <button onclick="PhoneMod.yenotePostCancel()">取消</button>
+            <div>
+                <button onclick="PhoneMod.yenotePostSubmit()">确定发布</button>
+            </div>
+        </div>
+    <<else>>
+        <div class="note-content-container">
+            <<if validArray($Phone.Yenotes)>>
+                <<for _note range $Phone.Yenotes>>
+                    <<capture _note>>
+                        <div class="yenote-content">
+                            <div class="note-avatar">
+                                <img class="yenote-avatar yenote-note" src="img/ui/phone/app/avatar.png">
+                            </div>
+                            <div class="note-content">
+                                <div class="note-title">
+                                    <b><<print _note.name>></b>
+                                </div>
+                                <div class="note-passage">
+                                    <<print _note.msg>>
+                                    <<if _note.price>>
+                                        <img class="note-premium" src="img/ui/phone/app/premium.png">
+                                    <</if>>
+                                </div>
+                                <div class="note-image-container">
+                                    <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @src=_note.img>'>>
+                                    <<if _note.price>>
+                                        <div class="note-locked-text">付费内容</div>
+                                    <</if>>
+                                </div>
+                                <div class="note-info"> 
+                                    <<print '阅读'+_note.view+'&nbsp;&nbsp;点赞'+_note.like+"&nbsp;&nbsp;">> 
+                                    <<if _note.earned>><<print '获利<span class="gold">£'+_note.earned+'</span>&nbsp;&nbsp;'>><</if>> 
+                                    <<if !_note.npc>><<link "删除此文章">><<run PhoneMod.yenoteDelete(_note.id)>><</link>><</if>> 
+                                </div>
+                                <<if validArray(_note.comments)>>
+                                    <div class="note-commends">
+                                        <details class="note-comment-foldable" open>
+                                            <summary><<print _note.comments.length+"条评论">></summary>
+                                            <<for _comment range _note.comments>>
+                                                <div class="note-comments-name">
+                                                    <b><<print _comment.name>></b>
+                                                </div>
+                                                <div @id='_note.id+"*"+_note.comments.indexOf(_comment)' class="note-comment">
+                                                    <<print _comment.text>>
+                                                </div>
+                                            <</for>>
+                                        </details>
+                                    </div>
+                                <</if>>
+                            </div>
+                        </div>
+                    <</capture>>
+                <</for>>
+            <<else>>
+                <p style="font-size:12px; color:#666;">你可以成为你的圈子里第一个发小黄书的人！</p>
+            <</if>>
+        </div>
+    <</if>>
+    <!-- <div class="yenote-tool-bar">
+    </div> -->
+<</widget>>
