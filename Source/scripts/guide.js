@@ -1,28 +1,6 @@
 PhoneMod.Guide = {}
 
 
-PhoneMod.Guide.intro = [
-    {
-        image: "img/misc/icon/phone/phone.png",
-        text: `感谢使用<span class="teal">万能的智能手机</span>，在此模组中，玩家一旦拥有智能手机，便可以设定定时闹钟提醒、拨打部分角色的电话、玩游戏、开通社交账号发布照片、网购、拍摄进攻者的照片进行勒索等以及触发更多有关手机的随机事件。`,
-        alt: ""
-    },
-    {
-        text: `<h3>获取的途径</h3><br>
-        购物商场一楼的手机店是最正规的购买和出售手机的途径。此外，你还可以带着偷窃的手机前往麋鹿街触发隐藏对话找到地下二手手机店，在这里你可以低价购买或出售二手手机或者出钱解锁盗窃而来的手机。
-        当然也可以通过以下方式盗窃智能手机，但是一般而言无法解锁，必须通过二手手机店刷机后才能使用，当然也可以直接出售给手机店：
-        · 在洗浴中心按摩实施盗窃时
-        · 在酒吧勾引人请他喝酒或者接受喝酒时
-        · 学校撬开保险柜时`,
-    },
-    {
-        image: "img/guide/intro/1.png",
-        text: `<h3>手机的显示</h3><br>
-        拥有手机后，其会处于息屏状态，以一个较小的手机图像显示在屏幕右下角，并在在上面显示时钟。通过单击可以解锁手机，在上面可以看到许多的应用程序，他们都可以使用。`,
-        alt: ""
-    },
-];
-
 PhoneMod.Guide.photo = [
     {
         image: "img/guide/photo/1.png",
@@ -132,6 +110,13 @@ PhoneMod.Guide.secondphoneshop = [
     }, 
 ]
 
+PhoneMod.Guide.stealphone = [
+    {
+        image: "img/guide/stealphone/1.png",
+        text: ``,
+        alt: ""
+    }, 
+]
 
 
 // 启动教程

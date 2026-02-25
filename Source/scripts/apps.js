@@ -477,10 +477,18 @@ PhoneMod.photoCheck = function() {
                 if (key === "_") {
                     return expectedValue()
                 } else {
-                    const actualValue = key.split('_').reduce((obj, prop) => obj?.[prop], V);
+                    let not = false
+                    if (key.endsWith("非")) {
+                        not = true
+                        key = key.slice(0, -1)
+                    }
+                    const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], V);
                     // console.log(photo_path, actualValue, expectedValue);
-                    
-                    return actualValue === expectedValue
+                    if (not) {
+                        return actualValue !== expectedValue
+                    } else {
+                        return actualValue === expectedValue
+                    }
                 }
             });
             if (result) {
@@ -649,7 +657,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                         <div @class="_statColor" style="width:${Math.round(photo.quality / 10)}%"></div>
                     </div>
                 </div>
-                <div>相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>
+                ${task.fames && task.fames.length > 0? `<div>相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>`: ''}
             </div>
             <div class="album-photo-content">
                 <div class="album-photo-passage">
@@ -689,6 +697,9 @@ PhoneMod.addAlbumTask = function(taskId) {
                 </span>
                 <span class="todo-text">${task.taskDesc}</span>
             </label>
+            <div class="album-photo-title">
+                ${task.fames && task.fames.length > 0? `<div>相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>`: ''}
+            </div>
             <div class="album-photo-content">
                 <div style="font-size:12px; color:#666; flex-grow: 1">完成任务后可以拍摄照片并发布</div>
                 <img class="album-photo-image" src="img/ui/phone/app/photo.png">

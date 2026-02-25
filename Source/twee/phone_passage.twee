@@ -91,7 +91,7 @@
     <<switch random(1, 3)>>
         <<case 1>>
             “你以为你能骗过我吗？这部手机是被盗的，我现在就要报警！” 店员一边说着，一边拿起电话准备报警。<br><br>
-            <<if random(1, 2) is 1>>
+            <<if $rng gte 50>>
                 <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
             <<else>>
                 <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
@@ -108,7 +108,7 @@
             <<if $money gte 100000>>
                 <<link [[贿赂（£1000）|Shopping Centre Phone Shop]]>><<money -100000>><<endevent>><</link>><br>
             <</if>>
-            <<if random(1, 2) is 1>>
+            <<if $rng gte 50>>
                 <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
             <<else>>
                 <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
@@ -148,7 +148,7 @@
 <<if crimeSumCurrent() gte 5000>>
 	坐在司机位的那个<<person1>><<person>>回头看向你，"你一定是个坏<<girl>>吧？不只是偷手机，你肯定还惹了各种各样的麻烦。"<br>
 	<br><br>
-	坐在<<His>>旁边的那个<<person2>><<person>>插话道，"注意看路。"
+	坐在<<he>>的旁边的那个<<person2>><<person>>插话道，"注意看路。"
 	<br><br>
 	<<person1>><<person>>张了张嘴，但还是什么都没有说。<<he>>回头继续看着前方的道路，车内就这样保持着诡异的沉默。
 	<br><br>
@@ -510,7 +510,7 @@
     你抚摸<<person>>，直到<<he>>醒来。"按摩结束了，"你低声说道，"希望你能满意。"
 <</if>>
 <br><br>
-<<He>>点点头，半醒着，爬了起来。你把目光移开，递给<<his>>毛巾。<<tipreceive>><<pass 50>>
+<<He>>点点头，半醒着，爬了起来。你把目光移开，递给<<he>>的毛巾。<<tipreceive>><<pass 50>>
 <br><br>
 <<spa_end>>
 
@@ -522,11 +522,11 @@
 <<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
 
 :: Pub Drink Steal Phone Link
-眼前的<<person>>看起来已经醉了，<<he>>的目光几乎全部放在了手上的酒杯上。你注意到<<his>>手边<span class="teal">有一台发着光的手机</span><<icon "phone/phone.png">>，就在靠向你的这边！<br>
+眼前的<<person>>看起来已经醉了，<<he>>的目光几乎全部放在了手上的酒杯上。你注意到<<he>>的手边<span class="teal">有一台发着光的手机</span><<icon "phone/phone.png">>，就在靠向你的这边！<br>
 你四周看了看，酒保也没有看向你这边，没有人注意到你！如果处理得当，这台手机就不再属于<<he>>。
 <br><br>
 <<set $skulduggerydifficulty to 500>>
-<<link [[偷走<<his>>的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
+<<link [[偷走<<he>>的的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
 
 :: Pub Drink Steal Phone
 <<set $skulduggerydifficulty to 500>>
@@ -544,6 +544,225 @@
     并且继续和他有一句没一句地聊天。 <<pass 20>><br><br>
     <<skulduggeryuse>>
     <<link [[离开|Pub]]>><<endevent>><</link>>
+<</if>>
+
+:: Ocean Breeze Steal Phone Link
+<<if $Phone.StealPhoneAlertOceanBreeze gte 5>>
+    你看到了咖啡馆的招牌旁边有一个告示，上面写着： <span class="red">近期本店频繁失窃贵重物品，请保护好您的私人财物</span><br>
+<</if>>
+<<if Time.dayState is "day" or Time.dayState is "dusk">>
+    <<icon "phone/theft.png">>
+    <<link [[寻找目标偷窃手机 (0:10)|Ocean Breeze Steal Phone]]>><</link>><br><br>
+<</if>>
+:: Ocean Breeze Steal Phone
+<<pass 10>>
+<<set $lock to 200>>
+<<set _StealPhoneSkulduggery to 200 + random(-30, 100)>>
+<<if currentSkillValue('skulduggery') gte _StealPhoneSkulduggery>>
+    <<if $rng gte 50>>
+        你在咖啡馆
+        <<generate1>><<person1>>
+        <<set $StealPhoneFollow to 0>>
+        <<set $StealPhoneSucceed to 0>>
+        <<set $StealPhoneNoticed to random(1, 4)>>
+        <<switch $StealPhoneNoticed>>
+            <<case 1>>
+                里坐着，来客很稀少，寥寥无几的人都坐在自己的位置上。<br><br>
+                你看见一个<<person>>，<<he>>正在阅读报纸，而<<he>>的手机就这么放在桌子上的咖啡旁边。
+            <<case 2>>
+                门口兜兜转转，来客很稀少，进店的人也行色匆匆。<br><br>
+                你看见一个<<person>>走了过来，坐在门口的木椅上，点了根烟，然后把<<he>>的的手机放在了身边。
+            <<case 3>>
+                里坐着，来客很稀少，寥寥无几的人都坐在自己的位置上。<br><br>
+                你看见一个<<person>>，<<he>>正戴着耳机对着笔记本电脑屏幕，不时地敲打着键盘，而<<he>>的手机就压在笔记本下面。
+            <<case 4>>
+                里坐着，来客很稀少，寥寥无几的人都坐在自己的位置上。<br><br>
+                你看见一个<<person>>，<<he>>拿着本书走进来，点了杯咖啡后便找了个靠墙的位置坐下，将手机压在了翻开的那一页上。
+        <</switch>><br><br>
+        你开始关注<<he>>。<br><br>
+        <<icon "phone/theft.png">><<link [[继续关注 (0:10)|Ocean Breeze Steal Phone Follow]]>><</link>><br>
+        <<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><</link>><br>
+    <<else>>
+        你一直在咖啡馆
+        <<if $rng gte 25>>
+            里坐着，来客本就很稀少，寥寥无几的人都坐在自己的位置上，手机没有离手。
+        <<else>>
+            门口兜兜转转，来客本就很稀少，进店的人也行色匆匆，你没有机会下手。
+        <</if>><<gtiredness>><<tiredness 5>><br><br>
+        <<icon "phone/theft.png">><<link [[继续寻找目标偷窃手机 (0:10)|Ocean Breeze Steal Phone]]>><</link>><br>
+        <<cafeicon>><<link [[回到咖啡馆|Ocean Breeze]]>><</link>><br>
+        <<clifficon>><<link [[离开|Cliff Street]]>><</link>>
+    <</if>>
+<<else>>
+    你一直在咖啡馆里坐着，目光不停扫视着稀少的来客，又不自觉的低下头。<br>
+    你看起来很紧张，在咖啡馆这样使人平静的地方，你非常的不正常。<br><br>
+    <<if currentSkillValue('skulduggery') gte $lock>>
+        即使你有一点当扒手的经验，但是做这种盗窃的事情还是令你不自觉地感到紧张。
+    <<else>>
+        你没有当扒手的经验。<<skulduggeryrequired>>
+    <</if>>
+    <br><br>
+    <<if $rng gte 75>>
+        <<generate1>><<person1>>
+        <<set _clerk_kickoff to 50>>
+        一名店员发现了你，朝你走了过来。<br>
+        <<if $daily.cafeEaten isnot 1>>
+            你又没有点任何的菜品。<<he>>看着你身前空空如也的桌子，
+            <<set _clerk_kickoff to 70>>
+        <<else>>
+            <<he>>
+        <</if>>
+        <<if random(0, 100) lte _clerk_kickoff>>
+            皱着眉头说道：“<<girl>>，你是有什么毛病吗？这里出门往购物中心那边走，过去就是医院，你最好去那里看看！”<br>
+            店员一把扯住你的衣服，把你赶出门外。<<ggstress>><<stress 12>><<lcontrol>><<control -6>>
+            <br><br>
+            <<clifficon>><<link [[继续|Cliff Street]]>><<endevent>><</link>>
+        <<else>>
+            说：“您好<<if $player.gender_appearance is "m">>先生<<else>>女士<</if>>，您是不舒服吗？需要我的帮忙吗？”
+            <br><br>
+            <<cafeicon>><<link [[说你没事并继续待在咖啡馆|Ocean Breeze]]>><<endevent>><</link>><br>
+            <<clifficon>><<link [[离开|Cliff Street]]>><<endevent>><</link>>
+        <</if>>
+    <<else>>
+        然而没有人发现你的不正常，而你也没有发现任何可以盗窃的目标。<<gtiredness>><<tiredness 5>><br><br>
+        <<icon "phone/theft.png">><<link [[继续寻找目标偷窃手机 (0:10)|Ocean Breeze Steal Phone]]>><</link>><br>
+        <<cafeicon>><<link [[待在咖啡馆|Ocean Breeze]]>><</link>><br>
+        <<clifficon>><<link [[离开|Cliff Street]]>><</link>>
+    <</if>>
+<</if>>
+:: Ocean Breeze Steal Phone Follow
+<<person1>>
+<<if Time.hour is $closinghour>>
+    关店时间到了，萨姆正在清场，<<person>>也离开了。<br><br>
+    <<set $StealPhoneSucceed to 3>>
+    <<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><</link>><br>
+<<else>>
+    <<pass 10>>
+    <<if $StealPhoneFollowNext or $rng gte 75>>
+        <<set $StealPhoneFollowNext to 0>>
+        <<set $StealPhoneFollow += 1>>
+    <</if>>
+    <<set _PeopleAlertness to 30>>
+    <<if $Phone.StealPhoneAlertOceanBreeze gte 5>> <<set _PeopleAlertness to 70>> <</if>>
+    你正在关注着一个<<person>>。<br><br>
+    <<if $rng gte 50>>
+        <<switch random(0, 1)>>
+            <<case 0>>也许是左眼盯人，右眼盯手机，你有点头晕。<<gstress>><<stress 6>>
+            <<case 1>>你聚精会神地盯着<<he>>，长时间没有眨眼，终于你的眼皮开始打架了。<<gtiredness>><<tiredness 5>>
+        <</switch>><br><br>
+    <</if>>
+    <<switch $StealPhoneNoticed>>
+        <<case 1>>
+            <<switch $StealPhoneFollow>>
+                <<case 0>><<person>>依然在看着自己手里的报纸，时不时抿一口咖啡。而那部手机从来没有离开过<<he>>的视线。
+                <<case 1>><<person>>突然开始左顾右盼，似乎在找服务员的身影。<<set $StealPhoneFollowNext to 1>>
+                <<case 2>>服务员过去了，<<person>>好像在向店员询问着什么。随后<<he>>放下报纸突然起身，
+                    <<if random(0, 100) lte _PeopleAlertness>>拿起手机，就往厕所的方向走去。你失去了盗窃<<he>>手机的机会<<set $StealPhoneFollowFinish to 1>>
+                    <<else>>就往厕所的方向走去。你的机会来了！<<set $StealPhoneFollowStart to 1>>
+                    <</if>>
+            <</switch>>
+        <<case 2>>
+            <<switch $StealPhoneFollow>>
+                <<case 0>><<person>>依然看着远处的风景，左手撑在腿上，右手夹着点燃的香烟。而那部手机就在<<he>>的左手边。
+                <<case 1>><<person>>翘起二郎腿，把左手搭在大腿上，右手夹着点燃的香烟。<<he>>的手已经离那部手机很远了，但是现在还不是动手的时候。
+                <<case 2>><<person>>突然伸着脖子向右看去，似乎在找着什么人。<<set $StealPhoneFollowNext to 1>>
+                <<case 3>>“哎，终于来了，我这等了半天”，<<person>>突然开心地向远处走来的那个人打招呼。随后<<he>>顺势起身，
+                    <<if random(0, 100) lte _PeopleAlertness>>拿起手机，就往那个人的方向走去。你失去了盗窃<<he>>手机的机会<<set $StealPhoneFollowFinish to 1>>
+                    <<else>>就往那个人的方向走去。你的机会来了！<<set $StealPhoneFollowStart to 1>>
+                    <</if>>
+            <</switch>>
+        <<case 3>>
+            <<switch $StealPhoneFollow>>
+                <<case 0>><<person>>专注地看着屏幕，时而皱眉，时而微笑，看起来完全沉浸在工作中。
+                <<case 1>><<person>>突然摘下耳机，揉了揉耳朵，然后四处张望了一下，似乎在找电源插座。<<set $StealPhoneFollowNext to 1>>
+                <<case 2>>终于，<<he>>像是找到了插座的位置，拿起笔记本准备换座位。<<he>>先把电脑合上抱在怀里，然后
+                    <<if random(0, 100) lte _PeopleAlertness>>自然地拿起压在下面的手机，一起走向了新的座位。你失去了盗窃<<he>>手机的机会<<set $StealPhoneFollowFinish to 1>>
+                    <<else>>却忘了压在电脑下面的手机，径直向插座的方向走去。你的机会来了！<<set $StealPhoneFollowStart to 1>>
+                    <</if>>
+            <</switch>>
+        <<case 4>>
+            <<switch $StealPhoneFollow>>
+                <<case 0>><<person>>安静地读着书，偶尔翻一页，翻页时会小心地抬起压着手机的那一页。
+                <<case 1>><<person>>已经进入了阅读的状态，但是<<he>>的手机一直在手上。因此你还要找正确的时机。
+                <<case 2>><<he>>突然把书合上了，像是读到了什么需要思考的内容，<<he>>把书放在桌上，盯着封面发呆，手机则露了出来，放在书旁边。<<set $StealPhoneFollowNext to 1>>
+                <<case 3>><<he>>回过神来，端起咖啡喝了一大口，然后站起身，像是要去续杯或去洗手间。<<he>>低头看了眼桌上的书和手机，
+                    <<if random(0, 100) lte _PeopleAlertness>>犹豫了一下，还是拿起手机，只把书留在桌上，然后离开了座位。你失去了盗窃<<he>>手机的机会<<set $StealPhoneFollowFinish to 1>>
+                    <<else>>径直离开了座位，书和手机都被留在了桌上。你的机会来了！<<set $StealPhoneFollowStart to 1>>
+                    <</if>>
+            <</switch>>
+    <</switch>><br><br>
+    <<if $StealPhoneFollowStart is 1>>
+        <<icon "phone/theft.png">><<link [[开始盗窃|Ocean Breeze Steal Phone Start]]>><</link>><br>
+        <<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><</link>><br>
+    <<elseif $StealPhoneFollowFinish is 1>>
+        <<set $StealPhoneSucceed to 3>>
+        <<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><</link>><br>
+    <<else>>
+        <<icon "phone/theft.png">><<link [[继续关注 (0:10)|Ocean Breeze Steal Phone Follow]]>><</link>><br>
+        <<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><</link>><br>
+    <</if>>
+<</if>>
+:: Ocean Breeze Steal Phone Start
+<<person1>>
+<<switch $StealPhoneNoticed>>
+    <<case 1>>你装作若无其事地靠近那个<<person>>的桌子，<<he>>的报纸和手机都安静地在桌子上等着它们的主人回来。
+    <<case 2>>你装作若无其事地靠近那个<<person>>刚坐过的木椅，<<he>>的手机安静地在椅子上等着它的主人带走它。
+    <<case 3>>你装作若无其事地靠近那个<<person>>的桌子，<<he>>的手机都安静地在桌子上等着它的主人发现它的丢失。
+    <<case 4>>你装作若无其事地靠近那个<<person>>的座位，<<he>>的书和手机都安静地在桌子上等着它们的主人回来。
+<</switch>><br><br>
+<span class="teal">你看着那部手机</span><<icon "phone/phone.png">>
+<br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
+<<icon "phone/theft.png">><<link [[拿走手机|Ocean Breeze Steal Phone Finish]]>><<set $StealPhoneSucceed to 1>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
+<<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><<set $StealPhoneSucceed to 2>><</link>><br>
+:: Ocean Breeze Steal Phone Finish
+<<person1>>
+<<if $StealPhoneSucceed is 1>>
+    你迅速拿起那个<<person>>的手机，然后快速地离开。
+    <<if $Phone.StealPhoneAlertOceanBreeze is undefined>>
+        <<set $Phone.StealPhoneAlertOceanBreeze to 1>>
+    <<else>>
+        <<set $Phone.StealPhoneAlertOceanBreeze += 1>>
+    <</if>>
+<<elseif $StealPhoneSucceed is 2>>
+    你放弃了偷到那个<<person>>的手机的机会，然后缓缓地离开。
+<<elseif $StealPhoneSucceed is 3>>
+    你失去了盗窃那个<<person>>手机的机会，决定不再关注<<he>>。
+<<else>>
+    你放弃了可能能够偷到那个<<person>>的手机的机会，决定不再关注<<he>>。
+<</if>>
+<<unset $StealPhoneNoticed>>
+<<unset $StealPhoneFollow>>
+<<unset $StealPhoneFollowNext>>
+<<unset $StealPhoneFollowStart>>
+<<unset $StealPhoneFollowFinish>>
+<<unset $StealPhoneSucceed>>
+<<endevent>>
+<br><br>
+<<cafeicon>><<link [[待在咖啡馆|Ocean Breeze]]>><</link>><br>
+<<clifficon>><<link [[离开|Cliff Street]]>><</link>>
+
+:: Park Steal Phone Link
+<<icon "phone/theft.png">>
+<<if Time.dayState is "day">>
+    <<link [[寻找目标偷窃手机 (0:10)|Park Steal Phone]]>><<pass 10>><</link>><br>
+<<else>>
+    <<link [[寻找目标偷窃手机 (0:30)|Park Steal Phone]]>><<pass 30>><</link>><br>
+<</if>>
+:: Park Steal Phone
+<<if $rng gte 50>>
+
+<<else>>
+    你一直在公园
+    <<if $rng gte 25>>
+        的长椅上坐着，
+        <<if Time.dayState is "day">>
+
+        <<else>>
+            这么晚的天，根本没有人
+        <</if>>
+    <<else>>
+        外面兜兜转转
+    <</if>>
 <</if>>
 
 

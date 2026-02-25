@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.0",
+    "version": "Alpha.3.1",
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
@@ -21,6 +21,7 @@
         "img/misc/icon/phone/phone_forbid.png",
         "img/misc/icon/phone/phone_crack.png",
         "img/misc/icon/phone/live.png",
+        "img/misc/icon/phone/theft.png",
         "img/misc/locations/phone/base.png",
         "img/ui/phone/battery.png",
         "img/ui/phone/battery_bg.png",
@@ -44,8 +45,10 @@
         "img/photo/31d15586-9bb9-432e-a336-bb52006f0304.png",
         "img/photo/07363819-aebb-4e32-be7e-240d665c7731.png",
         "img/photo/4c5fcd71-92b5-4974-badd-6a1b2de9d8b6.png",
+        "img/photo/6596727a-7882-4665-acdc-5ad967f49360.png",
+        "img/photo/asdsds1z1-92b5-4974-badd-6a1b2de9d8b6.png",
+        "img/photo/as22s1s11-92b5-4974-badd-6sdsasz12a16.png",
 
-        "img/guide/intro/1.png",
         "img/guide/photo/1.png",
         "img/guide/photo/2.png",
         "img/guide/photo/3.png",

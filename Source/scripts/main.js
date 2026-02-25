@@ -85,6 +85,23 @@ PhoneMod.eventsLoadInsert_ = function(target, insert_target, position, offset) {
     }
 }
 
+// ================== 原版函数注入 ==================
+dayPassed = new Proxy(dayPassed, {
+    apply: function(target, thisArg, argumentsList) {
+        PhoneMod.dayPassed()
+        return target.apply(thisArg, argumentsList);
+    }
+});
+PhoneMod.dayPassed = function() {
+    // 咖啡馆每天下降警戒
+    if (V.Phone.StealPhoneAlertOceanBreeze) {
+        V.Phone.StealPhoneAlertOceanBreeze -= 3
+        if (V.Phone.StealPhoneAlertOceanBreeze <= 0) {
+            delete V.Phone.StealPhoneAlertOceanBreeze
+        }
+    }
+}
+
 
 // =================== 操控手机 =====================
 PhoneMod.checkPhoneDisabled = function() {
