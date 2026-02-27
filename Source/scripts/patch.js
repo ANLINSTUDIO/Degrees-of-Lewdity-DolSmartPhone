@@ -13,10 +13,22 @@ PhoneMod.patchOnPassageRender = function (ev) {
     V.Phone.photography = V.Phone.photography || 0;
     V.Phone.CurrentApp = V.Phone.CurrentApp || "main";
     V.Phone.Guide = V.Phone.Guide || [];
+    V.Phone.Charger = V.Phone.Charger || {};
 
+    // 2.95 | 设置变量迁移
     PhoneMod.patchTV("Phone.SettingsWallpaperPath", "Phone.Settings.WallpaperPath");
     PhoneMod.patchTV("Phone.SettingsWallpaperBlur", "Phone.Settings.WallpaperBlur");
     PhoneMod.patchTV("Phone.SettingsWallpaperBlack", "Phone.Settings.WallpaperBlack");
+
+    // 3.2 | 手机更新型号
+    V.Phone.Owned.forEach(phone => {
+        if (!phone.hasOwnProperty("newnessmax")) {
+            phone.model = "斯达特3 限量型"
+            phone.newnessmax = PhoneMod.PhoneModels["斯达特3 限量型"].newnessfactory;
+            phone.newness = Math.round(phone.newness * phone.newnessmax)
+        }
+    });
+    if (!V.Phone.SecondPhoneShopGoods) PhoneMod.RefreshSecondPhone();
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

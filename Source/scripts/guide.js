@@ -110,6 +110,16 @@ PhoneMod.Guide.secondphoneshop = [
     }, 
 ]
 
+PhoneMod.Guide.charge = [
+    {
+        image: "img/guide/charge/1.png",
+        text: `手机分为多种型号，其质量不一，目前主要体现在电池最大电量，<span class="red">使用不当（如过度充电和没电强制关机）</span>会造成电池磨损，减少最大电量。<br>
+        当手机完全损坏时将无法继续使用。<br>
+        你可以在<span class="teal">卧室、海风咖啡馆和学校图书馆柜台（和悉尼有剧情哦）<span>对手机进行充电。`,
+        alt: ""
+    }, 
+]
+
 PhoneMod.Guide.stealphone = [
     {
         image: "img/guide/stealphone/1.png",
@@ -120,57 +130,55 @@ PhoneMod.Guide.stealphone = [
 
 
 // 启动教程
-PhoneMod.Guide.startTutorial = function(data) {
-    let tutorialCompleted = false;
-    if (V.Phone.Guide) {
-        for (let key in PhoneMod.Guide) {
-            if (PhoneMod.Guide[key] === data) {
-                tutorialCompleted = V.Phone.Guide.hasOwnProperty(key)
-                break
-            }
-        }
+PhoneMod.Guide.startTutorial = function(key) {
+    if (V.Phone.Guide.includes(key)) {
+        return;
     }
-    if (!tutorialCompleted) {
-        PhoneMod.Guide.currentStep = 1;
-        PhoneMod.Guide.currentData = data;
-        PhoneMod.Guide.totalSteps = data.length;
-        PhoneMod.Guide.touchStartX = 0;
-        PhoneMod.Guide.touchEndX = 0;
+    data = PhoneMod.Guide[key];
+    if (!data) {
+        return;
+    }
 
-        const smartphone_guide = document.getElementById("smartphone_guide")
-        if (smartphone_guide) {
-            smartphone_guide.remove();
-        }
+    PhoneMod.Guide.currentDataKey = key;
+    PhoneMod.Guide.currentStep = 1;
+    PhoneMod.Guide.currentData = data;
+    PhoneMod.Guide.totalSteps = data.length;
+    PhoneMod.Guide.touchStartX = 0;
+    PhoneMod.Guide.touchEndX = 0;
 
-        new Wikifier(document.querySelector("body"), "<<smartphone_guide>>")
-        // 点击步骤指示器切换
+    const smartphone_guide = document.getElementById("smartphone_guide")
+    if (smartphone_guide) {
+        smartphone_guide.remove();
+    }
 
-        const stepsContainer = document.getElementById('tutorialSteps');
-        data.forEach((_, index) => {
-            const stepNumber = index + 1;
-            const indicator = document.createElement('span');
-            indicator.className = `step-indicator ${stepNumber === currentStep ? 'active' : ''}`;
-            indicator.dataset.step = stepNumber;
-            indicator.textContent = stepNumber;
-            
-            // 添加点击事件
-            indicator.addEventListener('click', () => {
-                PhoneMod.Guide.goToStep(stepNumber);
-            });
-            
-            stepsContainer.appendChild(indicator);
-        });
-        document.getElementById('totalSteps').textContent = PhoneMod.Guide.totalSteps;
+    new Wikifier(document.querySelector("body"), "<<smartphone_guide>>")
+    // 点击步骤指示器切换
 
-        const overlay = document.getElementById('tutorial-overlay');
-        overlay.classList.remove('hidden');
-        PhoneMod.Guide.updateTutorialStep(PhoneMod.Guide.currentStep);
+    const stepsContainer = document.getElementById('tutorialSteps');
+    data.forEach((_, index) => {
+        const stepNumber = index + 1;
+        const indicator = document.createElement('span');
+        indicator.className = `step-indicator ${stepNumber === currentStep ? 'active' : ''}`;
+        indicator.dataset.step = stepNumber;
+        indicator.textContent = stepNumber;
         
-        // 添加触摸事件监听
-        const content = document.querySelector('.tutorial-content');
-        content.addEventListener('touchstart', PhoneMod.Guide.handleTouchStart, false);
-        content.addEventListener('touchend', PhoneMod.Guide.handleTouchEnd, false);
-    }
+        // 添加点击事件
+        indicator.addEventListener('click', () => {
+            PhoneMod.Guide.goToStep(stepNumber);
+        });
+        
+        stepsContainer.appendChild(indicator);
+    });
+    document.getElementById('totalSteps').textContent = PhoneMod.Guide.totalSteps;
+
+    const overlay = document.getElementById('tutorial-overlay');
+    overlay.classList.remove('hidden');
+    PhoneMod.Guide.updateTutorialStep(PhoneMod.Guide.currentStep);
+    
+    // 添加触摸事件监听
+    const content = document.querySelector('.tutorial-content');
+    content.addEventListener('touchstart', PhoneMod.Guide.handleTouchStart, false);
+    content.addEventListener('touchend', PhoneMod.Guide.handleTouchEnd, false);
 }
 
 PhoneMod.Guide.resetGuide = function() {
@@ -271,12 +279,8 @@ PhoneMod.Guide.goToStep = function(step) {
 // 完成教程
 PhoneMod.Guide.completeTutorial = function() {
     PhoneMod.Guide.closeTutorial();
-    for (let key in PhoneMod.Guide) {
-        if (PhoneMod.Guide[key] === PhoneMod.Guide.currentData) {
-            V.Phone.Guide[key] = true
-            break
-        }
-    }
+    V.Phone.Guide.push(PhoneMod.Guide.currentDataKey)
+    delete PhoneMod.Guide.currentDataKey
 }
 
 // 触摸事件处理

@@ -492,7 +492,7 @@ PhoneMod.photoCheck = function() {
                 }
             });
             if (result) {
-                PhoneMod.Guide.startTutorial(PhoneMod.Guide.photo);
+                PhoneMod.Guide.startTutorial("photo");
                 V.Phone.TakingPhotoWill = photo_path;
                 break
             }

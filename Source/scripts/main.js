@@ -10,9 +10,7 @@ $(document).one(":passageinit", function () {
 $(document).on(":passagerender", function (ev) {PhoneMod.onPassageRender(ev)});
 PhoneMod.onPassageRender = function (ev) {
     PhoneMod.ev = ev
-    V.Phone.open = false
-    V.Phone.havingOrgasm = false
-    delete V.Phone.yenotePosting
+    PhoneMod.varClean()
 
     const phoneDebugSwitchUI = document.createElement('div');
     phoneDebugSwitchUI.id = "smartphone_debug_switch"
@@ -34,33 +32,66 @@ PhoneMod.onPassageRender = function (ev) {
     PhoneMod.photoCheck();  // 检测完成任务并执行拍照
 }
 PhoneMod.eventsLoad = function() {
-    PhoneMod.events.forEach(function(event) {
-        if (V.passage === event.passage) {
-        if (event.chance === undefined || Math.random() < event.chance) {
+    PhoneMod.events.forEach(PhoneMod.eventsLoad_)
+}
+PhoneMod.eventsLoad_ = function(event_or_id) {  // 可以提供event或者eventid
+    let event = event_or_id
+    if (typeof(event_or_id) === "string") {
+        event = PhoneMod.events.find(event_ => event_.eventid === event)
+        if (!event) {
+            console.log(`| [SmartPhone] 没有找到次事件 ${event_or_id}，注入失败`);
+        }
+    }
+    if (!event) return
+    if (V.passage === event.passage || typeof(event_or_id) === "string") {
+        let pass = null
+        if (event.condition) {
+            pass = PhoneMod[event.condition]()
+        }
+        if (pass === null) {
+            if (event.chance) {
+                pass = Math.random() < event.chance
+            } else {
+                pass = true
+            }
+        }
+        if (pass) {
+            let succeed = true
             if (event.goto === true) {
                 new Wikifier(null, `<<goto "${event.event}">>`);
             } else {
-                PhoneMod.eventsLoadInclude_(event.target, event.event, event.position, event.offset)
+                succeed = PhoneMod.eventsLoadInclude_(event.target, event.event, event.position, event.offset)
             }
-            if (event.replace_target) {
-                PhoneMod.eventsLoadInclude_(event.replace_target, event.replace_event, "replace", 0)
+            if (succeed) {
+                if (event.s) {
+                    PhoneMod.eventsLoad_(event.s)
+                }
+            } else {
+                if (event.f) {
+                    console.log(`| [SmartPhone] 注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`);
+                    PhoneMod.eventsLoad_(event.f)
+                } else {
+                    console.log(`| [SmartPhone] 注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`);
+                }
             }
-    }}})
-}
-PhoneMod.eventsLoadInclude_ = function(data_passage, include, position, offset) {
-    const $target = $(PhoneMod.ev.content).find(`a[data-passage="${data_passage}"]`);
-    if ($target.length > 0) {
-        const Div = document.createElement("div");
-        Div.style.display = "inline";
-        new Wikifier(Div, `<<include "${include}">>`);
-        if (position === "replace") {
-            $target.first().replaceWith(Div);
-        } else{
-            PhoneMod.eventsLoadInsert_($target, Div, position, offset ?? 0)
         }
     }
 }
-PhoneMod.eventsLoadInsert_ = function(target, insert_target, position, offset) {
+PhoneMod.eventsLoadInclude_ = function(target, include, position="after", offset=0) {
+    let $target = $(PhoneMod.ev.content).find(`a[data-passage="${target}"]`);
+    if ($target.length <= 0) return false
+
+    const Div = document.createElement("div");
+    Div.style.display = "inline";
+    new Wikifier(Div, `<<include "${include}">>`);
+    if (position === "replace") {
+        $target.first().replaceWith(Div);
+    } else{
+        PhoneMod.eventsLoadInsert_($target, Div, position, offset)
+    }
+    return true
+}
+PhoneMod.eventsLoadInsert_ = function(target, insert_target, position="after", offset=0) {
     let insertTarget = target.first();
     if (position === "before") {
         // 遍历前两个兄弟节点
@@ -84,6 +115,11 @@ PhoneMod.eventsLoadInsert_ = function(target, insert_target, position, offset) {
         insertTarget.after(insert_target);
     }
 }
+PhoneMod.varClean = function() {
+    V.Phone.open = false
+    V.Phone.havingOrgasm = false
+    delete V.Phone.yenotePosting
+}
 
 // ================== 原版函数注入 ==================
 dayPassed = new Proxy(dayPassed, {
@@ -100,6 +136,8 @@ PhoneMod.dayPassed = function() {
             delete V.Phone.StealPhoneAlertOceanBreeze
         }
     }
+
+    PhoneMod.RefreshSecondPhone()  // 老冯二手店刷新货
 }
 
 
@@ -122,6 +160,7 @@ PhoneMod.checkPhoneDisabled = function() {
     }, 10)
 }
 PhoneMod.togglePhone = function(force=null) {
+    if (!PhoneMod.PhoneConsumption(1)) return;
     const phone = document.getElementById("smart-phone-container");
     if (!phone) return;
 
@@ -168,12 +207,13 @@ PhoneMod.togglePhone = function(force=null) {
     PhoneMod.appInit(true)
 };
 PhoneMod.toggleApp = function(AppName, open=true) {
-    if (!PhoneMod.PhoneWaer(0.001)) return;
+    if (!PhoneMod.PhoneConsumption(1)) return;
     V.Phone.CurrentApp = AppName;
     PhoneMod.PhoneUIInit(open);
     PhoneMod.appInit();
 };
-PhoneMod.appInit = function(togglePhone=false){
+PhoneMod.appInit = function(togglePhone=false) {
+    if (!PhoneMod.PhoneConsumption(1)) return;
     const AppName = V.Phone.CurrentApp
     const app = PhoneMod.Apps[AppName]
     if (!V.Phone.AlarmTriggered && app) {
@@ -302,25 +342,6 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
         console.log("SafeCloseError");
     }
 };
-PhoneMod.PhoneWaer = function(value) {
-    PhoneMod.getUsingPhone().newness = round(PhoneMod.getUsingPhone().newness - value, 4);
-    return PhoneMod.PhoneCheckNewness()
-}
-PhoneMod.PhoneCheckNewness = function () {
-    if (PhoneMod.getUsingPhone().newness <= 0) {
-        PhoneMod.getUsingPhone().newness = 0;
-        if (!PhoneMod.changeUsingPhone()) {
-            PhoneMod.PhoneSafeClose()
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
-            return false;
-        } else {
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
-            return true;
-        }
-    }
-    return true;
-}
-
 
 // =================== 弹窗信息 =====================
 PhoneMod.msgSend = function (msg, app=null, func=null) {
@@ -397,7 +418,7 @@ PhoneMod.DebugExcuteSugerCube = function() {
         const path_input = document.getElementById("excute-sugercube-path")
         if (input) {
             const command = input.value
-            let path = "null"
+            let path = "\"#passages\""
             if (path_input && path_input.value) {
                 path = `document.querySelector("${path_input.value}")`
             }
@@ -413,82 +434,78 @@ PhoneMod.DebugExcuteSugerCube = function() {
 PhoneMod.Phone = class {
   constructor() {
     this.id = this.generateId();
-    this.price = undefined;
-    this.newness = 1;
+    this.model = "未知品牌"
+    this.newnessmax = 0;  // 当前磨损，最大电量
+    this.newness = 0;  // 电量
     this.stolen = false;
     this.usable = false;
     this.second = false;
   }
   generateId(){
-    const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+    const uniqueId = this.model + Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
     return uniqueId
   }
+  generateModel() {
+    this.setModel(PhoneMod.PhoneModelsMain[ PhoneMod.PhoneModelsMain.length * Math.random() << 0]);
+  }
+  setModel(model) {
+    this.model = model
+    this.id = this.generateId();
+    this.newnessmax = this.info().newnessfactory
+    this.newness = this.newnessmax
+  }
+  info() {
+    return PhoneMod.getPhoneInfo(this.model)
+  }
   return() {
-    return {
-        id: this.id,
-        price: this.price,
-        newness: this.newness,
-        stolen: this.stolen,
-        usable: this.usable,
-        second: this.second
-    }
+    return { ...this }
   }
   generate() { // 生成一部手机
-    this.price = Math.round(4000 + (Math.random() * 3000 - 3000 / 2));
-    this.newness = Math.random();
+    this.generateModel();
+    this.newnessmax = Math.round(Math.random() * this.info().newnessfactory);
+    this.newness = Math.round(Math.random() * this.newnessmax);
   }
-  newBuy(price) {
-    this.price = price;
-    this.usable = true
+  newBuy(model) {
+    this.setModel(model);
+    this.usable = true;
     return this.return();
   }
-  newBuySecond(price, newness) {
-    this.newBuy(price)
-    this.newness = newness
-    this.second = true
+  newBuySecond(model, newnessK) {
+    this.newBuy(model);
+    this.newnessmax = Math.round(newnessK * this.info().newnessfactory);
+    this.newness = this.newnessmax
+    this.second = true;
     return this.return();
   }
   newStolen() {
+    this.generate();
     this.stolen = true;
-    this.generate()
     return this.return();
   }
 }
-PhoneMod.generatePassward = function() {
-const chars = '0123456789';
-let password = '';
-for (let i = 0; i < 6; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-}
-return password;
-}
-
-PhoneMod.BuyPhone = function(price) { // 购买一部手机
-  V.Phone.Owned.push(new PhoneMod.Phone().newBuy(price));
+// === 手机控制 ==========================================
+PhoneMod.BuyPhone = function(model) { // 购买一部手机
+  V.Phone.Owned.push(new PhoneMod.Phone().newBuy(model));
   PhoneMod.changeUsingPhone();
 }
-PhoneMod.BuySecondPhone = function(price, newness) { // 购买一部二手手机
-  V.Phone.Owned.push(new PhoneMod.Phone().newBuySecond(price, newness));
+PhoneMod.BuySecondPhone = function(model, newnessK) { // 购买一部二手手机
+  V.Phone.Owned.push(new PhoneMod.Phone().newBuySecond(model, newnessK));
   PhoneMod.changeUsingPhone();
+  V.Phone.SecondPhoneShopGoods = V.Phone.SecondPhoneShopGoods.filter(item => !(item.model === model && item.newnessK === newnessK));
+}
+PhoneMod.RefreshSecondPhone = function() {
+    delete V.Phone.SecondPhoneShopGoodsBought
+    V.Phone.SecondPhoneShopGoods = []
+    for (let index = 0; index < 4 + Math.random() * 3; index++) {
+        const model = PhoneMod.PhoneModelsMain[ PhoneMod.PhoneModelsMain.length * Math.random() << 0]
+        const newnessK = 0.4 + Math.random() * 0.5
+        const model_info = PhoneMod.getPhoneInfo(model)
+        const price = Math.round(model_info.price * newnessK)
+        V.Phone.SecondPhoneShopGoods.push({model: model, newnessK: newnessK, price: price})
+    }
 }
 PhoneMod.StolePhone = function() { // 盗窃一部手机
   V.Phone.Owned.push(new PhoneMod.Phone().newStolen());
-}
-PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
-    if (!V.Phone.Owned) return;
-    const index = V.Phone.Owned.findIndex(p => p.id === id);
-    if (index !== -1) {
-        const phone = V.Phone.Owned[index];
-        let price = phone.price;
-        price *= phone.newness; // 根据新旧程度调整价格
-        if (feng) price *= 0.9;
-        price = round(price, 2)
-        if (price <= 0) price = 1; // 最低售价为1
-        return price;
-    }
-}
-PhoneMod.isUsable = function(phone) { // 检查是否有可用的手机
-    return phone && phone.usable && phone.newness > 0;
 }
 PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     console.log("Attempting to sell phone with id:", id);
@@ -501,14 +518,6 @@ PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
         return moneyEarned;
     }
     return 0
-}
-PhoneMod.getUsingPhone = function() {
-    if (!V.Phone.Using) return null;
-    return PhoneMod.getPhone(V.Phone.Using);
-}
-PhoneMod.getPhone = function(id) {
-    if (!V.Phone.Owned) return null;
-    return V.Phone.Owned.find(p => p.id === id) || null;
 }
 PhoneMod.changeUsingPhone = function(phone=null) { // 切换正在使用的手机
     if (phone === null) {
@@ -536,13 +545,109 @@ PhoneMod.changeUsingPhone = function(phone=null) { // 切换正在使用的手�
     }
     return V.Phone.Using;
 }
-PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
-  if (!V.Phone.Owned) return false;
-  for (let i = 0; i < V.Phone.Owned.length; i++) {
-    if (V.Phone.Owned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.Phone.Owned[i]))) return true;
-  }
-  return false;
+// === 手机电量与磨损 ====================================
+PhoneMod.PhoneConsumption = function(value) {
+    const phone = PhoneMod.getUsingPhone()
+    if (phone) {
+        phone.newness = Math.round(phone.newness - value);
+        return PhoneMod.PhoneCheckNewness()
+    }
+    return false
 }
+PhoneMod.PhoneCharge = function(value, phone = null) {
+    if (!phone) {phone = PhoneMod.getUsingPhone()}
+    const newness = Math.round(phone.newness + value)
+    const wear = Math.round(Math.max(newness - phone.newnessmax, 0) * PhoneMod.充电损害每度电比)
+    PhoneMod.PhoneWaer(wear, phone, false)  // 损耗手机：过度充电
+    phone.newness = Math.min(newness, phone.newnessmax);
+    return wear
+}
+PhoneMod.PhoneWaer = function(value, phone = null) {
+    if (!phone) {phone = PhoneMod.getUsingPhone()}
+    if (value <= 0) return;
+    phone.newnessmax = Math.round(phone.newnessmax - value);
+    if (phone === PhoneMod.getUsingPhone()) {
+        PhoneMod.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
+        return PhoneMod.PhoneCheckNewness()
+    } else {
+        return null
+    }
+}
+PhoneMod.PhoneCheckNewness = function () {
+    const phone = PhoneMod.getUsingPhone()
+    if (phone.newnessmax <= 0) {
+        phone.newnessmax = 0;
+        if (!PhoneMod.changeUsingPhone()) {
+            PhoneMod.PhoneSafeClose()
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            return false;
+        } else {
+            PhoneMod.PhoneUIInit()
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            return true;
+        }
+    }
+    if (phone.newness <= 0) {
+        PhoneMod.PhoneWaer(50)  // 损耗手机：强制关机
+        phone.newness = 0;
+        if (!PhoneMod.changeUsingPhone()) {
+            PhoneMod.PhoneSafeClose()
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            return false;
+        } else {
+            PhoneMod.PhoneUIInit()
+            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            return true;
+        }
+    }
+    return true;
+}
+PhoneMod.PhoneChargeUnguarded = function(position) {
+    const phone = PhoneMod.getUsingPhone()
+    V.Phone.Charger[position] = {
+        phone: phone,
+        date: Time.date,
+        started: Time.date
+    }
+    V.Phone.Owned = V.Phone.Owned.filter(_phone => _phone !== phone)
+    PhoneMod.changeUsingPhone()
+}
+PhoneMod.PhoneChargeUnguardedFinish = function(position) {
+    const phone = V.Phone.Charger[position].phone
+    V.Phone.Owned.push(phone)
+    PhoneMod.changeUsingPhone(phone)
+    delete V.Phone.Charger[position]
+}
+PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
+    if (Time === undefined) return;
+    if (V.Phone.Charger.hasOwnProperty(position)) {
+        if (apply) {
+            const phone = V.Phone.Charger[position].phone
+            
+            const ageHours = (Time.date.timeStamp - V.Phone.Charger[position].date.timeStamp) / 3600; // 小时差
+            const wear = PhoneMod.PhoneCharge(ageHours * PhoneMod.充电速度每小时, phone)
+            
+            V.Phone.Charger[position].date = Time.date
+            
+            const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
+            const hours = Math.floor(ageHoursFromStarted);
+            let fromStartedText = ""
+            if (hours) {
+                fromStartedText += `${hours}小时`
+            }
+            const minutes = Math.round((ageHoursFromStarted - hours) * 60);
+            if (minutes) {
+                fromStartedText += `${minutes}分钟`
+            }
+
+            return {phone: phone, hours: ageHours, fromStarted: ageHoursFromStarted, fromStartedText: fromStartedText, wear: wear}
+        }
+        
+        return true
+    }
+    return false
+}
+// === 日志 ==========================================
 PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
     if (V.Phone.Owned && V.Phone.Owned.length > 0) {
         const Uls = document.getElementsByClassName("journal carry")
@@ -559,14 +664,15 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
             
             V.Phone.Owned.forEach(function(phone) {
                 const Li = document.createElement("li");
-                let info = PhoneMod.getPhoneConditionInfo(phone.newness);
+                let info = PhoneMod.getPhoneConditionInfo(phone);
                 new Wikifier(Li, `
-                    <span style="margin-right: 50px"></span>
+                    <span style="margin-right: 20px"></span>
                     <<if $Phone.Using and "${phone.id}" eq $Phone.Using>>
                         <<icon "phone/phone.png">>
                         <span class='teal'>正在使用</span> | 
                     <<elseif ${phone.stolen && !phone.usable}>>
                         <<icon "phone/phone_forbid.png">>
+                        <span class='red'>无法使用</span> | 
                     <<else>>
                         <<icon "phone/phone_disabled.png">> 
                         <<if ${phone.newness > 0}>>
@@ -575,16 +681,19 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                             <span class='red'>已损坏</span> |
                         <</if>>
                     <</if>>
-                    一部
-                    <span class='${info.color}'>${info.text}</span>
-                    的手机，官网售价为
-                    <span class='gold'>£${Math.round(phone.price)}</span>。
+                    <<if ${phone.newness > 0}>>
+                        [ ${PhoneMod.getPhoneBattery(phone)}% ] 
+                    <<else>>
+                        [ --- ] 
+                    <</if>>
+                    一部${info.html}的 ${phone.model} ，官网售价为
+                    <span class='gold'>£${Math.round(PhoneMod.getPhoneInfo(phone.model).price)}</span>。
                     <<if ${phone.stolen}>>
                         <span class='red'>盗窃得来</span>
                         <<if ${phone.usable}>>
                             <span class='yellow'>密码已重置</span>
                         <<else>>
-                            <span class='red'>因为密码未知而无法使用</span>
+                            <span class='red'>密码未知</span>
                         <</if>>
                     <<else>>
                         <<if ${phone.second}>>
@@ -607,4 +716,29 @@ PhoneMod.phoneJournalChange = function(id) { // 日志中更新手机信息
         Div.remove();
         PhoneMod.showPhoneJournal();
     }
+    PhoneMod.PhoneUIInit()
+}
+// === 内容 ==========================================
+PhoneMod.SchoolLockersSneakOnNPC = function(npc) {
+    V.Phone.SchoolLockersSneakOnNPC = npc
+}
+PhoneMod.SchoolLockersSneakCondition = function() {
+    switch (V.Phone.SchoolLockersSneakOnNPC) {
+        case "Kylar":
+            PhoneMod.eventsLoad_("School Lockers Sneak Kylar")
+            break;
+        case "Whitney":
+            PhoneMod.eventsLoad_("School Lockers Sneak Whitney")
+            break;
+        case "Robin":
+            PhoneMod.eventsLoad_("School Lockers Sneak Robin")
+            break;
+        case "Sydney":
+            PhoneMod.eventsLoad_("School Lockers Sneak Sydney")
+            break;
+        default:
+            return null;
+    }
+    delete V.Phone.SchoolLockersSneakOnNPC
+    return false;
 }

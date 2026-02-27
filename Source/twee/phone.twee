@@ -76,8 +76,8 @@
                     <span style="flex-grow: 1;"></span>
                     <<print Weather.toSelectedString(Weather.temperature, 1)>>
                     <div id="battery">
-                        <<set _battery to Math.round(PhoneMod.getUsingPhone().newness * 100)>>
                         <img id="battery_bg" src="img/ui/phone/battery_bg.png">
+                        <<set _battery to PhoneMod.getPhoneBattery()>>
                         <<print '<img id="battery_cover" src="img/ui/phone/battery.png" style="clip-path: inset(0 '+(100 - _battery)+'% 0 0);">'>>
                         <<print '<span id="battery_value">'+_battery+'</span>'>>
                     </div>
@@ -341,13 +341,18 @@
     <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>>
     <hr>
-    <input type="text" id="excute-sugercube-path" placeholder="执行SugerCube位置">
+    <input type="text" id="excute-sugercube-path" placeholder="执行位置 ?? #passages">
     <input type="text" id="excute-sugercube" placeholder="执行SugerCube命令"><<link "执行">><<run PhoneMod.DebugExcuteSugerCube()>><</link>>
     <hr>
     <h3 class="gold">获取手机</h3>
-    <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone(4999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
-    <<link "通过老冯购买手机">><<run PhoneMod.BuySecondPhone(2999)>><<run PhoneMod.toggleDebug(true)>><</link>><br>
-    <<link "修复当前使用的手机">><<run PhoneMod.getUsingPhone().newness = 1.0>><<run Engine.play(passage())>><</link>>
+    <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone("特斯特2 测试型")>><<run Engine.play(passage())>><</link>><br>
+    <<link "通过老冯购买手机">><<run PhoneMod.BuySecondPhone("特斯特2 测试型", 0.8)>><<run Engine.play(passage())>><</link>><br>
+    <<link "通过盗窃获得手机">><<run PhoneMod.StolePhone()>><<run Engine.play(passage())>><</link>><br>
+    <<link "修复当前使用的手机">><<run PhoneMod.getUsingPhone().newness = PhoneMod.getUsingPhone().newnessmax>><<run Engine.play(passage())>><</link>>
+    <hr>
+    <h3 class="gold">剧情变量</h3>
+    <<link "清空咖啡店盗窃警戒">><<run delete V.Phone.StealPhoneAlertOceanBreeze>><<run Engine.play(passage())>><</link>><br>
+    <<link "刷新二手手机店货物">><<run PhoneMod.RefreshSecondPhone()>><<run Engine.play(passage())>><</link>>
     <hr>
     <h3 class="gold">调试对话</h3><span class="red">注意！这可能会破坏你的存档 至少会改变你的位置</span><br>
     <<link [[进入官方店|Shopping Centre Phone Shop]]>><</link>><br>

@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.1",
+    "version": "Alpha.3.2",
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
@@ -22,6 +22,7 @@
         "img/misc/icon/phone/phone_crack.png",
         "img/misc/icon/phone/live.png",
         "img/misc/icon/phone/theft.png",
+        "img/misc/icon/phone/charge.png",
         "img/misc/locations/phone/base.png",
         "img/ui/phone/battery.png",
         "img/ui/phone/battery_bg.png",
@@ -64,7 +65,8 @@
         "img/guide/contacts/2.png",
         "img/guide/contacts/3.png",
         "img/guide/contacts/4.png",
-        "img/guide/secondphoneshop/1.png"
+        "img/guide/secondphoneshop/1.png",
+        "img/guide/charge/1.png"
     ],
     "additionFile": ["README.md"],
     "addonPlugin": [
@@ -92,13 +94,33 @@
                 {
                     "passage": "Widgets Journal",
                     "findString": "<<if _carrying or _hasProduce>>",
-                    "replace": "<<if _carrying or _hasProduce or $Phone.Owned>>",
+                    "replace": "<<if _carrying or _hasProduce or ($Phone.Owned and $Phone.Owned.length gt 0)>>",
                     "all": true
                 },
                 {
                     "passage": "Clothing Shop v2 Widgets",
                     "findString": "<<elseif (Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride>>",
                     "replace": "<<elseif $location isnot \"phone\" and ((Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride)>>"
+                },
+                {
+                    "passage": "School Lockers Sneak",
+                    "findString": "<<addinlineevent \"KylarLocker\" 0.015>>",
+                    "replace": "<<addinlineevent \"KylarLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Kylar\")>>"
+                },
+                {
+                    "passage": "School Lockers Sneak",
+                    "findString": "<<addinlineevent \"WhitneyLocker\" 0.015>>",
+                    "replace": "<<addinlineevent \"WhitneyLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Whitney\")>>"
+                },
+                {
+                    "passage": "School Lockers Sneak",
+                    "findString": "<<addinlineevent \"RobinLocker\" 0.015>>",
+                    "replace": "<<addinlineevent \"RobinLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Robin\")>>"
+                },
+                {
+                    "passage": "School Lockers Sneak",
+                    "findString": "<<addinlineevent \"SydneyLocker\" 0.015>>",
+                    "replace": "<<addinlineevent \"SydneyLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Sydney\")>>"
                 }
             ]
         }

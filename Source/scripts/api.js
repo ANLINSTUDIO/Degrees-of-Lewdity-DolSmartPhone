@@ -101,7 +101,7 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
 
     // 检查是否有可用的手机
     if (V.Phone && V.Phone.Owned && Array.isArray(V.Phone.Owned)) {
-        return V.Phone.Owned.some(phone => phone.usable);
+        return V.Phone.Owned.some(phone => phone.usable && phone.newness > 0 && phone.newnessmax > 0);
     }
 
     return false;
@@ -140,26 +140,6 @@ PhoneMod.PhoneBack =  function() {
     } 
     return V.safePassage  // 没有passage保存
 }
-PhoneMod.getPhoneConditionInfo = function(condition) {
-    condition = Math.max(0, Math.min(1, condition)); // 限制在0-1范围内
-    for (let level of PhoneMod.phoneConditionLevels) {
-        if (condition >= level.threshold) {
-            return {
-                text: level.text,
-                color: level.color,
-                value: condition,
-                percentage: Math.round(condition * 100)
-            };
-        }
-    }
-    
-    return {
-        text: "看不出情况",
-        color: "#9E9E9E",
-        value: condition,
-        percentage: Math.round(condition * 100)
-    };
-}
 PhoneMod.setPhoneBeating = function(shouldBeat) {
     const phoneContainer = document.getElementById('smart-phone-container');
     
@@ -168,6 +148,101 @@ PhoneMod.setPhoneBeating = function(shouldBeat) {
     } else {
         phoneContainer.classList.remove('beating');
     }
+}
+PhoneMod.getPhone = function(id) {
+    if (!V.Phone.Owned) return null;
+    return V.Phone.Owned.find(p => p.id === id) || null;
+}
+PhoneMod.generatePassward = function() {
+    const chars = '0123456789';
+    let password = '';
+    for (let i = 0; i < 6; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+}
+PhoneMod.getPhoneInfo = function(id_or_model) {
+    if (PhoneMod.PhoneModels.hasOwnProperty(id_or_model)) {
+        return PhoneMod.PhoneModels[id_or_model]
+    }
+    const index = V.Phone.Owned.findIndex(p => p.id === id_or_model);
+    if (index >= 0) {
+        return PhoneMod.PhoneModels[V.Phone.Owned[index].model]
+    }
+    return null
+}
+PhoneMod.getPhoneConditionInfo = function(phone_or_condition) {
+    let condition = -1
+    if (typeof phone_or_condition === "number") {
+        condition = phone_or_condition
+    } else {
+        if (phone_or_condition === undefined) {
+            phone_or_condition = PhoneMod.getUsingPhone()
+        }
+        condition = Math.max(0, Math.min(1, phone_or_condition.newnessmax / PhoneMod.getPhoneInfo(phone_or_condition.model).newnessfactory)); // 限制在0-1范围内
+    }
+
+    let info = {
+        text: "看不出情况",
+        color: "#9E9E9E",
+        value: condition,
+        percentage: Math.round(condition * 100),
+        percent_text: "看不出情况"
+    }
+
+    const percent = Math.round(condition*10)
+    let percent_text = "看不出情况"
+    if (percent === 10) { percent_text = "全新"} 
+    else if (percent === 0) { percent_text = "全损"} 
+    else {percent_text = percent+'成新'}
+    info["percent_text"] = percent_text
+    
+    for (let level of PhoneMod.phoneConditionLevels) {
+        if (condition >= level.threshold) {
+            info["text"] = level.text
+            info["color"] = level.color
+            break
+        }
+    }
+
+    info["html"] = `<span style="color: ${info["color"]}">${info["text"]}</span>`
+    
+    return info;
+}
+PhoneMod.getPhoneBattery = function(phone) {
+    phone = phone ?? PhoneMod.getUsingPhone()
+    if (phone) {
+        return Math.round((phone.newness / phone.newnessmax) * 100)
+    } else {
+        return null
+    }
+}
+PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
+    if (!V.Phone.Owned) return;
+    const index = V.Phone.Owned.findIndex(p => p.id === id);
+    if (index !== -1) {
+        const phone = V.Phone.Owned[index];
+        let price = PhoneMod.getPhoneInfo(phone.model).price;
+        price *= phone.newnessmax / PhoneMod.getPhoneInfo(id).newnessfactory; // 根据新旧程度调整价格
+        if (feng) price *= 0.9;
+        price = Math.floor(price)
+        if (price <= 0) price = 1; // 最低售价为1
+        return price;
+    }
+}
+PhoneMod.getUsingPhone = function() {  // 获取正在使用的手机
+    if (!V.Phone.Using) return null;
+    return PhoneMod.getPhone(V.Phone.Using);
+}
+PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
+  if (!V.Phone.Owned) return false;
+  for (let i = 0; i < V.Phone.Owned.length; i++) {
+    if (V.Phone.Owned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.Phone.Owned[i]))) return true;
+  }
+  return false;
+}
+PhoneMod.isUsable = function(phone) { // 检查是否有可用的手机
+    return phone && phone.usable && phone.newness > 0 && phone.newnessmax > 0;
 }
 
 // ==================== 下面是关于玩家的工具函数 ====================
@@ -207,4 +282,15 @@ PhoneMod.getStarRating = function(value) {
         stars += '☆';
     }
     return stars;
+}
+PhoneMod.haveSexPhotoInPhone = function() {
+    for (let photo in V.Phone.Album) {
+        const task = PhoneMod.PhonePhotos[photo]
+        for (let index = 0; index < task.fames.length; index++) {
+            if (["bestiality", "exhibitionism", "impreg", "pimp", "pregnancy", "prostitution", "rape", "sex"].contains(task.fames[index])) {
+                return true
+            }
+        }
+    }
+    return false
 }

@@ -1,5 +1,7 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 
+
+// === 版本 =======================================================
 PhoneMod.currentVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.version
 PhoneMod.latestVersion = null
 PhoneMod.notice = ""
@@ -68,80 +70,58 @@ getLastedVersion()
 getNotice()
 
 
-PhoneMod.热度衰减系数 = 0.1;  // 衰减系数 0.1 控制热度下降速度（可根据需求调整，如每天衰减一半则系数约为 0.03）。
-PhoneMod.点赞概率百分之 = 50;
-PhoneMod.评论概率百分之 = 5;
-PhoneMod.打赏概率百分之 = 10;
-
-
-PhoneMod.debugBlackVPhone = [
-  "Settings", "ReturnWorn", "Album"
-]
-
-
-PhoneMod.extraUsePhoneAreas = [
-  "Shopping Centre", "Shopping Centre Top", "Commercial rooftops",
-  "Shopping Centre Phone Shop", "Second Phone Shop",
-];
-
+// === 注入 =======================================================
 PhoneMod.events = [
+    // {
+    //   passage: "注入段落", 
+    //   target: "定位锚点目标", 
+    //   event: "注入事件", 
+    //   position: "方向" => ["after"], "before", "replace",
+    //   offset: "偏移",
+    //   chance: "出现概率",
+    //   condition: (额外条件) => true:一定触发、无视概率 | false:不触发、无视概率 | null:继承概率
+    //   eventid: "通过定义eventid，可以在成功或失败时继续注入事件"
+    //   s: "成功时注入的event"
+    //   f: "失败时注入的event",
+    //   goto: "直接替换当前段落",
+    // }
+    // 地点
     {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
     {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
     {passage: "Elk Street", target: "Nightingale Street", event: "Second Phone Shop Link", position: "before", offset: 4},
+    // 直播
     {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
     // 盗窃手机
-    {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Steal Phone", chance: 0.1, position: "before"},
-    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
-    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", 
-        replace_target: "Spa Tired Steal", replace_event: "Spa Tired Steal Phone Link"},
+    {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Steal Phone", chance: 0.1, condition: "SchoolLockersSneakCondition", position: "before"},
+    {eventid: "School Lockers Sneak Kylar", target: "School Lockers", event: "School Lockers Sneak Kylar", position: "before", offset: 3},
+    {eventid: "School Lockers Sneak Whitney", target: "School Lockers", event: "School Lockers Sneak Whitney", position: "before", offset: 3},
+    {eventid: "School Lockers Sneak Robin", target: "School Lockers", event: "School Lockers Sneak Robin", position: "before", offset: 3},
+    {eventid: "School Lockers Sneak Sydney", target: "School Lockers", event: "School Lockers Sneak Sydney", position: "before", offset: 3},
+    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {eventid: "Spa Tired Steal REPLACE", target: "Spa Tired Steal", event: "Spa Tired Steal Phone Link"},
     {passage: "Pub Drink", target: "Pub Seduce", event: "Pub Drink Steal Phone Link", chance: 0.7, position: "before"},
     {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Steal Phone Link", position: "before", offset: 1},
     // 询问电话
     {passage: "Pub Landry", target: "Pub", event: "Landry AskTel Link", position: "before", offset: 1},
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
+    // 充电
+    {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Charge Link", position: "before", offset: 1},
+    {passage: "Bedroom", target: "Live Bedroom", event: "Bedroom Charge Link", f:"Bedroom Charge NOLIVE"},
+    {eventid: "Bedroom Charge NOLIVE", target: "Mirror", event: "Bedroom Charge Link", offset: 1},
+    {passage: "Library Rental Counter", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
+    {passage: "Sydney Leighton Spank 4", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
 ];
 PhoneMod.events_on_macro = [
     {macro: "journal", func: "showPhoneJournal"},
     {macro: "orgasm", func: "havingOrgasm"},
 ]
-PhoneMod.phoneConditionLevels = [
-    { threshold: 0.8, text: "崭新出厂", color: "green" },
-    { threshold: 0.6, text: "略有磨损", color: "teal" },
-    { threshold: 0.4, text: " 明显划痕", color: "blue" },
-    { threshold: 0.2, text: "严重磨损", color: "purple" },
-    { threshold: 0, text: "残破不堪", color: "pink" }
-];
-PhoneMod.Contacts = [
-    {name: "兰德里", call: "Phone Call Landry"},
-    {name: "惠特尼", call: "Phone Call Whitney"},
-    {name: "艾利克斯", call: "Phone Call Alex"},
-    {name: "艾弗里", call: "Phone Call Avery"},
-    {name: "贝利", call: "Phone Call Bailey"},
-    {name: "裁缝", call: "Phone Call Tailor"},
-];
-PhoneMod.Apps = {
-    alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
-    memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: PhoneMod.Guide.memo},
-    shop: {display_name: "网购", icon: "img/misc/icon/shopping_centre.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"]},
 
-    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: PhoneMod.Guide.photo},
-    album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: PhoneMod.Guide.photo},
-    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", toggle: "toggleYenote", guide: PhoneMod.Guide.yenote},
 
-    contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: PhoneMod.Guide.contacts},
-    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
-    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
-};
-setup.LocationImages.phone = {
-  folder: "phone",
-  base: {default: {image: "base.png"}}
-}
-PhoneMod.PhonePhotos = {
+// === 内容 =======================================================
+PhoneMod.PhonePhotos = {  // 摄像任务
     "6583d16f-7c3f-4f18-b980-c41f2be40241": {
         msg: "洗澡~洗澡~洗澡澡❤️",
         taskDesc: "在家里洗澡时<span class='pink'>自慰达到高潮</span>",
@@ -547,7 +527,81 @@ PhoneMod.PhonePhotos = {
         }
     },
 }
-PhoneMod.Comments = {
+PhoneMod.Apps = {  // APP
+    alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
+    memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: "memo"},
+    shop: {display_name: "网购", icon: "img/misc/icon/shopping_centre.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"]},
+
+    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: "photo"},
+    album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: "photo"},
+    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", toggle: "toggleYenote", guide: "yenote"},
+
+    contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: "contacts"},
+    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
+    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
+};
+PhoneMod.Contacts = [  // 联系人
+    {name: "兰德里", call: "Phone Call Landry"},
+    {name: "惠特尼", call: "Phone Call Whitney"},
+    {name: "艾利克斯", call: "Phone Call Alex"},
+    {name: "艾弗里", call: "Phone Call Avery"},
+    {name: "贝利", call: "Phone Call Bailey"},
+    {name: "裁缝", call: "Phone Call Tailor"},
+];
+PhoneMod.PhoneModels = {  // 手机品牌
+    "斯达特3 限量型": {
+        price: 4999,
+        newnessfactory: 1000,
+        desc: "拥有这一部手机，说明您是测试版就开始游玩的天选之人。感谢您的支持~❤"
+    },
+    "特斯特2 测试型": {
+        price: 0,
+        newnessfactory: 1000,
+        desc: "内部测试机，此型号严禁外传，不知道你是从哪里搞来的"
+    },
+    "Neme 12": {
+        price: 2999,
+        newnessfactory: 600,
+        desc: "性价比超高的实惠之选！"
+    },
+    "Neme 12 Pro": {
+        price: 3599,
+        newnessfactory: 1000,
+        desc: "全新电池容量，更大，更实惠！"
+    },
+    "Neme 12 Pro Max": {
+        price: 4399,
+        newnessfactory: 1400,
+        desc: "8000mAh / 给用户提供了全方位的极致体验。"
+    },
+    "Mimi 17": {
+        price: 4799,
+        newnessfactory: 1500,
+        desc: "极具质感的小尺寸旗舰 / 第五代萧隆 8 至尊版移动平台，性能跨代 / 专业影像，定格光影 / 低功耗超级阳光屏，亮眼更护眼 / 多瑙河电池，续航超越想象 / 友商都是傻逼"
+    }
+}
+PhoneMod.PhoneModelsMain = [
+  "Neme 12", "Neme 12 Pro", "Neme 12 Pro Max", "Mimi 17"
+]
+
+
+// === 常量 =======================================================
+PhoneMod.热度衰减系数 = 0.1;  // 衰减系数 0.1 控制热度下降速度（可根据需求调整，如每天衰减一半则系数约为 0.03）。
+PhoneMod.点赞概率百分之 = 50;
+PhoneMod.评论概率百分之 = 5;
+PhoneMod.打赏概率百分之 = 10;
+PhoneMod.充电速度每小时 = 500;
+PhoneMod.充电损害每度电比 = 0.2;
+PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
+  "Settings", "ReturnWorn", "Album"
+]
+PhoneMod.extraUsePhoneAreas = [  // 能够允许使用手机的额外区域
+  "Shopping Centre", "Shopping Centre Top", "Commercial rooftops", "Shopping Centre Phone Shop",  // 购物商场：玩家可能刚买完手机
+  "Second Phone Shop",  // 二手手机店：玩家可能刚买完手机
+  "Ocean Breeze Charge", "Bedroom Charge",   // 充电区域
+  "School Library"  // 图书馆充电区域
+];
+PhoneMod.Comments = {  // 通用评论
     "你真美~": `<<lstress>><<stress -12>>`,
     "每次看到好看的人都觉得和你有点神似，我想这世间但凡称得上美的人，都得有几分像你，不过她们又都只能像你，因为你的可爱她们学也学不来！": `<<llstress>><<stress -24>>`,
     "你是与众不同的可爱，表里如一的可爱": `<<lstress>><<stress -12>>`,
@@ -572,7 +626,7 @@ PhoneMod.Comments = {
     "牛逼": "<<garousal>><<arousal 100>>",
     "6": "<<garousal>><<arousal 10>>",
 }
-PhoneMod.NicknameGenerator = {
+PhoneMod.NicknameGenerator = {  // 网名库
     // 前缀库
     prefixes: [
         '可爱的', '帅气的', '迷人的', '疯狂的', '安静的', '暴躁的',
@@ -593,7 +647,7 @@ PhoneMod.NicknameGenerator = {
     numbers: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
               '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
 };
-PhoneMod.PhoneGameQuestions = {
+PhoneMod.PhoneGameQuestions = {  // 小游戏题库
   "Maths": [
     {
       "q": "若一个等差数列的首项为3，公差为4，则第10项是多少？",
@@ -803,7 +857,18 @@ PhoneMod.PhoneGameQuestions = {
     }
   ]
 }
-PhoneMod.Fames = {
+setup.LocationImages.phone = {  // 使用手机时的背景图
+  folder: "phone",
+  base: {default: {image: "base.png"}}
+}
+PhoneMod.phoneConditionLevels = [  // 手机磨损度
+    { threshold: 0.8, text: "崭新出厂", color: "green" },
+    { threshold: 0.6, text: "略有磨损", color: "teal" },
+    { threshold: 0.4, text: " 明显划痕", color: "blue" },
+    { threshold: 0.2, text: "严重磨损", color: "purple" },
+    { threshold: 0, text: "残破不堪", color: "red" }
+];
+PhoneMod.Fames = {  // 原版名声对应表
   bestiality:"人外" ,
   business:"商业" ,
   exhibitionism:"露出" ,
