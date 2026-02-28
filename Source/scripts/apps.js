@@ -142,7 +142,7 @@ PhoneMod.cancelAlarm = function() { // 关闭闹钟
     PhoneMod.PhoneUIInit();
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
-    V.Phone.Alarms.pop(index);
+    V.Phone.Alarms.splice(index, 1);
     PhoneMod.PhoneUIInit(true, true);
 };
 PhoneMod.toggleAlarmType = function(type) {
@@ -483,7 +483,6 @@ PhoneMod.photoCheck = function() {
                         key = key.slice(0, -1)
                     }
                     const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], V);
-                    // console.log(photo_path, actualValue, expectedValue);
                     if (not) {
                         return actualValue !== expectedValue
                     } else {
@@ -491,7 +490,8 @@ PhoneMod.photoCheck = function() {
                     }
                 }
             });
-            if (result) {
+            
+            if (Object.keys(photo.conditions).length > 0 && result) {
                 PhoneMod.Guide.startTutorial("photo");
                 V.Phone.TakingPhotoWill = photo_path;
                 break
@@ -503,6 +503,9 @@ PhoneMod.photoCheck = function() {
 }
 PhoneMod.photoTake = function() {
     if (!V.Phone.TakingPhotoWill) return;
+    if (V.player.gender === "m") {
+        PhoneMod.msgSend("抱歉，目前还没有为男性主角设置额外的拍摄照片。")
+    }
     PhoneMod.setPhoneBeating(false);
     PhoneMod.photoDesc();
     PhoneMod.toggleApp("photo");
@@ -521,6 +524,7 @@ PhoneMod.photoDesc = function() {
     let quality = 0
     const photography_k = V.Phone.photography / 1000
     quality = photography_k * 0.8 + Math.random() * 0.2
+    quality *= PhoneMod.getPhoneInfo().photography
     quality  = Math.round(quality * 1000)
 
     let worn_text = ""
@@ -576,6 +580,7 @@ PhoneMod.addAlbumTask = function(taskId) {
     const task = PhoneMod.PhonePhotos[taskId]
     const photo = V.Phone.Album[taskId]
     const isFinished = taskId in V.Phone.Album
+    if (!photo && task.hide) return
     
     // 创建新的待办项
     const li = document.createElement('li');
@@ -751,6 +756,7 @@ PhoneMod.toggleYenote = function(open) {
             yenote.comments.forEach(comment => {
                 if (!comment.already_read) {
                     comment.already_read = true
+                    console.log(0, comment, comment.effect);
                     new Wikifier(document.getElementById(yenote.id+"*"+yenote.comments.indexOf(comment)), `<<print \`${comment.effect}\`>>`)
                 }
             })
@@ -1026,3 +1032,216 @@ PhoneMod.yenoteGenerateRandomComment = function(photo_id) {
         already_read: false
     };
 };
+// =================== 地图实现 ===================
+PhoneMod.initMap = function() {
+    (function() {
+        const locations = [
+            { name: "森林商店" },
+            { name: "" },
+            { name: "老教堂墓地、墓穴" },
+            { name: "" },
+            { name: "" },
+            { name: "湖畔、湖中遗址", hasLakeRuins: true },
+            { name: "湖畔、湖中遗址", hasLakeRuins: true },
+            { name: "瀑布" },
+            { name: "瀑布" },
+            { name: "钓鱼岩" },
+            { name: "营地" },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "狼穴、伊甸的小屋", hasEden: true },
+            { name: "" }
+        ];
+
+        // ----- 2. 护理等级表 (tending 0-1000) -----
+        const tendingLevels = [
+            { requiredValue: 0, level: "None", color: 'red' },
+            { requiredValue: 1, level: "F", color: 'pink' },
+            { requiredValue: 100, level: "F+", color: 'pink' },
+            { requiredValue: 200, level: "D", color: 'purple' },
+            { requiredValue: 300, level: "D+", color: 'purple' },
+            { requiredValue: 400, level: "C", color: 'blue' },
+            { requiredValue: 500, level: "C+", color: 'blue' },
+            { requiredValue: 600, level: "B", color: 'lblue' },
+            { requiredValue: 700, level: "B+", color: 'lblue' },
+            { requiredValue: 800, level: "A", color: 'teal' },
+            { requiredValue: 900, level: "A+", color: 'teal' },
+            { requiredValue: 1000, level: "S", color: 'green' }
+        ];
+
+        // 科学等级: 根据V.science/200 取整映射 0->D,1->C,2->B,3->A,4->A*
+        function getScienceLevel(science) {
+            let idx = Math.floor(science / 200);
+            if (idx < 0) idx = 0;
+            if (idx > 4) idx = 4;   // 最大A*对应4
+            const map = [
+                { level: 'D', color: 'purple' },   // 0
+                { level: 'C', color: 'blue' },      // 1
+                { level: 'B', color: 'lblue' },      // 2
+                { level: 'A', color: 'teal' },       // 3
+                { level: 'A*', color: 'green' }      // 4
+            ];
+            return map[idx];
+        }
+
+        // 护理等级查找
+        function getTendingLevel(tending) {
+            let best = tendingLevels[0];
+            for (let i = tendingLevels.length - 1; i >= 0; i--) {
+                if (tending >= tendingLevels[i].requiredValue) {
+                    return tendingLevels[i];
+                }
+            }
+            return best;
+        }
+
+        // ----- 古董生成 -----
+        function getAntiques(index, loc) {
+            let base = [];
+            if (index >= 0 && index <= 4) base = ["苔藓遍布的森林箭头£20"];
+            else if (index >= 5 && index <= 10) base = ["锈迹斑斑的森林匕首£40"];
+            else if (index >= 11 && index <= 19) base = ["流光溢彩的森林宝石£100"];
+
+            // 特殊湖中遗址特殊古董
+            if (loc.hasLakeRuins) {
+                base.push("磨损的银戒指£30", "精美的金项链£500", "金质贞操带£2000", "无暇的象牙项链£2000");
+            }
+            return [...new Set(base)];
+        }
+
+        // ----- 种子生成 + 收获/收集条件 -----
+        function getSeeds(index, loc, tendingLevelObj, scienceLevelObj) {
+            let seeds = [];
+            // 基础范围
+            if (index >= 0 && index <= 4) seeds.push({ name: "百合", harvest: "F+", collect: "C" });
+            if (index >= 6 && index <= 11) seeds.push({ name: "红玫瑰", harvest: "D+", collect: "B" });
+            if (index >= 11 && index <= 19) seeds.push({ name: "兰花", harvest: "D+", collect: "A" });
+
+            // 附加上当前护理/科学是否满足 (用于显示颜色)
+            return seeds.map(s => {
+                const harvestReq = s.harvest;
+                const collectReq = s.collect;
+                // 解析护理需求: 比较等级字符串, 简易比较按顺序 None<F<F+<D<D+<C<C+<B<B+<A<A+<S
+                const levelOrder = ["None","F","F+","D","D+","C","C+","B","B+","A","A+","S"];
+                const harvestMet = levelOrder.indexOf(tendingLevelObj.level) >= levelOrder.indexOf(harvestReq);
+                // 科学等级直接比较字母顺序 (D < C < B < A < A*)
+                const scienceOrder = ["D","C","B","A","A*"];
+                const collectMet = scienceOrder.indexOf(scienceLevelObj.level) >= scienceOrder.indexOf(collectReq);
+                return {
+                    name: s.name,
+                    harvestReq,
+                    collectReq,
+                    harvestMet,
+                    collectMet
+                };
+            });
+        }
+
+        // ----- 5. 野生动植物 (血月影响柠檬) -----
+        function getWildlife(index, isBloodMoon, loc) {
+            let items = [];
+            if (index >= 0 && index <= 4) items = ["苹果", "普通蘑菇"];
+            else if (index >= 6 && index <= 10) items = ["梨", "普通蘑菇"];
+            else if (index >= 11 && index <= 19) {
+                items = ["柠檬", "狼菇", "野蜂巢"];
+                if (isBloodMoon) {
+                    items = items.map(i => i === "柠檬" ? "血柠檬" : i);
+                }
+            }
+            return [...new Set(items)];
+        }
+
+        // ----- 7. 构建标尺 -----
+        function buildRuler() {
+            const ruler = document.getElementById('rulerContainer');
+            ruler.innerHTML = '';
+            for (let i = 0; i <= 20; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'ruler-cell';
+                cell.textContent = i;
+                ruler.appendChild(cell);
+            }
+        }
+
+        // ----- 8. 主更新函数 -----
+        function updateAll() {
+            const forestSlider = document.getElementById('forestSlider');
+
+            const forestVal = V.forest/10;
+            const tendingVal = V.tending;
+            const scienceVal = V.science;
+
+            document.getElementById('forestVal').innerText = forestVal;
+
+            // 计算深度索引 (0-20)
+            let rawIndex = Math.floor(forestVal / 5);
+            if (forestVal === 100) rawIndex = 20;
+            const index = Math.min(20, Math.max(0, rawIndex));
+
+            // 更新标尺激活
+            const cells = document.querySelectorAll('.ruler-cell');
+            cells.forEach((c, i) => {
+                if (i === index) c.classList.add('active');
+                else c.classList.remove('active');
+            });
+
+            // 当前地点对象
+            const currentLoc = locations[index];
+
+            // 护理/科学等级对象
+            const tendingLvl = getTendingLevel(tendingVal);
+            const scienceLvl = getScienceLevel(scienceVal);
+
+            // 获取古董
+            const antiques = getAntiques(index, currentLoc);
+
+            // 获取种子（带条件）
+            const seeds = getSeeds(index, currentLoc, tendingLvl, scienceLvl);
+
+            // 获取野生动植物
+            const wildlife = getWildlife(index, Weather.bloodMoon, currentLoc);
+
+            // 渲染infoPanel
+            let html = `
+                <div class="location-title">
+                    <h3>深度 ${index}</h3>
+                </div>
+                <div class="res-section">
+                    <h3>附近地点</h3>
+                    <div class="items-grid">
+                        <span class="item">${currentLoc.name}</span>
+                    </div>
+                </div>
+                <div class="res-section">
+                    <h3>出现古董</h3>
+                    <div class="items-grid">
+                        ${antiques.map(a => `<span class="item">${a}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="res-section">
+                    <h3>出现种子、野生动植物</h3>
+                    <div class="items-grid">
+                        ${seeds.map(s => {
+                            return `<span class="item requirement">
+                                ${s.name} 护理${s.harvestReq} 科学${s.collectReq}</span>
+                            </span>`;
+                        }).join('')}
+                        ${wildlife.map(w => `<span class="item">${w}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('infoPanel').innerHTML = html;
+        }
+
+        // 初始化
+        buildRuler();
+        updateAll();
+    })();
+}

@@ -160,7 +160,7 @@ PhoneMod.checkPhoneDisabled = function() {
     }, 10)
 }
 PhoneMod.togglePhone = function(force=null) {
-    if (!PhoneMod.PhoneConsumption(1)) return;
+    if (!PhoneMod.PhoneConsumption(1) && V.passage !== "Start") return;
     const phone = document.getElementById("smart-phone-container");
     if (!phone) return;
 
@@ -345,14 +345,32 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
 
 // =================== 弹窗信息 =====================
 PhoneMod.msgSend = function (msg, app=null, func=null) {
-    const phone_popup = document.querySelector(".phone-popup")
-    if (phone_popup) {
-        const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
-        new Wikifier(phone_popup_content, `${phone_popup_content.innerHTML? '<br>': ''}${msg}`);
-        phone_popup.classList.add("active")
-        V.Phone.MsgApp = app
-        V.Phone.MsgFunc = func
+    if (PhoneMod.getUsingPhone()) {
+        if (V.Phone.msgLine.length > 0) PhoneMod.msgShowLine();
+        const phone_popup = document.querySelector(".phone-popup")
+        console.log(1, phone_popup);
+        
+        if (phone_popup) {
+            const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
+            new Wikifier(phone_popup_content, `${phone_popup_content.innerHTML? '<br>': ''}${msg}`);
+            phone_popup.classList.add("active")
+            V.Phone.MsgApp = app
+            V.Phone.MsgFunc = func
+        }
+    } else {
+        console.log(2, msg);
+        V.Phone.msgLine.push(msg)
     }
+}
+PhoneMod.msgShowLine = function() {
+    const msgLine = V.Phone.msgLine
+    V.Phone.msgLine = []
+    
+    setTimeout(() => {
+        msgLine.forEach(msg_ => {
+            PhoneMod.msgSend(msg_)
+        })
+    }, 200)
 }
 PhoneMod.msgClose = function () {
     const phone_popup = document.querySelector(".phone-popup")
@@ -525,6 +543,7 @@ PhoneMod.changeUsingPhone = function(phone=null) { // 切换正在使用的手�
             const PhoneUsing = V.Phone.Owned.find(p => p.id === V.Phone.Using)
             if (PhoneMod.isUsable(PhoneUsing)) return V.Phone.Using;
         }
+        
         if (!V.Phone.Owned || V.Phone.Owned.length === 0) {
             V.Phone.Using = null;
         } else {
@@ -543,6 +562,7 @@ PhoneMod.changeUsingPhone = function(phone=null) { // 切换正在使用的手�
             V.Phone.Using = null
         }
     }
+    PhoneMod.msgShowLine();
     return V.Phone.Using;
 }
 // === 手机电量与磨损 ====================================
@@ -558,17 +578,21 @@ PhoneMod.PhoneCharge = function(value, phone = null) {
     if (!phone) {phone = PhoneMod.getUsingPhone()}
     const newness = Math.round(phone.newness + value)
     const wear = Math.round(Math.max(newness - phone.newnessmax, 0) * PhoneMod.充电损害每度电比)
-    PhoneMod.PhoneWaer(wear, phone, false)  // 损耗手机：过度充电
+    PhoneMod.PhoneWaer(wear, phone)  // 损耗手机：过度充电
     phone.newness = Math.min(newness, phone.newnessmax);
     return wear
 }
-PhoneMod.PhoneWaer = function(value, phone = null) {
+PhoneMod.PhoneWaer = function(value, phone = null, check = true) {
     if (!phone) {phone = PhoneMod.getUsingPhone()}
     if (value <= 0) return;
-    phone.newnessmax = Math.round(phone.newnessmax - value);
+    phone.newnessmax = Math.max(Math.round(phone.newnessmax - value), 0);
     if (phone === PhoneMod.getUsingPhone()) {
         PhoneMod.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
-        return PhoneMod.PhoneCheckNewness()
+        if (check) {
+            return PhoneMod.PhoneCheckNewness()
+        } else {
+            return null
+        }
     } else {
         return null
     }
@@ -588,8 +612,8 @@ PhoneMod.PhoneCheckNewness = function () {
         }
     }
     if (phone.newness <= 0) {
-        PhoneMod.PhoneWaer(50)  // 损耗手机：强制关机
         phone.newness = 0;
+        PhoneMod.PhoneWaer(50, null, false)  // 损耗手机：强制关机
         if (!PhoneMod.changeUsingPhone()) {
             PhoneMod.PhoneSafeClose()
             PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
@@ -675,13 +699,15 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                         <span class='red'>无法使用</span> | 
                     <<else>>
                         <<icon "phone/phone_disabled.png">> 
-                        <<if ${phone.newness > 0}>>
+                        <<if ${phone.newnessmax > 0 && phone.newness > 0}>>
                             <<link "切换到">> <<run PhoneMod.phoneJournalChange("${phone.id}")>> <</link>> | 
-                        <<else>>
+                        <<elseif ${phone.newnessmax === 0}>>
                             <span class='red'>已损坏</span> |
+                        <<else>>
+                            <span class='red'>已关机</span> |
                         <</if>>
                     <</if>>
-                    <<if ${phone.newness > 0}>>
+                    <<if ${phone.newnessmax > 0}>>
                         [ ${PhoneMod.getPhoneBattery(phone)}% ] 
                     <<else>>
                         [ --- ] 

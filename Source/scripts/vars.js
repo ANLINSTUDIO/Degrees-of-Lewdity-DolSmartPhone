@@ -90,7 +90,7 @@ PhoneMod.events = [
     {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
     {passage: "Elk Street", target: "Nightingale Street", event: "Second Phone Shop Link", position: "before", offset: 4},
     // 直播
-    {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
+    // {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
     // 盗窃手机
     {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Steal Phone", chance: 0.1, condition: "SchoolLockersSneakCondition", position: "before"},
     {eventid: "School Lockers Sneak Kylar", target: "School Lockers", event: "School Lockers Sneak Kylar", position: "before", offset: 3},
@@ -526,6 +526,16 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           "好奇你卖的是啥，下次发个商品照": ""
         }
     },
+    "Sydney/7121c738-bc5a-41e1-bd2e-3bbbbce37cea": {
+        msg: "好可爱的小悉尼~（拿着我的手机自拍不知道怎么删。那就只能发出来了ya~",
+        taskDesc: "在学校图书馆柜台充电有几率完成",
+        risk: 40,
+        hide: true,
+        fames: [],
+        conditions: {},
+        comments: {
+        }
+    },
 }
 PhoneMod.Apps = {  // APP
     alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
@@ -539,6 +549,8 @@ PhoneMod.Apps = {  // APP
     contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: "contacts"},
     game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
     settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
+
+    // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
 };
 PhoneMod.Contacts = [  // 联系人
     {name: "兰德里", call: "Phone Call Landry"},
@@ -552,36 +564,48 @@ PhoneMod.PhoneModels = {  // 手机品牌
     "斯达特3 限量型": {
         price: 4999,
         newnessfactory: 1000,
+        photography: 1,
         desc: "拥有这一部手机，说明您是测试版就开始游玩的天选之人。感谢您的支持~❤"
     },
     "特斯特2 测试型": {
         price: 0,
         newnessfactory: 1000,
+        photography: 1,
         desc: "内部测试机，此型号严禁外传，不知道你是从哪里搞来的"
     },
     "Neme 12": {
         price: 2999,
         newnessfactory: 600,
+        photography: 0.6,
         desc: "性价比超高的实惠之选！"
     },
     "Neme 12 Pro": {
         price: 3599,
         newnessfactory: 1000,
-        desc: "全新电池容量，更大，更实惠！"
+        photography: 1,
+        desc: "全新电池容量，更大，更实惠！拍摄更清晰！"
     },
     "Neme 12 Pro Max": {
         price: 4399,
         newnessfactory: 1400,
-        desc: "8000mAh / 给用户提供了全方位的极致体验。"
+        photography: 1.4,
+        desc: "8000mAh / 给用户提供了全方位的极致体验 / 摄影新科技，拍照更清晰！"
     },
     "Mimi 17": {
         price: 4799,
         newnessfactory: 1500,
+        photography: 1.6,
         desc: "极具质感的小尺寸旗舰 / 第五代萧隆 8 至尊版移动平台，性能跨代 / 专业影像，定格光影 / 低功耗超级阳光屏，亮眼更护眼 / 多瑙河电池，续航超越想象 / 友商都是傻逼"
+    },
+    "Photographer 3": {
+        price: 4999,
+        newnessfactory: 500,
+        photography: 3,
+        desc: "专业摄像手机，捕捉每一刻艺术的瞬间"
     }
 }
 PhoneMod.PhoneModelsMain = [
-  "Neme 12", "Neme 12 Pro", "Neme 12 Pro Max", "Mimi 17"
+  "Neme 12", "Neme 12 Pro", "Neme 12 Pro Max", "Mimi 17", "Photographer 3"
 ]
 
 
@@ -593,13 +617,15 @@ PhoneMod.打赏概率百分之 = 10;
 PhoneMod.充电速度每小时 = 500;
 PhoneMod.充电损害每度电比 = 0.2;
 PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
-  "Settings", "ReturnWorn", "Album"
+  "Settings", "ReturnWorn", "Album",
+  "Yenotes" // 必须禁用，否则内部的effect会重新作用
 ]
 PhoneMod.extraUsePhoneAreas = [  // 能够允许使用手机的额外区域
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops", "Shopping Centre Phone Shop",  // 购物商场：玩家可能刚买完手机
   "Second Phone Shop",  // 二手手机店：玩家可能刚买完手机
   "Ocean Breeze Charge", "Bedroom Charge",   // 充电区域
-  "School Library"  // 图书馆充电区域
+  "School Library",  // 图书馆充电区域
+  "Bathroom",  // 刚拍完照要看看
 ];
 PhoneMod.Comments = {  // 通用评论
     "你真美~": `<<lstress>><<stress -12>>`,
@@ -617,7 +643,7 @@ PhoneMod.Comments = {  // 通用评论
     "除了窒息我没有什么要表演的": `<<llstress>><<stress -24>><<ltrauma>><<trauma -6>>`,
     "看完照片后，我不敢轻易评论，我担心我庸俗不堪的语言会玷污了这世间少有的美感。但我还是评论了，我觉得如果不能在这样有美感的照片后面留下评论，那将会是一生的遗憾": `<<lstress>><<stress -12>>`,
 
-    "这么小的奶子你敢发我都不敢看": `<<insecurity "breasts_small" 1>><<ginsecurity "breasts_small">>`,
+    "这么小的奶子你敢发我都不敢看": `<<insecurity breasts_small 1>><<ginsecurity breasts_small>>`,
     "你在勾引谁呢，臭婊子": `<<ggstress>><<stress 24>><<gtrauma>><<trauma 12>>`,
     "粉粉嫩嫩的小骚逼，给我吃两口": "<<gstress>><<stress 12>><<lcontrol>><<control -12>>",
     "你怎么这么骚啊，贱货": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
@@ -864,7 +890,7 @@ setup.LocationImages.phone = {  // 使用手机时的背景图
 PhoneMod.phoneConditionLevels = [  // 手机磨损度
     { threshold: 0.8, text: "崭新出厂", color: "green" },
     { threshold: 0.6, text: "略有磨损", color: "teal" },
-    { threshold: 0.4, text: " 明显划痕", color: "blue" },
+    { threshold: 0.4, text: "明显划痕", color: "blue" },
     { threshold: 0.2, text: "严重磨损", color: "purple" },
     { threshold: 0, text: "残破不堪", color: "red" }
 ];

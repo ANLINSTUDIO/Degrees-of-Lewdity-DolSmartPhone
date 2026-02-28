@@ -13,14 +13,13 @@ PhoneMod.patchOnPassageRender = function (ev) {
     V.Phone.photography = V.Phone.photography || 0;
     V.Phone.CurrentApp = V.Phone.CurrentApp || "main";
     V.Phone.Guide = V.Phone.Guide || [];
-    V.Phone.Charger = V.Phone.Charger || {};
 
     // 2.95 | 设置变量迁移
     PhoneMod.patchTV("Phone.SettingsWallpaperPath", "Phone.Settings.WallpaperPath");
     PhoneMod.patchTV("Phone.SettingsWallpaperBlur", "Phone.Settings.WallpaperBlur");
     PhoneMod.patchTV("Phone.SettingsWallpaperBlack", "Phone.Settings.WallpaperBlack");
 
-    // 3.2 | 手机更新型号
+    // 3.2 | 手机更新型号、电池充电系统更新
     V.Phone.Owned.forEach(phone => {
         if (!phone.hasOwnProperty("newnessmax")) {
             phone.model = "斯达特3 限量型"
@@ -29,6 +28,13 @@ PhoneMod.patchOnPassageRender = function (ev) {
         }
     });
     if (!V.Phone.SecondPhoneShopGoods) PhoneMod.RefreshSecondPhone();
+    V.Phone.Charger = V.Phone.Charger || {};
+
+    // 3.3 | 修复信息列队
+    V.Phone.msgLine = V.Phone.msgLine || [];
+    // 3.3 | 悉尼色播伴侣
+    V.SydneySexLiveCompanion = 0
+    if ("SydneySexPhoto" in V.Phone) V.Phone.SydneySexLiveCompanion = V.Phone.SydneySexPhoto  // 变量迁移
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

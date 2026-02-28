@@ -1,0 +1,30 @@
+.slider-header {
+    font-size: large;
+    font-weight: bold;
+}
+
+#forestSlider {
+    width: stretch;
+}
+
+.depth-ruler {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 6px;
+    background: #a3a3a3;
+    border-radius: 5px;
+    border: 2px solid #dddddd;
+    justify-content: space-between;
+}
+.ruler-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #464646;
+}
+.ruler-cell.active {
+    border: 4px solid #ffffff;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ffffff;
+    font-weight: 900;
+}

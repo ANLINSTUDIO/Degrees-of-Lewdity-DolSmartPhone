@@ -1,18 +1,19 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.2",
+    "version": "Alpha.3.3",
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
 
         "styles/apps/yenote.css",
-        "styles/apps/memo.css"
+        "styles/apps/memo.css",
+        "styles/apps/map.css"
     ],
     "scriptFileList": ["scripts/patch.js", "scripts/guide.js", "scripts/vars.js", "scripts/api.js", "scripts/apps.js", "scripts/main.js"],
     "tweeFileList": [
         "twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee", 
-        "twee/apps/yenote.twee"
+        "twee/apps/yenote.twee", "twee/apps/map.twee"
     ],
     "imgFileList": [
         "img/misc/icon/phone/phone.png",
@@ -34,12 +35,14 @@
         "img/ui/phone/app/correct.png",
         "img/ui/phone/app/photo.png",
         "img/ui/phone/app/premium.png",
+        "img/ui/phone/app/map/forest_map.png",
         
         "img/misc/icon/phone/app/yenote.png",
         "img/misc/icon/phone/app/yenote_text.png",
         "img/misc/icon/phone/app/yenote_text_full.png",
         "img/misc/icon/phone/app/album.png",
         "img/misc/icon/phone/app/memo.png",
+        "img/misc/icon/phone/app/map.png",
         
         "img/photo/6583d16f-7c3f-4f18-b980-c41f2be40241.png",
         "img/photo/44a3e666-7253-40a7-911b-8e0da7a65f7c.png",
@@ -49,6 +52,7 @@
         "img/photo/6596727a-7882-4665-acdc-5ad967f49360.png",
         "img/photo/asdsds1z1-92b5-4974-badd-6a1b2de9d8b6.png",
         "img/photo/as22s1s11-92b5-4974-badd-6sdsasz12a16.png",
+        "img/photo/Sydney/7121c738-bc5a-41e1-bd2e-3bbbbce37cea.png",
 
         "img/guide/photo/1.png",
         "img/guide/photo/2.png",
@@ -132,7 +136,7 @@
         },
         {
             "modName": "GameVersion",
-            "version": "=0.5.7.9"
+            "version": "^0.5.7.9"
         },
         {
             "modName": "ModLoader DoL ImageLoaderHook",

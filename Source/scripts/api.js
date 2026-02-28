@@ -161,7 +161,10 @@ PhoneMod.generatePassward = function() {
     }
     return password;
 }
-PhoneMod.getPhoneInfo = function(id_or_model) {
+PhoneMod.getPhoneInfo = function(id_or_model = null) {
+    if (id_or_model === null) {
+        id_or_model = PhoneMod.getUsingPhone().model
+    }
     if (PhoneMod.PhoneModels.hasOwnProperty(id_or_model)) {
         return PhoneMod.PhoneModels[id_or_model]
     }
@@ -211,7 +214,7 @@ PhoneMod.getPhoneConditionInfo = function(phone_or_condition) {
 }
 PhoneMod.getPhoneBattery = function(phone) {
     phone = phone ?? PhoneMod.getUsingPhone()
-    if (phone) {
+    if (phone && phone.newnessmax > 0 && phone.newness >= 0) {
         return Math.round((phone.newness / phone.newnessmax) * 100)
     } else {
         return null

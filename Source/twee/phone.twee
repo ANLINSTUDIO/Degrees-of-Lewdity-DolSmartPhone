@@ -259,7 +259,8 @@
                             <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>> | 已失效</div>
                         </div>
                     <</if>>
-                    <<link "删除">><<run PhoneMod.deleteAlarm(_i)>><</link>>
+                    
+                    <<print '<<link "删除">><<run PhoneMod.deleteAlarm('+_i+')>><</link>>'>>
                 </div>
             <</for>>
         <</if>>

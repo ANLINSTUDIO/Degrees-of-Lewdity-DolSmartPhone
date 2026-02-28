@@ -1,0 +1,13 @@
+:: SmartPhoneAppMap [widget]
+<<widget "phone_app_map">>
+    <div class="control-panel">
+        <div class="slider-group">
+            <div class="slider-header"><span>深入进度</span> <span id="forestVal">20</span></div>
+            <input type="range" id="forestSlider" min="0" max="100" value="20" step="1">
+        </div>
+    </div>
+
+    <div class="depth-ruler" id="rulerContainer"></div>
+
+    <div class="info-box" id="infoPanel"></div>
+<</widget>>
