@@ -198,7 +198,7 @@
 
 :: === Second Phone Shop ===
 :: Second Phone Shop Link
-<<if !$Phone.MetFengOnce and validArray($Phone.Owned)>>
+<<if !$Phone.MetFengOnce and $Phone.Using and !($Phone.Using eq "null")>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
     <<if $Phone.SecondShopKnown>>
@@ -218,8 +218,8 @@
 
 :: Second Phone Shop Meet Feng First
 <<set $Phone.MetFengOnce to 1>>
-<<set $Phone.OwnedTmp to $Phone.Owned>>
-<<set $Phone.Owned to []>>
+<<set $Phone.FengStole to $Phone.Using>>
+<<run >>
 
 <<generateNPC 1 a m m 23>>
 <<set $NPCList[0].name to "老冯">>
@@ -510,7 +510,7 @@
 :: Bedroom Corner
 <br><br>
 一个看起来还算干净的角落，从这里正好可以看到你的床。<br>
-<<if PhoneMod.isPhoneStoreIn("Bedroom") or PhoneMod.getUsingPhone()>>
+<<if PhoneMod.isPhoneStoreIn("Bedroom") or PhoneMod.isCarryingUsablePhone()>>
     <<icon "phone/drawer.png">><<link [[储存手机|Bedroom Store Phone]]>><</link>>
 <<else>>
     <<icon "phone/drawer.png">><span class="teal">这里有一个床头柜，你也许可以把一些贵重的东西放在这里。</span>
@@ -518,7 +518,7 @@
 <<if PhoneMod.isPhoneChargeUnguardedIn("Bedroom", false)>>
     <<icon "phone/charge.png">>
     <<link [[返回充电的地方|Bedroom Charge]]>><</link>>
-<<elseif PhoneMod.getUsingPhone()>>
+<<elseif PhoneMod.isCarryingUsablePhone()>>
     <<run PhoneMod.Guide.startTutorial("charge")>>
     <<icon "phone/charge.png">>
     <<link [[为手机充电|Bedroom Charge]]>><</link>>

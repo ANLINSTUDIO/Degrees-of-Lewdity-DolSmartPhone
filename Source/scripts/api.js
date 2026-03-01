@@ -100,11 +100,7 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
 
     // 检查是否有可用的手机
-    if (V.Phone && V.Phone.Owned && Array.isArray(V.Phone.Owned)) {
-        return V.Phone.Owned.some(phone => phone.usable && phone.newness > 0 && phone.newnessmax > 0);
-    }
-
-    return false;
+    return PhoneMod.isCarryingUsablePhone()
 };
 PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
@@ -117,8 +113,9 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
     if (!V.Phone.Settings.CanUsePhoneInAllAreas && !extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
 
-    if (V.Phone.Using === "null") return false;  // 检查是否有可用的手机
-    if (V.Phone.Using) return true;  // 检查是否有可用的手机
+    if (V.Phone.Using === "null") return false;  // 关机
+    const phone = PhoneMod.getPhone(V.Phone.Using)
+    if (phone && phone.newness > 0) return true;  // 检查是否有可用的手机
     return false;
 };
 PhoneMod.PhoneTo =  function() {
@@ -235,17 +232,26 @@ PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
     }
 }
 PhoneMod.getUsingPhone = function() {  // 获取正在使用的手机
-    if (!V.Phone.Using) return null;
+    if (!V.Phone.Using || V.Phone.Using === "null") return null;
     return PhoneMod.getPhone(V.Phone.Using);
+}
+PhoneMod.isCarryingUsablePhone = function() { // 检查是否携带可用的（包括没电关机的）手机
+    if (V.Phone && V.Phone.Owned && Array.isArray(V.Phone.Owned)) {
+        return V.Phone.Owned.some(phone => phone.usable && phone.newnessmax > 0);
+    }
+    return false;
 }
 PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
   if (!V.Phone.Owned) return false;
   for (let i = 0; i < V.Phone.Owned.length; i++) {
-    if (V.Phone.Owned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.Phone.Owned[i]))) return true;
+    if (V.Phone.Owned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.Phone.Owned[i], true))) return true;
   }
   return false;
 }
-PhoneMod.isUsable = function(phone) { // 检查是否有可用的手机
+PhoneMod.isUsable = function(phone, allow_shutdown=false) { // 检查是否有可用的手机
+    if (allow_shutdown) {
+        return phone && phone.usable && phone.newnessmax > 0;
+    }
     return phone && phone.usable && phone.newness > 0 && phone.newnessmax > 0;
 }
 

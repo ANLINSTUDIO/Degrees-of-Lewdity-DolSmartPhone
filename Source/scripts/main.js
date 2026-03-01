@@ -154,6 +154,7 @@ PhoneMod.checkPhoneDisabled = function() {
             if (PhoneMod.shouldUsePhone()) {
                 phone.classList.remove("phone-disabled");
             } else {
+                phone.classList.remove("phone-open");
                 phone.classList.add("phone-disabled");
             }
         }
@@ -537,12 +538,26 @@ PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     }
     return 0
 }
+PhoneMod.DeletePhone = function(id=null) { // 出售手机
+    if (!V.Phone.Owned) return;
+    if (!id) {
+        id = V.Phone.Using
+    }
+    let phone = null
+    const index = V.Phone.Owned.findIndex(p => p.id === id);
+    if (index !== -1) {
+        phone = V.Phone.Owned[index]
+        V.Phone.Owned.splice(index, 1);
+        PhoneMod.changeUsingPhone();
+    }
+    return phone
+}
 PhoneMod.changeUsingPhone = function(phone=undefined) { // 切换正在使用的手机
     if (phone === null || (V.Phone.Using === "null" && phone === undefined)) {
         V.Phone.Using = "null"
     } else {
         if (phone === undefined) {
-            if (V.Phone.Using) {
+            if (V.Phone.Using && V.Phone.Using !== "null") {
                 const PhoneUsing = V.Phone.Owned.find(p => p.id === V.Phone.Using)
                 if (PhoneMod.isUsable(PhoneUsing)) return V.Phone.Using;
             }
@@ -557,9 +572,15 @@ PhoneMod.changeUsingPhone = function(phone=undefined) { // 切换正在使用的
                         break;
                     }
                 }
+                for (var i = 0; i < V.Phone.Owned.length; i++) {
+                    if (PhoneMod.isUsable(V.Phone.Owned[i], true)) {
+                        V.Phone.Using = V.Phone.Owned[i].id;
+                        break;
+                    }
+                }
             }
         } else {
-            if (PhoneMod.isUsable(phone)) {
+            if (PhoneMod.isUsable(phone, true)) {
                 V.Phone.Using = phone.id;
             } else {
                 V.Phone.Using = null
@@ -572,8 +593,11 @@ PhoneMod.changeUsingPhone = function(phone=undefined) { // 切换正在使用的
 // === 手机电量与磨损 ====================================
 PhoneMod.PhoneConsumption = function(value) {
     const phone = PhoneMod.getUsingPhone()
-    if (phone) {
+    if (phone && phone.newness > 0) {
         phone.newness = Math.round(phone.newness - value);
+        if (phone.newness === 0) {
+            phone.newness = -1
+        }
         return PhoneMod.PhoneCheckNewness()
     }
     return false
@@ -615,7 +639,7 @@ PhoneMod.PhoneCheckNewness = function () {
             return true;
         }
     }
-    if (phone.newness <= 0) {
+    if (phone.newness < 0) {
         phone.newness = 0;
         PhoneMod.PhoneWaer(50, null, false)  // 损耗手机：强制关机
         if (!PhoneMod.changeUsingPhone()) {
@@ -711,7 +735,7 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
             
             const Li = document.createElement("li");
             new Wikifier(Li, `
-                <<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。<br>
+                <<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。
                 <span style="margin-right: 20px"></span> <<link "全部关机">> <<run PhoneMod.phoneJournalChange(null)>> <</link>>
             `);
             Div.appendChild(Li);
@@ -723,18 +747,20 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                     <span style="margin-right: 20px"></span>
                     <<if $Phone.Using and "${phone.id}" eq $Phone.Using>>
                         <<icon "phone/phone.png">>
-                        <span class='teal'>正在使用</span> | 
+                        <<if ${phone.newness > 0}>>
+                            <span class='teal'>正在使用</span> | 
+                        <<else>>
+                            <span class='red'>已经关机</span> |
+                        <</if>>
                     <<elseif ${phone.stolen && !phone.usable}>>
                         <<icon "phone/phone_forbid.png">>
                         <span class='red'>无法使用</span> | 
                     <<else>>
                         <<icon "phone/phone_disabled.png">> 
-                        <<if ${phone.newnessmax > 0 && phone.newness > 0}>>
+                        <<if ${phone.newnessmax > 0}>>
                             <<link "切换到">> <<run PhoneMod.phoneJournalChange("${phone.id}")>> <</link>> | 
                         <<elseif ${phone.newnessmax === 0}>>
                             <span class='red'>已损坏</span> |
-                        <<else>>
-                            <span class='red'>已关机</span> |
                         <</if>>
                     <</if>>
                     <<if ${phone.newnessmax > 0}>>
