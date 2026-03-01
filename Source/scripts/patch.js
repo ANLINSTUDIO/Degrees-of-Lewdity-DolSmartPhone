@@ -35,6 +35,9 @@ PhoneMod.patchOnPassageRender = function (ev) {
     // 3.3 | 悉尼色播伴侣
     V.SydneySexLiveCompanion = 0
     if ("SydneySexPhoto" in V.Phone) V.Phone.SydneySexLiveCompanion = V.Phone.SydneySexPhoto  // 变量迁移
+
+    // 3.4 | 手机存储
+    V.Phone.Store = V.Phone.Store || {};
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

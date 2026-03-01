@@ -35,11 +35,11 @@
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell
-<<for _i range $Phone.Owned>>
-    <<capture _i>>
-        <<set _condition to PhoneMod.getPhoneConditionInfo(_i)>>
-        <<set _money to PhoneMod.getSellPhonePrice(_i.id)>>
-        <<set _Phone to PhoneMod.getPhone(_i.id)>>
+<<for _Phone range $Phone.Owned>>
+    <<capture _Phone>>
+        <<set _condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<set _money to PhoneMod.getSellPhonePrice(_Phone.id)>>
+        <<set _Phone to PhoneMod.getPhone(_Phone.id)>>
         <<set _info to PhoneMod.getPhoneInfo(_Phone.model)>>
         <<icon "phone/phone.png">>
         一部<<print _condition.html>>的手机，
@@ -51,7 +51,7 @@
         <</if>>
         官网售价为<span class="red">£_info.price</span>，
         现在可以以<span class="gold">£_money</span>的价格在官方手机店
-        <<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _i.id>> <</link>>
+        <<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
         <br>
     <</capture>>
 <</for>><br>
@@ -198,7 +198,7 @@
 
 :: === Second Phone Shop ===
 :: Second Phone Shop Link
-<<if !$Phone.MetFengOnce and $Phone.Owned>>
+<<if !$Phone.MetFengOnce and validArray($Phone.Owned)>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
     <<if $Phone.SecondShopKnown>>
@@ -382,8 +382,8 @@
 <<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "elk">>
 <<if $Phone.MetFengGiveup>>
     <<generateNPC 1 a m m 23>>
-    <<set $NPCList[0].name to "老冯">>
-    <<set $NPCList[0].fullDescription to "黑衣人">>
+    <<set $NPCList[0].fullDescription to "老冯">>
+
     <<person1>>
     <<include "Second Phone Shop First">><br><br>
     一个黑衣人靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。 <span class="red">他看起来有点熟悉。</span><br><br>
@@ -438,22 +438,23 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Sell
-<<for _i range $Phone.Owned>>
-    <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_i)>>
-    <<set _money to PhoneMod.getSellPhonePrice(_i.id, true)>>
-    <<set _Phone to PhoneMod.getPhone(_i.id)>>
-    <<icon "phone/phone.png">>
-    一部<<print _phone_condition.html>>的 <<print _i.model>>，
-    <<if _Phone.stolen>>
-        <span class="red">由你盗窃而来，</span>
-        <<if _Phone.usable>>
-            <span class="green">但你已经破解了密码，</span>
+<<for _Phone range $Phone.Owned>>
+    <<capture _Phone>>
+        <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
+        <<icon "phone/phone.png">>
+        一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
+        <<if _Phone.stolen>>
+            <span class="red">由你盗窃而来，</span>
+            <<if _Phone.usable>>
+                <span class="green">但你已经破解了密码，</span>
+            <</if>>
         <</if>>
-    <</if>>
-    官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
-    现在可以以<span class="gold">£_money</span>的价格在老冯这里
-    <<print '<<link [[出售|Second Phone Sell Finish]]>> <<set $SellPhone to "'+_i.id+'">> <</link>>'>>
-    <br>
+        官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
+        现在可以以<span class="gold">£_money</span>的价格在老冯这里
+        <<link [[出售|Second Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
+        <br>
+    <</capture>>
 <</for>><br>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
@@ -473,21 +474,22 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack
-<<for _i range $Phone.Owned>>
-    <<set _Phone to PhoneMod.getPhone(_i.id)>>
-    <<if _Phone.stolen and !_Phone.usable>>
-        <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_i)>>
-        <<set _money to Math.round(PhoneMod.getSellPhonePrice(_i.id) * 0.2)>>
-        <<icon "phone/phone.png">>
-        一部<<print _phone_condition.html>>的 <<print _i.model>>，
-        <<if _Phone.stolen>>
-            <span class="red">由你盗窃而来，</span>
+<<for _Phone range $Phone.Owned>>
+    <<capture _Phone>>
+        <<if _Phone.stolen and !_Phone.usable>>
+            <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
+            <<set _money to Math.round(PhoneMod.getSellPhonePrice(_Phone.id) * 0.2)>>
+            <<icon "phone/phone.png">>
+            一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
+            <<if _Phone.stolen>>
+                <span class="red">由你盗窃而来，</span>
+            <</if>>
+            官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
+            现在你可以以<span class="gold">£_money</span>的价格在老冯这里
+            <<link [[破解密码|Second Phone Crack Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
+            <br>
         <</if>>
-        官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
-        现在你可以以<span class="gold">£_money</span>的价格在老冯这里
-        <<print '<<link [[破解密码|Second Phone Crack Finish]]>> <<set $SellPhone to "'+_i.id+'">> <</link>>'>>
-        <br>
-    <</if>>
+     <</capture>>
 <</for>><br>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
@@ -501,6 +503,33 @@
     你摇了摇头：“太贵了， <span class="gold">_money</span> 也不是我能付得起的价格”<br><br>
 <</if>>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
+
+
+
+:: ========AtPlace========
+:: Bedroom Corner
+<br><br>
+一个看起来还算干净的角落，从这里正好可以看到你的床。<br>
+<<if PhoneMod.isPhoneStoreIn("Bedroom") or PhoneMod.getUsingPhone()>>
+    <<icon "phone/drawer.png">><<link [[储存手机|Bedroom Store Phone]]>><</link>>
+<<else>>
+    <<icon "phone/drawer.png">><span class="teal">这里有一个床头柜，你也许可以把一些贵重的东西放在这里。</span>
+<</if>><br>
+<<if PhoneMod.isPhoneChargeUnguardedIn("Bedroom", false)>>
+    <<icon "phone/charge.png">>
+    <<link [[返回充电的地方|Bedroom Charge]]>><</link>>
+<<elseif PhoneMod.getUsingPhone()>>
+    <<run PhoneMod.Guide.startTutorial("charge")>>
+    <<icon "phone/charge.png">>
+    <<link [[为手机充电|Bedroom Charge]]>><</link>>
+<<else>>
+    <span class="teal">你注意到这个角落里有一个插座，不知道贝利有没有给它通电。</span>
+<</if>><br>
+<<if PhoneMod.getUsingPhone()>>
+    <<icon "phone/live.png">><<link [[直播|Live Bedroom]]>><</link>>
+<<else>>
+    <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
+<</if>>
 
 
 
@@ -866,8 +895,9 @@
     <<if _phone>>
         你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
         <<link [[把手机放在这里充电|Ocean Breeze Charge]]>><<run PhoneMod.PhoneChargeUnguarded("OceanBreeze")>><</link>><br><br>
+        <<link [[守着充电5分钟 (0:05)|Ocean Breeze Charge]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
         <<link [[守着充电10分钟 (0:10)|Ocean Breeze Charge]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-        <<link [[守着充电30分钟 (0:10)|Ocean Breeze Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
+        <<link [[守着充电30分钟 (0:30)|Ocean Breeze Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
         <<link [[守着充电1小时 (1:00)|Ocean Breeze Charge]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
     <<else>>
         这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
@@ -877,18 +907,6 @@
 <<cafeicon>><<link [[待在咖啡馆|Ocean Breeze]]>><</link>><br>
 <<clifficon>><<link [[离开|Cliff Street]]>><</link>>
 
-:: Bedroom Charge Link
-<br>
-<<if PhoneMod.isPhoneChargeUnguardedIn("Bedroom", false)>>
-    <<icon "phone/charge.png">>
-    <<link [[返回充电的地方|Bedroom Charge]]>><</link>>
-<<elseif PhoneMod.getUsingPhone()>>
-    <<run PhoneMod.Guide.startTutorial("charge")>>
-    <<icon "phone/charge.png">>
-    <<link [[为手机充电|Bedroom Charge]]>><</link>>
-<<else>>
-    <span class="teal">你注意到这个角落里有一个插座，不知道贝利有没有给它通电。</span>
-<</if>>
 :: Bedroom Charge
 <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn("Bedroom")>>
 <<if _UnguardedCharge>>
@@ -916,8 +934,9 @@
     <<if _phone>>
         你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
         <<link [[把手机放在这里充电|Bedroom Charge]]>><<run PhoneMod.PhoneChargeUnguarded("Bedroom")>><</link>><br><br>
+        <<link [[守着充电5分钟 (0:05)|Bedroom Charge]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
         <<link [[守着充电10分钟 (0:10)|Bedroom Charge]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-        <<link [[守着充电30分钟 (0:10)|Bedroom Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
+        <<link [[守着充电30分钟 (0:30)|Bedroom Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
         <<link [[守着充电1小时 (1:00)|Bedroom Charge]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
     <<else>>
         这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
@@ -998,8 +1017,9 @@
         你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。
         当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
         <<link [[把手机放在这里充电|Library Charge]]>><<run PhoneMod.PhoneChargeUnguarded("Library")>><</link>><br><br>
+        <<link [[守着充电5分钟 (0:05)|Library Charge]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
         <<link [[守着充电10分钟 (0:10)|Library Charge]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-        <<link [[守着充电30分钟 (0:10)|Library Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
+        <<link [[守着充电30分钟 (0:30)|Library Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
         <<link [[守着充电1小时 (1:00)|Library Charge]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
     <<else>>
         这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
@@ -1086,6 +1106,80 @@
 
 
 
+:: =======StoringPhone========
+:: Bedroom Store Phone
+将手机安全的保存起来，减少身上的空间占用。存放的手机不会消耗电量。<br><br>
+<<set _store to PhoneMod.getPhonesStoreIn("Bedroom")>>
+<<for _Phone range _store>>
+    <<capture _Phone>>
+        <<set _info to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<if _Phone.stolen and !_Phone.usable>>
+            <<icon "phone/phone_forbid.png">>
+        <<else>>
+            <<icon "phone/phone_disabled.png">> 
+        <</if>>
+        <<link [[取出|Bedroom Store Phone]]>> <<run PhoneMod.PhoneStoreFinish("Bedroom", _Phone.id)>> <</link>>
+        <<if _Phone.newnessmax gt 0>>
+            <<print '[ '+PhoneMod.getPhoneBattery(_Phone)+'% ] '>>
+        <<else>>
+            [ --- ] 
+        <</if>>
+        <<print '一部'+_info.html+'的 '+_Phone.model+' ，官网售价为<span class="gold">£'+Math.round(PhoneMod.getPhoneInfo(_Phone.model).price)+'</span>。'>>
+        <<if _Phone.stolen>>
+            <span class='red'>盗窃得来</span>
+            <<if _Phone.usable>>
+                <span class='yellow'>密码已重置</span>
+            <<else>>
+                <span class='red'>密码未知</span>
+            <</if>>
+        <<else>>
+            <<if _Phone.second>>
+                <span class='yellow'>地下手机店购买</span>
+            <<else>>
+                <span class='green'>官方渠道购买</span>
+            <</if>>
+        <</if>><br>
+    <</capture>>
+<</for>><br>
+<<for _Phone range $Phone.Owned>>
+    <<capture _Phone>>
+        <<set _info to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<if $Phone.Using and _Phone.id eq $Phone.Using>>
+            <<icon "phone/phone.png">>
+        <<elseif _Phone.stolen and !_Phone.usable>>
+            <<icon "phone/phone_forbid.png">>
+        <<else>>
+            <<icon "phone/phone_disabled.png">> 
+        <</if>>
+        <<link [[存放|Bedroom Store Phone]]>> <<run PhoneMod.PhoneStore("Bedroom", _Phone.id)>> <</link>>
+        <<if _Phone.newnessmax gt 0>>
+            <<print '[ '+PhoneMod.getPhoneBattery(_Phone)+'% ] '>>
+        <<else>>
+            [ --- ] 
+        <</if>>
+        <<print '一部'+_info.html+'的 '+_Phone.model+' ，官网售价为<span class="gold">£'+Math.round(PhoneMod.getPhoneInfo(_Phone.model).price)+'</span>。'>>
+        <<if _Phone.stolen>>
+            <span class='red'>盗窃得来</span>
+            <<if _Phone.usable>>
+                <span class='yellow'>密码已重置</span>
+            <<else>>
+                <span class='red'>密码未知</span>
+            <</if>>
+        <<else>>
+            <<if _Phone.second>>
+                <span class='yellow'>地下手机店购买</span>
+            <<else>>
+                <span class='green'>官方渠道购买</span>
+            <</if>>
+        <</if>><br>
+    <</capture>>
+<</for>>
+<br><br>
+<<bedicon>><<link [[卧室|Bedroom]]>><</link>><br>
+
+
+
+
 :: ==========AskTel==========
 :: Landry AskTel Link
 <<if !PhoneMod.isContactKnown("兰德里")>>
@@ -1119,15 +1213,6 @@
 
 
 :: ===========LIVE===========
-:: Live Bedroom Link
-<br><br>
-一个看起来还算干净的角落，从这里正好可以看到你的床。<br>
-<<if PhoneMod.getUsingPhone()>>
-    <<icon "phone/live.png">><<link [[直播|Live Bedroom]]>><</link>>
-<<else>>
-    <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
-<</if>>
-
 :: Live Bedroom
 正在开发！敬请期待！<br><br>
 <<icon "socialise.png">><<link [[与观众聊天]]>><</link>><br>

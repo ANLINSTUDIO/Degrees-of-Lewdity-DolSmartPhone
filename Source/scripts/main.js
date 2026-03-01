@@ -537,32 +537,36 @@ PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     }
     return 0
 }
-PhoneMod.changeUsingPhone = function(phone=null) { // 切换正在使用的手机
-    if (phone === null) {
-        if (V.Phone.Using) {
-            const PhoneUsing = V.Phone.Owned.find(p => p.id === V.Phone.Using)
-            if (PhoneMod.isUsable(PhoneUsing)) return V.Phone.Using;
-        }
-        
-        if (!V.Phone.Owned || V.Phone.Owned.length === 0) {
-            V.Phone.Using = null;
-        } else {
-            V.Phone.Using = null
-            for (var i = 0; i < V.Phone.Owned.length; i++) {
-                if (PhoneMod.isUsable(V.Phone.Owned[i])) {
-                    V.Phone.Using = V.Phone.Owned[i].id;
-                    break;
+PhoneMod.changeUsingPhone = function(phone=undefined) { // 切换正在使用的手机
+    if (phone === null || (V.Phone.Using === "null" && phone === undefined)) {
+        V.Phone.Using = "null"
+    } else {
+        if (phone === undefined) {
+            if (V.Phone.Using) {
+                const PhoneUsing = V.Phone.Owned.find(p => p.id === V.Phone.Using)
+                if (PhoneMod.isUsable(PhoneUsing)) return V.Phone.Using;
+            }
+            
+            if (!V.Phone.Owned || V.Phone.Owned.length === 0) {
+                V.Phone.Using = null;
+            } else {
+                V.Phone.Using = null
+                for (var i = 0; i < V.Phone.Owned.length; i++) {
+                    if (PhoneMod.isUsable(V.Phone.Owned[i])) {
+                        V.Phone.Using = V.Phone.Owned[i].id;
+                        break;
+                    }
                 }
             }
-        }
-    } else {
-        if (PhoneMod.isUsable(phone)) {
-            V.Phone.Using = phone.id;
         } else {
-            V.Phone.Using = null
+            if (PhoneMod.isUsable(phone)) {
+                V.Phone.Using = phone.id;
+            } else {
+                V.Phone.Using = null
+            }
         }
+        PhoneMod.msgShowLine();
     }
-    PhoneMod.msgShowLine();
     return V.Phone.Using;
 }
 // === 手机电量与磨损 ====================================
@@ -671,6 +675,29 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
     }
     return false
 }
+// === 手机存放 ====================================
+PhoneMod.PhoneStore = function(position, id) {
+    const phone = PhoneMod.getPhone(id)
+    V.Phone.Store[position] = V.Phone.Store[position] || {}
+    V.Phone.Store[position][id] = phone
+    V.Phone.Owned = V.Phone.Owned.filter(_phone => _phone !== phone)
+    PhoneMod.changeUsingPhone()
+}
+PhoneMod.PhoneStoreFinish = function(position, id) {
+    const phone = V.Phone.Store[position][id]
+    V.Phone.Owned.push(phone)
+    PhoneMod.changeUsingPhone(phone)
+    delete V.Phone.Store[position][id]
+    if (Object.keys(V.Phone.Store[position]).length === 0) {
+        delete V.Phone.Store[position]
+    }
+}
+PhoneMod.isPhoneStoreIn = function(position) {
+    return V.Phone.Store.hasOwnProperty(position)
+}
+PhoneMod.getPhonesStoreIn = function(position) {
+    return V.Phone.Store[position] ?? []
+}
 // === 日志 ==========================================
 PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
     if (V.Phone.Owned && V.Phone.Owned.length > 0) {
@@ -683,7 +710,10 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
             Ul.appendChild(Div);
             
             const Li = document.createElement("li");
-            new Wikifier(Li, `<<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。`);
+            new Wikifier(Li, `
+                <<icon "phone/phones.png">> <span class="yellow">持有的手机</span>。可以出售给手机店。<br>
+                <span style="margin-right: 20px"></span> <<link "全部关机">> <<run PhoneMod.phoneJournalChange(null)>> <</link>>
+            `);
             Div.appendChild(Li);
             
             V.Phone.Owned.forEach(function(phone) {
@@ -733,10 +763,15 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
         }}
 };
 PhoneMod.phoneJournalChange = function(id) { // 日志中更新手机信息
-    const phone = V.Phone.Owned.find(p => p.id === id);
-    if (phone) {
-        PhoneMod.changeUsingPhone(phone);
+    if (id) {
+        const phone = V.Phone.Owned.find(p => p.id === id);
+        if (phone) {
+            PhoneMod.changeUsingPhone(phone);
+        }
+    } else {
+        PhoneMod.changeUsingPhone(null);
     }
+    
     const Div = document.getElementById("phone-journal");
     if (Div) {
         Div.remove();

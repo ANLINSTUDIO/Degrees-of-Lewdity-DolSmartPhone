@@ -483,6 +483,8 @@ PhoneMod.photoCheck = function() {
                         key = key.slice(0, -1)
                     }
                     const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], V);
+                    console.log(key, actualValue, expectedValue);
+                    
                     if (not) {
                         return actualValue !== expectedValue
                     } else {

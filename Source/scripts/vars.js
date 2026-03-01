@@ -89,6 +89,8 @@ PhoneMod.events = [
     {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
     {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
     {passage: "Elk Street", target: "Nightingale Street", event: "Second Phone Shop Link", position: "before", offset: 4},
+    // 地点组
+    {passage: "Bedroom", target: "Mirror", event: "Bedroom Corner"},
     // 直播
     // {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
     // 盗窃手机
@@ -109,10 +111,12 @@ PhoneMod.events = [
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
     // 充电
     {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Charge Link", position: "before", offset: 1},
-    {passage: "Bedroom", target: "Live Bedroom", event: "Bedroom Charge Link", f:"Bedroom Charge NOLIVE"},
-    {eventid: "Bedroom Charge NOLIVE", target: "Mirror", event: "Bedroom Charge Link", offset: 1},
+    // {passage: "Bedroom", target: "Live Bedroom", event: "Bedroom Charge Link", f:"Bedroom Charge NOLIVE"},
+    // {eventid: "Bedroom Charge NOLIVE", target: "Mirror", event: "Bedroom Charge Link", offset: 1},
     {passage: "Library Rental Counter", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
     {passage: "Sydney Leighton Spank 4", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
+    // 储存手机
+    // {passage: "Bedroom", target: "Bed", event: "Bedroom Store Phone Link", position: "before", offset: 3},
 ];
 PhoneMod.events_on_macro = [
     {macro: "journal", func: "showPhoneJournal"},
@@ -173,7 +177,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["sex"],
         conditions: {
           passage: "Bath Masturbation",
-          Phon$havingOrgasm: true,
+          Phone$havingOrgasm: true,
           _: () => {
             const yenote = V.Phone.Yenotes.find(item => item.id === "6583d16f-7c3f-4f18-b980-c41f2be40241")
             if (yenote) {
@@ -331,7 +335,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
     },
     "4c5fcd71-92b5-4974-badd-6a1b2de9d8b6": {
         msg: "wataa",
-        taskDesc: "在<span class='gold'>宅邸街</span>进行<span class='teal'>等级为2的露出活动</span>",
+        taskDesc: "在<span class='gold'>宅邸街</span>进行<span class='teal'>裸露下体或者全裸的露出活动</span>",
         risk: 60,
         fames: ["exhibitionism"],
         conditions: {

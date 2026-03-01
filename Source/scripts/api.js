@@ -117,6 +117,7 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
     if (!V.Phone.Settings.CanUsePhoneInAllAreas && !extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
 
+    if (V.Phone.Using === "null") return false;  // 检查是否有可用的手机
     if (V.Phone.Using) return true;  // 检查是否有可用的手机
     return false;
 };

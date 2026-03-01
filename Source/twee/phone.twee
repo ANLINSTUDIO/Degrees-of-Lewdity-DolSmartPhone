@@ -56,7 +56,9 @@
     <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">
         <div class="phone-screen-locked">
             <div style="font-size: 16px; font-weight: bold;">
-                <<print PhoneMod.getTimeString()>>
+                <<if !($Phone.Using is "null")>>
+                    <<print PhoneMod.getTimeString()>>
+                <</if>>
             </div>
         </div>
         
