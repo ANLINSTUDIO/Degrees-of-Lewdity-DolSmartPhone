@@ -1328,6 +1328,10 @@ PhoneMod.ddCancelChecked = function() {
     delete V.Phone.ddcost
     PhoneMod.reload(true)
 }
+PhoneMod.ddFinish = function() {
+    delete V.Phone.dd
+    delete V.Phone.ddstart
+}
 PhoneMod.ddIsSubmited = function() {
     return V.Phone.ddstart
 }

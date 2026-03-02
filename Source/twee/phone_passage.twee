@@ -1359,52 +1359,55 @@
 <</widget>>
 
 :: DD seat
-<<set $outside to 0>><<effects>>
-<<set $foresthunt to 0>>
-<<if Weather.precipitation is "rain">>
-	车窗正经受着雨水的冲刷，那噼啪作响的声音便是它们的杰作。<br>
+<<if $Phone.dd>>
+    <<set $outside to 0>><<effects>>
+    <<set $foresthunt to 0>>
+    <<if Weather.precipitation is "rain">>
+        车窗正经受着雨水的冲刷，那噼啪作响的声音便是它们的杰作。<br>
+    <</if>>
+    你在车的后座坐下，就那样出神地望着窗外。<br><br>
+    <!-- <<if $stress gte $stressmax>>
+        <<passoutdd>>
+    <</if>> -->
+    你的车到达了目的地。<br>
+    <<set _fare to PhoneMod.ddCalculateFare()>>
+
+    <<print '<<money '+-_fare*100+'>>'>>
+    <<print '你支付了<span class="gold">£'+_fare+'</span>。'>><br><br>
+    <<switch $Phone.dd>>
+        <<case "domus">><<domus>>
+        <<case "barb">><<barb>>
+        <<case "danube">><<danube>>
+        <<case "wolf">><<wolf>>
+        <<case "high">><<high>>
+        <<case "connudatus">><<connudatus>>
+        <<case "cliff">><<cliff>>
+        <<case "nightingale">><<nightingale>>
+        <<case "starfish">><<starfish>>
+        <<case "oxford">><<oxford>>
+        <<case "elk">><<elk>>
+        <<case "mer">><<mer>>
+        <<case "harvest">><<harvest>>
+        <<case "park">><<park>>
+        <<case "barn">><<farmicon>><<link [[进入农田 (0:05)|Farmland]]>><<pass 5>><</link>>
+        <<case "lakebus">><<set $forest to 0>><<lake>>
+        
+        <!-- <<case "industrial">><<industrial>>
+        <<case "residential">><<residential>>
+        <<case "commercial">><<commercial>>
+
+        <<case "industrialdrain">><<industrialdrain>>
+        <<case "residentialdrain">><<residentialdrain>>
+        <<case "commercialdrain">><<commercialdrain>>
+        <<case "seabeach">><<seabeach>>
+        <<case "searocks">><<searocks>>
+        <<case "seadocks">><<seadocks>>
+        <<case "seacliffs">><<seacliffs>>
+        <<case "drainexit">><<drainexit>>
+        
+        <<case "sea">><<seamove>> -->
+    <</switch>>
+    <<displayLinks>>
+    <<run PhoneMod.ddFinish()>>
+<<else>>
 <</if>>
-你在车的后座坐下，就那样出神地望着窗外。<br><br>
-<!-- <<if $stress gte $stressmax>>
-	<<passoutdd>>
-<</if>> -->
-你的车到达了目的地。<br>
-<<set _fare to PhoneMod.ddCalculateFare()>>
-
-<<print '<<money '+-_fare*100+'>>'>>
-<<print '你支付了<span class="gold">£'+_fare+'</span>。'>><br><br>
-<<switch $Phone.dd>>
-    <<case "domus">><<domus>>
-    <<case "barb">><<barb>>
-    <<case "danube">><<danube>>
-    <<case "wolf">><<wolf>>
-    <<case "high">><<high>>
-    <<case "connudatus">><<connudatus>>
-    <<case "cliff">><<cliff>>
-    <<case "nightingale">><<nightingale>>
-    <<case "starfish">><<starfish>>
-    <<case "oxford">><<oxford>>
-    <<case "elk">><<elk>>
-    <<case "mer">><<mer>>
-    <<case "harvest">><<harvest>>
-    <<case "park">><<park>>
-    <<case "barn">><<farmicon>><<link [[进入农田 (0:05)|Farmland]]>><<pass 5>><</link>>
-    <<case "lakebus">><<set $forest to 0>><<lake>>
-    
-    <!-- <<case "industrial">><<industrial>>
-    <<case "residential">><<residential>>
-    <<case "commercial">><<commercial>>
-
-    <<case "industrialdrain">><<industrialdrain>>
-    <<case "residentialdrain">><<residentialdrain>>
-    <<case "commercialdrain">><<commercialdrain>>
-    <<case "seabeach">><<seabeach>>
-    <<case "searocks">><<searocks>>
-    <<case "seadocks">><<seadocks>>
-    <<case "seacliffs">><<seacliffs>>
-    <<case "drainexit">><<drainexit>>
-    
-    <<case "sea">><<seamove>> -->
-<</switch>>
-<<displayLinks>>
-<<run PhoneMod.ddCancel()>>
