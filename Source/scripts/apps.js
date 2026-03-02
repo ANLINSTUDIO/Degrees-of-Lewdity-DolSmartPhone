@@ -468,40 +468,42 @@ PhoneMod.getContact = function(name) {
 };
 // ==================== 相机实现 ====================
 PhoneMod.photoCheck = function() {
-    setTimeout(() => {
-        delete V.Phone.TakingPhotoWill;
-        for (let photo_path in PhoneMod.PhonePhotos) {
-            if (V.Phone.Album.hasOwnProperty(photo_path)) continue;
-            const photo = PhoneMod.PhonePhotos[photo_path];
-            const result = Object.entries(photo.conditions).every(([key, expectedValue]) => {
-                if (key === "_") {
-                    return expectedValue()
-                } else {
-                    let not = false
-                    if (key.endsWith("非")) {
-                        not = true
-                        key = key.slice(0, -1)
-                    }
-                    const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], V);
-                    console.log(key, actualValue, expectedValue);
-                    
-                    if (not) {
-                        return actualValue !== expectedValue
+    if (PhoneMod.getUsingPhone()) {
+        setTimeout(() => {
+            delete V.Phone.TakingPhotoWill;
+            for (let photo_path in PhoneMod.PhonePhotos) {
+                if (V.Phone.Album.hasOwnProperty(photo_path)) continue;
+                const photo = PhoneMod.PhonePhotos[photo_path];
+                const result = Object.entries(photo.conditions).every(([key, expectedValue]) => {
+                    if (key === "_") {
+                        return expectedValue()
                     } else {
-                        return actualValue === expectedValue
+                        let not = false
+                        if (key.endsWith("非")) {
+                            not = true
+                            key = key.slice(0, -1)
+                        }
+                        const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], V);
+                        // console.log(key, actualValue, expectedValue);
+                        
+                        if (not) {
+                            return actualValue !== expectedValue
+                        } else {
+                            return actualValue === expectedValue
+                        }
                     }
+                });
+                
+                if (Object.keys(photo.conditions).length > 0 && result) {
+                    PhoneMod.Guide.startTutorial("photo");
+                    V.Phone.TakingPhotoWill = photo_path;
+                    break
                 }
-            });
-            
-            if (Object.keys(photo.conditions).length > 0 && result) {
-                PhoneMod.Guide.startTutorial("photo");
-                V.Phone.TakingPhotoWill = photo_path;
-                break
             }
-        }
 
-        PhoneMod.checkPhoneDisabled();
-    }, 200)
+            PhoneMod.checkPhoneDisabled();
+        }, 200)
+    }
 }
 PhoneMod.photoTake = function() {
     if (!V.Phone.TakingPhotoWill) return;
@@ -1175,7 +1177,7 @@ PhoneMod.initMap = function() {
         function updateAll() {
             const forestSlider = document.getElementById('forestSlider');
 
-            const forestVal = V.forest/10;
+            const forestVal = V.forest;
             const tendingVal = V.tending;
             const scienceVal = V.science;
 
@@ -1246,4 +1248,112 @@ PhoneMod.initMap = function() {
         buildRuler();
         updateAll();
     })();
+}
+// =================== DD实现 ===================
+PhoneMod.ddBoardingPoints = {
+    // 住宅区
+    domus: { passage: 'Domus Street', name: '宅邸街 (家)', region: 'R' },
+    barb: { passage: 'Barb Street', name: '倒钩街 (工作室)', region: 'R' },
+    danube: { passage: 'Danube Street', name: '多瑙河街 (富人区)', region: 'R' },
+    wolf: { passage: 'Wolf Street', name: '狼街 (神殿)', region: 'R' },
+    
+    // 商业区
+    high: { passage: 'High Street', name: '商业街 (购物中心)', region: 'C' },
+    connudatus: { passage: 'Connudatus Street', name: '康努达塔斯街 (会所)', region: 'C' },
+    cliff: { passage: 'Cliff Street', name: '峭壁街 (咖啡馆)', region: 'C' },
+    nightingale: { passage: 'Nightingale Street', name: '南丁格尔街 (医院)', region: 'C' },
+    starfish: { passage: 'Starfish Street', name: '海星街 (海滩)', region: 'C' },
+    oxford: { passage: 'Oxford Street', name: '牛津街 (学校)', region: 'C' },
+    park: { passage: 'Park', name: '公园', region: 'C' },
+    
+    // 工业区
+    elk: { passage: 'Elk Street', name: '麋鹿街', region: 'I' },
+    mer: { passage: 'Mer Street', name: '梅尔街 (码头)', region: 'I' },
+    harvest: { passage: 'Harvest Street', name: '丰收街 (酒吧)', region: 'I' },
+    
+    // 镇外
+    barn: { passage: 'Farmland', name: '农场', region: 'O' },
+    
+    // 森林
+    lakebus: { passage: 'Lake Bus', name: '湖边', region: 'F' }
+};
+PhoneMod.ddSetDestination = function(destination) {
+    if (destination) {
+        V.Phone.dd = destination
+    } else {
+        delete V.Phone.dd
+    }
+    PhoneMod.PhoneUIInit(true, true)
+}
+PhoneMod.ddGetDestination = function() {
+    return PhoneMod.ddBoardingPoints[V.Phone.dd]?.name
+}
+PhoneMod.ddCalculateFare = function() {
+    const region1 = PhoneMod.ddGetTheNearestBoardingPoint()?.region;
+    const region2 = PhoneMod.ddBoardingPoints[V.Phone.dd]?.region;
+    
+    if (!region1 || !region2) return 0;
+
+    // 区域间距离矩阵（起步价为1，同一区域距离1）
+    const dist = {
+        R: { R: 1, C: 1, I: 2, O: 5, F: 3 },
+        C: { R: 1, C: 1, I: 1, O: 4, F: 3 },
+        I: { R: 2, C: 1, I: 1, O: 3, F: 4 },
+        O: { R: 5, C: 4, I: 3, O: 1, F: 7 },
+        F: { R: 3, C: 3, I: 4, O: 7, F: 1 }
+    };
+
+    const distance = dist[region1][region2];
+    return distance * 5; // 每距离5元
+}
+PhoneMod.ddGetTheNearestBoardingPoint = function() {
+    const key = Object.keys(PhoneMod.ddBoardingPoints).find(key => PhoneMod.ddBoardingPoints[key].passage === V.safePassage)
+    return PhoneMod.ddBoardingPoints[key];
+}
+PhoneMod.ddSubmit = function() {
+    V.Phone.ddstart = {passage: PhoneMod.ddGetTheNearestBoardingPoint()?.passage, time: Time.date}
+    PhoneMod.reload()
+}
+PhoneMod.ddCancel = function(text="订单已取消") {
+    const cost = Math.min(Math.max(Math.floor((PhoneMod.ddGetWaitTime() - 10) / 20 * 10), 0), 10)
+    delete V.Phone.dd
+    delete V.Phone.ddstart
+    V.Phone.ddcanceled = text
+    V.Phone.ddcost = cost
+    PhoneMod.reload(true)
+}
+PhoneMod.ddCancelChecked = function() {
+    new Wikifier(null, `<<money -${V.Phone.ddcost*100}>>`)
+    delete V.Phone.ddcanceled
+    delete V.Phone.ddcost
+    PhoneMod.reload(true)
+}
+PhoneMod.ddIsSubmited = function() {
+    return V.Phone.ddstart
+}
+PhoneMod.ddGetWaitTime = function() {
+    const ageMin = (Time.date.timeStamp - V.Phone.ddstart.time.timeStamp) / 3600 * 60; // 小时差
+    return ageMin
+}
+PhoneMod.ddCheck = function() {
+    setTimeout(() => {
+        if (PhoneMod.ddIsSubmited()) {
+            if (PhoneMod.ddGetWaitTime() > 30) {
+                PhoneMod.ddCancel("等待时间过长，司机已取消您的订单。")
+            } else if (V.passage === V.Phone.ddstart.passage) {
+                const Div = document.createElement("div");
+                Div.style.display = "inline";
+                let text = "<<icon 'phone/app/DD.png'>>"
+                
+                if (V.event) {
+                    text += '<span class="red">你需要先忙完当前的事情</span>'
+                } else {
+                    text += '<<link [[上车|DD seat]]>><</link>>'
+                }
+                text += ' | 你预定的DD司机正在这里等你。<br><br>'
+                new Wikifier(Div, text);
+                $(PhoneMod.ev.content).first().before(Div)
+            }
+        }
+    }, 100)
 }

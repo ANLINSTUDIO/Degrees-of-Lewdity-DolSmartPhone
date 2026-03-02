@@ -30,6 +30,7 @@ PhoneMod.onPassageRender = function (ev) {
 
     PhoneMod.photoFinish();
     PhoneMod.photoCheck();  // 检测完成任务并执行拍照
+    PhoneMod.ddCheck();
 }
 PhoneMod.eventsLoad = function() {
     PhoneMod.events.forEach(PhoneMod.eventsLoad_)
@@ -343,6 +344,14 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
         console.log("SafeCloseError");
     }
 };
+PhoneMod.PhoneSafeCloseFinish = function () {
+    const phoneContainerOld = document.getElementById("smart-phone-container-old") ?? document.getElementById("smart-phone-container-old-desktop")
+    if (phoneContainerOld) {
+        phoneContainerOld.remove()
+    } else {
+        console.log("SafeCloseFinishError");
+    }
+};
 
 // =================== 弹窗信息 =====================
 PhoneMod.msgSend = function (msg, app=null, func=null) {
@@ -526,6 +535,14 @@ PhoneMod.RefreshSecondPhone = function() {
 PhoneMod.StolePhone = function() { // 盗窃一部手机
   V.Phone.Owned.push(new PhoneMod.Phone().newStolen());
 }
+PhoneMod.effectsstealPhone = function () {
+    if (Math.random() < 0.5) {
+        PhoneMod.StolePhoneOnCombat()
+    }
+}
+PhoneMod.StolePhoneOnCombat = function () {
+    console.log(0);
+}
 PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     console.log("Attempting to sell phone with id:", id);
     if (!V.Phone.Owned) return;
@@ -538,7 +555,11 @@ PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     }
     return 0
 }
-PhoneMod.DeletePhone = function(id=null) { // 出售手机
+PhoneMod.AppendPhone = function(phone) { // 删除手机
+    V.Phone.Owned.push(phone);
+    PhoneMod.changeUsingPhone();
+}
+PhoneMod.DeletePhone = function(id=null) { // 删除手机
     if (!V.Phone.Owned) return;
     if (!id) {
         id = V.Phone.Using

@@ -218,8 +218,7 @@
 
 :: Second Phone Shop Meet Feng First
 <<set $Phone.MetFengOnce to 1>>
-<<set $Phone.FengStole to $Phone.Using>>
-<<run >>
+<<set $Phone.FengStole to PhoneMod.DeletePhone()>>
 
 <<generateNPC 1 a m m 23>>
 <<set $NPCList[0].name to "老冯">>
@@ -239,6 +238,7 @@
 你拍了拍口袋，决定算了。心想也许是你自己太敏感了。<br>
 拍……拍了拍口袋？口袋？？？<br><br>
 <span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
+<<print '<span class="red">你的 '+$Phone.FengStole.model+' 不见了！</span>'>><br><br>
 <<elkicon>><<link [[离开|Elk Street]]>><</link>>
 
 :: Second Phone Shop Meet Feng First 2
@@ -263,6 +263,7 @@
 <<else>>
     你突然瞪大你的双眼，随即拍了拍口袋。<br>
     <span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
+    <<print '<span class="red">你的 '+$Phone.FengStole.model+' 不见了！</span>'>><br><br>
 <</if>>
 在你的尖叫下，黑衣人终于意识到了你的存在，猛地抬起头看向你，并且偷偷地慢慢地将柜台上的手机挪向自己那边。<br><br>
 在盗贼面具下，你无法看清他的脸。但是你发觉到了满脸的青胡须，令你感到一阵恶心。
@@ -325,7 +326,7 @@
 :: Feng Contend Finish
 <<endcombat>>
 <<if $enemyhealth lte 0>>
-    <<set $Phone.Owned to $Phone.OwnedTmp>>
+    <<run PhoneMod.AppendPhone($Phone.FengStole)>>
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
@@ -347,6 +348,7 @@
     <</if>><br>
     “等一下！” 那人叫住了你，“你说你也干这行？我叫老冯，你下次有手机就卖到我这吧。”<br>
 <</if>><br>
+<<unset $Phone.FengStole>>
 他叹了口气，说：“要不是他被抓了，我才不会自己做这种事。”<br>
 “他？谁，” 好奇心使你停下脚步，但还是将半个身子，特别是头部露在外边，“意思是你的扒手落网啦？哈哈哈哈哈。”<br><br>
 
@@ -530,6 +532,54 @@
 <<else>>
     <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
 <</if>>
+
+
+
+:: ========APP========
+:: Phone Shop
+<div class="phone-overlay">
+    <<effects>>
+    你处于网购平台。
+
+    <<if $tryOn.autoReset isnot false>><<tryOnReset>><</if>>
+    <<set $shopName = "clothing">>
+    <div id="tryonstats-div"><<tryOnStats>></div>
+    <<unset $shopListStartCount>>
+    <<unset $clothes_choice>>
+    <<set $shopPage = 0>>
+
+    <span>保暖度：</span>
+    <<warmthscale>>
+    <div id="warmth-description">
+        <<warmth_description>>
+    </div>
+    <br><br>
+
+    <<set _outside to $outside>>
+    <div id="clothingShop-div">
+        <<AllShop>>
+        <<run linkifyDivs('.button-back-to-shop')>>
+    </div>
+    <<set $outside to _outside>>
+
+    <<getouticon>>
+    <<link [[退出网购商城|Phone Back]]>>
+        <<set $worn to $Phone.ReturnWorn>>
+        <<unset $Phone.ReturnWorn>>
+        <<updatesidebarimg>>
+        <<updatesidebardescription>>
+        <<updateallure>>
+        <<updatewarmthscale>>
+        <<updatewarmthdescription>>
+        <<updateclothingshop>>
+        <<run updateMoment()>>
+        <<shopClothingFilterReset>>
+        <<ShowUnderEquip "normal">>
+        <<ShowUnderEquip "over">>
+        <<set $tryOn.autoReset to true>>
+    <</link>>
+</div>
+
 
 
 
@@ -1242,3 +1292,119 @@
 
 :: Live Bedroom Finish
 <<link [[继续|Bedroom]]>><</link>>
+
+
+
+:: ============DD============ [widget]
+<<widget "phone_app_DD">>
+    <h2>DD打车</h2>
+    <<set _theNearestBoardingPoint to PhoneMod.ddGetTheNearestBoardingPoint()>>
+    <<if $Phone.ddcanceled>>
+        <span class="red">订单已取消</span> <br>
+        <<print $Phone.ddcanceled>><br>
+        <<if $Phone.ddcost>>
+            你需要为司机的等待支付 <span class="gold">£<<print $Phone.ddcost>></span>。
+        <</if>>
+        <br><br><<link "确认">><<run PhoneMod.ddCancelChecked()>><</link>><br>
+    <<elseif PhoneMod.ddIsSubmited()>>
+        请前往您的上车点。<br>
+        <<print '您在 <span class="green">'+$location+'</span>，请前往最近的可停车地点：<span class="red">'+_theNearestBoardingPoint.name+'</span> 。'>><br>
+        您预计支付：<<print '<span class="gold">£'+PhoneMod.ddCalculateFare()+'</span>'>>。<br>
+        等待时间 <span class="green">前10分钟免费</span>，<span class="red">不超过30分钟</span>，
+        现在已经等待了<span class="yellow"><<print PhoneMod.ddGetWaitTime()>>分钟</span>。
+        请尽快前往，否则将全额支付等待费<span class="gold">£10</span>。<br><br>
+        <<icon "phone/app/DD.png">><<link "取消叫车">><<run PhoneMod.ddCancel('用户取消了订单')>><</link>><br>
+    <<elseif $Phone.dd>>
+        <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+_theNearestBoardingPoint.name+'</span> ，目的地是 <span class="teal">'+PhoneMod.ddGetDestination()+'</span> 。'>><br>
+        您预计支付：<<print '<span class="gold">£'+PhoneMod.ddCalculateFare()+'</span>'>>。<br>
+        您需要亲自前往最近的可停车地点，您的专属司机会在那里等着您，
+        等待时间 <span class="green">前10分钟免费</span>，<span class="red">不超过30分钟</span>，
+        否则全额支付等待费<span class="gold">£10</span>。<br><br>
+        <<icon "phone/app/DD.png">><<link "确定叫车">><<run PhoneMod.ddSubmit()>><</link>><br>
+        <<getouticon>><<link 取消>><<run PhoneMod.ddSetDestination()>><</link>><br>
+    <<elseif _theNearestBoardingPoint>>
+        请确认您的目的地。<br>
+        <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+_theNearestBoardingPoint.name+'</span> 。'>><br>
+        您需要亲自前往最近的可停车地点，您的专属司机会在那里等着您，
+        等待时间 <span class="green">前10分钟免费</span>，<span class="red">不超过30分钟</span>，
+        否则全额支付等待费<span class="gold">£10</span>。<br>
+        <br>住宅区<br>
+        <<domusicon>><<link '宅邸街 (家)'>><<run PhoneMod.ddSetDestination("domus")>><</link>><br>
+        <<barbicon>><<link '倒钩街 (工作室)'>><<run PhoneMod.ddSetDestination("barb")>><</link>><br>
+        <<danubeicon>><<link '多瑙河街 (富人区)'>><<run PhoneMod.ddSetDestination("danube")>><</link>><br>
+        <<wolficon>><<link '狼街 (神殿)'>><<run PhoneMod.ddSetDestination("wolf")>><</link>><br>
+        <br>商业区<br>
+        <<highicon>><<link '商业街 (购物中心)'>><<run PhoneMod.ddSetDestination("high")>><</link>><br>
+        <<connudatusicon>><<link '康努达塔斯街 (会所)'>><<run PhoneMod.ddSetDestination("connudatus")>><</link>><br>
+        <<clifficon>><<link '峭壁街 (咖啡馆)'>><<run PhoneMod.ddSetDestination("cliff")>><</link>><br>
+        <<nightingaleicon>><<link '南丁格尔街 (医院)'>><<run PhoneMod.ddSetDestination("nightingale")>><</link>><br>
+        <<starfishicon>><<link '海星街 (海滩)'>><<run PhoneMod.ddSetDestination("starfish")>><</link>><br>
+        <<oxfordicon>><<link '牛津街 (学校)'>><<run PhoneMod.ddSetDestination("oxford")>><</link>><br>
+        <<parkicon>><<link '公园'>><<run PhoneMod.ddSetDestination("park")>><</link>><br>
+        <br>工业区<br>
+        <<elkicon>><<link '麋鹿街'>><<run PhoneMod.ddSetDestination("elk")>><</link>><br>
+        <<mericon>><<link '梅尔街 (码头)'>><<run PhoneMod.ddSetDestination("mer")>><</link>><br>
+        <<harvesticon>><<link '丰收街 (酒吧)'>><<run PhoneMod.ddSetDestination("harvest")>><</link>><br>
+        <br>镇外<br>
+        <<farmicon "barn">><<link '农场'>><<run PhoneMod.ddSetDestination("barn")>><</link>><br>
+        <br>
+        <<if $town_projects.road gte 4>>
+            森林<br>
+            <<lakeicon>><<link '湖边'>><<run PhoneMod.ddSetDestination("lakebus")>><</link>><br>
+            <br>
+        <</if>>
+    <<else>>
+        请所在的位置暂不支持DD打车服务。
+    <</if>>
+<</widget>>
+
+:: DD seat
+<<set $outside to 0>><<effects>>
+<<set $foresthunt to 0>>
+<<if Weather.precipitation is "rain">>
+	车窗正经受着雨水的冲刷，那噼啪作响的声音便是它们的杰作。<br>
+<</if>>
+你在车的后座坐下，就那样出神地望着窗外。<br><br>
+<!-- <<if $stress gte $stressmax>>
+	<<passoutdd>>
+<</if>> -->
+你的车到达了目的地。<br>
+<<set _fare to PhoneMod.ddCalculateFare()>>
+
+<<print '<<money '+-_fare*100+'>>'>>
+<<print '你支付了<span class="gold">£'+_fare+'</span>。'>><br><br>
+<<switch $Phone.dd>>
+    <<case "domus">><<domus>>
+    <<case "barb">><<barb>>
+    <<case "danube">><<danube>>
+    <<case "wolf">><<wolf>>
+    <<case "high">><<high>>
+    <<case "connudatus">><<connudatus>>
+    <<case "cliff">><<cliff>>
+    <<case "nightingale">><<nightingale>>
+    <<case "starfish">><<starfish>>
+    <<case "oxford">><<oxford>>
+    <<case "elk">><<elk>>
+    <<case "mer">><<mer>>
+    <<case "harvest">><<harvest>>
+    <<case "park">><<park>>
+    <<case "barn">><<farmicon>><<link [[进入农田 (0:05)|Farmland]]>><<pass 5>><</link>>
+    <<case "lakebus">><<set $forest to 0>><<lake>>
+    
+    <!-- <<case "industrial">><<industrial>>
+    <<case "residential">><<residential>>
+    <<case "commercial">><<commercial>>
+
+    <<case "industrialdrain">><<industrialdrain>>
+    <<case "residentialdrain">><<residentialdrain>>
+    <<case "commercialdrain">><<commercialdrain>>
+    <<case "seabeach">><<seabeach>>
+    <<case "searocks">><<searocks>>
+    <<case "seadocks">><<seadocks>>
+    <<case "seacliffs">><<seacliffs>>
+    <<case "drainexit">><<drainexit>>
+    
+    <<case "sea">><<seamove>> -->
+<</switch>>
+<<displayLinks>>
+<<run PhoneMod.ddCancel()>>

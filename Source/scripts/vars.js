@@ -121,6 +121,7 @@ PhoneMod.events = [
 PhoneMod.events_on_macro = [
     {macro: "journal", func: "showPhoneJournal"},
     {macro: "orgasm", func: "havingOrgasm"},
+    {macro: "effectssteal", func: "effectsstealPhone"},
 ]
 
 
@@ -555,6 +556,7 @@ PhoneMod.Apps = {  // APP
     settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
 
     // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
+    DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD"},
 };
 PhoneMod.Contacts = [  // 联系人
     {name: "兰德里", call: "Phone Call Landry"},

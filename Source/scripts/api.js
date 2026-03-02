@@ -65,6 +65,18 @@ window.validArray = function(dict) {
         return dict && dict.length > 0
     }
 }
+PhoneMod.reload = function(open=false) {
+    if (!V.event) {
+        Engine.play(passage());
+        if (open) {
+            setTimeout(() => {
+                if (PhoneMod.shouldUsePhone()) PhoneMod.togglePhone(true);
+            }, 400);
+        }
+        return true;
+    }
+    return false;
+}
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 PhoneMod.getIsLatestVersion = function() {
