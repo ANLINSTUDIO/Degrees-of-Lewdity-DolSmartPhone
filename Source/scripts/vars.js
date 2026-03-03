@@ -558,7 +558,7 @@ PhoneMod.Apps = {  // APP
     // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
     DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD"},
 };
-PhoneMod.Contacts = [  // 联系人
+PhoneMod.Contacts = [  // 联系人P
     {name: "兰德里", call: "Phone Call Landry"},
     {name: "惠特尼", call: "Phone Call Whitney"},
     {name: "艾利克斯", call: "Phone Call Alex"},
@@ -622,6 +622,10 @@ PhoneMod.评论概率百分之 = 5;
 PhoneMod.打赏概率百分之 = 10;
 PhoneMod.充电速度每小时 = 500;
 PhoneMod.充电损害每度电比 = 0.2;
+PhoneMod.DD免费等待时间 = 10
+PhoneMod.DD最大等待时间 = 30
+PhoneMod.DD等待全额费用 = 5
+PhoneMod.DD每距离费用 = 2
 PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",
   "Yenotes" // 必须禁用，否则内部的effect会重新作用

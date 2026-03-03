@@ -703,15 +703,7 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
             V.Phone.Charger[position].date = Time.date
             
             const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
-            const hours = Math.floor(ageHoursFromStarted);
-            let fromStartedText = ""
-            if (hours) {
-                fromStartedText += `${hours}小时`
-            }
-            const minutes = Math.round((ageHoursFromStarted - hours) * 60);
-            if (minutes) {
-                fromStartedText += `${minutes}分钟`
-            }
+            fromStartedText = PhoneMod.getFriendlyTimeText(ageHoursFromStarted)
 
             return {phone: phone, hours: ageHours, fromStarted: ageHoursFromStarted, fromStartedText: fromStartedText, wear: wear}
         }
@@ -742,6 +734,29 @@ PhoneMod.isPhoneStoreIn = function(position) {
 }
 PhoneMod.getPhonesStoreIn = function(position) {
     return V.Phone.Store[position] ?? []
+}
+// === 充电宝 =====================================
+PhoneMod.GetPowerBank = function() {
+    V.Phone.PowerBank = {
+        newness: 10000,
+        newnessmax: 10000
+    }
+}
+PhoneMod.PowerBankChargeOut = function() {
+    if (V.Phone.PowerBank && V.Phone.PowerBank.newness > 0) {
+        const phone = this.getUsingPhone();
+        if (phone) {
+            const charge_value = Math.min((phone.newnessmax - phone.newness), V.Phone.PowerBank.newness)
+            if (charge_value) {
+                phone.newness += charge_value;
+                V.Phone.PowerBank.newness -= charge_value;
+                PhoneMod.phoneJournalChange();
+            }
+        }
+    }
+}
+PhoneMod.PowerBankChargeIn = function() {
+    V.Phone.PowerBank.newness = V.Phone.PowerBank.newnessmax
 }
 // === 日志 ==========================================
 PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
@@ -807,6 +822,25 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                     <</if>>`);
                 Div.appendChild(Li)
             })
+
+            if (V.Phone.PowerBank) {
+                const Li = document.createElement("li");
+                new Wikifier(Li, `
+                    <span style="margin-right: 20px"></span>
+                    <<icon "phone/power_bank.png">> <span class="yellow">持有充电宝</span> 
+                    [ ${Math.round(V.Phone.PowerBank.newness / V.Phone.PowerBank.newnessmax * 100)}% ]
+                    <<if ${V.Phone.PowerBank.newness > 0}>>
+                        <<if ${PhoneMod.getUsingPhone() !== null}>>
+                            <<link "为当前正在使用的手机充电">> <<run PhoneMod.PowerBankChargeOut()>> <</link>>
+                        <<else>>
+                            <span class='teal'>选择使用一部手机，之后可以对其充电</span>
+                        <</if>>
+                    <<else>>
+                        <span class='red'>已经没电</span>
+                    <</if>>
+                `);
+                Div.appendChild(Li)
+            }
         }}
 };
 PhoneMod.phoneJournalChange = function(id) { // 日志中更新手机信息
@@ -815,7 +849,7 @@ PhoneMod.phoneJournalChange = function(id) { // 日志中更新手机信息
         if (phone) {
             PhoneMod.changeUsingPhone(phone);
         }
-    } else {
+    } else if (id === null) {
         PhoneMod.changeUsingPhone(null);
     }
     

@@ -77,6 +77,23 @@ PhoneMod.reload = function(open=false) {
     }
     return false;
 }
+PhoneMod.getFriendlyTimeText = function(ageHours, cn = true) {
+    const hours = Math.floor(ageHours);
+    let friendlyTimeText = ""
+    if (hours) {
+        friendlyTimeText += `${hours}${cn? '小时': ':'}`;
+    } else {
+        if (!cn) friendlyTimeText += `0:`;
+    }
+    const minutes = Math.round((ageHours - hours) * 60);
+    if (minutes) {
+        if (cn) {friendlyTimeText += `${minutes}分钟`}
+        else {friendlyTimeText += `${minutes}`.padStart(2, '0')};
+    } else {
+        if (!cn) friendlyTimeText += `00`;
+    }
+    return friendlyTimeText
+}
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 PhoneMod.getIsLatestVersion = function() {

@@ -105,7 +105,7 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
                     );
                     
                     // 检查这个闹钟时间是否在检查时间范围内
-                    if (alarmDateTime >= lastCheck && alarmDateTime <= currentTime) {
+                    if (alarmDateTime > lastCheck && alarmDateTime <= currentTime) {
                         shouldTrigger = true;
                         break;
                     }
@@ -1252,43 +1252,68 @@ PhoneMod.initMap = function() {
 // =================== DD实现 ===================
 PhoneMod.ddBoardingPoints = {
     // 住宅区
-    domus: { passage: 'Domus Street', name: '宅邸街 (家)', region: 'R' },
-    barb: { passage: 'Barb Street', name: '倒钩街 (工作室)', region: 'R' },
-    danube: { passage: 'Danube Street', name: '多瑙河街 (富人区)', region: 'R' },
-    wolf: { passage: 'Wolf Street', name: '狼街 (神殿)', region: 'R' },
+    domus: { passage: 'Domus Street', name: '宅邸街 (家)', icon: 'domusicon', region: 'R' },
+    barb: { passage: 'Barb Street', name: '倒钩街 (工作室)', icon: 'barbicon', region: 'R' },
+    danube: { passage: 'Danube Street', name: '多瑙河街 (富人区)', icon: 'danubeicon', region: 'R' },
+    wolf: { passage: 'Wolf Street', name: '狼街 (神殿)', icon: 'wolficon', region: 'R' },
     
     // 商业区
-    high: { passage: 'High Street', name: '商业街 (购物中心)', region: 'C' },
-    connudatus: { passage: 'Connudatus Street', name: '康努达塔斯街 (会所)', region: 'C' },
-    cliff: { passage: 'Cliff Street', name: '峭壁街 (咖啡馆)', region: 'C' },
-    nightingale: { passage: 'Nightingale Street', name: '南丁格尔街 (医院)', region: 'C' },
-    starfish: { passage: 'Starfish Street', name: '海星街 (海滩)', region: 'C' },
-    oxford: { passage: 'Oxford Street', name: '牛津街 (学校)', region: 'C' },
-    park: { passage: 'Park', name: '公园', region: 'C' },
+    high: { passage: 'High Street', name: '商业街 (购物中心)', icon: 'highicon', region: 'C' },
+    connudatus: { passage: 'Connudatus Street', name: '康努达塔斯街 (会所)', icon: 'connudatusicon', region: 'C' },
+    cliff: { passage: 'Cliff Street', name: '峭壁街 (咖啡馆)', icon: 'clifficon', region: 'C' },
+    nightingale: { passage: 'Nightingale Street', name: '南丁格尔街 (医院)', icon: 'nightingaleicon', region: 'C' },
+    starfish: { passage: 'Starfish Street', name: '海星街 (海滩)', icon: 'starfishicon', region: 'C' },
+    oxford: { passage: 'Oxford Street', name: '牛津街 (学校)', icon: 'oxfordicon', region: 'C' },
+    park: { passage: 'Park', name: '公园', icon: 'parkicon', region: 'C' },
     
     // 工业区
-    elk: { passage: 'Elk Street', name: '麋鹿街', region: 'I' },
-    mer: { passage: 'Mer Street', name: '梅尔街 (码头)', region: 'I' },
-    harvest: { passage: 'Harvest Street', name: '丰收街 (酒吧)', region: 'I' },
+    elk: { passage: 'Elk Street', name: '麋鹿街', icon: 'elkicon', region: 'I' },
+    mer: { passage: 'Mer Street', name: '梅尔街 (码头)', icon: 'mericon', region: 'I' },
+    harvest: { passage: 'Harvest Street', name: '丰收街 (酒吧)', icon: 'harvesticon', region: 'I' },
     
     // 镇外
-    barn: { passage: 'Farmland', name: '农场', region: 'O' },
+    barn: { passage: 'Farmland', name: '农场', icon: 'farmicon', region: 'O' },
     
     // 森林
-    lakebus: { passage: 'Lake Bus', name: '湖边', region: 'F' }
+    lakebus: { passage: 'Lake Bus', name: '湖边', icon: 'lakeicon', region: 'F' }
 };
+PhoneMod.ddRegionNames = {
+    R: '住宅区',
+    C: '商业区',
+    I: '工业区',
+    O: '镇外',
+    F: '森林'
+};
+PhoneMod.getAllBoardingPoints = function() {
+    const result = {};
+    const current = PhoneMod.ddGetTheNearestBoardingPoint().name
+    
+    Object.entries(PhoneMod.ddBoardingPoints).forEach(([key, data]) => {
+        const regionName = PhoneMod.ddRegionNames[data.region];
+        if (!result[regionName]) {
+            result[regionName] = [];
+        }
+        result[regionName].push({key: key, name: data.name, icon: data.icon, current: data.name === current});
+    });
+
+    return result;
+}
 PhoneMod.ddSetDestination = function(destination) {
     if (destination) {
-        V.Phone.dd = destination
+        if (PhoneMod.ddBoardingPoints[destination]?.name !== PhoneMod.ddGetTheNearestBoardingPoint().name) {
+            V.Phone.dd = destination
+        } else {
+            PhoneMod.ddCancel("起终点相距很近，建议步行前往")
+        }
     } else {
         delete V.Phone.dd
     }
     PhoneMod.PhoneUIInit(true, true)
 }
-PhoneMod.ddGetDestination = function() {
+PhoneMod.ddGetDestinationName = function() {
     return PhoneMod.ddBoardingPoints[V.Phone.dd]?.name
 }
-PhoneMod.ddCalculateFare = function() {
+PhoneMod.ddCalculateDistance = function() {
     const region1 = PhoneMod.ddGetTheNearestBoardingPoint()?.region;
     const region2 = PhoneMod.ddBoardingPoints[V.Phone.dd]?.region;
     
@@ -1304,7 +1329,10 @@ PhoneMod.ddCalculateFare = function() {
     };
 
     const distance = dist[region1][region2];
-    return distance * 5; // 每距离5元
+    return distance;
+}
+PhoneMod.ddCalculateFare = function() {
+    return PhoneMod.ddCalculateDistance() * PhoneMod.DD每距离费用;
 }
 PhoneMod.ddGetTheNearestBoardingPoint = function() {
     const key = Object.keys(PhoneMod.ddBoardingPoints).find(key => PhoneMod.ddBoardingPoints[key].passage === V.safePassage)
@@ -1315,22 +1343,29 @@ PhoneMod.ddSubmit = function() {
     PhoneMod.reload()
 }
 PhoneMod.ddCancel = function(text="订单已取消") {
-    const cost = Math.min(Math.max(Math.floor((PhoneMod.ddGetWaitTime() - 10) / 20 * 10), 0), 10)
+    if (V.Phone.ddstart) {
+        const cost = Math.min(Math.max(Math.floor((PhoneMod.ddGetWaitTime() - PhoneMod.DD免费等待时间) / (PhoneMod.DD最大等待时间 - PhoneMod.DD免费等待时间 ) * PhoneMod.DD等待全额费用), 0), PhoneMod.DD等待全额费用)
+        V.Phone.ddcost = cost
+    }
     delete V.Phone.dd
     delete V.Phone.ddstart
     V.Phone.ddcanceled = text
-    V.Phone.ddcost = cost
     PhoneMod.reload(true)
 }
 PhoneMod.ddCancelChecked = function() {
-    new Wikifier(null, `<<money -${V.Phone.ddcost*100}>>`)
-    delete V.Phone.ddcanceled
-    delete V.Phone.ddcost
-    PhoneMod.reload(true)
+    if (V.Phone.ddcost) new Wikifier(null, `<<money -${V.Phone.ddcost*100}>>`);
+    delete V.Phone.ddcanceled;
+    delete V.Phone.ddcost;
+    PhoneMod.reload(true);
 }
 PhoneMod.ddFinish = function() {
-    delete V.Phone.dd
-    delete V.Phone.ddstart
+    const pass = PhoneMod.ddCalculateDistance();
+    const pass_text = PhoneMod.getFriendlyTimeText(pass / 60, false);
+    const cost = pass * PhoneMod.DD每距离费用;
+    const destination =  PhoneMod.ddBoardingPoints[V.Phone.dd];
+    delete V.Phone.dd;
+    delete V.Phone.ddstart;
+    return {pass: pass, pass_text: pass_text, cost: cost, name: destination?.name, passage: destination?.passage, icon: destination?.icon}
 }
 PhoneMod.ddIsSubmited = function() {
     return V.Phone.ddstart
@@ -1342,7 +1377,7 @@ PhoneMod.ddGetWaitTime = function() {
 PhoneMod.ddCheck = function() {
     setTimeout(() => {
         if (PhoneMod.ddIsSubmited()) {
-            if (PhoneMod.ddGetWaitTime() > 30) {
+            if (PhoneMod.ddGetWaitTime() > PhoneMod.DD最大等待时间) {
                 PhoneMod.ddCancel("等待时间过长，司机已取消您的订单。")
             } else if (V.passage === V.Phone.ddstart.passage) {
                 const Div = document.createElement("div");

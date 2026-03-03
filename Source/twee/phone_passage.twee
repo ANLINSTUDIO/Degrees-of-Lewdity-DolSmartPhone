@@ -31,25 +31,27 @@
     <</if>>
     <span style="margin-right: 50px"></span><span class="gold">最大电池续航：<<print _phone_info.newnessfactory>> / 摄像加成：<<print _phone_info.photography*100>>%</span><br>
     <span style="margin-right: 50px"></span><<print _phone_info.desc>><br><br>
-<</for>><br><br>
+<</for>>
+<<if !$Phone.PowerBank>>
+    <<icon "phone/power_bank.png">><<link [[购买充电宝|Shopping Centre Phone Shop]]>><<run PhoneMod.GetPowerBank()>><</link>><br>
+    <span style="margin-right: 50px"></span><span class="gold">最大电池续航：10000</span><br><br>
+<</if>>
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<set _condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
         <<set _money to PhoneMod.getSellPhonePrice(_Phone.id)>>
-        <<set _Phone to PhoneMod.getPhone(_Phone.id)>>
-        <<set _info to PhoneMod.getPhoneInfo(_Phone.model)>>
         <<icon "phone/phone.png">>
-        一部<<print _condition.html>>的手机，
+        一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
         <<if _Phone.stolen>>
             <span class="red">由你盗窃而来，</span>
             <<if _Phone.usable>>
                 <span class="green">但你已经破解了密码，</span>
             <</if>>
         <</if>>
-        官网售价为<span class="red">£_info.price</span>，
+        官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
         现在可以以<span class="gold">£_money</span>的价格在官方手机店
         <<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
         <br>
@@ -401,6 +403,16 @@
             <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
+    <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop", false)>>
+        <br><span class="teal">你的手机正放在老冯这里充电。</span><br>
+        <<icon "phone/charge.png">>
+        <<link [[返回充电的地方|Second Phone Shop Charge]]>><</link>><br><br>
+    <<elseif PhoneMod.getUsingPhone()>>
+        <br><<run PhoneMod.Guide.startTutorial("charge")>>
+        <span class="teal">经过老冯的同意，你可以把手机放在这里充电。</span><br>
+        <<icon "phone/charge.png">>
+        <<link [[为手机充电|Second Phone Shop Charge]]>><</link>><br><br>
+    <</if>>
 <</if>>
 <<elkicon>><<link [[离开|Elk Street]]>><</link>>
 
@@ -590,7 +602,7 @@
 <br>如果你要拿走它，那么你就要将顾客翻身，这真的会弄醒<<him>>！<br><br>
 
 :: Spa Tired Steal Phone Link
-<<set $skulduggerydifficulty to 700>>
+<<set $skulduggerydifficulty to 700>><br>
 <<link [[趁顾客翻身拿走手机|Spa Tired Steal Phone]]>><<set $skulduggerydifficulty to 700>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
 <<link [[拿走赃物|Spa Tired Steal]]>><<set $skulduggerydifficulty to 500>><</link>>
 
@@ -895,6 +907,46 @@
 
 
 :: ==========Charge========== [widget]
+<<widget "charge">>
+    <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn(_args[0])>>
+    <<if _UnguardedCharge>>
+        <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
+        <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
+        你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
+        <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
+            <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
+            <<if _UnguardedChargeHours>>
+                <br><br>
+                你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
+            <</if>>
+        <<else>>
+            当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
+            <<if _UnguardedChargeHours>>
+                <br><br>
+                你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
+                <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
+                <<phonewear _UnguardedCharge.wear>>
+            <</if>>
+        <</if>><br><br>
+        <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+    <<else>>
+        <<set _phone to PhoneMod.getUsingPhone()>>
+        <<if _phone>>
+            你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
+            <<link [[把手机放在这里充电|_args[1]]]>><<run PhoneMod.PhoneChargeUnguarded(_args[0])>><</link>>
+            <<if $Phone.PowerBank>>
+                <br><<icon "phone/power_bank.png">> <<link [[为充电宝充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn()>><</link>>
+            <</if>>
+            <br><br>
+            <<link [[守着充电5分钟 (0:05)|_args[1]]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
+            <<link [[守着充电10分钟 (0:10)|_args[1]]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
+            <<link [[守着充电30分钟 (0:30)|_args[1]]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
+            <<link [[守着充电1小时 (1:00)|_args[1]]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
+        <<else>>
+            这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
+        <</if>>
+    <</if>>
+<</widget>>
 <<widget "phonecharge">>
     <<if _args.length gt 0>>
         | <span class="green">+<<print Math.round(eval(_args[1])/_args[0].newnessmax*100)>>%</span>
@@ -919,81 +971,20 @@
     <span class="teal">你注意到咖啡馆的角落有一个插座，也许真的有人会把手机放在这里充电。</span>
 <</if>><br><br>
 :: Ocean Breeze Charge
-<<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn("OceanBreeze")>>
-<<if _UnguardedCharge>>
-    <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
-    <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
-    你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
-    <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
-        <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
-        <<if _UnguardedChargeHours>>
-            <br><br>
-            你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
-        <</if>>
-    <<else>>
-        当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
-        <<if _UnguardedChargeHours>>
-            <br><br>
-            你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
-            <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
-            <<phonewear _UnguardedCharge.wear>>
-        <</if>>
-    <</if>><br><br>
-    <<link [[把放在这里充电的手机拿走|Ocean Breeze Charge]]>><<run PhoneMod.PhoneChargeUnguardedFinish("OceanBreeze")>><</link>><br>
-<<else>>
-    <<set _phone to PhoneMod.getUsingPhone()>>
-    <<if _phone>>
-        你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
-        <<link [[把手机放在这里充电|Ocean Breeze Charge]]>><<run PhoneMod.PhoneChargeUnguarded("OceanBreeze")>><</link>><br><br>
-        <<link [[守着充电5分钟 (0:05)|Ocean Breeze Charge]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
-        <<link [[守着充电10分钟 (0:10)|Ocean Breeze Charge]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-        <<link [[守着充电30分钟 (0:30)|Ocean Breeze Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
-        <<link [[守着充电1小时 (1:00)|Ocean Breeze Charge]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
-    <<else>>
-        这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
-    <</if>>
-<</if>>
+<<charge "OceanBreeze", "Ocean Breeze Charge">>
 <br><br>
 <<cafeicon>><<link [[待在咖啡馆|Ocean Breeze]]>><</link>><br>
 <<clifficon>><<link [[离开|Cliff Street]]>><</link>>
 
 :: Bedroom Charge
-<<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn("Bedroom")>>
-<<if _UnguardedCharge>>
-    <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
-    <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
-    你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
-    <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
-        <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
-        <<if _UnguardedChargeHours>>
-            <br><br>
-            你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
-        <</if>>
-    <<else>>
-        当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
-        <<if _UnguardedChargeHours>>
-            <br><br>
-            你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
-            <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
-            <<phonewear _UnguardedCharge.wear>>
-        <</if>>
-    <</if>><br><br>
-    <<link [[把放在这里充电的手机拿走|Bedroom Charge]]>><<run PhoneMod.PhoneChargeUnguardedFinish("Bedroom")>><</link>><br>
-<<else>>
-    <<set _phone to PhoneMod.getUsingPhone()>>
-    <<if _phone>>
-        你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
-        <<link [[把手机放在这里充电|Bedroom Charge]]>><<run PhoneMod.PhoneChargeUnguarded("Bedroom")>><</link>><br><br>
-        <<link [[守着充电5分钟 (0:05)|Bedroom Charge]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
-        <<link [[守着充电10分钟 (0:10)|Bedroom Charge]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-        <<link [[守着充电30分钟 (0:30)|Bedroom Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
-        <<link [[守着充电1小时 (1:00)|Bedroom Charge]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
-    <<else>>
-        这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
-    <</if>>
-<</if>>
+<<charge "Bedroom", "Bedroom Charge">>
 <br><br>
 <<bedicon>><<link [[离开这个角落|Bedroom]]>><</link>><br>
+
+:: Second Phone Shop Charge
+<<charge "SecondPhoneShop" "Second Phone Shop Charge">>
+<br><br>
+<<icon "unused_stonebuilding1.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
 
 :: Library Charge Link
 <<if PhoneMod.isPhoneChargeUnguardedIn("Library", false)>>
@@ -1032,49 +1023,19 @@
 :: Library Charge
 <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn("Library")>>
 <<if _UnguardedCharge>>
-    <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
-    <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
     <<if V.npc.contains("Sydney")>>
         <<if _UnguardedChargeHours gt 0>>
-        “看吧！还好好的呢！”悉尼骄傲地看着你，“我一直看着呢！”<br><br>
+            “看吧！还好好的呢！”悉尼骄傲地看着你，“我一直看着呢！”<br><br>
         <<else>>
-        “你放心吧，”悉尼眼神坚定地看着你，“我一定给你看好了！”<br><br>
+            “你放心吧，”悉尼眼神坚定地看着你，“我一定给你看好了！”<br><br>
         <</if>>
     <</if>>
-    你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
-    <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
-        <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
-        <<if _UnguardedChargeHours>>
-            <br><br>
-            你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
-        <</if>>
-    <<else>>
-        当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
-        <<if _UnguardedChargeHours>>
-            <br><br>
-            你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
-            <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
-            <<phonewear _UnguardedCharge.wear>>
-        <</if>>
-    <</if>><br><br>
-    <<link [[把放在这里充电的手机拿走|Library Charge]]>><<run PhoneMod.PhoneChargeUnguardedFinish("Library")>><</link>><br>
 <<else>>
     <<if V.npc.contains("Sydney")>>
         “是不是很贵重啊？”悉尼嘟起嘴看着你把充电头插进插座，“我……可以帮你看着的…………如果我在这里的话”<br><br>
     <</if>>
-    <<set _phone to PhoneMod.getUsingPhone()>>
-    <<if _phone>>
-        你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。
-        当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
-        <<link [[把手机放在这里充电|Library Charge]]>><<run PhoneMod.PhoneChargeUnguarded("Library")>><</link>><br><br>
-        <<link [[守着充电5分钟 (0:05)|Library Charge]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
-        <<link [[守着充电10分钟 (0:10)|Library Charge]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-        <<link [[守着充电30分钟 (0:30)|Library Charge]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
-        <<link [[守着充电1小时 (1:00)|Library Charge]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
-    <<else>>
-        这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
-    <</if>>
 <</if>>
+<<charge "Library" "Library Charge">>
 <br><br>
 <<schoolicon "library desk">><<link [[待在柜台|Library Rental Counter]]>><</link>><br>
 <<getouticon>><<link [[离开柜台|School Library]]>><</link>>
@@ -1296,6 +1257,23 @@
 
 
 :: ============DD============ [widget]
+<<widget "ddinfo">>
+    您需要亲自前往最近的可停车地点，您的专属司机会在那里等着您，
+    <<ddwaittimeinfo>>
+    否则全额支付等待费<span class="gold">£<<print PhoneMod.DD等待全额费用>></span>。<br>
+<</widget>>
+<<widget "ddwaittimeinfo">>
+    等待时间 <span class="green">前<<print PhoneMod.DD免费等待时间>>分钟免费</span>，<span class="red">不超过<<print PhoneMod.DD最大等待时间>>分钟</span>，
+<</widget>>
+<<widget "ddlocationinfo">>
+    <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+PhoneMod.ddGetTheNearestBoardingPoint().name+'</span> 。'>><br>
+<</widget>>
+<<widget "ddlocationinfodestination">>
+    <<print '您在 <span class="green">'+$location+'</span>，请立刻前往最近的可停车地点：<span class="red">'+PhoneMod.ddGetTheNearestBoardingPoint().name+'</span> ，本次出行的目的地是 <span class="teal">'+PhoneMod.ddGetDestinationName()+'</span> 。'>><br>
+<</widget>>
+<<widget "ddcostinfo">>
+    您预计支付：<<print '<span class="gold">£'+PhoneMod.ddCalculateFare()+'</span>'>>。<br>
+<</widget>>
 <<widget "phone_app_DD">>
     <h2>DD打车</h2>
     <<set _theNearestBoardingPoint to PhoneMod.ddGetTheNearestBoardingPoint()>>
@@ -1308,51 +1286,44 @@
         <br><br><<link "确认">><<run PhoneMod.ddCancelChecked()>><</link>><br>
     <<elseif PhoneMod.ddIsSubmited()>>
         请前往您的上车点。<br>
-        <<print '您在 <span class="green">'+$location+'</span>，请前往最近的可停车地点：<span class="red">'+_theNearestBoardingPoint.name+'</span> 。'>><br>
-        您预计支付：<<print '<span class="gold">£'+PhoneMod.ddCalculateFare()+'</span>'>>。<br>
-        等待时间 <span class="green">前10分钟免费</span>，<span class="red">不超过30分钟</span>，
-        现在已经等待了<span class="yellow"><<print PhoneMod.ddGetWaitTime()>>分钟</span>。
-        请尽快前往，否则将全额支付等待费<span class="gold">£10</span>。<br><br>
+        <<ddlocationinfodestination>>
+        <<ddcostinfo>>
+        现在已经等待了<span class="yellow"><<print PhoneMod.ddGetWaitTime()>>分钟</span>。<br>
+        <<ddinfo>><br>
         <<icon "phone/app/DD.png">><<link "取消叫车">><<run PhoneMod.ddCancel('用户取消了订单')>><</link>><br>
     <<elseif $Phone.dd>>
-        <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+_theNearestBoardingPoint.name+'</span> ，目的地是 <span class="teal">'+PhoneMod.ddGetDestination()+'</span> 。'>><br>
-        您预计支付：<<print '<span class="gold">£'+PhoneMod.ddCalculateFare()+'</span>'>>。<br>
-        您需要亲自前往最近的可停车地点，您的专属司机会在那里等着您，
-        等待时间 <span class="green">前10分钟免费</span>，<span class="red">不超过30分钟</span>，
-        否则全额支付等待费<span class="gold">£10</span>。<br><br>
-        <<icon "phone/app/DD.png">><<link "确定叫车">><<run PhoneMod.ddSubmit()>><</link>><br>
+        <<ddlocationinfodestination>>
+        <<ddcostinfo>>
+        <<ddinfo>><br>
+        <<if $money lt PhoneMod.ddCalculateFare()*100>>
+            <span class="red">你支付不起这个金额。</span>
+        <<elseif $money lt PhoneMod.DD等待全额费用*100>>
+            <span class="red">你支付不起最大等待费定价。</span>
+        <<else>>
+            <<icon "phone/app/DD.png">><<link "确定叫车">><<run PhoneMod.ddSubmit()>><</link>>
+        <</if>><br>
         <<getouticon>><<link 取消>><<run PhoneMod.ddSetDestination()>><</link>><br>
     <<elseif _theNearestBoardingPoint>>
         请确认您的目的地。<br>
-        <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+_theNearestBoardingPoint.name+'</span> 。'>><br>
-        您需要亲自前往最近的可停车地点，您的专属司机会在那里等着您，
-        等待时间 <span class="green">前10分钟免费</span>，<span class="red">不超过30分钟</span>，
-        否则全额支付等待费<span class="gold">£10</span>。<br>
-        <br>住宅区<br>
-        <<domusicon>><<link '宅邸街 (家)'>><<run PhoneMod.ddSetDestination("domus")>><</link>><br>
-        <<barbicon>><<link '倒钩街 (工作室)'>><<run PhoneMod.ddSetDestination("barb")>><</link>><br>
-        <<danubeicon>><<link '多瑙河街 (富人区)'>><<run PhoneMod.ddSetDestination("danube")>><</link>><br>
-        <<wolficon>><<link '狼街 (神殿)'>><<run PhoneMod.ddSetDestination("wolf")>><</link>><br>
-        <br>商业区<br>
-        <<highicon>><<link '商业街 (购物中心)'>><<run PhoneMod.ddSetDestination("high")>><</link>><br>
-        <<connudatusicon>><<link '康努达塔斯街 (会所)'>><<run PhoneMod.ddSetDestination("connudatus")>><</link>><br>
-        <<clifficon>><<link '峭壁街 (咖啡馆)'>><<run PhoneMod.ddSetDestination("cliff")>><</link>><br>
-        <<nightingaleicon>><<link '南丁格尔街 (医院)'>><<run PhoneMod.ddSetDestination("nightingale")>><</link>><br>
-        <<starfishicon>><<link '海星街 (海滩)'>><<run PhoneMod.ddSetDestination("starfish")>><</link>><br>
-        <<oxfordicon>><<link '牛津街 (学校)'>><<run PhoneMod.ddSetDestination("oxford")>><</link>><br>
-        <<parkicon>><<link '公园'>><<run PhoneMod.ddSetDestination("park")>><</link>><br>
-        <br>工业区<br>
-        <<elkicon>><<link '麋鹿街'>><<run PhoneMod.ddSetDestination("elk")>><</link>><br>
-        <<mericon>><<link '梅尔街 (码头)'>><<run PhoneMod.ddSetDestination("mer")>><</link>><br>
-        <<harvesticon>><<link '丰收街 (酒吧)'>><<run PhoneMod.ddSetDestination("harvest")>><</link>><br>
-        <br>镇外<br>
-        <<farmicon "barn">><<link '农场'>><<run PhoneMod.ddSetDestination("barn")>><</link>><br>
-        <br>
-        <<if $town_projects.road gte 4>>
-            森林<br>
-            <<lakeicon>><<link '湖边'>><<run PhoneMod.ddSetDestination("lakebus")>><</link>><br>
-            <br>
-        <</if>>
+        <<ddlocationinfo>>
+        <<ddinfo>>
+
+        <<for _region, _destinations range PhoneMod.getAllBoardingPoints()>>
+            <<set _pass to 1>>
+            <<if _region is "森林" and !($town_projects.road gte 4)>>
+                <<set _pass to 0>>
+            <</if>>
+            <<if _pass>>
+                <<print '<br>'+_region+'<br>'>>
+                <<for _destination range _destinations>>
+                    <<if _destination.current>>
+                        <<print '<<'+_destination.icon+'>>'+_destination.name+' | <span class="green">当前最近的可停车地点</span><br>'>>
+                    <<else>>
+                        <<print '<<'+_destination.icon+'>><<link "'+_destination.name+'">><<run PhoneMod.ddSetDestination("'+_destination.key+'")>><</link>><br>'>>
+                    <</if>>
+                <</for>>
+            <</if>>
+        <</for>>
     <<else>>
         请所在的位置暂不支持DD打车服务。
     <</if>>
@@ -1370,44 +1341,27 @@
         <<passoutdd>>
     <</if>> -->
     你的车到达了目的地。<br>
-    <<set _fare to PhoneMod.ddCalculateFare()>>
+    <<set _finish to PhoneMod.ddFinish()>>
 
-    <<print '<<money '+-_fare*100+'>>'>>
-    <<print '你支付了<span class="gold">£'+_fare+'</span>。'>><br><br>
-    <<switch $Phone.dd>>
-        <<case "domus">><<domus>>
-        <<case "barb">><<barb>>
-        <<case "danube">><<danube>>
-        <<case "wolf">><<wolf>>
-        <<case "high">><<high>>
-        <<case "connudatus">><<connudatus>>
-        <<case "cliff">><<cliff>>
-        <<case "nightingale">><<nightingale>>
-        <<case "starfish">><<starfish>>
-        <<case "oxford">><<oxford>>
-        <<case "elk">><<elk>>
-        <<case "mer">><<mer>>
-        <<case "harvest">><<harvest>>
-        <<case "park">><<park>>
-        <<case "barn">><<farmicon>><<link [[进入农田 (0:05)|Farmland]]>><<pass 5>><</link>>
-        <<case "lakebus">><<set $forest to 0>><<lake>>
-        
-        <!-- <<case "industrial">><<industrial>>
-        <<case "residential">><<residential>>
-        <<case "commercial">><<commercial>>
+    <<print '<<money '+-_finish.cost*100+'>>'>>
+    <<print '你支付了<span class="gold">£'+_finish.cost+'</span>。'>><br><br>
 
-        <<case "industrialdrain">><<industrialdrain>>
-        <<case "residentialdrain">><<residentialdrain>>
-        <<case "commercialdrain">><<commercialdrain>>
-        <<case "seabeach">><<seabeach>>
-        <<case "searocks">><<searocks>>
-        <<case "seadocks">><<seadocks>>
-        <<case "seacliffs">><<seacliffs>>
-        <<case "drainexit">><<drainexit>>
-        
-        <<case "sea">><<seamove>> -->
-    <</switch>>
-    <<displayLinks>>
-    <<run PhoneMod.ddFinish()>>
+    <<print "<<"+_finish.icon+">><<link [["+_finish.name+" ("+_finish.pass_text+")|"+_finish.passage+"]]>><<pass "+_finish.pass+">><</link>><br>">>
+
+
+    <!-- <<case "industrial">><<industrial>>
+    <<case "residential">><<residential>>
+    <<case "commercial">><<commercial>>
+
+    <<case "industrialdrain">><<industrialdrain>>
+    <<case "residentialdrain">><<residentialdrain>>
+    <<case "commercialdrain">><<commercialdrain>>
+    <<case "seabeach">><<seabeach>>
+    <<case "searocks">><<searocks>>
+    <<case "seadocks">><<seadocks>>
+    <<case "seacliffs">><<seacliffs>>
+    <<case "drainexit">><<drainexit>>
+    
+    <<case "sea">><<seamove>> -->
 <<else>>
 <</if>>
