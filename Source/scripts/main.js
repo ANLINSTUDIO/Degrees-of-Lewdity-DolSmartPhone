@@ -663,12 +663,12 @@ PhoneMod.PhoneCheckNewness = function () {
     if (phone.newness < 0) {
         phone.newness = 0;
         PhoneMod.PhoneWaer(50, null, false)  // 损耗手机：强制关机
-        if (!PhoneMod.changeUsingPhone()) {
-            PhoneMod.PhoneSafeClose()
+        PhoneMod.changeUsingPhone()
+        PhoneMod.PhoneUIInit()
+        if (PhoneMod.getUsingPhone().newness === 0) {
             PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return false;
         } else {
-            PhoneMod.PhoneUIInit()
             PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
             return true;
         }
@@ -703,7 +703,7 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
             V.Phone.Charger[position].date = Time.date
             
             const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
-            fromStartedText = PhoneMod.getFriendlyTimeText(ageHoursFromStarted)
+            const fromStartedText = PhoneMod.getFriendlyTimeText(ageHoursFromStarted)
 
             return {phone: phone, hours: ageHours, fromStarted: ageHoursFromStarted, fromStartedText: fromStartedText, wear: wear}
         }

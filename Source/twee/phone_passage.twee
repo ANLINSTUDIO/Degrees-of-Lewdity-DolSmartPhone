@@ -971,13 +971,13 @@
     <span class="teal">你注意到咖啡馆的角落有一个插座，也许真的有人会把手机放在这里充电。</span>
 <</if>><br><br>
 :: Ocean Breeze Charge
-<<charge "OceanBreeze", "Ocean Breeze Charge">>
+<<charge "OceanBreeze" "Ocean Breeze Charge">>
 <br><br>
 <<cafeicon>><<link [[待在咖啡馆|Ocean Breeze]]>><</link>><br>
 <<clifficon>><<link [[离开|Cliff Street]]>><</link>>
 
 :: Bedroom Charge
-<<charge "Bedroom", "Bedroom Charge">>
+<<charge "Bedroom" "Bedroom Charge">>
 <br><br>
 <<bedicon>><<link [[离开这个角落|Bedroom]]>><</link>><br>
 
