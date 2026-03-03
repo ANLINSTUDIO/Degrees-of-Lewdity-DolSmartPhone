@@ -7,7 +7,7 @@
 <br><br>
 “您好，欢迎光临，请问是需要购买手机还是出售二手机？”一名店员微笑着朝你走来。
 <br><br>
-<<icon "phone/phone.png">><<link [[购买手机|Shopping Centre Phone Buy]]>><</link>><br>
+<<icon "phone/phone.png">><<link [[购买手机或充电宝|Shopping Centre Phone Buy]]>><</link>><br>
 <<if validArray($Phone.Owned)>>
     <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
 <</if>>
@@ -33,7 +33,12 @@
     <span style="margin-right: 50px"></span><<print _phone_info.desc>><br><br>
 <</for>>
 <<if !$Phone.PowerBank>>
-    <<icon "phone/power_bank.png">><<link [[购买充电宝|Shopping Centre Phone Shop]]>><<run PhoneMod.GetPowerBank()>><</link>><br>
+    <<icon "phone/power_bank.png">>
+    <<if $money gte 10000>>
+        <<link [[购买充电宝 (£100)|Shopping Centre Phone Shop]]>><<money -10000>><<run PhoneMod.GetPowerBank()>><</link>>
+    <<else>>
+        <span class="red">购买充电宝 (£100)</span>
+    <</if>><br>
     <span style="margin-right: 50px"></span><span class="gold">最大电池续航：10000</span><br><br>
 <</if>>
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
