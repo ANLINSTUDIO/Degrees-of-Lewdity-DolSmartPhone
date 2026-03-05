@@ -356,16 +356,19 @@ PhoneMod.PhoneSafeCloseFinish = function () {
 // =================== 弹窗信息 =====================
 PhoneMod.msgSend = function (msg, app=null, func=null) {
     if (PhoneMod.getUsingPhone()) {
-        if (V.Phone.msgLine.length > 0) PhoneMod.msgShowLine();
-        const phone_popup = document.querySelector(".phone-popup")
-        console.log(1, phone_popup);
-        
-        if (phone_popup) {
-            const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
-            new Wikifier(phone_popup_content, `${phone_popup_content.innerHTML? '<br>': ''}${msg}`);
-            phone_popup.classList.add("active")
-            V.Phone.MsgApp = app
-            V.Phone.MsgFunc = func
+        if (!V.Phone.Settings.NotificationClose) {
+            if (V.Phone.msgLine.length > 0) PhoneMod.msgShowLine();
+            const phone_popup = document.querySelector(".phone-popup")
+            
+            if (phone_popup) {
+                const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
+                new Wikifier(phone_popup_content, `${phone_popup_content.innerHTML? '<br>': ''}${msg}`);
+                phone_popup.classList.add("active")
+                V.Phone.MsgApp = app
+                V.Phone.MsgFunc = func
+            }
+        } else {
+            V.Phone.msgLine = []
         }
     } else {
         console.log(2, msg);
@@ -513,27 +516,33 @@ PhoneMod.Phone = class {
 }
 // === 手机控制 ==========================================
 PhoneMod.BuyPhone = function(model) { // 购买一部手机
-  V.Phone.Owned.push(new PhoneMod.Phone().newBuy(model));
-  PhoneMod.changeUsingPhone();
+    const phone = new PhoneMod.Phone().newBuy(model);
+    V.Phone.Owned.push(phone);
+    PhoneMod.changeUsingPhone();
+    return phone;
 }
 PhoneMod.BuySecondPhone = function(model, newnessK) { // 购买一部二手手机
-  V.Phone.Owned.push(new PhoneMod.Phone().newBuySecond(model, newnessK));
-  PhoneMod.changeUsingPhone();
-  V.Phone.SecondPhoneShopGoods = V.Phone.SecondPhoneShopGoods.filter(item => !(item.model === model && item.newnessK === newnessK));
+    const phone = new PhoneMod.Phone().newBuySecond(model, newnessK);
+    V.Phone.Owned.push(phone);
+    PhoneMod.changeUsingPhone();
+    V.Phone.SecondPhoneShopGoods = V.Phone.SecondPhoneShopGoods.filter(item => !(item.model === model && item.newnessK === newnessK));
+    return phone;
 }
 PhoneMod.RefreshSecondPhone = function() {
-    delete V.Phone.SecondPhoneShopGoodsBought
-    V.Phone.SecondPhoneShopGoods = []
+    delete V.Phone.SecondPhoneShopGoodsBought;
+    V.Phone.SecondPhoneShopGoods = [];
     for (let index = 0; index < 4 + Math.random() * 3; index++) {
         const model = PhoneMod.PhoneModelsMain[ PhoneMod.PhoneModelsMain.length * Math.random() << 0]
         const newnessK = 0.4 + Math.random() * 0.5
         const model_info = PhoneMod.getPhoneInfo(model)
         const price = Math.round(model_info.price * newnessK)
         V.Phone.SecondPhoneShopGoods.push({model: model, newnessK: newnessK, price: price})
-    }
+    };
 }
 PhoneMod.StolePhone = function() { // 盗窃一部手机
-  V.Phone.Owned.push(new PhoneMod.Phone().newStolen());
+    const phone = new PhoneMod.Phone().newStolen();
+    V.Phone.Owned.push(phone);
+    return phone;
 }
 PhoneMod.effectsstealPhone = function () {
     if (Math.random() < 0.5) {

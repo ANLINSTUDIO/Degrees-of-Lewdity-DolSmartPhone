@@ -43,18 +43,11 @@ async function getNotice() {
     if (data.error) {
       console.error('| [SmartPhone] 获取公告失败:', data.error);
     } else {
-      PhoneMod.notice = data.value;
-      console.log(`| [SmartPhone] 更新公告 =====\n${PhoneMod.notice}\n===============`)
-      const observer = new MutationObserver((mutations) => {
-        const phone_notice = document.getElementById("phone-notice");
-        if (phone_notice) {
-          setTimeout(() => {
-            const phone_notice = document.getElementById("phone-notice");
-            phone_notice.innerText = PhoneMod.notice;
-          }, 1000)
-          observer.disconnect(); // 找到后停止观察
-        }
-      });
+      PhoneMod.notice = data.value.replaceAll("\n", "<br>");
+      const phone_notice = document.getElementById("phone-notice");
+      if (phone_notice) {
+        phone_notice.innerHTML = PhoneMod.notice;
+      }
 
       // 开始观察整个文档
       observer.observe(document.body, {

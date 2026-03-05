@@ -205,7 +205,7 @@
 
 :: === Second Phone Shop ===
 :: Second Phone Shop Link
-<<if !$Phone.MetFengOnce and $Phone.Using and !($Phone.Using eq "null")>>
+<<if !$Phone.MetFengOnce and validArray($Phone.Owned)>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
     <<if $Phone.SecondShopKnown>>
@@ -225,7 +225,11 @@
 
 :: Second Phone Shop Meet Feng First
 <<set $Phone.MetFengOnce to 1>>
-<<set $Phone.FengStole to PhoneMod.DeletePhone()>>
+<<if validArray($Phone.Owned)>>
+    <<set $Phone.FengStole to PhoneMod.DeletePhone(V.Phone.Owned[0].id)>>
+<<else>>
+    <<set $Phone.FengStole to PhoneMod.BuySecondPhone("特斯特2 测试型", 0.01)>>
+<</if>>
 
 <<generateNPC 1 a m m 23>>
 <<set $NPCList[0].name to "老冯">>

@@ -38,6 +38,9 @@ PhoneMod.patchOnPassageRender = function (ev) {
 
     // 3.4 | 手机存储
     V.Phone.Store = V.Phone.Store || {};
+
+    // 3.7 | 关闭通知
+    V.Phone.Settings.NotificationClose = V.Phone.Settings.NotificationClose || false;
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

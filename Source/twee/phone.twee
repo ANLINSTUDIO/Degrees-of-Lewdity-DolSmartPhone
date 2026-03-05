@@ -297,6 +297,7 @@
     <span class="black" style="font-size: small">【实验性！】DoL中的事件貌似判定为只要有NPC出现就属于事件，<b class="teal">当你使用游戏、网购等跳转页面的功能时</b>，非常有可能会触发endevent！一旦如此，那么你正在触发的事件的<b class="red">NPC都会被清除</b>，正常剧情也会报错！</span><br>
     <hr>
     <h3>其他设置</h3>
+    <<print `<input type="checkbox" onclick="V.Phone.Settings.NotificationClose = this.checked" ` + ($Phone.Settings.NotificationClose ? "checked" : "") + `> 关闭所有通知`>><br>
     <<link "重置教程进度">><<run PhoneMod.Guide.resetGuide()>><</link>><br>
 <</widget>>
 
