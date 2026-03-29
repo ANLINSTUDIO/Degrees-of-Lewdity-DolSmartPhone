@@ -4,7 +4,7 @@ console.log("| [SmartPhone] DoL万能的智能手机 正在加载：main.js");
 // ================== passage 注入 ==================
 $(document).one(":passageinit", function () {
     PhoneMod.events_on_macro.forEach(function(event) {
-        PhoneMod.onMacro(event.macro, PhoneMod[event.func])
+        AsAPI.onMacro(event.macro, PhoneMod[event.func])
     })
 });
 $(document).on(":passagerender", function (ev) {PhoneMod.onPassageRender(ev)});
@@ -118,7 +118,7 @@ PhoneMod.eventsLoadInsert_ = function(target, insert_target, position="after", o
 }
 PhoneMod.varClean = function() {
     V.Phone.open = false
-    V.Phone.havingOrgasm = false
+    PhoneMod.reset_task_state()
     delete V.Phone.yenotePosting
 }
 
@@ -645,7 +645,7 @@ PhoneMod.PhoneWaer = function(value, phone = null, check = true) {
     if (value <= 0) return;
     phone.newnessmax = Math.max(Math.round(phone.newnessmax - value), 0);
     if (phone === PhoneMod.getUsingPhone()) {
-        PhoneMod.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
+        AsAPI.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
         if (check) {
             return PhoneMod.PhoneCheckNewness()
         } else {
@@ -661,11 +661,11 @@ PhoneMod.PhoneCheckNewness = function () {
         phone.newnessmax = 0;
         if (!PhoneMod.changeUsingPhone()) {
             PhoneMod.PhoneSafeClose()
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            AsAPI.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return false;
         } else {
             PhoneMod.PhoneUIInit()
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            AsAPI.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
             return true;
         }
     }
@@ -675,10 +675,10 @@ PhoneMod.PhoneCheckNewness = function () {
         PhoneMod.changeUsingPhone()
         PhoneMod.PhoneUIInit()
         if (PhoneMod.getUsingPhone().newness === 0) {
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            AsAPI.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return false;
         } else {
-            PhoneMod.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            AsAPI.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
             return true;
         }
     }
@@ -712,7 +712,7 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
             V.Phone.Charger[position].date = Time.date
             
             const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
-            const fromStartedText = PhoneMod.getFriendlyTimeText(ageHoursFromStarted)
+            const fromStartedText = AsAPI.getFriendlyTimeText(ageHoursFromStarted)
 
             return {phone: phone, hours: ageHours, fromStarted: ageHoursFromStarted, fromStartedText: fromStartedText, wear: wear}
         }

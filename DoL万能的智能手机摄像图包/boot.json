@@ -1,0 +1,57 @@
+{
+    "name": "SmartPhone PhotoPack",
+    "nickName": "万能的智能手机 摄像图包",
+    "version": "Alpha.3.7",
+    "styleFileList": [],
+    "scriptFileList": [
+        "smartphonephotopack.js"
+    ],
+    "tweeFileList": [],
+    "imgFileList": [
+        "img/photo/07363819-aebb-4e32-be7e-240d665c7731.png",
+        "img/photo/31d15586-9bb9-432e-a336-bb52006f0304.png",
+        "img/photo/44a3e666-7253-40a7-911b-8e0da7a65f7c.png",
+        "img/photo/4c5fcd71-92b5-4974-badd-6a1b2de9d8b6.png",
+        "img/photo/6583d16f-7c3f-4f18-b980-c41f2be40241.png",
+        "img/photo/6596727a-7882-4665-acdc-5ad967f49360.png",
+        "img/photo/Sydney/27c42d58-c893-4ff5-9971-92319d0ce66b.png",
+        "img/photo/Sydney/587dd552-b2dc-49f9-9836-b56ee0ed36df.png",
+        "img/photo/Sydney/6b484671-ec00-465e-b930-56e33cd72539.png",
+        "img/photo/Sydney/7121c738-bc5a-41e1-bd2e-3bbbbce37cea.png",
+        "img/photo/as22s1s11-92b5-4974-badd-6sdsasz12a16.png",
+        "img/photo/asdsds1z1-92b5-4974-badd-6a1b2de9d8b6.png",
+        "img/photo/submission-1772723288215-73320694.png",
+        "img/photo/submission-1772759964692-f.png",
+        "img/photo/submission-1772759964692-m.png",
+        "img/photo/submission-1772760217366.png",
+        "img/photo/submission-1772762023345.png",
+        "img/photo/submission-1772783983529.png",
+        "img/photo/submission-1772793749698.png",
+        "img/photo/submission-1772794747373.png",
+        "img/photo/submission-1772804166165-662370930.png",
+        "img/photo/submission-1773407171580.png"
+    ],
+    "additionFile": [],
+    "addonPlugin": [
+        {
+            "modName": "ModLoader DoL ImageLoaderHook",
+            "addonName": "ImageLoaderAddon",
+            "modVersion": "^2.3.0",
+            "params": []
+        }
+    ],
+    "dependenceInfo": [
+        {
+            "modName": "ModLoader",
+            "version": "^2.31.2"
+        },
+        {
+            "modName": "GameVersion",
+            "version": "^0.5.7.9"
+        },
+        {
+            "modName": "ModLoader DoL ImageLoaderHook",
+            "version": "^2.3.0"
+        }
+    ]
+}

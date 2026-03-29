@@ -677,7 +677,7 @@
 <<link [[偷走<<he>>的的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
 
 :: Pub Drink Steal Phone
-<<set $skulduggerydifficulty to 500>>
+<<set $skulduggerydifficulty to 500 + random(-30, 200)>>
 <<skulduggerycheck>>
 <<pass 5>>
 <<if $skulduggerysuccess is 1>>

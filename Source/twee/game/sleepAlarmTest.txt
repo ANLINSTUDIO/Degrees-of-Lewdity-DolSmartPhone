@@ -1,0 +1,11 @@
+	<<set $sleephour -= 1>>
+	
+	<!-- 闹钟检测 - 新增部分开始 -->
+	<<unset _sleepinterrupt>>
+	<<if $Phone and $Phone.Alarms and $Phone.Alarms.length gt 0>>
+		<<if PhoneMod.checkAlarmsInSleep()>>
+			<<set _wakeByAlarm to 1>>
+			<<set _sleepinterrupt to 1>>
+		<</if>>
+	<</if>>
+	<!-- 闹钟检测 - 新增部分结束 -->

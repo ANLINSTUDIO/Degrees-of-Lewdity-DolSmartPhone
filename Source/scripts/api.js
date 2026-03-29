@@ -1,19 +1,6 @@
 console.log("| [SmartPhone] DoL万能的智能手机 正在加载：api.js");
 
 // ==================== 这是提供给其他模块调用的API，工具函数 ====================
-PhoneMod.onMacro = function(name, func) {
-  let originalMacro = Macro.get(name);
-    if (originalMacro) {
-        let oldHandler = originalMacro.handler;
-        Macro.delete(name);
-        Macro.add(name, {
-            handler: function () {
-                oldHandler.apply(this, arguments);
-                setTimeout(func, 10);
-            }
-        });
-    }
-}
 PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefault=false) {  // 遭遇战选项增加API
   setTimeout(() => {
     const actions = document.querySelector(`#${actionslot}.radioControl`)
@@ -46,28 +33,8 @@ PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefaul
     }
   }, 10);
 };
-PhoneMod.addStoryCaptionContent = function(content) {
-    setTimeout(() => {
-        const container = document.getElementById("storyCaptionContent");
-        if (container) {
-            // 插入在第一个位置
-            const newCaption = document.createElement("div");
-            newCaption.innerHTML = content + "<br>";
-            container.insertAdjacentElement('afterbegin', newCaption);
-        }
-        document.getElementById("ui-bar").classList.remove("stowed");
-    }, 10);
-}
-window.validArray = function(dict) {
-    if (dict instanceof Object) {
-        return dict && Object.keys(dict).length > 0
-    } else {
-        return dict && dict.length > 0
-    }
-}
 PhoneMod.reload = function(open=false) {
-    if (!V.event) {
-        Engine.play(passage());
+    if (AsAPI.reload()) {
         if (open) {
             setTimeout(() => {
                 if (PhoneMod.shouldUsePhone()) PhoneMod.togglePhone(true);
@@ -75,24 +42,6 @@ PhoneMod.reload = function(open=false) {
         }
         return true;
     }
-    return false;
-}
-PhoneMod.getFriendlyTimeText = function(ageHours, cn = true) {
-    const hours = Math.floor(ageHours);
-    let friendlyTimeText = ""
-    if (hours) {
-        friendlyTimeText += `${hours}${cn? '小时': ':'}`;
-    } else {
-        if (!cn) friendlyTimeText += `0:`;
-    }
-    const minutes = Math.round((ageHours - hours) * 60);
-    if (minutes) {
-        if (cn) {friendlyTimeText += `${minutes}分钟`}
-        else {friendlyTimeText += `${minutes}`.padStart(2, '0')};
-    } else {
-        if (!cn) friendlyTimeText += `00`;
-    }
-    return friendlyTimeText
 }
 
 // ==================== 下面是关于手机使用的工具函数 ====================
@@ -135,6 +84,7 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
     if (V.Phone.PhotoCurrent) return true;  // 
+    if (V.Phone.AlarmTriggered) return true;  // 
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
     if (!V.Phone.Settings.CanUsePhoneInEvent && V.event) return false;  // 活动中不可以操控手机
     if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
@@ -285,26 +235,23 @@ PhoneMod.isUsable = function(phone, allow_shutdown=false) { // 检查是否有�
 }
 
 // ==================== 下面是关于玩家的工具函数 ====================
-PhoneMod.AddClothToPlayer = function(cloth, color="black") {
-    const item = setup.clothes.face.find(item => item.name === cloth);
+PhoneMod.AddClothToPlayer = function(cloth, color="black", type="face") {
+    const item = setup.clothes[type].find(item => item.name === cloth);
     if (item) {
         const newItem = structuredClone(item);
         newItem.integrity = newItem.integrity_max;
         newItem.colour = color;
-        if (V.worn.face.name === "naked") {
-            V.worn.face = newItem;
+        if (V.worn[type].name === "naked") {
+            V.worn[type] = newItem;
             return true;
         } else {
-            V.wardrobe.face.push(newItem);
+            V.wardrobe[type].push(newItem);
             return false;
         }
     }
 }
 PhoneMod.getFaceVariant = function(value) {
     return Object.keys(setup.faceVariantOptions.default).find(key => setup.faceVariantOptions.default[key] === value);
-}
-PhoneMod.havingOrgasm = function() {
-    V.Phone.havingOrgasm = true;
 }
 PhoneMod.shuffle = function(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -332,4 +279,17 @@ PhoneMod.haveSexPhotoInPhone = function() {
         }
     }
     return false
+}
+
+
+// ==================== 下面是任务钩子 ====================
+PhoneMod.reset_task_state = function() {
+    V.Phone.havingOrgasm = false;
+    V.Phone.makingRecipe = false;
+}
+PhoneMod.orgasm = function() {
+    V.Phone.havingOrgasm = true;
+}
+PhoneMod.make_recipe = function() {
+    V.Phone.makingRecipe = true;
 }

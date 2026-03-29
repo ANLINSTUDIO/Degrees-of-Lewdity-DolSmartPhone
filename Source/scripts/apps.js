@@ -23,9 +23,7 @@ PhoneMod.initAlarm = function() {
 
     PhoneMod.toggleAlarmType("today");
 };
-PhoneMod.checkAlarms = function() { // 闹钟检查
-    let shouldTrigger = false;
-
+PhoneMod.checkAlarms = function(offset=0) { // 闹钟检查
     // 如果闹钟正在触发、未被关闭而切换了Passage，则仍然需要响铃
     if (V.Phone.AlarmTriggered) {
         setTimeout(() => PhoneMod.togglePhone(true), 10);
@@ -33,6 +31,20 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
     
     if (!V.Phone.Alarms || V.Phone.Alarms.length === 0) return false;
     let now = PhoneMod.getAbsTime();
+    if (offset > 0) {
+        let date = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
+        // 加一小时
+        date.setMinutes(date.getMinutes() + offset);
+        // 转换回 getAbsTime 格式
+        now = {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,  // 加回1
+            day: date.getDate(),
+            weekDay: date.getDay(),  // 0-6, 0=周日
+            hour: date.getHours(),
+            minute: date.getMinutes()
+        };
+    }
 
     if (!V.Phone.AlarmLastCheckTime) {
         V.Phone.AlarmLastCheckTime = {
@@ -62,7 +74,6 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
                 V.Phone.AlarmLastCheckTime.minute
             );
             const currentTime = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
-            
             // 如果闹钟时间在上次检查时间和当前时间之间（包含边界）
             shouldTrigger = (alarmDate >= lastCheck && alarmDate <= currentTime);
             
@@ -125,6 +136,7 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
         hour: now.hour,
         minute: now.minute
     };
+    
     if (V.Phone.AlarmsToTrigger && V.Phone.AlarmsToTrigger.length > 0) {
         V.Phone.AlarmTriggered = true;
         let alarm = V.Phone.AlarmsToTrigger.shift();
@@ -132,7 +144,88 @@ PhoneMod.checkAlarms = function() { // 闹钟检查
         if (alarm.type === "once") alarm.active = false; // 一次性的关掉
         setTimeout(() => PhoneMod.togglePhone(true), 10);
     }
-    return shouldTrigger;
+    
+    return V.Phone.AlarmTriggered;
+};
+PhoneMod.checkAlarmsInSleep = function() {
+    const shouldTrigger = PhoneMod.checkAlarms(60)
+    if (shouldTrigger) {
+        let now = PhoneMod.getAbsTime();
+        let alarm = V.Phone.AlarmCurrent;
+        let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
+        let alarmDate = new Date(alarm.year, alarm.month - 1, alarm.day, alarm.hour, alarm.minute);
+        let diffMinutes = Math.round((alarmDate - nowDate) / (1000 * 60));
+        console.log(diffMinutes);
+        
+        new Wikifier(null, `<<pass ${diffMinutes}>>`)
+    }
+    return shouldTrigger
+};
+PhoneMod.checkAlarmsInSleepText = function() {
+    // 获取当前时间
+    let now = PhoneMod.getAbsTime();
+    let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
+
+    // 初始化变量
+    let nearestAlarm = null;
+    let minDiffMinutes = Infinity;
+
+    // 遍历所有闹钟
+    for (let i = 0; i < V.Phone.Alarms.length; i++) {
+        let alarm = V.Phone.Alarms[i];
+        if (!alarm.active) continue; // 只检查激活的闹钟
+        
+        let alarmDate = null;
+        
+        if (alarm.type === "once") {
+            // 一次性闹钟
+            alarmDate = new Date(alarm.year, alarm.month - 1, alarm.day, alarm.hour, alarm.minute);
+        } else if (alarm.type === "weekly") {
+            // 周期闹钟 - 需要计算下一个符合条件的日期
+            // 获取本周的每一天
+            for (let dayOffset = 0; dayOffset <= 7; dayOffset++) {
+                let checkDate = new Date(nowDate);
+                checkDate.setDate(nowDate.getDate() + dayOffset);
+                let weekday = checkDate.getDay(); // 0-6, 0=周日
+                
+                // 转换 weekday 到你的系统格式（可能需要调整）
+                // 假设你的 weekDays 中 0=周日,1=周一,...6=周六
+                if (alarm.weekDays.includes(weekday)) {
+                    let potentialAlarm = new Date(
+                        checkDate.getFullYear(),
+                        checkDate.getMonth(),
+                        checkDate.getDate(),
+                        alarm.hour,
+                        alarm.minute
+                    );
+                    
+                    // 只考虑未来的闹钟
+                    if (potentialAlarm > nowDate) {
+                        if (!alarmDate || potentialAlarm < alarmDate) {
+                            alarmDate = potentialAlarm;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (alarmDate && alarmDate > nowDate) {
+            let diffMinutes = Math.round((alarmDate - nowDate) / (1000 * 60));
+            if (diffMinutes < minDiffMinutes) {
+                minDiffMinutes = diffMinutes;
+                nearestAlarm = alarm;
+            }
+        }
+    }
+
+    // 判断结果
+    if (nearestAlarm) {
+        let hoursDiff = minDiffMinutes / 60;
+        if (hoursDiff <= 8) {
+            return `手机闹钟会在 <span class="def">${hoursDiff.toFixed(0)}小时</span> 后响起。<br><br>`;
+        }
+    }
+    return ""
 };
 PhoneMod.cancelAlarm = function() { // 关闭闹钟
     V.Phone.AlarmTriggered = false;
@@ -475,15 +568,23 @@ PhoneMod.photoCheck = function() {
                 if (V.Phone.Album.hasOwnProperty(photo_path)) continue;
                 const photo = PhoneMod.PhonePhotos[photo_path];
                 const result = Object.entries(photo.conditions).every(([key, expectedValue]) => {
-                    if (key === "_") {
+                    if (key === "$") {
                         return expectedValue()
                     } else {
+                        let obj = V
                         let not = false
                         if (key.endsWith("非")) {
                             not = true
                             key = key.slice(0, -1)
                         }
-                        const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], V);
+                        if (key.startsWith("$")) {
+                            obj = V.Phone
+                            key = key.slice(1)
+                        } else if (key.startsWith("_")) {
+                            obj = T
+                            key = key.slice(1)
+                        }
+                        const actualValue = key.split('$').reduce((obj, prop) => obj?.[prop], obj);
                         // console.log(key, actualValue, expectedValue);
                         
                         if (not) {
@@ -504,6 +605,20 @@ PhoneMod.photoCheck = function() {
             PhoneMod.checkPhoneDisabled();
         }, 200)
     }
+}
+PhoneMod.photoTakeDebug = function(id) {
+    let ids = []
+    if (id) {
+        ids.push(id)
+    } else {
+        ids = Object.keys(PhoneMod.PhonePhotos)
+    }
+    ids.forEach(id_ => {
+        V.Phone.TakingPhotoWill = id_;
+        PhoneMod.photoDesc();
+        V.Phone.PhotoCurrent.facevariant = V.facevariant;
+        V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
+    })
 }
 PhoneMod.photoTake = function() {
     if (!V.Phone.TakingPhotoWill) return;
@@ -553,7 +668,7 @@ PhoneMod.photoDesc = function() {
     V.Phone.PhotoCurrent = photo;
 };
 PhoneMod.photoSubmit = function() {
-    V.Phone.PhotoCurrent.facevariant = V.facevariant
+    V.Phone.PhotoCurrent.facevariant = V.facevariant;
     V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
     PhoneMod.togglePhone();
     V.Phone.photography = Math.min(V.Phone.photography + 20, 1000)
@@ -572,10 +687,23 @@ PhoneMod.photoDelete = function(photo_id) {
     }
 }
 PhoneMod.initAlbum = function() {
+    if (!PhoneMod.photoLoaded) {
+        document.querySelector("#photononetip").style.display = ""
+    }
     for (let taskId in PhoneMod.PhonePhotos) {
         PhoneMod.addAlbumTask(taskId)
     }
     PhoneMod.reorderTodoItems();
+}
+PhoneMod.photoError = function(element) {
+    element.remove();
+    const photononetip = document.querySelector("#photononetip");
+    photononetip.style.display = "";
+    if (PhoneMod.photoLoaded) {
+        photononetip.innerHTML = "加载的图包模组可能<span class='gold'>未启用美化</span>或者装载的图包不是对应的版本；此种问题将导致某些甚至全部的摄像图像不可见。"
+    } else {
+        photononetip.innerHTML = "未装载摄像图包，将不会在游戏内显示任务具体照片。"
+    };
 }
 PhoneMod.addAlbumTask = function(taskId) {
     const todoList = document.querySelector('.todo-list');
@@ -666,7 +794,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                         <div @class="_statColor" style="width:${Math.round(photo.quality / 10)}%"></div>
                     </div>
                 </div>
-                ${task.fames && task.fames.length > 0? `<div>相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>`: ''}
+                ${task.fames && task.fames.length > 0? `<div class="black">相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>`: ''}
             </div>
             <div class="album-photo-content">
                 <div class="album-photo-passage">
@@ -677,6 +805,8 @@ PhoneMod.addAlbumTask = function(taskId) {
                         你摆出${PhoneMod.getFaceVariant(photo.facevariant)}的表情
                         <<if ${photo.havingOrgasm}>>
                             ，<span class="pink">正在高潮！</span>
+                        <<else>>
+                            。
                         <</if>><br>
                     </p>
                     <<if ${photo.isUsed}>>
@@ -691,7 +821,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                         <</if>>
                     <</if>>
                 </div>
-                <img class="album-photo-image" src='${(isFinished)? `img/photo/${taskId}.png`: "img/ui/phone/app/photo.png"}'>
+                <img class="album-photo-image" src='${(isFinished)? `img/photo/${taskId}.png`: "img/ui/phone/app/photo.png"}' onerror="javascript:PhoneMod.photoError(this)">
             </div>
         `);
     } else {
@@ -848,14 +978,14 @@ PhoneMod.yenotesCheck = function() {
                 })
             }, 10);
             for (let i = 0; i < commentInc; i++) {
-                yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote.id));
+                yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote));
             }
         }
     })
 }
 PhoneMod.yenoteGetHeat = function (yenote) {
     const ageHours = (Time.date.timeStamp - yenote.date.timeStamp) / 3600; // 小时差
-    const decayFactor = Math.exp(-PhoneMod.热度衰减系数 * ageHours);                         // 衰减系数可调
+    const decayFactor = Math.exp(-PhoneMod.热度衰减系数 * ageHours);        // 衰减系数可调
     const baseHeat = yenote.attract * decayFactor;
 
     let fame = 0
@@ -873,6 +1003,8 @@ PhoneMod.yenoteGetHeat = function (yenote) {
     if (yenote.onceUsed) {
         heat *= 0.5
     }
+
+    heat = Math.max(Math.min(heat, 1), 0);
 
     return heat
 }
@@ -997,7 +1129,7 @@ PhoneMod.yenoteChangePrice = function() {
 PhoneMod.yenotePostSubmit = function() {
     const photo = V.Phone.Album[V.Phone.yenotePosting.id]
     photo.isUsed = true
-    V.Phone.Yenotes.push({
+    V.Phone.Yenotes.unshift({
         ...V.Phone.yenotePosting,
         name: V.Phone.yenoteUsername,
         npc: false,
@@ -1021,21 +1153,172 @@ PhoneMod.yenoteDelete = function(photo_id) {
         PhoneMod.PhoneUIInit(true, true)
     }
 }
-PhoneMod.yenoteGenerateRandomComment = function(photo_id) {
-    const photo = PhoneMod.PhonePhotos[photo_id];
+PhoneMod.yenoteGenerateRandomComment = function(photo) {
+    const photo_id = photo.id;
+    const photoData = PhoneMod.PhonePhotos[photo_id];
     // 合并全局评论和照片评论（照片评论覆盖同名键）
-    const commentPool = Object.assign({}, PhoneMod.Comments, photo.comments || {});
-    const keys = Object.keys(commentPool);
-    if (keys.length === 0) return null; // 无评论
+    const commentPool = Object.assign({}, photoData.uncommon ? {} : PhoneMod.Comments, photoData.comments || {});
+    
+    const normalComments = {};
+    const lineComments = {}; // 存储完整的跟评链
 
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    let lineCommentsStartTmp = undefined;
+    let lineCommentsLineTmp = undefined;
+
+    // 遍历所有评论，构建跟评链结构
+    for (let index = 0; index < Object.keys(commentPool).length; index++) {
+        const key = Object.keys(commentPool)[index];
+        const currentKey = Object.keys(commentPool)[index];
+        const currentComment = commentPool[currentKey];
+
+        // 如果已经在跟评链中且当前是↑评论，则添加到当前链的line中
+        if (lineCommentsStartTmp && currentKey.startsWith('↑')) {
+            lineCommentsLineTmp[currentKey] = currentComment;
+            continue;
+        } 
+        // 如果已经在跟评链中但当前不是↑评论，说明跟评链结束
+        else if (lineCommentsStartTmp) {
+            // 保存当前构建的跟评链
+            lineComments[lineCommentsStartTmp] = {
+                start: {
+                    [lineCommentsStartTmp]: commentPool[lineCommentsStartTmp]
+                },
+                line: lineCommentsLineTmp
+            };
+            lineCommentsStartTmp = undefined;
+            lineCommentsLineTmp = undefined;
+            
+            // 处理当前key（因为不是↑评论，需要重新判断）
+            if (currentKey.startsWith('↓')) {
+                lineCommentsStartTmp = currentKey;
+                lineCommentsLineTmp = {};
+            } else {
+                normalComments[currentKey] = currentComment;
+            }
+        }
+        // 不在跟评链中，判断是否为↓评论（开始新的跟评链）
+        else if (currentKey.startsWith('↓')) {
+            lineCommentsStartTmp = currentKey;
+            lineCommentsLineTmp = {};
+        } 
+        // 普通评论
+        else {
+            normalComments[currentKey] = currentComment;
+        }
+    }
+    
+    // 处理遍历结束后可能还有未保存的跟评链
+    if (lineCommentsStartTmp) {
+        lineComments[lineCommentsStartTmp] = {
+            start: {
+                [lineCommentsStartTmp]: commentPool[lineCommentsStartTmp]
+            },
+            line: lineCommentsLineTmp
+        };
+    }
+
+    // 获取照片的最后一条评论
+    const lastComments = photo.comments || [];
+    if (lastComments.length === 0) {
+        // 没有评论，随机生成普通评论
+        const normalKeys = Object.keys(normalComments);
+        if (normalKeys.length === 0) return null;
+        const randomKey = normalKeys[Math.floor(Math.random() * normalKeys.length)];
+        return {
+            name: PhoneMod.generateNickname(),
+            text: randomKey,
+            effect: normalComments[randomKey],
+            already_read: false
+        };
+    }
+    
+    const lastCommentText = lastComments[lastComments.length - 1].text;
+    
+    // 检查最后一条评论是否是某个跟评链的start
+    for (const startKey in lineComments) {
+        if (lastCommentText === startKey.replace(/^[↓↑]/, '')) {
+            // 最后一条评论是↓评论，取此跟评链的第一个↑评论
+            const lineKeys = Object.keys(lineComments[startKey].line);
+            if (lineKeys.length > 0) {
+                const selectedKey = lineKeys[0];
+                return {
+                    name: PhoneMod.generateNickname(),
+                    text: selectedKey.replace(/^[↓↑]/, ''),
+                    effect: lineComments[startKey].line[selectedKey],
+                    already_read: false
+                };
+            }
+            break;
+        }
+    }
+    
+    // 检查最后一条评论是否是某个跟评链的line中的评论
+    for (const startKey in lineComments) {
+        const lineKeys = Object.keys(lineComments[startKey].line);
+        for (let i = 0; i < lineKeys.length; i++) {
+            if (lastCommentText === lineKeys[i].replace(/^[↓↑]/, '')) {
+                // 80%概率取此跟评链的下一个评论
+                if (Math.random() < 0.8 && i < lineKeys.length - 1) {
+                    const selectedKey = lineKeys[i + 1];
+                    return {
+                        name: PhoneMod.generateNickname(),
+                        text: selectedKey.replace(/^[↓↑]/, ''),
+                        effect: lineComments[startKey].line[selectedKey],
+                        already_read: false
+                    };
+                } else {
+                    // 20%概率或没有下一个评论时，生成普通评论
+                    const normalKeys = Object.keys(normalComments);
+                    if (normalKeys.length === 0) {
+                        // 如果没有普通评论，可能从其他跟评链的start中选
+                        const allStartKeys = Object.keys(lineComments);
+                        if (allStartKeys.length > 0) {
+                            const randomStartKey = allStartKeys[Math.floor(Math.random() * allStartKeys.length)];
+                            return {
+                                name: PhoneMod.generateNickname(),
+                                text: randomStartKey.replace(/^[↓↑]/, ''),
+                                effect: lineComments[randomStartKey].start[randomStartKey],
+                                already_read: false
+                            };
+                        }
+                        return null;
+                    }
+                    const randomKey = normalKeys[Math.floor(Math.random() * normalKeys.length)];
+                    return {
+                        name: PhoneMod.generateNickname(),
+                        text: randomKey,
+                        effect: normalComments[randomKey],
+                        already_read: false
+                    };
+                }
+            }
+        }
+    }
+    
+    // 最后一条评论不在任何跟评链中，随机生成普通评论
+    const normalKeys = Object.keys(normalComments);
+    if (normalKeys.length === 0) {
+        // 如果没有普通评论，从跟评链的start中选
+        const allStartKeys = Object.keys(lineComments);
+        if (allStartKeys.length === 0) return null;
+        const randomStartKey = allStartKeys[Math.floor(Math.random() * allStartKeys.length)];
+        return {
+            name: PhoneMod.generateNickname(),
+            text: randomStartKey.replace(/^[↓↑]/, ''),
+            effect: lineComments[randomStartKey].start[randomStartKey],
+            already_read: false
+        };
+    }
+    
+    const randomKey = normalKeys[Math.floor(Math.random() * normalKeys.length)];
     return {
         name: PhoneMod.generateNickname(),
         text: randomKey,
-        effect: commentPool[randomKey],
+        effect: normalComments[randomKey],
         already_read: false
     };
 };
+
 // =================== 地图实现 ===================
 PhoneMod.initMap = function() {
     (function() {
@@ -1360,7 +1643,7 @@ PhoneMod.ddCancelChecked = function() {
 }
 PhoneMod.ddFinish = function() {
     const pass = PhoneMod.ddCalculateDistance();
-    const pass_text = PhoneMod.getFriendlyTimeText(pass / 60, false);
+    const pass_text = AsAPI.getFriendlyTimeText(pass / 60, false);
     const cost = pass * PhoneMod.DD每距离费用;
     const destination =  PhoneMod.ddBoardingPoints[V.Phone.dd];
     delete V.Phone.dd;

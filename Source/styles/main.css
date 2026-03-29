@@ -3,6 +3,7 @@
     --phone-height-closed: 100px;
     --phone-width-open: 300px;
     --phone-height-open: 500px;
+    --phone-ratio: 0.6;
     --phone-disabled-translateY: 40px;
     --popup-offset: 10px; /* 弹窗与手机的距离 */
 }
@@ -76,6 +77,14 @@
     background-color: #1a1a1a;
     color: #fff;
     cursor: default;
+}
+@media (max-width: 360px) {
+    .phone-main.phone-open {
+        width: calc(100% - 6em);
+        aspect-ratio: var(--phone-ratio);
+        height: auto;
+        max-height: 90%;
+    }
 }
 /* 禁用状态 */
 .phone-main.phone-disabled {

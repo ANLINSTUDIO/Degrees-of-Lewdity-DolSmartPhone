@@ -15,19 +15,25 @@
         </div>
 
         <div class="phone-screen-unlocked" onclick="event.stopPropagation()">
-            <div id="phone-content" class="phone-content phone-content-open">
+            <div id="phone-content" class="phone-content phone-content-open" style="overflow-x: hidden;">
                 <<if PhoneMod.getIsLatestVersion()>>
                     <h2 class="green">已是最新版本🥳</h2>
                     <<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>><br>
                     <<print '<span id="phone-notice" class="black">'+PhoneMod.notice+'</span>'>>
+                    <div style="text-align: start;" 
+                    data-remote="https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice"
+                    data-replace="true">正在获取公告</div>
                 <<else>>
                     <div>
                         <h2 class="pink"><a class="link-external pink" href="https://sb.alseece.top/2?=DoL-SmartPhone" target="_blank">点我更新到最新版本😘</a></h2>
                         <<print '<span class="black">当前版本 '+PhoneMod.currentVersion+'</span>'>><br>
                         <<print '<span class="hypno-text hypno">'+PhoneMod.latestVersion+' 贴近你的耳边对你说：“来呀~来呀~”</span>'>><br>
-                        <<print '<span id="phone-notice" class="jitter-text jitter-1">'+PhoneMod.notice+'</span>'>>
+                        <div style="text-align: start;" class="jitter-text jitter-1"
+                        data-remote="https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice"
+                        data-replace="true">正在获取公告</div>
                     </div>
                 <</if>>
+                <<run AsAPI.loadRemote()>>
                 <hr>
                 <h1>万能的智能手机 <span class="teal">尝鲜版</span></h1>
                 <h3>你好丫~ 感谢<b style="color: pink;">聪明可爱又大方</b>的你的支持哦</h3>
@@ -157,7 +163,7 @@
     <<if $Phone.PhotoCurrent>>
         <div class="app-content" style="overflow-y: hidden">
             <div id="photo" style="display: flex; justify-content: space-evenly;"> 
-                <img class="photo-image" @src=$Phone.PhotoCurrent.img>
+                <img class="photo-image" @src=$Phone.PhotoCurrent.img onerror="javascript:this.src='img/photo/photonone.png'">
             </div>
             <div id="photo_ui" style="display: flex; justify-content: space-evenly;"> 
                 <div id="photo_take_button_outline" style="position: absolute; bottom: 40px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #fff; border-radius: 50%;">
@@ -175,6 +181,7 @@
 <<widget "phone_app_album">>
     <h3>相册</h3>
     <div class="album-content-container">
+        <span class="def" id="photononetip" style="display:none">某些甚至全部的摄像图像将不可见</span>
         <ul class="todo-list"></ul>
     </div>
 <</widget>>
@@ -290,10 +297,10 @@
     <<print `<input type="checkbox" onclick="V.Phone.Settings.WallpaperBlack = this.checked" ` + ($Phone.Settings.WallpaperBlack ? "checked" : "") + `> 加黑效果`>>
     <hr>
     <h3>使用设置</h3>
-    <<print `<input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInAllAreas = this.checked" ` + ($Phone.Settings.CanUsePhoneInAllAreas ? "checked" : "") + `> 可以在非主要区域中使用`>><br>
+    <<print `<label><input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInAllAreas = this.checked" ` + ($Phone.Settings.CanUsePhoneInAllAreas ? "checked" : "") + `> 可以在非主要区域中使用</label>`>><br>
     <span class="black" style="font-size: small">【实验性！】主要区域是指DoL原版指定的最安全的区域，在这些区域，不会拥有<b class="red">存档破坏性事件</b>。而当玩家处于某些非主要区域时，一旦玩家在执行某一项活动中，<b class="teal">使用游戏、网购等跳转页面的功能时</b>，可能会破坏当前上下文，导致你的存档被破坏。<br>
     当然，开启此选项的风险并不大，但仍然建议谨慎使用。</span><br>
-    <<print `<input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInEvent = this.checked" ` + ($Phone.Settings.CanUsePhoneInEvent ? "checked" : "") + `> 可以在事件中使用`>><br>
+    <<print `<label><input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInEvent = this.checked" ` + ($Phone.Settings.CanUsePhoneInEvent ? "checked" : "") + `> 可以在事件中使用</label>`>><br>
     <span class="black" style="font-size: small">【实验性！】DoL中的事件貌似判定为只要有NPC出现就属于事件，<b class="teal">当你使用游戏、网购等跳转页面的功能时</b>，非常有可能会触发endevent！一旦如此，那么你正在触发的事件的<b class="red">NPC都会被清除</b>，正常剧情也会报错！</span><br>
     <hr>
     <h3>其他设置</h3>
@@ -495,6 +502,7 @@
     <h3 class="gold">剧情变量</h3>
     <<link "清空咖啡店盗窃警戒">><<run delete V.Phone.StealPhoneAlertOceanBreeze>><<run Engine.play(passage())>><</link>><br>
     <<link "刷新二手手机店货物">><<run PhoneMod.RefreshSecondPhone()>><<run Engine.play(passage())>><</link>>
+    <<link "一键最高摄影技能">><<run V.Phone.photography = 1000>><</link>>
     <hr>
     <h3 class="gold">调试对话</h3><span class="red">注意！这可能会破坏你的存档 至少会改变你的位置</span><br>
     <<link [[进入官方店|Shopping Centre Phone Shop]]>><</link>><br>

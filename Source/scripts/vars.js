@@ -29,38 +29,7 @@ async function getLastedVersion() {
     console.error('| [SmartPhone] 请求最新版本出错:', error);
   }
 }
-async function getNotice() {
-  console.log(`| [SmartPhone] 正在取求公告`)
-  try {
-    const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice`, {
-      mode: 'cors',  // 明确指定 cors 模式
-      credentials: 'omit'  // 不发送凭据
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (data.error) {
-      console.error('| [SmartPhone] 获取公告失败:', data.error);
-    } else {
-      PhoneMod.notice = data.value.replaceAll("\n", "<br>");
-      const phone_notice = document.getElementById("phone-notice");
-      if (phone_notice) {
-        phone_notice.innerHTML = PhoneMod.notice;
-      }
-
-      // 开始观察整个文档
-      observer.observe(document.body, {
-        childList: true,      // 监听子节点变化
-        subtree: true         // 监听所有后代节点
-      });
-    }
-  } catch (error) {
-    console.error('| [SmartPhone] 请求公告出错:', error);
-  }
-};
 getLastedVersion()
-getNotice()
 
 
 // === 注入 =======================================================
@@ -113,8 +82,11 @@ PhoneMod.events = [
 ];
 PhoneMod.events_on_macro = [
     {macro: "journal", func: "showPhoneJournal"},
-    {macro: "orgasm", func: "havingOrgasm"},
     {macro: "effectssteal", func: "effectsstealPhone"},
+
+    // 任务钩子
+    {macro: "orgasm", func: "orgasm"},
+    {macro: "make_recipe", func: "make_recipe"},
 ]
 
 
@@ -127,7 +99,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["sex"],
         conditions: {
           passage: "Bath Masturbation",
-          Phone$havingOrgasm: true
+          $havingOrgasm: true
         },
         comments: {
           "洗完澡都是香香的哦": `<<llstress>><<stress -24>>`,
@@ -171,8 +143,8 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["sex"],
         conditions: {
           passage: "Bath Masturbation",
-          Phone$havingOrgasm: true,
-          _: () => {
+          $havingOrgasm: true,
+          $: () => {
             const yenote = V.Phone.Yenotes.find(item => item.id === "6583d16f-7c3f-4f18-b980-c41f2be40241")
             if (yenote) {
               return yenote.view >= 500
@@ -228,7 +200,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["exhibitionism"],
         conditions: {
           passage: "School Roof",
-          _: () => {
+          $: () => {
             return V.worn.lower.name === "school skirt" && V.worn.under_lower.name === "naked"
           },
         },
@@ -529,9 +501,175 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         taskDesc: "在学校图书馆柜台充电有几率完成",
         risk: 40,
         hide: true,
+        uncommon: true,
         fames: [],
         conditions: {},
         comments: {
+        }
+    },
+
+
+    // 投稿
+    "submission-1772804166165-662370930": {
+        msg: "几步就能搞定的简单又美味的美食教程它来啦！昨天剩下的食材不要扔，裹上鸡蛋液，撒上面包糠，炸至金黄，隔壁小孩都馋哭了！ 当然，本贴所有收益都将用于改善孤儿的生活质量，所以还希望各位观众朋友们多多支持哦！",
+        taskDesc: "在<span class='gold'>孤儿院厨房</span><span class='teal'>制作任意一种食物</span>",
+        risk: 40,
+        fames: ["social", "good", "business"],
+        conditions: {
+          $makingRecipe: true,
+          passage: "Kitchen"
+        },
+        comments: {
+          "看起来好好吃😍今天晚上回家我也试一下": "<<llstress>><<stress -30>>",
+          "支持支持，希望孤儿们能得到更好的生活🙏": "<<llstress>><<stress -30>>",
+
+          "↓呵呵，不敢露脸，谁知道正脸是不是丑八怪啊": "<<gstress>><<stress +15>>",
+          "↑前面的是纯喷子吧😓虽然看不到正脸，但是小姐姐这么善良，一定很漂亮的❤️": "<<llstress>><<stress -30>>",
+          "↑就是就是！": "<<llstress>><<stress -30>>",
+
+          "我看是借着美食的名义发骚，这不是穿条围裙就来勾引人了吗？": "<<gstress>><<stress +15>><<garousal>><<arousal 30>>",
+        }
+    },
+    "submission-1772794747373": {
+        msg: "神明啊，您能感受到我的诚意吗",
+        taskDesc: "在<span class='gold'>神殿</span><span class='teal'>为救赎祈祷</span>",
+        risk: 20,
+        fames: ["good"],
+        conditions: {
+          passage: "Temple Pray"
+        },
+        comments: {
+          "神圣而又美丽呀": "<<lstress>><<stress -15>>",
+          "嘿嘿，不知道那天为我净化的是不是你呢": "<<lstress>><<stress -15>>",
+          "天使啊，可以赐我祝福吗": "<<lstress>><<stress -15>>",
+          "要是能为我净化就好了": "<<lstress>><<stress -15>>",
+          "这种亵渎起来最爽了": "<<gstress>><<stress 15>><<garousal>><<arousal 30>>",
+          "看到你之后，我也想加入神殿了": "",
+          "你简直就是我的偶像！": "<<lstress>><<stress -15>>",
+        }
+    },
+    "submission-1772793749698": {
+        msg: "真是恶心的流氓，活该！",
+        taskDesc: "穿着<span class='gold'>高跟鞋</span>，<span class='teal'>打败强奸者</span>",
+        risk: 60,
+        fames: ["good"],
+        conditions: {
+          combat: 1,
+          $:() => {
+            return V.worn.feet.type.includes("heels") && V.enemyhealth <= 0
+          }
+        },
+        comments: {
+          "我靠，这也太猛了吧": "<<lstress>><<stress -15>>",
+          "一看就很疼，咦咦咦": "<<lstress>><<stress -15>>",
+          "看这些流氓被踩在脚下的感觉就是爽": "<<lstress>><<stress -15>>",
+          "邪恶终究会被正义踩在脚下，嘿嘿": "<<lstress>><<stress -15>>",
+          "这个样子，一定是被踢到那个了": "<<lstress>><<stress -15>><<garousal>><<arousal 30>>",
+          "不行了，我出来了": "<<gstress>><<stress 15>><<garousal>><<arousal 30>>",
+        }
+    },
+    "submission-1772783983529": {
+        msg: "想看里面吗？可以的哦",
+        taskDesc: "在床上<span class='pink'>自慰达到高潮</span>",
+        risk: 1,
+        fames: ["sex"],
+        conditions: {
+          passage: "Home Masturbation",
+          $havingOrgasm: true
+        },
+        comments: {
+          "粉粉的，好可爱呀": "<<lstress>><<stress -15>>",
+          "真是个不要脸的东西": "<<gstress>><<stress 15>>",
+          "臭母狗": "<<gstress>><<stress 30>><<garousal>><<arousal 30>>",
+          "我打赌，这种东西根本不要钱": "<<gstress>><<stress 15>>",
+          "有本事你来找我，看我不把你弄得下不了床": "<<garousal>><<arousal 30>>",
+          "出门小心一点": "<<gstress>><<stress 15>><<garousal>><<arousal 30>>",
+        }
+    },
+    "submission-1772723288215-73320694": {
+        msg: "今天又是“充实”的一天，奶油面包新鲜出炉～",
+        taskDesc: "穿<span class='teal'>女仆装</span>在咖啡馆制作奶油小面包",
+        risk: 30,
+        fames: ["exhibitionism" ,"business"],
+        conditions: {
+          passage: "Chef Work Masturbation",
+          $: () => {
+            return V.worn.upper.type.includes("maid") || V.worn.lower.type.includes("maid") || V.worn.head.type.includes("maid")
+          },
+        },
+        comments: {
+          "在哪!买爆!!!": "<<garousal>><<arousal 30>>",
+          "111可以预约吗": "<<garousal>><<arousal 30>>",
+          "就说怎么感觉……更好吃了": "<<garousal>><<arousal 30>>",
+        }
+    },
+    "submission-1772762023345": {
+        msg: "神明在注视着我，好兴奋～",
+        taskDesc: "穿<span class='teal'>性感修女长袍</span>在神殿<span class='pink'>自慰达到高潮</span>",
+        risk: 30,
+        fames: ["exhibitionism" ,"sex"],
+        conditions: {
+          passage: "Temple Masturbation",
+          $havingOrgasm: true,
+          $: () => {
+            return V.worn.upper.name === "sexy nun's habit" && V.worn.lower.name === "sexy nun's habit skirt"
+          },
+        },
+        comments: {
+        }
+    },
+    "submission-1772759964692-m": {
+        msg: "给姐妹们看点好的",
+        taskDesc: "在<span class='gold'>学校</span>偷拍男更衣室",
+        risk: 60,
+        fames: ["pimp" ,"social"],
+        uncommon: true,
+        conditions: {
+          passage: "School Boy Changing Room",
+          _allowedToChange: false
+        },
+        comments: {
+          "可以给我那个男生手机号": "",
+          "这也太劲爆了吧": "",
+        }
+    },
+    "submission-1772759964692-f": {
+        msg: "给兄弟们看点好的",
+        taskDesc: "在<span class='gold'>学校</span>偷拍女更衣室",
+        risk: 60,
+        fames: ["pimp" ,"social"],
+        uncommon: true,
+        conditions: {
+          passage: "School Girl Changing Room",
+          _allowedToChange: false
+        },
+        comments: {
+          "可以给我那个女生手机号": "",
+          "这也太劲爆了吧": "",
+        }
+    },
+    "submission-1772760217366": {
+        msg: "今天拉个大的",
+        taskDesc: "完成分娩",
+        risk: 100,
+        fames: ["pregnancy" ,"exhibitionism"],
+        conditions: {
+          _pregnancyBirth非: undefined,
+        },
+        comments: {
+        }
+    },
+    "submission-1773407171580": {
+        msg: "两只小鸟🐦",
+        taskDesc: "静静欣赏孤儿院花园中的小鸟和罗宾",
+        risk: 30,
+        fames: ["good"],
+        conditions: {
+          passage: "Robin Bird Visit",
+        },
+        comments: {
+          "@每日新鲜农产品 快来看迪士尼公主": "",
+          "你不许观鸟😭👊🏻 你不许观鸟😭👊🏻 你不许观鸟😭👊🏻": "",
         }
     },
 }
@@ -629,6 +767,7 @@ PhoneMod.extraUsePhoneAreas = [  // 能够允许使用手机的额外区域
   "Ocean Breeze Charge", "Bedroom Charge",   // 充电区域
   "School Library",  // 图书馆充电区域
   "Bathroom",  // 刚拍完照要看看
+  "Bed", "Sleep",  // 允许在床上关闭闹钟
 ];
 PhoneMod.Comments = {  // 通用评论
     "你真美~": `<<lstress>><<stress -12>>`,
