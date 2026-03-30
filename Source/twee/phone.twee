@@ -501,8 +501,9 @@
     <hr>
     <h3 class="gold">剧情变量</h3>
     <<link "清空咖啡店盗窃警戒">><<run delete V.Phone.StealPhoneAlertOceanBreeze>><<run Engine.play(passage())>><</link>><br>
-    <<link "刷新二手手机店货物">><<run PhoneMod.RefreshSecondPhone()>><<run Engine.play(passage())>><</link>>
-    <<link "一键最高摄影技能">><<run V.Phone.photography = 1000>><</link>>
+    <<link "刷新二手手机店货物">><<run PhoneMod.RefreshSecondPhone()>><<run Engine.play(passage())>><</link>><br>
+    <<link "一键最高摄影技能">><<run V.Phone.photography = 1000>><</link>><br>
+    <<link "一键解锁所有照片">><<run PhoneMod.photoTakeDebug()>><</link>>
     <hr>
     <h3 class="gold">调试对话</h3><span class="red">注意！这可能会破坏你的存档 至少会改变你的位置</span><br>
     <<link [[进入官方店|Shopping Centre Phone Shop]]>><</link>><br>

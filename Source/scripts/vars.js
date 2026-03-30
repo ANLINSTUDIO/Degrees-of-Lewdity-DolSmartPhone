@@ -5,6 +5,7 @@ console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
 PhoneMod.currentVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.version
 PhoneMod.latestVersion = null
 PhoneMod.notice = ""
+PhoneMod.debug = 0
 
 async function getLastedVersion() {
   console.log(`| [SmartPhone] 正在取求最新版本号`)
@@ -66,7 +67,7 @@ PhoneMod.events = [
     {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
     {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
     {eventid: "Spa Tired Steal REPLACE", target: "Spa Tired Steal", event: "Spa Tired Steal Phone Link"},
-    {passage: "Pub Drink", target: "Pub Seduce", event: "Pub Drink Steal Phone Link", chance: 0.7, position: "before"},
+    {passage: "Pub Drink", target: "Pub Seduce", event: "Pub Drink Steal Phone Link", chance: 0.3, position: "before"},
     {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Steal Phone Link", position: "before", offset: 1},
     // 询问电话
     {passage: "Pub Landry", target: "Pub", event: "Landry AskTel Link", position: "before", offset: 1},
@@ -92,6 +93,61 @@ PhoneMod.events_on_macro = [
 
 // === 内容 =======================================================
 PhoneMod.PhonePhotos = {  // 摄像任务
+    // "任务ID 也是图片路径键": {
+    //     msg: "发布时的文案",
+    //     taskDesc: "对任务的简述",
+    //     risk: int 任务难度或者稀有度,
+    //     fames: ["相关名声"],
+    //   [ hide: bool 未完成前是否隐藏,
+    //   [ uncommon: bool 是否出现普通评论 (非自拍照片设为true),
+    //     conditions: {
+    //       // 完成条件，例如: 
+    //       passage: "所处passage",
+    //       var1: "var1为某值",
+    //       var2非: "var2并非某值",
+    //       $var3: "V.Phone.var3为某值",
+    //       _var4: "T.var4为某值",
+    //       $: () => {
+    //         return "特殊完成条件函数，需要返回bool"
+    //       },
+    //     },
+    //     comments: {
+    //       "评论": "影响",
+    //       "→": [() => {return "条件函数，需要返回bool"}, {
+    //         "如果满足条件则可能出现这些评论": "影响",
+    //       }, {
+    //         "否则可能出现这些评论": "影响",
+    //       }]
+    //       "→": [() => {return "条件函数，需要返回bool"}, {
+    //         "也可以没有否则项": "影响",
+    //         "→": [() => {return "条件函数，需要返回bool"}, {
+    //           "也可以嵌套": "影响",
+    //         }]
+    //       }]
+    //       "↓" : [
+    //         [
+    //           ["评论链 首评", "影响"],
+    //           ["跟评1", "影响"],
+    //           ["跟评2 跟的是跟评1", "影响"],
+    //         ],
+    //         {
+    //           ["评论链 首评", "影响"],
+    //           ["跟评1", "影响"],
+    //           ["跟评2 跟的是跟评1", "影响"],
+    //           ["→", [() => {return "条件函数，需要返回bool"}, [
+    //             ["跟评3 跟的是跟评2", "影响"],
+    //             ["跟评4 跟的是跟评3", "影响"],
+    //           ], [
+    //             ["跟评5 跟的是跟评2", "影响"],
+    //           ]]],
+    //           // 条件之后的写法上不再允许有跟评，因为无法判断到底跟谁
+    //         ]
+    //         // 跟评的原理是下一次获取yenoteGenerateRandomComment时，如果最后一个评论处于跟评链内，
+    //         // 则50%出现其跟评（如果还有），50%断开跟评链，所以一个跟评链不一定全部都会被连续返回，
+    //         // 跟评链只能从首评开始，但是不一定从最后一个跟评结束；到了最后一个跟评则一定结束。
+    //       ],
+    //     }
+    // },
     "6583d16f-7c3f-4f18-b980-c41f2be40241": {
         msg: "洗澡~洗澡~洗澡澡❤️",
         taskDesc: "在家里洗澡时<span class='pink'>自慰达到高潮</span>",
@@ -508,7 +564,6 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         }
     },
 
-
     // 投稿
     "submission-1772804166165-662370930": {
         msg: "几步就能搞定的简单又美味的美食教程它来啦！昨天剩下的食材不要扔，裹上鸡蛋液，撒上面包糠，炸至金黄，隔壁小孩都馋哭了！ 当然，本贴所有收益都将用于改善孤儿的生活质量，所以还希望各位观众朋友们多多支持哦！",
@@ -522,12 +577,15 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         comments: {
           "看起来好好吃😍今天晚上回家我也试一下": "<<llstress>><<stress -30>>",
           "支持支持，希望孤儿们能得到更好的生活🙏": "<<llstress>><<stress -30>>",
-
-          "↓呵呵，不敢露脸，谁知道正脸是不是丑八怪啊": "<<gstress>><<stress +15>>",
-          "↑前面的是纯喷子吧😓虽然看不到正脸，但是小姐姐这么善良，一定很漂亮的❤️": "<<llstress>><<stress -30>>",
-          "↑就是就是！": "<<llstress>><<stress -30>>",
-
           "我看是借着美食的名义发骚，这不是穿条围裙就来勾引人了吗？": "<<gstress>><<stress +15>><<garousal>><<arousal 30>>",
+
+          "↓" : [
+            {
+              "呵呵，不敢露脸，谁知道正脸是不是丑八怪啊":  "<<gstress>><<stress +15>>",
+              "前面的是纯喷子吧😓虽然看不到正脸，但是小姐姐这么善良，一定很漂亮的❤️": "<<llstress>><<stress -30>>",
+              "就是就是！": "<<llstress>><<stress -30>>",
+            }
+          ],
         }
     },
     "submission-1772794747373": {
@@ -621,12 +679,12 @@ PhoneMod.PhonePhotos = {  // 摄像任务
     "submission-1772759964692-m": {
         msg: "给姐妹们看点好的",
         taskDesc: "在<span class='gold'>学校</span>偷拍男更衣室",
-        risk: 60,
+        risk: 20,
         fames: ["pimp" ,"social"],
         uncommon: true,
         conditions: {
           passage: "School Boy Changing Room",
-          _allowedToChange: false
+          changingroomstate非: "empty",
         },
         comments: {
           "可以给我那个男生手机号": "",
@@ -636,16 +694,40 @@ PhoneMod.PhonePhotos = {  // 摄像任务
     "submission-1772759964692-f": {
         msg: "给兄弟们看点好的",
         taskDesc: "在<span class='gold'>学校</span>偷拍女更衣室",
-        risk: 60,
+        risk: 20,
         fames: ["pimp" ,"social"],
         uncommon: true,
         conditions: {
           passage: "School Girl Changing Room",
-          _allowedToChange: false
+          changingroomstate非: "empty",
         },
         comments: {
-          "可以给我那个女生手机号": "",
           "这也太劲爆了吧": "",
+          "→": [() => V.player.gender === "f", {
+            "姐妹你无敌了": "",
+            "下次有本事去拍男更衣室啊姐姐": "",
+          }],
+          "↓": [
+            [
+              ["可以给我那个女生手机号吗？", ""],
+              ["→", [(p) => p.quality > 400, [
+                ["我去，我好像认识她", ""],
+                ["快快快，我也要她电话号码，求你了哥", ""]
+              ], [
+                ["不行啊，太模糊了根本看不清", ""],
+                ["楼主下次拍照能不能手别抖啊", ""]
+              ]]],
+            ],
+            [
+              ["→", [(p) => p.facevariant === "aloof", [
+                ["好高冷的表情，爱了爱了", ""],
+                ["不是，别人嫌弃你，你看不出来啊", ""],
+                ["→", [(p) => p.quality < 100, [
+                  ["算了算了，啥也看不到，你们也别吵了", ""]
+                ]]],
+              ]]],
+            ],
+          ]
         }
     },
     "submission-1772760217366": {
@@ -672,7 +754,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           "你不许观鸟😭👊🏻 你不许观鸟😭👊🏻 你不许观鸟😭👊🏻": "",
         }
     },
-}
+};
 PhoneMod.Apps = {  // APP
     alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
     memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: "memo"},
@@ -740,10 +822,10 @@ PhoneMod.PhoneModels = {  // 手机品牌
         photography: 3,
         desc: "专业摄像手机，捕捉每一刻艺术的瞬间"
     }
-}
+};
 PhoneMod.PhoneModelsMain = [
   "Neme 12", "Neme 12 Pro", "Neme 12 Pro Max", "Mimi 17", "Photographer 3"
-]
+];
 
 
 // === 常量 =======================================================

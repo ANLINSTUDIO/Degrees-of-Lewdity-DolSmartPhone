@@ -673,11 +673,10 @@
 眼前的<<person>>看起来已经醉了，<<he>>的目光几乎全部放在了手上的酒杯上。你注意到<<he>>的手边<span class="teal">有一台发着光的手机</span><<icon "phone/phone.png">>，就在靠向你的这边！<br>
 你四周看了看，酒保也没有看向你这边，没有人注意到你！如果处理得当，这台手机就不再属于<<he>>。
 <br><br>
-<<set $skulduggerydifficulty to 500>>
+<<set $skulduggerydifficulty to 500 + random(0, 700)>>
 <<link [[偷走<<he>>的的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
 
 :: Pub Drink Steal Phone
-<<set $skulduggerydifficulty to 500 + random(-30, 200)>>
 <<skulduggerycheck>>
 <<pass 5>>
 <<if $skulduggerysuccess is 1>>
@@ -1119,11 +1118,9 @@
 悉尼的脸颊突然变得通红，“我……我……我知道了……”
 <br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
 :: Library Charge TookPhoto Sydney
-“嗨，悉尼！” 你照常地打着招呼。
+“嗨，悉尼！” 你照常地打着招呼。<br>
 还没做完。
 <br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-
-
 
 
 :: =======StoringPhone========

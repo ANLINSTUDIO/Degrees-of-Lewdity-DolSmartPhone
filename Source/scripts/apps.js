@@ -162,6 +162,10 @@ PhoneMod.checkAlarmsInSleep = function() {
     return shouldTrigger
 };
 PhoneMod.checkAlarmsInSleepText = function() {
+    if (!V.Phone.Alarms) {
+        return ""
+    }
+    
     // 获取当前时间
     let now = PhoneMod.getAbsTime();
     let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
@@ -1156,167 +1160,84 @@ PhoneMod.yenoteDelete = function(photo_id) {
 PhoneMod.yenoteGenerateRandomComment = function(photo) {
     const photo_id = photo.id;
     const photoData = PhoneMod.PhonePhotos[photo_id];
-    // 合并全局评论和照片评论（照片评论覆盖同名键）
-    const commentPool = Object.assign({}, photoData.uncommon ? {} : PhoneMod.Comments, photoData.comments || {});
-    
-    const normalComments = {};
-    const lineComments = {}; // 存储完整的跟评链
+    const photoThis = {...photo, ...V.Phone.Album[photo_id]};
+    const commentPool = Object.assign({}, photoData.uncommon ? {} : PhoneMod.Comments);
 
-    let lineCommentsStartTmp = undefined;
-    let lineCommentsLineTmp = undefined;
-
-    // 遍历所有评论，构建跟评链结构
-    for (let index = 0; index < Object.keys(commentPool).length; index++) {
-        const key = Object.keys(commentPool)[index];
-        const currentKey = Object.keys(commentPool)[index];
-        const currentComment = commentPool[currentKey];
-
-        // 如果已经在跟评链中且当前是↑评论，则添加到当前链的line中
-        if (lineCommentsStartTmp && currentKey.startsWith('↑')) {
-            lineCommentsLineTmp[currentKey] = currentComment;
-            continue;
-        } 
-        // 如果已经在跟评链中但当前不是↑评论，说明跟评链结束
-        else if (lineCommentsStartTmp) {
-            // 保存当前构建的跟评链
-            lineComments[lineCommentsStartTmp] = {
-                start: {
-                    [lineCommentsStartTmp]: commentPool[lineCommentsStartTmp]
-                },
-                line: lineCommentsLineTmp
-            };
-            lineCommentsStartTmp = undefined;
-            lineCommentsLineTmp = undefined;
-            
-            // 处理当前key（因为不是↑评论，需要重新判断）
-            if (currentKey.startsWith('↓')) {
-                lineCommentsStartTmp = currentKey;
-                lineCommentsLineTmp = {};
-            } else {
-                normalComments[currentKey] = currentComment;
+    // 检测评论链
+    const putChain = function(comment, value, commentPool_) {
+        if (comment === "→") {
+            const condition = value[0](photoThis);
+            const comments = condition? value[1]: (value[2] ?? {});
+            for (let index = 0; index < comments.length; index++) {
+                const comment = comments[index];
+                putChain(comment[0], comment[1], commentPool_)
             }
+        } else {
+            commentPool_.push([comment, value])
         }
-        // 不在跟评链中，判断是否为↓评论（开始新的跟评链）
-        else if (currentKey.startsWith('↓')) {
-            lineCommentsStartTmp = currentKey;
-            lineCommentsLineTmp = {};
-        } 
-        // 普通评论
-        else {
-            normalComments[currentKey] = currentComment;
-        }
-    }
-    
-    // 处理遍历结束后可能还有未保存的跟评链
-    if (lineCommentsStartTmp) {
-        lineComments[lineCommentsStartTmp] = {
-            start: {
-                [lineCommentsStartTmp]: commentPool[lineCommentsStartTmp]
-            },
-            line: lineCommentsLineTmp
-        };
-    }
-
-    // 获取照片的最后一条评论
-    const lastComments = photo.comments || [];
-    if (lastComments.length === 0) {
-        // 没有评论，随机生成普通评论
-        const normalKeys = Object.keys(normalComments);
-        if (normalKeys.length === 0) return null;
-        const randomKey = normalKeys[Math.floor(Math.random() * normalKeys.length)];
-        return {
-            name: PhoneMod.generateNickname(),
-            text: randomKey,
-            effect: normalComments[randomKey],
-            already_read: false
-        };
-    }
-    
-    const lastCommentText = lastComments[lastComments.length - 1].text;
-    
-    // 检查最后一条评论是否是某个跟评链的start
-    for (const startKey in lineComments) {
-        if (lastCommentText === startKey.replace(/^[↓↑]/, '')) {
-            // 最后一条评论是↓评论，取此跟评链的第一个↑评论
-            const lineKeys = Object.keys(lineComments[startKey].line);
-            if (lineKeys.length > 0) {
-                const selectedKey = lineKeys[0];
-                return {
-                    name: PhoneMod.generateNickname(),
-                    text: selectedKey.replace(/^[↓↑]/, ''),
-                    effect: lineComments[startKey].line[selectedKey],
-                    already_read: false
-                };
+    };
+    const last_comment = photo.comments.at(-1)
+    if (photoData.comments.hasOwnProperty("↓")) {
+        for (let index = 0; index < photoData.comments["↓"].length; index++) {
+            const commentChain = []
+            const commentChainRaw = photoData.comments["↓"][index];
+            for (let index = 0; index < commentChainRaw.length; index++) {
+                const [comment, value] = commentChainRaw[index];
+                putChain(comment, value, commentChain);
             }
-            break;
-        }
-    }
-    
-    // 检查最后一条评论是否是某个跟评链的line中的评论
-    for (const startKey in lineComments) {
-        const lineKeys = Object.keys(lineComments[startKey].line);
-        for (let i = 0; i < lineKeys.length; i++) {
-            if (lastCommentText === lineKeys[i].replace(/^[↓↑]/, '')) {
-                // 80%概率取此跟评链的下一个评论
-                if (Math.random() < 0.8 && i < lineKeys.length - 1) {
-                    const selectedKey = lineKeys[i + 1];
-                    return {
-                        name: PhoneMod.generateNickname(),
-                        text: selectedKey.replace(/^[↓↑]/, ''),
-                        effect: lineComments[startKey].line[selectedKey],
-                        already_read: false
-                    };
-                } else {
-                    // 20%概率或没有下一个评论时，生成普通评论
-                    const normalKeys = Object.keys(normalComments);
-                    if (normalKeys.length === 0) {
-                        // 如果没有普通评论，可能从其他跟评链的start中选
-                        const allStartKeys = Object.keys(lineComments);
-                        if (allStartKeys.length > 0) {
-                            const randomStartKey = allStartKeys[Math.floor(Math.random() * allStartKeys.length)];
+            if (commentChain) {
+                if (PhoneMod.debug) console.log("跟评链", commentChain);
+                if (last_comment) {
+                    for (let index = 0; index < commentChain.length; index++) {
+                        const commentR = commentChain[index];
+                        if (last_comment.text === commentR[0] && index < commentChain.length - 1) {
+                            const comment = commentChain[index + 1];
                             return {
                                 name: PhoneMod.generateNickname(),
-                                text: randomStartKey.replace(/^[↓↑]/, ''),
-                                effect: lineComments[randomStartKey].start[randomStartKey],
+                                text: comment[0],
+                                effect: comment[1],
                                 already_read: false
                             };
                         }
-                        return null;
                     }
-                    const randomKey = normalKeys[Math.floor(Math.random() * normalKeys.length)];
-                    return {
-                        name: PhoneMod.generateNickname(),
-                        text: randomKey,
-                        effect: normalComments[randomKey],
-                        already_read: false
-                    };
                 }
+                commentPool[commentChain[0][0]] = commentChain[0][1]
             }
         }
+    };
+    
+    // 遍历照片评论
+    const putComments = function(comment, value, commentPool_) {
+        if (comment === "→") {
+            const condition = value[0](photoThis);
+            const comments = condition ? value[1]: (value[2] ?? {});
+            for (const comment in comments) {
+                putComments(comment, comments[comment], commentPool_)
+            }
+        } else if (comment === "↓") {
+            return;
+        } else {
+            commentPool_[comment] = value
+        }
+    }
+    for (const comment in photoData.comments) {
+        putComments(comment, photoData.comments[comment], commentPool)
     }
     
-    // 最后一条评论不在任何跟评链中，随机生成普通评论
-    const normalKeys = Object.keys(normalComments);
-    if (normalKeys.length === 0) {
-        // 如果没有普通评论，从跟评链的start中选
-        const allStartKeys = Object.keys(lineComments);
-        if (allStartKeys.length === 0) return null;
-        const randomStartKey = allStartKeys[Math.floor(Math.random() * allStartKeys.length)];
-        return {
-            name: PhoneMod.generateNickname(),
-            text: randomStartKey.replace(/^[↓↑]/, ''),
-            effect: lineComments[randomStartKey].start[randomStartKey],
-            already_read: false
-        };
-    }
-    
-    const randomKey = normalKeys[Math.floor(Math.random() * normalKeys.length)];
+    if (PhoneMod.debug) console.log("评论池", commentPool);
+    const randomKey = Object.keys(commentPool)[Math.floor(Math.random() * Object.keys(commentPool).length)];
     return {
         name: PhoneMod.generateNickname(),
         text: randomKey,
-        effect: normalComments[randomKey],
+        effect: commentPool[randomKey],
         already_read: false
     };
+};
+PhoneMod.yenoteDebugComment = function(index) {
+    const yenote = V.Phone.Yenotes[index];
+    const comment = PhoneMod.yenoteGenerateRandomComment(yenote);
+    yenote.comments.push(comment)
+    return comment
 };
 
 // =================== 地图实现 ===================

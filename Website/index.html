@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>万能智能手机 · 下载中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0f1a, #030609);
+            background-attachment: fixed;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        /* 主容器，让内容垂直排列并居中 */
+        .main-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 顶部公告条 — 跳转链接区域 */
+        .announcement-banner {
+            width: 100%;
+            background: rgba(20, 25, 40, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.9rem 1.8rem;
+            margin-top: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .announcement-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #f0f3fa;
+            letter-spacing: 0.3px;
+            line-height: 1.45;
+            display: inline-block;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .announcement-text a {
+            color: #ffd966;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px solid rgba(255, 217, 102, 0.5);
+            transition: all 0.2s;
+            margin-left: 8px;
+            display: inline-block;
+        }
+
+        .announcement-text a:hover {
+            color: #ffcd38;
+            border-bottom-color: #ffcd38;
+            transform: scale(1.02);
+            text-shadow: 0 0 6px rgba(255, 217, 102, 0.5);
+        }
+
+        /* 主标题 毛玻璃加重 */
+        .glow-title {
+            font-size: 3.3rem;
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(135deg, #FFFFFF 0%, #cdd9ff 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+        }
+
+        /* 双按钮区域 (水平居中) */
+        .buttons-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 2.2rem;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        /* 毛玻璃卡片按钮样式 — 大尺寸 居中块 */
+        .glass-card {
+            display: flex;
+            flex-direction: column;
+            flex: 0 1 320px;
+
+            min-width: 280px;
+            width: 320px;
+            background: rgba(20, 28, 40, 0.55);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 42px;
+            padding: 1.6rem 1rem 1.8rem 1rem;
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 32px -12px rgba(0, 0, 0, 0.4), inset 0 0.5px 0 rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+            background: rgba(30, 38, 55, 0.7);
+            border-color: rgba(255, 215, 120, 0.5);
+            box-shadow: 0 28px 36px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 按钮内图片样式 — 固定合理尺寸且居中 */
+        .card-icon {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+            transition: transform 0.2s;
+        }
+
+        .glass-card:hover .card-icon img {
+            transform: scale(1.02);
+        }
+
+        .card-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0.6rem 0 0.3rem;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px black;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: #9b9b9b;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-top: 6px;
+        }
+
+        .card-fn {
+            color: #b9c7d9;
+        }
+
+        .card-desc:last-of-type {
+            margin-top: auto; /* 将最后一段描述推到底部 */
+        }
+
+        /* 海报区域 - 1:1 正方形 */
+        .poster-section {
+            width: 100%;
+            max-width: 400px;
+            margin: 0.5rem auto;
+        }
+
+        .poster-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 28px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 32px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .poster-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 圆形链接按钮区域 */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 0.5rem 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .circle-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .circle-link:hover {
+            transform: translateY(-4px);
+        }
+
+        .circle-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(20, 28, 40, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .circle-link:hover .circle-icon {
+            background: rgba(255, 180, 70, 0.3);
+            border-color: rgba(255, 200, 100, 0.7);
+            box-shadow: 0 0 18px rgba(255, 180, 70, 0.3);
+        }
+
+        .circle-icon svg {
+            width: 40px;
+            height: 40px;
+            transition: transform 0.2s;
+        }
+
+        .circle-link:hover .circle-icon svg {
+            transform: scale(1.05);
+        }
+
+        .circle-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #cdd9ff;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.5px;
+        }
+
+        /* 更新公告区域 — 毛玻璃效果 */
+        .update-section {
+            width: 100%;
+            max-width: 880px;
+            background: rgba(12, 18, 28, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 1.6rem 2rem 2rem 2rem;
+            margin-top: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 18px 28px -8px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s;
+        }
+
+        .update-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid #ffb347;
+            padding-left: 18px;
+        }
+
+        .update-header h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, #e9f0ff, #cbd9ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .update-badge {
+            background: rgba(255, 180, 70, 0.2);
+            padding: 4px 12px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #ffcf8a;
+            border: 0.5px solid rgba(255, 180, 70, 0.5);
+        }
+
+        .error {
+            color: red;
+            background: rgba(255, 0, 0, 0.2);
+            border: 0.5px solid rgba(255, 0, 0, 0.5);
+            text-shadow: none;
+        }
+
+        .update-content {
+            color: #cbd5e6;
+            font-size: 1rem;
+            line-height: 1.55;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 28px;
+            padding: 1.2rem 1.5rem;
+            min-height: 180px;
+            word-break: break-word;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        /* 留空提示占位符 (表示待更新) */
+        .empty-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #8a99b0;
+        }
+
+        .empty-placeholder svg {
+            opacity: 0.5;
+        }
+
+        .empty-placeholder p {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* 响应式 */
+        @media (max-width: 760px) {
+            .buttons-area {
+                gap: 1.5rem;
+            }
+            .glass-card {
+                width: 280px;
+                padding: 1.2rem 0.8rem 1.4rem;
+            }
+            .card-icon {
+                width: 76px;
+                height: 76px;
+            }
+            .card-title {
+                font-size: 1.4rem;
+            }
+            .glow-title {
+                font-size: 2.4rem;
+            }
+            .announcement-text {
+                font-size: 0.85rem;
+            }
+            .update-content {
+                padding: 0;
+            }
+            .update-section {
+                padding: 1rem 1.2rem;
+                border-radius: 10px;
+            }
+            .circle-icon {
+                width: 55px;
+                height: 55px;
+            }
+            .circle-icon svg {
+                width: 30px;
+                height: 30px;
+            }
+            .circle-label {
+                font-size: 0.7rem;
+            }
+            .poster-section {
+                max-width: 280px;
+            }
+        }
+
+        .glass-card:active {
+            transform: scale(0.98);
+            transition: 0.05s;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #5a6b7c;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<!-- 最上方 跳转链接 活动入口 -->
+<div class="announcement-banner">
+    <div class="announcement-text">
+        拍照任务投稿通道已经开启 | 分享你的拍照任务，帮助其他玩家完成挑战！<br>
+        您需要提供的：完成条件、相关名声、配图文案、图片（可选、可以使用AI画出大概的你期望的样子，我们视质量使用）和多条可能的预设评论。<br>
+        <a href="https://dol.alseece.top/submit.html" target="_blank" rel="noopener noreferrer">快来参与活动吧 🚀</a>
+    </div>
+</div>
+<div class="main-container">
+    <!-- 主标题：万能的智能手机 -->
+    <div class="glow-title">
+        万能的智能手机
+    </div>
+    <div class="glow-title" style="position: absolute; transform: translateX(20%) translateY(50%);">
+        SmartPhone
+    </div>
+    <div id="version" class="glow-title" style="font-size: 2rem; color: #008fff2e;">
+        VERSION
+    </div>
+
+    <!-- 1:1 海报显示区域 (根目录 poster.jpg) -->
+    <div class="poster-section">
+        <div class="poster-container">
+            <img src="assets/poster.jpg" alt="万能智能手机海报" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 400\'%3E%3Crect width=\'400\' height=\'400\' fill=\'%231a2538\'/%3E%3Ctext x=\'200\' y=\'200\' font-size=\'20\' text-anchor=\'middle\' fill=\'%238a99b0\'%3E海报加载中...%3C/text%3E%3C/svg%3E';">
+        </div>
+    </div>
+
+    <!-- 两个大按钮居中，间距适中 (毛玻璃效果 + 图片) -->
+    <div class="buttons-area">
+        <!-- 模组下载按钮 -->
+        <div class="glass-card" id="modBtn">
+            <div class="card-icon">
+                <img src="assets/phone.png" alt="模组下载">
+            </div>
+            <div class="card-title">模组下载</div>
+            <div id="modDesc" class="card-desc card-fn"></div>
+            <div class="card-desc">点击下载模组本体，请使用ModLoader加载，此处不包含游戏本体</div>
+        </div>
+
+        <!-- 摄像图包下载按钮 -->
+        <div class="glass-card" id="photoBtn">
+            <div class="card-icon">
+                <img src="assets/album.png" alt="摄像图包下载">
+            </div>
+            <div class="card-title">摄像图包下载&nbsp;&nbsp;<span class="update-badge error">NSFW</span></div>
+            <div id="photoDesc" class="card-desc card-fn"></div>
+            <div class="card-desc">
+                游玩摄像任务的玩家需要额外下载此摄像图包，其中仅包括模组中拍摄任务的照片素材。不包括模组和游戏本体。
+                <span style="color: red">包含不适宜公开内容</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 两个圆形链接按钮 (GitHub + 百度贴吧) -->
+    <div class="social-links">
+        <a href="https://github.com/ANLINSTUDIO/Degrees-of-Lewdity-DolSmartPhone" class="circle-link" target="_blank" rel="noopener noreferrer">
+            <div class="circle-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.447-1.27.098-2.646 0 0 .84-.269 2.75 1.025.8-.223 1.65-.334 2.5-.334.85 0 1.7.111 2.5.334 1.91-1.294 2.75-1.025 2.75-1.025.545 1.376.201 2.393.099 2.646.64.698 1.03 1.591 1.03 2.682 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z" fill="white"/>
+                </svg>
+            </div>
+            <span class="circle-label">GitHub</span>
+        </a>
+        <a href="https://tieba.baidu.com/p/10532612839" class="circle-link" target="_blank" rel="noopener noreferrer">
+            <div class="circle-icon">
+                <svg t="1774760840816" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4500" width="200" height="200"><path d="M222.059497 183.140732m192.574849-23.645218l220.979639-27.132888q192.574849-23.645218 216.220068 168.929631l29.661613 241.574449q23.645218 192.574849-168.929631 216.220068l-220.97964 27.132888q-192.574849 23.645218-216.220067-168.929631l-29.661613-241.57445q-23.645218-192.574849 168.929631-216.220067Z" fill="#FC607E" p-id="4501"></path><path d="M421.123518 175.640181a194.021053 194.021053 0 0 1 1.310105 0.056337l222.800425 8.481202a194.021053 194.021053 0 0 1 186.484851 200.056192l-7.642653 242.896869a194.021053 194.021053 0 0 1-201.362573 187.785544l-41.415643-1.647934-50.091415 65.228284a7.168 7.168 0 0 1-0.616591 0.727301l-0.683221 0.626884a7.168 7.168 0 0 1-10.050999-1.372267l-53.667761-69.592594-66.281362-2.50437A194.021053 194.021053 0 0 1 213.368336 606.332006l7.74964-242.910005A194.021053 194.021053 0 0 1 421.123518 175.640181z" fill="#58B6FD" p-id="4502"></path><path d="M421.187368 175.696842h1.239579l222.800842 8.515369a194.021053 194.021053 0 0 1 186.47579 200.003368l-7.653053 242.957474a193.104842 193.104842 0 0 1-35.570526 106.010947 194.775579 194.775579 0 0 1-75.883789 25.869474l-220.968422 27.162947a194.021053 194.021053 0 0 1-216.225684-168.96l-29.642105-241.55621a193.805474 193.805474 0 0 1 64.512-169.445053c31.905684-20.48 70.117053-31.905684 110.915368-30.612211z" fill="#4835B1" p-id="4503"></path><path d="M619.250526 277.719579a4.311579 4.311579 0 0 1 4.688842-4.688842h39.882106c2.425263-0.161684 4.527158 2.155789 4.311579 4.634947v31.797895h101.645473c2.640842-0.269474 4.904421 2.155789 4.581053 4.850526v40.04379c0.053895 1.455158-0.215579 3.018105-1.347368 3.98821-1.616842 1.562947-3.934316 1.077895-5.928422 1.185684h-98.950736V466.728421h100.24421c2.694737-0.323368 4.904421 2.209684 4.581053 4.850526v183.781053a50.607158 50.607158 0 0 1-9.054316 29.049263 49.044211 49.044211 0 0 1-28.564211 19.671579c-6.736842 1.724632-13.689263 1.293474-20.587789 1.347369h-132.527158c-1.401263 0-2.910316-0.269474-3.826526-1.401264-1.616842-1.832421-1.024-4.473263-1.13179-6.736842V474.327579c0.107789-2.048-0.431158-4.473263 1.077895-6.144 0.916211-1.239579 2.479158-1.509053 3.934316-1.455158h36.917895V277.719579m7.006315 377.640421h97.872842V516.742737H626.256842c-0.161684 46.187789 0 92.375579-0.053895 138.617263zM353.441684 293.025684a48.505263 48.505263 0 0 1 38.049684-19.240421h149.773474a4.203789 4.203789 0 0 1 4.419369 3.395369c0.269474 1.940211 0.107789 3.988211 0.161684 5.928421v307.146105c0.377263 2.694737-1.940211 5.389474-4.634948 5.12h-39.774315a4.311579 4.311579 0 0 1-4.527158-4.419369V323.745684H392.030316v261.712842c-0.053895 2.155789 0.107789 4.311579-0.161684 6.467369a4.257684 4.257684 0 0 1-4.365474 3.449263h-39.882105a4.311579 4.311579 0 0 1-4.527158-4.419369V324.446316a50.714947 50.714947 0 0 1 10.24-31.474527z" fill="#FFFFFF" p-id="4504"></path><path d="M420.001684 357.052632c-0.269474-2.586947 2.048-4.958316 4.581053-4.688843h39.774316A4.203789 4.203789 0 0 1 468.884211 355.705263c0.215579 2.048 0.107789 4.096 0.107789 6.090105v192.458106c0.053895 10.024421-0.377263 20.048842 1.293474 29.965473 3.125895 20.48 13.042526 40.043789 28.887579 53.194106 12.449684 10.509474 28.079158 16.707368 44.085894 18.593684 2.155789-0.161684 2.694737 2.317474 2.640842 3.98821v40.04379c0.107789 1.778526-0.323368 3.772632-1.832421 4.850526-1.832421 1.832421-4.527158 0.916211-6.790736 0.700632a126.976 126.976 0 0 1-64.943158-27.917474 146.593684 146.593684 0 0 1-27.701895-30.342737c-0.538947 0.323368-0.862316 0.916211-1.239579 1.401263a136.084211 136.084211 0 0 1-56.912842 47.481264c-12.072421 5.281684-24.953263 8.623158-38.049684 9.862736-2.694737 0.538947-5.281684-1.886316-5.22779-4.634947-0.107789-13.797053 0-27.594105 0-41.391158a5.820632 5.820632 0 0 1 1.347369-4.096c20.641684-2.694737 40.097684-13.527579 53.786947-29.58821 13.689263-15.791158 21.557895-36.702316 21.719579-57.829053V357.052632z" fill="#FFFFFF" p-id="4505"></path></svg>
+            </div>
+            <span class="circle-label">百度贴吧</span>
+        </a>
+    </div>
+
+    <!-- 更新公告区域 -->
+    <div class="update-section">
+        <div class="update-header">
+            <h2>📢 更新公告</h2>
+            <div class="update-badge">LATEST</div>
+        </div>
+        <div class="update-content" id="updateContent">
+            <div class="empty-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 8V12L15 15M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#9aaec5" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <p>✨ 暂无新公告，敬请期待后续动态 ✨</p>
+                <p style="font-size:0.8rem; opacity:0.7;">开发团队将在这里发布最新版本日志、功能预览与活动情报</p>
+            </div>
+            <div id="update-content-inner" style="text-align: start; display: none;"></div>
+        </div>
+    </div>
+    <footer>
+        开发者: ANLIN.STUDIO
+    </footer>
+</div>
+
+<script>
+    (async function() {
+        // 定义准确的下载链接
+        const MOD_API_KEY = "DoL-SmartPhone-Self";
+        const PHOTO_API_KEY = "DoL-SmartPhone-PhotoPack";
+        const API_URL = "https://sb.alseece.top/2/value.php";
+
+        // 从URL中提取文件名
+        function getFileNameFromUrl(url) {
+            try {
+                const urlWithoutQuery = url.split('?')[0];
+                const parts = urlWithoutQuery.split('/');
+                return decodeURIComponent(parts.pop()) || '未知文件';
+            } catch (e) {
+                return '下载文件';
+            }
+        }
+
+        async function fetchDownloadUrl(key, nocount = true) {
+            try {
+                const response = await fetch(`${API_URL}?key=${encodeURIComponent(key)}&nocount=${nocount ? 1 : 0}`, {
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                return data.value;
+            } catch (error) {
+                console.error(`获取 ${key} 失败:`, error);
+                return null;
+            }
+        }
+
+        // 获取模组下载链接
+        const MOD_URL = await fetchDownloadUrl(MOD_API_KEY);
+        // 获取摄像图包下载链接
+        const PHOTO_URL = await fetchDownloadUrl(PHOTO_API_KEY);
+ 
+        // 动态设置描述文本
+        const modDesc = document.getElementById('modDesc');
+        const photoDesc = document.getElementById('photoDesc');
+        if (modDesc && MOD_URL) {
+            modDesc.textContent = getFileNameFromUrl(MOD_URL);
+        } else if (modDesc) {
+            modDesc.textContent = '无法连接到服务器';
+        }
+        if (photoDesc && PHOTO_URL) {
+            photoDesc.textContent = getFileNameFromUrl(PHOTO_URL);
+        } else if (photoDesc) {
+            photoDesc.textContent = '无法连接到服务器';
+        }
+
+        // 异步获取最新版本和公告内容
+        (async function() {
+            const element = document.querySelector('#update-content-inner');
+            const placeholder = document.querySelector('.empty-placeholder');
+            if (!element) return;
+            try {
+                const response = await fetch('https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-Notice&nocount=1', {
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                const data = await response.json();
+                if (data && !data.error && data.value) {
+                    let content = data.value;
+                    content = content.replaceAll('\n', '<br>');
+                    element.innerHTML = content;
+                    element.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+            } catch (error) {
+                console.log('公告加载失败，使用默认占位');
+                if (placeholder) placeholder.style.display = 'flex';
+                element.style.display = 'none';
+            }
+
+            const element_version = document.querySelector('#version');
+            if (!element_version) return;
+            try {
+                const response = await fetch('https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion&nocount=1', {
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                const data = await response.json();
+                if (data && !data.error && data.value) {
+                    let content = data.value;
+                    content = content.replaceAll('\n', '<br>');
+                    element_version.innerHTML = content;
+                }
+            } catch (error) {
+                element_version.style.display = 'none';
+            }
+        })();
+
+        // 获取按钮元素
+        const modBtn = document.getElementById('modBtn');
+        const photoBtn = document.getElementById('photoBtn');
+
+        // 下载函数
+        function triggerDownload(key) {
+            if (!key) return;
+            (async function() {
+                const url = await fetchDownloadUrl(key, false);
+                if (!url) {
+                    alert('下载链接获取失败，请稍后再试');
+                    return;
+                }
+                const link = document.createElement('a');
+                link.href = url;
+                const urlParts = url.split('/');
+                let suggestedName = urlParts.pop() || 'download.zip';
+                if (suggestedName.indexOf('?') !== -1) suggestedName = suggestedName.split('?')[0];
+                link.download = suggestedName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })();
+        }
+
+        // 绑定下载事件
+        modBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerDownload(MOD_API_KEY);
+        });
+
+        photoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerDownload(PHOTO_API_KEY);
+        });
+
+        // 键盘可访问性
+        modBtn.setAttribute('role', 'button');
+        modBtn.setAttribute('tabindex', '0');
+        photoBtn.setAttribute('role', 'button');
+        photoBtn.setAttribute('tabindex', '0');
+
+        modBtn.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                triggerDownload(MOD_API_KEY);
+            }
+        });
+        photoBtn.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                triggerDownload(PHOTO_API_KEY);
+            }
+        });
+    })();
+</script>
+</body>
+</html>
