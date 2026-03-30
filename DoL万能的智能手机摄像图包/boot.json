@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone PhotoPack",
     "nickName": "万能的智能手机 摄像图包",
-    "version": "Alpha.3.7",
+    "version": "Alpha.3.7a",
     "styleFileList": [],
     "scriptFileList": [
         "smartphonephotopack.js"
