@@ -1,0 +1,56 @@
+		<!-- SmartPhone NPC -->
+		<<case Feng>>
+			<<if C.npc.Feng.name_known>>
+				老冯
+				<<if C.npc.Feng.love gt 0 or C.npc.Feng.lust gt 0>>
+					<<if C.npc.Feng.love gt 0>>
+						<<if C.npc.Feng.love gte 99>>
+							<span class="green">放心把任何事情交给你做</span>
+						<<elseif C.npc.Feng.love gte 95>>
+							<span class="teal">非常欣赏你</span>
+						<<elseif C.npc.Feng.love gte 85>>
+							<span class="blue">比较欣赏你</span>
+						<<elseif C.npc.Feng.love gte 75>>
+							<span class="lblue">有点欣赏你</span>
+						<<elseif C.npc.Feng.love gte 50>>
+							对你<span class="purple">印象很深</span>
+						<<elseif C.npc.Feng.love gte 1>>
+							对你<span class="red">保持着警惕</span>
+						<</if>>
+					<</if>>
+					<<if C.npc.Feng.lust gt 0>>
+						<<if C.npc.Feng.love gt 0>>
+							，
+							<<if ((C.npc.Feng.love gte 50) and (C.npc.Feng.lust gte 50)) or ((C.npc.Feng.love lt 50) and (C.npc.Feng.lust lt 50))>>
+								并且
+							<<else>>
+								但是
+							<</if>>
+						<</if>>
+						<<if C.npc.Feng.lust gte 99>>
+							<span class="green">完全认为你是偷手机的天才</span>。
+						<<elseif C.npc.Feng.lust gte 95>>
+							<span class="teal">很佩服你的能力</span>。
+						<<elseif C.npc.Feng.lust gte 85>>
+							<span class="blue">佩服你的手法</span>。
+						<<elseif C.npc.Feng.lust gte 75>>
+							<span class="lblue">很看好你的能力</span>。
+						<<elseif C.npc.Feng.lust gte 50>>
+							认为<span class="lblue">你的能力还不错</span>。
+						<<elseif C.npc.Feng.lust gte 20>>
+							认为<span class="purple">你的能力有所欠缺</span>。
+						<<elseif C.npc.Feng.lust gte 10>>
+							认为<span class="pink">你的能力拙劣</span>。
+						<<elseif C.npc.Feng.lust gte 1>>
+							认为<span class="red">你不适合偷手机这行</span>。
+						<</if>>
+					<</if>>
+				<<else>>
+					对你保持警惕。
+				<</if>>
+			<<else>>
+				黑衣人
+				<span class="red">与你擦肩而过</span>。
+			<</if>>
+		
+		<!-- Default cases -->

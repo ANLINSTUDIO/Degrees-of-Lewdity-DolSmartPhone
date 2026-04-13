@@ -51,7 +51,8 @@ PhoneMod.events = [
     // 地点
     {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
     {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
-    {passage: "Elk Street", target: "Nightingale Street", event: "Second Phone Shop Link", position: "before", offset: 4},
+    {passage: "Elk Street", target: "Trash", event: "Second Phone Shop Link"},
+    {passage: "Elk Street", target: "Trash Gate Enter", event: "Second Phone Shop Link"},
     // 地点组
     {passage: "Bedroom", target: "Mirror", event: "Bedroom Corner"},
     // 直播
@@ -92,7 +93,7 @@ PhoneMod.events_on_macro = [
 
 
 // === 内容 =======================================================
-PhoneMod.PhonePhotos = {  // 摄像任务
+PhoneMod.PhonePhotos = {  // 摄像任务 
     // "任务ID 也是图片路径键": {
     //     msg: "发布时的文案",
     //     taskDesc: "对任务的简述",
@@ -112,7 +113,8 @@ PhoneMod.PhonePhotos = {  // 摄像任务
     //       },
     //     },
     //     comments: {
-    //       "评论": "影响",
+    //       "评论1": "影响1",
+    //       "评论2": "影响2",
     //       "→": [() => {return "条件函数，需要返回bool"}, {
     //         "如果满足条件则可能出现这些评论": "影响",
     //       }, {
@@ -158,8 +160,52 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           $havingOrgasm: true
         },
         comments: {
-          "洗完澡都是香香的哦": `<<llstress>><<stress -24>>`,
-          "我愿意高价购买这位女士的洗澡水，有人与我竞价吗": "<<ltrauma>><<trauma -6>><<lcontrol>><<control -12>>",
+          "洗完澡都是香香的哦": `<<lstress>><<stress -1>>`,
+          "这阿黑颜……顶爆了！": "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>",
+
+          "洗澡还要发情，你真是没救了": "<<ggtrauma>><<trauma 10>><<ggstress>><<stress 3>>",
+
+          "↓": [
+            [
+              ["我愿意出200高价购买这位女士的洗澡水，有人与我竞价吗", "<<garousal>><<arousal 30>>"],
+              ["没钱还想吃好的？我出500", "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"],
+            ],
+            [
+              ["→", [()=>V.player.gender=="f"&&V.player.penisExist, [
+                ["我去，下面那是根啥？", "<<garousal>><<arousal 30>>"],
+                ["应该是八级甲吧",  "<<garousal>><<arousal 30>>"],
+                ["我感觉不像", "<<ggarousal>><<arousal 100>>"],
+                ["破案了，lz其实是扶她", "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"],
+                ["没我长", "<<insecurity 'penis_small' 1>><<ginsecurity 'penis_small'>>"],
+              ]]]
+            ],
+            [
+              ["想玩浴室play", "<<garousal>><<arousal 30>>"],
+              ["加我一个", "<<garousal>><<arousal 30>>"],
+              ["做的时候记得喊我名字", "<<ggarousal>><<arousal 100>>"],
+            ],
+            [
+              ["身材管理方法发一个", "<<lstress>><<stress -1>>"],
+              ["楼主拿刀砍出来的", "<<lstress>><<stress -1>>"],
+              ["楼主腰比我脖子都细", "<<lstress>><<stress -1>>"],
+              ["也就一般吧", "<<gstress>><<stress 1>>"],
+            ],
+            [
+              ["→", [()=>V.player.gender=="f", [
+                ["妹妹看看b", "<<garousal>><<arousal 30>>"],
+                ["不准看我老婆",  "<<garousal>><<arousal 30>>"],
+                ["那我更喜欢了", "<<ggarousal>><<arousal 100>>"],
+                ["我去还有ntr", "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"],
+                ["还有人没看过这骚货的？", "<<gstress>><<stress 1>>"],
+              ], [
+                ["弟弟看看鸟", "<<garousal>><<arousal 30>>"],
+                ["不准看我老公",  "<<garousal>><<arousal 30>>"],
+                ["那我更喜欢了", "<<ggarousal>><<arousal 100>>"],
+                ["我去还有ntr", "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"],
+                ["还有人没看过这骚货的？", "<<gstress>><<stress 1>>"],
+              ]]]
+            ],
+          ],
 
           "洗澡还要发情，你真是没救了": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
 
@@ -867,7 +913,8 @@ PhoneMod.Comments = {  // 通用评论
     "除了窒息我没有什么要表演的": `<<llstress>><<stress -24>><<ltrauma>><<trauma -6>>`,
     "看完照片后，我不敢轻易评论，我担心我庸俗不堪的语言会玷污了这世间少有的美感。但我还是评论了，我觉得如果不能在这样有美感的照片后面留下评论，那将会是一生的遗憾": `<<lstress>><<stress -12>>`,
 
-    "这么小的奶子你敢发我都不敢看": `<<insecurity breasts_small 1>><<ginsecurity breasts_small>>`,
+    "这么小的奶子你敢发我都不敢看": `<<insecurity "breasts_small" 1>><<ginsecurity "breasts_small">>`,
+    "这么大的奶子就是出来卖的": `<<insecurity "breasts_big" 1>><<ginsecurity "breasts_big">>`,
     "你在勾引谁呢，臭婊子": `<<ggstress>><<stress 24>><<gtrauma>><<trauma 12>>`,
     "粉粉嫩嫩的小骚逼，给我吃两口": "<<gstress>><<stress 12>><<lcontrol>><<control -12>>",
     "你怎么这么骚啊，贱货": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",

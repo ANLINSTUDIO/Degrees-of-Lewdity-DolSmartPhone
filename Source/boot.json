@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.7a",
+    "version": "Alpha.3.8",
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
@@ -135,6 +135,52 @@
                     "findString": "<<if $daily.motherWake is 1>>",
                     "replaceFile": "twee/game/sleepAlarmWake.txt",
                     "all": true
+                },
+                {
+                    "_comment1": "添加新NPC-老冯 参考模拟人生的代码",
+                    "passage": "npcNamed",
+                    "findString": "\t<<for _i to 0; _i lt $NPCName.length; _i++>>",
+                    "replaceFile": "twee/game/npc/Feng_0.txt"
+                },
+                {
+                    "passage": "npcNamed",
+                    "findString": "\t\t\t\"zephyr\": {nam : \"Zephyr\", title: \"captain\", insecurity: \"skill\", adult: 1}",
+                    "replaceFile": "twee/game/npc/Feng_1.txt"
+                },
+                {
+                    "passage": "npcNamed",
+                    "findString": "\t\t\t<<case \"Zephyr\">>",
+                    "replaceFile": "twee/game/npc/Feng_2.txt"
+                },
+                {
+                    "passage": "npcNamed",
+                    "findString": "\t\t<<case \"Gwylan\" \"Zephyr\">>",
+                    "replaceFile": "twee/game/npc/Feng_3.txt"
+                },
+                {
+                    "passage": "Widgets variablesStatic",
+                    "findString": "\t<<run initCNPC()>>",
+                    "replaceFile": "twee/game/npc/Feng_4.txt"
+                },
+                {
+                    "passage": "Widgets variablesVersionUpdate",
+                    "findString": "\t\t<<for _npc range [\"avery\", \"bailey\", \"charlie\", \"darryl\", \"doren\", \"eden\", \"gwylan\", \"harper\", \"jordan\", \"kylar\", \"landry\", \"leighton\", \"mason\", \"morgan\", \"river\", \"robin\", \"sam\", \"sirris\", \"whitney\", \"winter\", \"zephyr\"]>>",
+                    "replaceFile": "twee/game/npc/Feng_5.txt"
+                },
+                {
+                    "passage": "Social",
+                    "findString": "\t\t\t\t\t\"Zephyr\" : {",
+                    "replaceFile": "twee/game/npc/Feng_7.txt"
+                },
+                {
+                    "passage": "Widgets",
+                    "findString": "\t<<set _i to $NPCNameList.indexOf(\"Zephyr\")>>",
+                    "replaceFile": "twee/game/npc/Feng_8.txt"
+                },
+                {
+                    "passage": "Widgets Named Npcs",
+                    "findString": "\t\t<!-- Default cases -->",
+                    "replaceFile": "twee/game/npc/Feng_9.txt"
                 }
             ]
         }

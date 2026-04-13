@@ -482,15 +482,19 @@
 
 :: Smartphone Debug [widget]
 <<widget "smartphone_debug_switch">>
-    <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()"><<icon "phone/phone.png">></div>
+    <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()">
+        <<icon "phone/phone.png">>
+        <span style="position: absolute; left: 0; top: 20px; font-size: 5px; background-color: black;"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
+    </div>
 <</widget>>
 
 <<widget "smartphone_debug">> <div id="smart-phone-debug-container">
+    <div id="smartphone_debug_msg"></div>
     <br><br><br>
     <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>>
     <hr>
-    <input type="text" id="excute-sugercube-path" placeholder="执行位置 ?? #passages">
+    <input type="text" id="excute-sugercube-path" placeholder="执行位置 ?? #smartphone_debug_msg">
     <input type="text" id="excute-sugercube" placeholder="执行SugerCube命令"><<link "执行">><<run PhoneMod.DebugExcuteSugerCube()>><</link>>
     <hr>
     <h3 class="gold">获取手机</h3>

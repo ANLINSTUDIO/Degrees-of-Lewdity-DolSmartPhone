@@ -33,8 +33,8 @@ PhoneMod.patchOnPassageRender = function (ev) {
     // 3.3 | 修复信息列队
     V.Phone.msgLine = V.Phone.msgLine || [];
     // 3.3 | 悉尼色播伴侣
-    V.SydneySexLiveCompanion = 0
-    if ("SydneySexPhoto" in V.Phone) V.Phone.SydneySexLiveCompanion = V.Phone.SydneySexPhoto  // 变量迁移
+    V.Phone.SydneySexLiveCompanion = V.Phone.SydneySexLiveCompanion ?? 0;
+    PhoneMod.patchTV("Phone.SydneySexPhoto", "Phone.SydneySexLiveCompanion");
 
     // 3.4 | 手机存储
     V.Phone.Store = V.Phone.Store || {};

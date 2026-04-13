@@ -422,14 +422,20 @@ PhoneMod.toggleDebug = function(reload = false) {
         event.stopImmediatePropagation();
     }, true);
 }
-PhoneMod.DebugShowMsg = function(content) {
+PhoneMod.DebugShowMsg = function(content, prefix="", add=false) {
     const phoneDebugUI = document.getElementById("smart-phone-debug-container")
-    if (phoneDebugUI) {
+    const smartphone_debug_msg = document.getElementById("smartphone_debug_msg")
+    if (phoneDebugUI && smartphone_debug_msg) {
         const element = document.createElement("div")
-        element.class = "red"
-        element.innerHTML = content + "<br>"
-        phoneDebugUI.insertAdjacentElement('afterbegin', element);
-        phoneDebugUI.scrollTo(0, 0)
+        element.innerHTML = `<small style="color: gray">[${prefix}${prefix?":":""}${new Date().toLocaleTimeString()}]</small>`
+        if (add) {
+            element.appendChild(content)
+        } else {
+            const msg = document.createElement("span")
+            msg.innerHTML = content
+            element.appendChild(msg)
+        }
+        smartphone_debug_msg.appendChild(element);
     }
 }
 PhoneMod.DebugExcuteJs = function() {
@@ -438,7 +444,16 @@ PhoneMod.DebugExcuteJs = function() {
         if (input) {
             const command = input.value
             if (command) {
-                PhoneMod.DebugShowMsg(eval(command))
+                try {
+                    PhoneMod.DebugShowMsg(eval(command), "JS")
+                } catch (err) {
+                    console.log(err.message, err);
+                    const msg = document.createElement("span")
+                    msg.className = 'red';
+                    const match = err.message.match(/^[\d.]+\s*出错\s*\(::\s*[^)]+\):\s*(.+?)Export$/);
+                    msg.textContent = " " + (match ? match[1] : err.message);
+                    PhoneMod.DebugShowMsg(msg, "JS", true)
+                }
             }
         }
     }, 1)
@@ -449,17 +464,35 @@ PhoneMod.DebugExcuteSugerCube = function() {
         const path_input = document.getElementById("excute-sugercube-path")
         if (input) {
             const command = input.value
-            let path = "\"#passages\""
+            let path = "#smartphone_debug_msg"
             if (path_input && path_input.value) {
-                path = `document.querySelector("${path_input.value}")`
+                path = JSON.stringify(path_input.value)
             }
             if (command) {
-                PhoneMod.DebugShowMsg(eval(`new wikifier(${path}, "${command}")`))
+                try {
+                    const tmp = new wikifier(document.querySelector(path), command)
+                    let html = '';
+                    Array.from(tmp.childNodes).slice(2, -1).forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                        html += node.textContent;  // 文本节点直接加内容
+                        } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        html += node.outerHTML;     // 元素节点加 outerHTML
+                        }
+                    });
+                    console.log(html, tmp);
+                    PhoneMod.DebugShowMsg(html, "SC")
+                } catch (err) {
+                    console.log(err.message, err);
+                    const msg = document.createElement("span")
+                    msg.className = 'red';
+                    const match = err.message.match(/^[\d.]+\s*出错\s*\(::\s*[^)]+\):\s*(.+?)Export$/);
+                    msg.textContent = " " + (match ? match[1] : err.message);
+                    PhoneMod.DebugShowMsg(msg, "SC", true)
+                }
             }
         }
     }, 1)
 }
-
 
 // ================== 游戏内容 ==================
 PhoneMod.Phone = class {

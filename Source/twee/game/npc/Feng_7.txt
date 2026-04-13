@@ -1,0 +1,14 @@
+					"Feng" : {
+						love : { name : "信任" },
+						lust : { name : "欣赏" , activeIcon : "img/ui/sym_confidence.png", inactiveIcon : undefined, iconOrientation : undefined },
+					},
+					/* npc的各自属性及特有调整，只能加载四条属性，写五条属性会报错……吗？（←并不会报错，但是多个属性同时显示会把信息框撑裂。之前报错可能是我写错代码了） */
+					/* 不过可以通过显隐和更名来实现花式变换←但既然可以写新属性，那就用更直接的逻辑 */
+					/* 由于普通角色只显示lust和love，这里暂用lust来替代atfield（改逻辑让普通角色显示atfield也可以，但很繁琐） */
+					/* 比如悉尼的好感在这里被设定为最大值150，代码里拉悉尼的手跳神殿火坑需要90好感，也就是只需要60% */
+					/* 此外还有一些独有调整，比如罗宾的支配读作自信，凯拉尔的愤怒读作嫉妒，不一而足 */
+					/* 若未满足requirements则该属性不可见 */
+					/* 不要学习悉尼那一条写V.NPCName[28].purity这种代码，用C.npc.Sydney.purity安全得多 */
+					/* 若非主要角色，则删去important:true，6号文件也得做相应的修改 */
+					/* 由于requirements互斥，确保创伤和心防只会同时显示一条（虽然说普通NPC是可以塞下两条状态） */
+					"Zephyr" : {

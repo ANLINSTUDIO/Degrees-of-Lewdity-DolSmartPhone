@@ -1,0 +1,10 @@
+	<<set setup.loveAlias.Feng to () => "信任">>
+	<<set setup.NPCNameList.pushUnique("Feng")>>
+
+	<<set setup.NPCNameList_cn_name += "|Feng,老冯">>
+	<<set setup.NPCTitleList_cn_name += "|pickpocket,扒手">>
+
+	<<run initCNPC()>>
+
+	/* pushUnique，减少mod互创可能性 */
+	/* 适配新版逻辑，第二条要改动一下写法，由于NPCNameList_cn_name对排序没有要求，不用push也可以 */

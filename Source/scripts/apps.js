@@ -1185,7 +1185,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
                 const [comment, value] = commentChainRaw[index];
                 putChain(comment, value, commentChain);
             }
-            if (commentChain) {
+            if (commentChain.length > 0) {
                 if (PhoneMod.debug) console.log("跟评链", commentChain);
                 if (last_comment) {
                     for (let index = 0; index < commentChain.length; index++) {

@@ -205,18 +205,23 @@
 
 :: === Second Phone Shop ===
 :: Second Phone Shop Link
-<<if !$Phone.MetFengOnce and validArray($Phone.Owned)>>
+<<if C.npc.Feng.init is 0 and validArray($Phone.Owned)>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
     <<if $Phone.SecondShopKnown>>
-        <br><<icon "unused_stonebuilding1.png">><<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+        <br><<icon "unused_stonebuilding1.png">>
+        <<if $exposed gt 0>>
+            <<link [[地下手机店 (0:01)|Second Phone Shop Exposed]]>><<pass 1>><</link>>
+        <<else>>
+            <<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+        <</if>>
     <<else>>
         <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
     <</if>>
 <</if>>
 
 :: Second Phone Shop Unknown
-<<if $Phone.MetFengOnce>>
+<<if C.npc.Feng.init is 1>>
     <<include "Second Phone Shop">>
 <<else>>
     这个神秘的房子就这么屹立在这里。大门紧锁，严丝合缝。你无法透过那扇老旧的木门看到里面的任何东西。<br><br>
@@ -224,25 +229,21 @@
 <</if>>
 
 :: Second Phone Shop Meet Feng First
-<<set $Phone.MetFengOnce to 1>>
 <<if validArray($Phone.Owned)>>
     <<set $Phone.FengStole to PhoneMod.DeletePhone(V.Phone.Owned[0].id)>>
 <<else>>
     <<set $Phone.FengStole to PhoneMod.BuySecondPhone("特斯特2 测试型", 0.01)>>
 <</if>>
 
-<<generateNPC 1 a m m 23>>
-<<set $NPCList[0].name to "老冯">>
-<<set $NPCList[0].fullDescription to "黑衣人">>
-<<person1>>
-
-你前脚刚踏入麋鹿街的地区，后脚就发现一个可疑的黑衣人从你身边几乎贴着你经过。<span class="red">他很可疑！</span><br>
-“喂！”你朝他大声呼喊，“你干了什么！”<br>
+<<npc Feng>>
+<<set C.npc.Feng.name_known to 0>>
+你前脚刚踏入麋鹿街的地区，后脚就发现一个可疑的黑衣人从你身边几乎贴着你经过。<span class="red"><<he>>很可疑！</span><br>
+“喂！”你朝<<he>>大声呼喊，“你干了什么！”<br>
 黑衣人眼看着顿了一下，随即停下了脚步。<br>
-你决定上前查看，但你没走过几步，他便开始加速向麋鹿街的尽头那间<span class="teal">神秘的房子</span>走去。<br>
-他的步伐太快，你有点追不上了。<br><br>
+你决定上前查看，但你没走过几步，<<he>>便开始加速向麋鹿街的尽头那间<span class="teal">神秘的房子</span>走去。<br>
+<<he>>的步伐太快，你有点追不上了。<br><br>
 <<icon "unused_stonebuilding1.png">><<link [[追随神秘人的脚步进入神秘的房子 (0:01)|Second Phone Shop Meet Feng First 2]]>><<pass 1>><</link>><br>
-<<getouticon>><<link [[算了|Second Phone Shop Meet Feng First Finish]]>><</link>>
+<<getouticon>><<link [[算了|Second Phone Shop Meet Feng First Finish]]>><<endevent>><</link>>
 
 :: Second Phone Shop Meet Feng First Finish
 <<set $Phone.MetFengGiveup to 1>>
@@ -253,8 +254,9 @@
 <<elkicon>><<link [[离开|Elk Street]]>><</link>>
 
 :: Second Phone Shop Meet Feng First 2
+<<npc Feng>>
 <<include "Second Phone Shop First">>
-你一眼就看到了刚才的黑衣人，他靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。<br><br>
+你一眼就看到了刚才的黑衣人，<<he>>靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。<br><br>
 <<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>>
 
 :: Second Phone Shop Meet Feng First 3
@@ -264,7 +266,7 @@
     “喂！你刚刚干了什么？” 你捏住鼻子问到。<br>
 <</if>>
 <span class="teal">黑衣人并没有理会你。</span><br>
-你皱起眉头，于是慢慢警惕地向他靠近。你极力想看清楚他到底在拆卸什么东西。<br><br>
+你皱起眉头，于是慢慢警惕地向<<he>>靠近。你极力想看清楚<<he>>到底在拆卸什么东西。<br><br>
 好像，要么是一块砖头……要么就是一部手机…………<br>
 一部……手机？<br>
 手……<br>
@@ -277,9 +279,67 @@
     <<print '<span class="red">你的 '+$Phone.FengStole.model+' 不见了！</span>'>><br><br>
 <</if>>
 在你的尖叫下，黑衣人终于意识到了你的存在，猛地抬起头看向你，并且偷偷地慢慢地将柜台上的手机挪向自己那边。<br><br>
-在盗贼面具下，你无法看清他的脸。但是你发觉到了满脸的青胡须，令你感到一阵恶心。
+在盗贼面具下，你无法看清<<he>>的脸。但是你发觉到了<<if C.npc.Feng.penis is "none">>满头糟乱的头发<<else>>满脸发青的胡须<</if>>，令你感到一阵恶心。
 <br><br>
 <<link [[抢夺手机|Feng Contend]]>><<set $molestationstart to 1>><<set $phase to 0>><</link>>
+
+:: Feng Widget [widget]
+<<widget "gfenglove">>
+    <<set C.npc.Feng.love += 1>>
+    <<note "+ 老冯的信任" "green">>
+<</widget>>
+<<widget "ggfenglove">>
+    <<set C.npc.Feng.love += 2>>
+    <<note "++ 老冯的信任" "green">>
+<</widget>>
+<<widget "gggfenglove">>
+    <<set C.npc.Feng.love += 3>>
+    <<note "+++ 老冯的信任" "green">>
+<</widget>>
+<<widget "lfenglove">>
+    <<set C.npc.Feng.love -= 1>>
+    <<note "- 老冯的信任" "red">>
+<</widget>>
+<<widget "llfenglove">>
+    <<set C.npc.Feng.love -= 2>>
+    <<note "-- 老冯的信任" "red">>
+<</widget>>
+<<widget "lllfenglove">>
+    <<set C.npc.Feng.love -= 3>>
+    <<note "--- 老冯的信任" "red">>
+<</widget>>
+<<widget "gfenglust">>
+    <<set C.npc.Feng.lust += 1>>
+    <<note "+ 老冯的欣赏" "green">>
+<</widget>>
+<<widget "ggfenglust">>
+    <<set C.npc.Feng.lust += 2>>
+    <<note "++ 老冯的欣赏" "green">>
+<</widget>>
+<<widget "gggfenglust">>
+    <<set C.npc.Feng.lust += 3>>
+    <<note "+++ 老冯的欣赏" "green">>
+<</widget>>
+<<widget "lfenglust">>
+    <<set C.npc.Feng.lust -= 1>>
+    <<note "- 老冯的欣赏" "red">>
+<</widget>>
+<<widget "llfenglust">>
+    <<set C.npc.Feng.lust -= 2>>
+    <<note "-- 老冯的欣赏" "red">>
+<</widget>>
+<<widget "lllfenglust">>
+    <<set C.npc.Feng.lust -= 3>>
+    <<note "--- 老冯的欣赏" "red">>
+<</widget>>
+<<widget "fengclothes">>
+    <<if $worn.upper.index is 0>>
+        <<upperwear 8>><<set $worn.upper.colour to either("black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow")>><<set $worn.upper.integrity /= 6>>
+    <</if>>
+    <<if $worn.lower.index is 0>>
+        <<lowerwear 5>><<set $worn.lower.colour to either("black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow")>><<set $worn.lower.integrity /= 6>>
+    <</if>>
+<</widget>>
 
 :: Feng Contend
 <<if $molestationstart is 1>>
@@ -312,11 +372,11 @@
 <<effectsman>>
 <<man>>
 <<switch random(1, 5)>>
-    <<case 1>>那人在争夺手机之余<span class="red">对你踢了狠狠的一脚</span>，你觉得腿上可能是已经破皮了，但你无暇去理会。<<gggpain>><<pain 15>>
-    <<case 2>>那人不断地对你言语攻击，骂你是个婊子，又说你是个妓女，你本来就非常着急地想抢回你的手机，现在心情万分悲伤。<<ggstress>><<ggtrauma>><<trauma 12>><<stress 24>>
-    <<case 3>>你被他掐住了喉咙，<span class="red">无法动弹</span>。<<llcontrol>><<control -50>><br>你拼命地挣扎，他迫不得已放开了你。
-    <<case 4>>他的力气十分雄厚，你差点无法握紧你的手机。
-    <<case 5>>“妈的，你凭什么说这是你的手机！松手！” 他嘶吼着。
+    <<case 1>>那人在争夺手机之余<span class="red">对你踢了狠狠的一脚</span>，你觉得腿可能已经是废了，但你无暇去理会。<<gggpain>><<pain 10>>
+    <<case 2>>那人不断地对你言语攻击，骂你是个婊子，又说你是个妓女，你本来就非常着急地想抢回你的手机，现在心情万分悲伤。<<ggstress>><<ggtrauma>><<trauma 12>><<stress 9>>
+    <<case 3>>你被<<he>>掐住了喉咙，<span class="red">无法动弹</span>。<<llcontrol>><<control -20>><br>你拼命地挣扎，<<he>>迫不得已放开了你。
+    <<case 4>><<he>>的力气十分雄厚，你差点无法握紧你的手机。
+    <<case 5>>“妈的，你凭什么说这是你的手机！松手！” <<he>>嘶吼着。
 <</switch>><br>
 <<stateman>>
 <br><br>
@@ -333,19 +393,21 @@
     <<goto "Feng Contend Finish">>
 <</if>>
 
-
 :: Feng Contend Finish
 <<endcombat>>
+<<npc Feng>>
 <<if $enemyhealth lte 0>>
     <<run PhoneMod.AppendPhone($Phone.FengStole)>>
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
     <<if PhoneMod.isCarryingStolenPhone()>>
-        “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了他一番，说明了这部手机的来历后就准备离开。<br>
+        “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了<<he>>一番，说明了这部手机的来历后就准备离开。<br>
+        <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>>
-        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了他一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
+        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
         “庆幸我不会报警抓你吧。” 你实在无法忍受这里的气味了。<br>
+        <<set C.npc.Feng.lust to 1>><<note "--- 老冯的欣赏" "red">>   <!-- 认为你不适合偷手机这行 -->
     <</if>><br>
     “等一下！” 那人叫住了你，“我叫老冯，你下次还有手机就卖到我这吧。”<br>
 <<elseif $Phone.Stolen is 1>>
@@ -353,14 +415,18 @@
     “敢抢我的手机？” 那人放下狠话。<br>
     <<if PhoneMod.isCarryingStolenPhone()>>
         “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。<br>
+        <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>>
-        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！不像你只会偷只会抢！” 你羞辱了他一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
+        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！不像你只会偷只会抢！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
         你实在无法忍受这里的气味了，转身朝门外走去：“我会记住你的。” <br>
+        <<set C.npc.Feng.lust to 1>><<note "--- 老冯的欣赏" "red">>   <!-- 认为你不适合偷手机这行 -->
     <</if>><br>
     “等一下！” 那人叫住了你，“你说你也干这行？我叫老冯，你下次有手机就卖到我这吧。”<br>
 <</if>><br>
+<<set C.npc.Feng.name_known to 1>>
+<<set C.npc.Feng.love to 1>>   <!-- 保持着警惕 -->
 <<unset $Phone.FengStole>>
-他叹了口气，说：“要不是他被抓了，我才不会自己做这种事。”<br>
+<<he>>叹了口气，说：“要不是他被抓了，我才不会自己做这种事。”<br>
 “他？谁，” 好奇心使你停下脚步，但还是将半个身子，特别是头部露在外边，“意思是你的扒手落网啦？哈哈哈哈哈。”<br><br>
 
 老冯脱下盗贼面具，点了一支烟，吐出一个烟圈，缓缓又叹了口气：“<span class="teal">哎，总之，你到我这里来，不管是买还是卖，绝对要比外面那些只会吃品牌饭的划算。</span>”<br>
@@ -371,7 +437,7 @@
     老冯扭过头去：“那不可能。”<br>
     “那我走了，” 你转身又要离开，“你没有扒手了关我什么事，又没有我的好处。”<br>
     “哎哎哎，你看看你，你又意气用事，”老冯伸出手挽留，“哎，我真的没什么好给你的，<<girl>>。如果你愿意帮我的忙……你不嫌弃的话，这个你就拿着吧”<br><br>
-    这是他的<<icon "clothes/skulduggery_mask.png">><span class="teal">盗贼面具</span>，它专为那些图谋不轨的人而打造。<br><br>
+    这是<<he>>的<<icon "clothes/skulduggery_mask.png">><span class="teal">盗贼面具</span>，它专为那些图谋不轨的人而打造。<br><br>
     “这个面具可以隐藏你的身份，但是骗不到警察或认识你的人，也可以让你的犯罪行为更难被追踪，我希望它能够跟着你……过得更好。”<br>
     <<if PhoneMod.AddClothToPlayer("skulduggery mask")>>
         你虽然很不情愿，但是还是将它缓缓戴上：“这……那我就戴上试试看吧。”
@@ -394,22 +460,25 @@
 :: Second Phone Shop
 <<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "elk">>
 <<if $Phone.MetFengGiveup>>
-    <<generateNPC 1 a m m 23>>
-    <<set $NPCList[0].fullDescription to "老冯">>
-
-    <<person1>>
+    <<npc Feng>>
     <<include "Second Phone Shop First">><br><br>
-    一个黑衣人靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。 <span class="red">他看起来有点熟悉。</span><br><br>
+    一个黑衣人靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。 <span class="red"><<he>>看起来有点熟悉。</span><br><br>
     <<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>><br>
 <<else>>
     <<run PhoneMod.Guide.startTutorial(PhoneMod.Guide.secondphoneshop)>>
     你在地下手机店里，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 2>><br>
     狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br><br>
+    <<if $exposed gt 0>>
+        老冯尽量不看你暴露的身体，但是你发现<<nnpc_he "Feng">>的余光还是不经意往你这边瞟。<br><br>
+        <<if C.npc.Feng.love gte 50>>
+            <<link [[请求一件衣服|Second Phone Shop Exposed 4]]>><</link>><br>
+        <</if>>
+    <</if>>
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
     <<if validArray($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
         <<if PhoneMod.isCarryingStolenPhone(true)>>
-            <<icon "phone/phone_crack.png">><<link [[刷机  破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
+            <<icon "phone/phone_crack.png">><<link [[刷机 | 破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
     <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop", false)>>
@@ -423,8 +492,100 @@
         <<link [[为手机充电|Second Phone Shop Charge]]>><</link>><br><br>
     <</if>>
 <</if>>
-<<elkicon>><<link [[离开|Elk Street]]>><</link>>
+<<elkicon>><<link [[离开|Elk Street]]>><<endevent>><</link>>
+:: Second Phone Shop Exposed
+<<npc Feng>>
+<<if $daily.FengAcceptExposed is 1>>
+    你一进门，老冯便注意到了你。你暴露着的身体实在引人注目，但是<<he>>又迅速低下了头，问道：“还有什么事吗？”<br><br>
+    <<link [[继续|Second Phone Shop]]>><<endevent>><</link>>
+<<else>>
+    <<set $daily.FengAcceptExposed to 1>>
+    <<if $Phone.FengAcceptExposed is undefined>>
+        <<set $Phone.FengAcceptExposed to 0>>
+    <<else>>
+        <<set $Phone.FengAcceptExposed++>>
+    <</if>>
+    <<switch $Phone.FengAcceptExposed>>
+        <<case 0>>
+            “哟哟哟哟~，” 老冯一脸难以置信的表情看着暴露的你，“这是哪里来的小可爱，咋回事，你的衣服呢？”<br>
+        <<case 1>>
+            “小<<girl>>，这是怎么回事啊？” 老冯看着暴露的你，“你怎么又不穿衣服来光顾我的狗窝了？”<<gfenglust>><br>
+        <<case 2>>
+            “<<girl>>，这已经不是第一次、第二次了，你有暴露癖是吗？” 老冯看着如此暴露的你，“在外面不穿衣服很危险的。”<<gfenglust>><br>
+        <<default>>
+            “…………，” 老冯看着你，“这次呢？”<br>
+    <</switch>><br>
 
+    <<link [[请求一件衣服|Second Phone Shop Exposed 1]]>><</link>><br>
+
+    <<if !hasSexStat("exhibitionism", 2)>>
+        <<insufficientStat "exhibitionism" "暴露地进行活动">>
+    <<else>>
+        <<switch $Phone.FengAcceptExposed>>
+            <<case 0>>
+                <<link [[这样没事对吧？|Second Phone Shop Exposed Accept]]>><</link>>
+            <<case 1>>
+                <<link [[这样没事的，对吧？|Second Phone Shop Exposed Accept]]>><</link>>
+            <<case 2>>
+                <<link [[没事的没事的！|Second Phone Shop Exposed Accept]]>><</link>>
+            <<default>>
+                <<link [[我这样根本就没事对吧？|Second Phone Shop Exposed Accept]]>><</link>>
+        <</switch>><br>
+
+        <<link [[离开|Elk Street]]>><<endevent>><</link>>
+    <</if>>
+<</if>>
+
+:: Second Phone Shop Exposed Accept
+<<switch $Phone.FengAcceptExposed>>
+    <<case 0>>
+        “你……是这么认为的？” 老冯不可思议的看着你，“你觉得你这样裸体出现在我这种即使鸟不拉屎的公共场合是没有问题的？”<br>
+        “……嗯，我感觉还不错。” 你弱弱的说。<br>
+        “你注意点安全吧……” 老冯低下了头。<<gfenglove>><br>
+    <<case 1>>
+        ...
+    <<case 2>>
+        ...
+    <<default>>
+        ...
+<</switch>><br>
+<<link [[继续|Second Phone Shop]]>><<endevent>><</link>>
+:: Second Phone Shop Exposed 1
+<<switch $Phone.FengAcceptExposed>>
+    <<case 0>>
+        “老冯，可以给我一件衣服穿吗？” 你用乞求的目光看着<<he>>。<br>
+    <<case 1>>
+        ...
+    <<case 2>>
+        ...
+    <<default>>
+        ...
+<</switch>>
+<<if C.npc.Feng.love gte 50>>
+    “这是咋搞的呀，”老冯拍着自己的额头，“我这……没有什么特别好的衣服，只有自己穿的背心和短裤啥的，可能破一点，你如果不介意……？”<br><br>
+    <<link [[说你不介意|Second Phone Shop Exposed 2]]>><</link>><br>
+    <<link [[还是算了吧|Second Phone Shop Exposed 3]]>><</link>>
+<<else>>
+    “你这样和我有什么关系？” 老冯又低下了头，不再说话。<br><br>
+    <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
+    <<link [[离开|Elk Street]]><</link>>
+<</if>>
+:: Second Phone Shop Exposed 2
+"不介意不介意，只要能够穿就行，谢谢你。"<<ggfenglove>><<ggfenglust>><br><br>
+<<fengclothes>>
+<<endevent>>
+<<link [[呆在店里|Second Phone Shop]]>><</link>><br>
+<<link [[离开|Elk Street]]><</link>>
+:: Second Phone Shop Exposed 3
+"算了吧算了吧"<<lfenglove>><br><br>
+<<endevent>>
+<<link [[呆在店里|Second Phone Shop]]>><</link>><br>
+<<link [[离开|Elk Street]]><</link>>
+:: Second Phone Shop Exposed 4
+"还是给我一件衣服穿吧，谢谢你。"<<gfenglove>><<gfenglust>><br><br>
+<<fengclothes>>
+<<link [[呆在店里|Second Phone Shop]]>><</link>><br>
+<<link [[离开|Elk Street]]><</link>>
 
 :: Second Phone Buy
 <<switch $Phone.SecondPhoneShopGoodsBought>>
@@ -484,10 +645,14 @@
 :: Second Phone Sell Finish
 <<set _Phone to PhoneMod.getPhone($SellPhone)>>
 <<if _Phone.stolen>>
-    “不错不错”<br>
+    “不错不错”
+    <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
+    <<set C.npc.Feng.lust to Math.min(74, C.npc.Feng.lust + 1)>><<note "+ 老冯的欣赏" "green">>
 <<else>>
-    你把手机卖给了老冯，虽然到手的价格比官方店那边低了一点，但是你觉得老冯很开心。<br>
-<</if>>
+    你把手机卖给了老冯，虽然到手的价格比官方店那边低了一点，但是你觉得老冯很开心。
+    <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
+    <!-- 74是 有点信任你 之前的值，即到这个时候必须通过完成任务才能加信任了 -->
+<</if>><br>
 <<set $Phone.SellMoney to PhoneMod.SellPhone($SellPhone, true)>>
 <<money $Phone.SellMoney>>
 你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
@@ -1004,7 +1169,7 @@
             <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion === 0>>
                 你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
                 <<link [[悄悄看看悉尼在干什么|Library Charge SexPhoto Sydney]]>><</link>>
-            <<elif $rng gt 70 and $Phone.SydneySexLiveCompanion === 1>>
+            <<elseif $rng gt 70 and $Phone.SydneySexLiveCompanion === 1>>
                 悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
                 <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
             <<else>>
@@ -1067,60 +1232,7 @@
 悉尼的脸颊变得通红。“好吧好吧，反正我的台灯已经充好电了，你用就是了。”<br><br>
 <<set $Phone.SydneyLibraryChargeAsked to 1>>
 <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-:: Library Charge SexPhoto Sydney
-<<set $Phone.SydneySexLiveCompanion to 1>>
-你缓缓靠近，你大概已经猜到了<<he>>就是在用你的手机，但是你还是想看看<<he>>到底在干什么。<br>
-或许是感应到来人，悉尼突然抬起头，正好与你四目相对。<br>
-<<he>>身体一震，立刻开始尖叫起来，随即又迅速地低下头，疯狂的戳着你的手机。<br><br>
-你很好奇地凑过去看，但是只看到悉尼从一个软件里面退出来。然后<<he>>就快速弹开，与你的手机保持着距离。<br><br>
-“你……你……” 悉尼的脸颊通红，束手无措。<br>
-“怎么了？”你疑惑地看着<<he>>，“我怎么了？”<br>
-“你……你的手机里面……你怎么……拍了那些东西？！！”悉尼不敢看你。<br><br>
-你知道<<he>>看到了你的相册，<<he>>是指你相册里面自拍的那些色色的照片。<br><br>
-<<link [[调戏地回答|Library Charge SexPhoto Sydney Flirt]]>><<npcincr Sydney purity -5>><<stress -2>><<handheldon 1>><</link>><<promiscuous1>><<lstress>><<llspurity>><br>
-<<link [[认真地回答|Library Charge SexPhoto Sydney Seriously]]>><<stress 12>><<npcincr Sydney lust -5>><<npcincr Sydney love 5>><</link>><<ggstress>><<llslust>><<glove>><br>
-<<link [[随意地回答|Library Charge SexPhoto Sydney Casually]]>><<npcincr Sydney lust 3>><<npcincr Sydney purity -5>><</link>><<ggslust>><<llspurity>><br>
-<<link [[责怪悉尼私自动你的手机|Library Charge SexPhoto Sydney Blaming]]>><<stress 12>><<npcincr Sydney love -5>><<npcincr Sydney lust -5><</link>><<ggstress>><<lllove>><<llslust>>
-:: Library Charge SexPhoto Sydney Flirt
-“小坏蛋，你怎么偷偷看我的手机呀？” 你嘟起嘴吧，装作责怪地说，“哎呀，那我这些自拍的那些色色的照片……不都被你看到了呀！”<br>
-“我……我…………我不是故意的，你……你走的时候没锁手机，我就……我就……” 悉尼的脸都要埋到地下去了。<br>
-“那意思就是……现在你眼中的我，和全裸没有区别咯？” 你缓缓靠近悉尼， “你喜欢这样的我吗？”<br><br>
-“哎呀，哎呀，” 悉尼双手前撑，把你和<<he>>隔开，不让你继续靠近， “我……我……”<br><br>
-“其实呀，拍这些照片，赚的还不少哦，” 你微笑的看着悉尼，“如果你也想要和我一起，我不会介意的。”<br>
-悉尼的脸越来越红了：“我……我……我知道了……”
-<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-:: Library Charge SexPhoto Sydney Seriously
-“你知道的，我本来就没有钱，” 你看着悉尼认真的说：“拍这些照片，赚的还不少，我也只能这样靠出卖自己的身体赚钱了。”<br>
-悉尼不再低着头，脸上的红晕也慢慢消失，取而代之的更多是担忧：“你……你也可以找点别的方式赚钱的呀。”<br>
-你摇摇头，不再说话。<br><br>
-沉默许久，悉尼向你道歉：“我……我…………我不是故意的，你……你走的时候没锁手机，我就不小心看了一下。”<br>
-“没事的，” 你回答道。<br><br>
-“如果你需要我的帮忙，我随时奉陪，”悉尼说，随后又红了脸，偷偷地咕哝着：“当然，不是指那些东西……”
-<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-:: Library Charge SexPhoto Sydney Casually
-“哦，你说那些照片呀，” 你随意地回答道：“就是不小心拍的，然后不小心发到了网上，然后又不小心收到了很多很多的打赏！”<br>
-悉尼的神色好像轻松了一点，用一只眼睛盯着你：“赚……赚钱？你说你在网上发自己的……那种照片来赚钱？”<br>
-“嗯，怎么了吗？”你轻松地回答，仿佛照片里的不是你。<br><br>
-“呀呀呀呀呀！这对吗？这不对吧！” 悉尼的脸更加红了， “这种事情，也太…………不合适了吧，你还是一个学生！”<br>
-“不对吗？之所以是学生，所以才能用这个赚钱呀，网上很多色狼都是点名道姓的要看学生呢，不是学生还不看呢！” 你说。<br><br>
-“真，真的吗？” 悉尼弱弱的问到，“我……我……我知道了……”。
-<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-:: Library Charge SexPhoto Sydney Blaming
-“你为什么要私自动我的手机？” 你发怒到，“任何人的手机，别人都不应该私自乱动，这是最基本的礼貌！”<br>
-悉尼向你道歉：“我……我…………我不是故意的，你……你走的时候没锁手机，我就不小心看了一下……”<br>
-“这不是理由！你如果有教养，你就会帮我把手机关上，而不是去看它！” 你继续责怪<<he>>。<br><br>
-“我……我，” 悉尼脸上的红晕慢慢消失，取而代之的更多是忧伤，随后向你倾诉道：“我看到了！
-你不就是通过出卖自己的身体来赚钱嘛！那又怎样？我虽然也没钱，不像你一样买得起手机。但是我……我赚的钱，每一分都是正经的！
-我就是没见过手机！我就是好奇而已，我……我又不是故意的…………”<br><br>
-眼看着悉尼越说越激动，都快要哭出来了。你的神情缓和，随后叹了一口气：“没事没事，算了。”<br><br>
-悉尼依旧低着头，“你，你不生气了？”<br>
-“生气倒是不生气了。但是如果你真的也缺钱的话，可以和我一起，收入也不低，希望你不会介意。”<br><br>
-悉尼的脸颊突然变得通红，“我……我……我知道了……”
-<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-:: Library Charge TookPhoto Sydney
-“嗨，悉尼！” 你照常地打着招呼。<br>
-还没做完。
-<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+
 
 
 :: =======StoringPhone========
@@ -1371,3 +1483,107 @@
     <<case "sea">><<seamove>> -->
 <<else>>
 <</if>>
+
+
+
+:: ==========Sydney==========
+:: Library Charge SexPhoto Sydney
+<<set $Phone.SydneySexLiveCompanion to 1>>
+你缓缓靠近，你大概已经猜到了<<he>>就是在用你的手机，但是你还是想看看<<he>>到底在干什么。<br>
+或许是感应到来人，悉尼突然抬起头，正好与你四目相对。<br>
+<<he>>身体一震，立刻开始尖叫起来，随即又迅速地低下头，疯狂的戳着你的手机。<br><br>
+你很好奇地凑过去看，但是只看到悉尼从一个软件里面退出来。然后<<he>>就快速弹开，与你的手机保持着距离。<br><br>
+“你……你……” 悉尼的脸颊通红，束手无措。<br>
+“怎么了？”你疑惑地看着<<he>>，“我怎么了？”<br>
+“你……你的手机里面……你怎么……拍了那些东西？！！”悉尼不敢看你。<br><br>
+你知道<<he>>看到了你的相册，<<he>>是指你相册里面自拍的那些色色的照片。<br><br>
+<<link [[调戏地回答|Library Charge SexPhoto Sydney Flirt]]>><<npcincr Sydney purity -5>><<stress -2>><<handheldon 1>><</link>><<promiscuous1>><<lstress>><<llspurity>><br>
+<<link [[认真地回答|Library Charge SexPhoto Sydney Seriously]]>><<stress 12>><<npcincr Sydney lust -5>><<npcincr Sydney love 5>><</link>><<ggstress>><<llslust>><<glove>><br>
+<<link [[随意地回答|Library Charge SexPhoto Sydney Casually]]>><<npcincr Sydney lust 3>><<npcincr Sydney purity -5>><</link>><<ggslust>><<llspurity>><br>
+<<link [[责怪悉尼私自动你的手机|Library Charge SexPhoto Sydney Blaming]]>><<stress 12>><<npcincr Sydney love -5>><<npcincr Sydney lust -5><</link>><<ggstress>><<lllove>><<llslust>>
+:: Library Charge SexPhoto Sydney Flirt
+“小坏蛋，你怎么偷偷看我的手机呀？” 你嘟起嘴吧，装作责怪地说，“哎呀，那我这些自拍的那些色色的照片……不都被你看到了呀！”<br>
+“我……我…………我不是故意的，你……你走的时候没锁手机，我就……我就……” 悉尼的脸都要埋到地下去了。<br>
+“那意思就是……现在你眼中的我，和全裸没有区别咯？” 你缓缓靠近悉尼， “你喜欢这样的我吗？”<br><br>
+“哎呀，哎呀，” 悉尼双手前撑，把你和<<he>>隔开，不让你继续靠近， “我……我……”<br><br>
+“其实呀，拍这些照片，赚的还不少哦，” 你微笑的看着悉尼，“如果你也想要和我一起，我不会介意的。”<br>
+悉尼的脸越来越红了：“我……我……我知道了……”
+<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+:: Library Charge SexPhoto Sydney Seriously
+“你知道的，我本来就没有钱，” 你看着悉尼认真的说：“拍这些照片，赚的还不少，我也只能这样靠出卖自己的身体赚钱了。”<br>
+悉尼不再低着头，脸上的红晕也慢慢消失，取而代之的更多是担忧：“你……你也可以找点别的方式赚钱的呀。”<br>
+你摇摇头，不再说话。<br><br>
+沉默许久，悉尼向你道歉：“我……我…………我不是故意的，你……你走的时候没锁手机，我就不小心看了一下。”<br>
+“没事的，” 你回答道。<br><br>
+“如果你需要我的帮忙，我随时奉陪，”悉尼说，随后又红了脸，偷偷地咕哝着：“当然，不是指那些东西……”
+<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+:: Library Charge SexPhoto Sydney Casually
+“哦，你说那些照片呀，” 你随意地回答道：“就是不小心拍的，然后不小心发到了网上，然后又不小心收到了很多很多的打赏！”<br>
+悉尼的神色好像轻松了一点，用一只眼睛盯着你：“赚……赚钱？你说你在网上发自己的……那种照片来赚钱？”<br>
+“嗯，怎么了吗？”你轻松地回答，仿佛照片里的不是你。<br><br>
+“呀呀呀呀呀！这对吗？这不对吧！” 悉尼的脸更加红了， “这种事情，也太…………不合适了吧，你还是一个学生！”<br>
+“不对吗？之所以是学生，所以才能用这个赚钱呀，网上很多色狼都是点名道姓的要看学生呢，不是学生还不看呢！” 你说。<br><br>
+“真，真的吗？” 悉尼弱弱的问到，“我……我……我知道了……”。
+<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+:: Library Charge SexPhoto Sydney Blaming
+“你为什么要私自动我的手机？” 你发怒到，“任何人的手机，别人都不应该私自乱动，这是最基本的礼貌！”<br>
+悉尼向你道歉：“我……我…………我不是故意的，你……你走的时候没锁手机，我就不小心看了一下……”<br>
+“这不是理由！你如果有教养，你就会帮我把手机关上，而不是去看它！” 你继续责怪<<he>>。<br><br>
+“我……我，” 悉尼脸上的红晕慢慢消失，取而代之的更多是忧伤，随后向你倾诉道：“我看到了！
+你不就是通过出卖自己的身体来赚钱嘛！那又怎样？我虽然也没钱，不像你一样买得起手机。但是我……我赚的钱，每一分都是正经的！
+我就是没见过手机！我就是好奇而已，我……我又不是故意的…………”<br><br>
+眼看着悉尼越说越激动，都快要哭出来了。你的神情缓和，随后叹了一口气：“没事没事，算了。”<br><br>
+悉尼依旧低着头，“你，你不生气了？”<br>
+“生气倒是不生气了。但是如果你真的也缺钱的话，可以和我一起，收入也不低，希望你不会介意。”<br><br>
+悉尼的脸颊突然变得通红，“我……我……我知道了……”
+<br><br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+:: Library Charge TookPhoto Sydney
+“嗨，悉尼！” 你照常地打着招呼，“我的手机放在这里充电，刚才没发生什么吧？”<br>
+悉尼的目光明显躲闪了一下，草莓金的马尾轻轻一甩。“没……没有啊。”她的声音有些发紧，手指胡乱翻着桌上的书。<br>
+她的动作有些僵硬，仿佛那手机是烫手山芋。她慌乱地低下头，草莓金的马尾随着她的动作轻轻摆动，像一道流动的霞光。<br>
+<br>
+她试图用手中的文件掩盖住自己，嘴唇微微嘟起，显得有些委屈又有些可爱，仿佛在自言自语：“这些书……还没整理好呢。”她的眼神却时不时地，小心翼翼地，瞟向那部手机，又迅速收回，仿佛生怕被你抓个正着。<br>
+<br><<link [[继续|Library Charge TookPhoto Sydney 2]]>><</link>>
+:: Library Charge TookPhoto Sydney 2 
+你走到柜台前，将手中的书轻轻放在桌上。目光扫过悉尼那红扑扑的脸颊，以及她那故作镇定，却又难以掩饰的小动作。这其中定然藏着些什么。<br>
+<br>
+“悉尼，”你的语气带着一丝调侃，却没有丝毫责备，像春风拂过柳梢，带着戏谑的温柔，“你对我的手机，做了什么？”<br>
+<br>
+话音刚落，悉尼的身体明显地僵了一下，像是被定格的画面。她琥珀色的眸子猛地抬起，又迅速垂下，几乎要埋进怀里的文件之中。她的十指不自觉地抓紧了文件边缘，似乎在努力平复内心的波澜。<br>
+<br>
+“我……我没……没什么啊。”她的声音变得有些细小，仿佛怕惊动了图书馆里沉睡的寂静。平日里清澈明亮的眸子里，此刻正闪烁着一丝微不可察的慌乱，甚至带着点求饶的意味。她的小手不安地抚了抚耳边的发丝，试图用这个小动作来掩饰内心的紧张。<br>
+<br>
+“我只是……只是想看看时间啦。”悉尼试图解释，但那欲盖弥彰的语气，反而更添了几分可疑。她的目光再次不自觉地瞟向手机，又像是触电般迅速收回，却没注意到，她的脸颊已经像熟透的苹果，红得可以滴出水来。<br>
+<br><<link [[继续|Library Charge TookPhoto Sydney 3]]>><</link>>
+:: Library Charge TookPhoto Sydney 3
+你轻笑一声，并没有追问，只是伸出手，指尖轻柔地，几乎是带着一丝怜惜地，触碰了一下她的马尾。那发丝柔软细腻，带着阳光的暖意。<br>
+<br>
+“哦？只是看时间？”你嘴角的笑意更深了，但眼神里却充满了洞悉一切的温柔。“那……为什么你刚刚看到我的时候，好像……吓了一跳？”<br>
+<br>
+悉尼的心跳仿佛漏了一拍，双颊的红晕蔓延至耳根。她的身子微微向后缩了缩，像是被点破了心事的小动物。<br>
+<br>
+“我……我只是……刚刚想起来，哦对，手机没电了，所以……所以就……”她支支吾吾地说着，话语变得混乱而碎裂，完全没有了平日里条理清晰的模样。她甚至有些手足无措地，伸出纤细的手指，轻轻地，像是无意识般，拨弄了一下手机屏幕旁边的充电线。<br>
+<br>
+“而且，我……我也不是吓了一跳啦，只是……只是太专注了，没注意到你。”她努力为自己辩解，但那闪烁的眼神和微微颤抖的指尖，却彻底出卖了她内心的不安与那一丝丝难以言喻的窃喜。她的指尖轻轻划过手机的边缘，仿佛在提醒你，手机里，或许藏着一个小小的秘密。她的心底，隐秘地期待着，又忐忑不安着，等待你去发现那个被她“不小心”留下的痕迹。<br>
+<br>
+此刻的悉尼，心中仿佛上演了一场无声的挣扎。她的理智告诉她应该表现得更自然，更像平日里那个严谨的图书管理员。然而，那份被抓包的羞赧，以及心底深处对他的细微情感，却让她所有的掩饰都显得拙劣而可爱。她低下头，紧紧地抿着唇，仿佛想把自己藏起来，只露出了小巧精致的耳垂，在光线下泛着诱人的粉色。她的指尖不安地在桌面上轻点，一下一下，敲击着无声的旋律，仿佛是她内心小鹿乱撞的节奏。她不自觉地把那根红色的记号笔拿起又放下，又拿起，仿佛只有这个熟悉的动作才能给她带来一丝安慰。<br>
+<br><<link [[继续|Library Charge TookPhoto Sydney 4]]>><</link>>
+:: Library Charge TookPhoto Sydney 4
+你看着她这副手足无措的模样，心中涌起一股暖流。她平日里那份近乎完美的冷静与认真，此刻被这份小小的慌乱打破，反而显得更加真实，也更加动人。你没有再追问，只是微笑着，眼神中充满了理解与包容。有些“秘密”，需要自己去发现，才能体会到那份独有的乐趣。你拿起手机，轻轻地解开充电线，目光不经意地扫过屏幕，又抬头，深深地看了悉尼一眼。<br>
+<br>
+“没什么，只是想检查一下手机，看看有没有什么重要的信息。”你的声音带着一种让人安心的力量。拿起手机，指尖轻轻地划过屏幕，解锁，然后，似乎只是漫不经心地，打开了相册图标。<br>
+<br>
+悉尼屏住了呼吸，她的身体绷得紧紧的。她的眼神死死地盯着你手中的手机，又迅速转向你的脸，试图从表情中读出些什么。她看到你打开了相册，心中猛地一跳，紧张、期待与一丝无法言喻的甜蜜，混杂在一起，让她整个人都有些发软。她张了张嘴，似乎想说些什么，但最终，只是发出了一个微弱的“嗯”字，像一只受惊的小猫，尾巴都竖了起来。<br>
+<br>
+你微微侧过身，恰好挡住了悉尼的视线，让她无法完全看清手机屏幕上的内容。然而，你嘴角那抹意味深长的微笑，以及那双深邃眼眸中闪烁的玩味光芒，却让她更加确定，你即将发现那个“秘密”。她的呼吸变得有些急促，心跳如鼓，敲击着她的胸腔，几乎要跳出来。她那双白皙的小手不自觉地交握在一起，紧张地揉搓着，指尖变得冰凉。<br>
+<br>
+点开相册，手指在屏幕上轻轻滑动。几张正常的照片一闪而过，然后，一张有些模糊，但主题清晰的照片映入眼帘。<span class="teal">照片中，是悉尼的脸庞。</span> 她似乎是在无意中触碰到了前置摄像头，又或许是好奇心驱使下的“不小心”。她的琥珀色眼睛里带着一丝好奇与玩味，草莓金的马尾有些散乱，嘴唇微微抿着，透着少女的青涩与纯真。照片的光线有些暗，却意外地捕捉到了她脸上那份独特的书卷气，以及一丝罕见的活泼。她的脖颈上，那枚银质十字架在领口处若隐若现，仿佛在无声地诉说着她的虔诚。<br>
+<br>
+盯着那张照片看了几秒，嘴角微微上扬，眼底闪过一丝不易察觉的宠溺。<br>
+<br>
+“悉尼，”你再次开口，声音里带着一种让人无法抗拒的温柔，却又夹杂着一丝玩味，“这张照片……是你拍的吗？”<br>
+“你……你看到了？”她的声音闷闷的，带着哭腔，“我不是故意的……就是那个按钮……它忽然就拍了……我找不到怎么删……”<br>
+<br>
+你忍不住笑出声。“挺可爱的。”<br>
+悉尼的耳朵更红了。<br>
+<br><<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
