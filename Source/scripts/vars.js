@@ -81,6 +81,9 @@ PhoneMod.events = [
     {passage: "Sydney Leighton Spank 4", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
     // 储存手机
     // {passage: "Bedroom", target: "Bed", event: "Bedroom Store Phone Link", position: "before", offset: 3},
+    // 获取APP
+    {passage: "Ocean Breeze Work", target: "Chef Help", event: "Chef Help Get NewWest 1", position: "before"},
+    {passage: "Chef Work", target: "Chef Work 2", event: "Chef Help Get NewWest 2", position: "before"},
 ];
 PhoneMod.events_on_macro = [
     {macro: "journal", func: "showPhoneJournal"},
@@ -804,18 +807,19 @@ PhoneMod.PhonePhotos = {  // 摄像任务
 PhoneMod.Apps = {  // APP
     alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
     memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: "memo"},
-    shop: {display_name: "网购", icon: "img/misc/icon/shopping_centre.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"]},
+    shop: {display_name: "网购", icon: "img/misc/icon/shopping_centre.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
 
     photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: "photo"},
     album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: "photo"},
     yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", toggle: "toggleYenote", guide: "yenote"},
 
     contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: "contacts"},
-    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game"},
+    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game", disableinevent: true},
     settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
 
     // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
     DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD"},
+    newWest: {display_name: "美食屋", icon: "img/misc/icon/phone/app/newWest.png", app_widget: "phone_app_newWest", disableinevent: true, dlock: true},
 };
 PhoneMod.Contacts = [  // 联系人P
     {name: "兰德里", call: "Phone Call Landry"},

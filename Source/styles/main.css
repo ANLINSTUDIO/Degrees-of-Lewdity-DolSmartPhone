@@ -51,6 +51,7 @@
     -webkit-tap-highlight-color: transparent;
 }
 #phone-wrapper {
+    position: fixed;
     z-index: 200;
 }
 /* 手机容器：固定在右下角 */

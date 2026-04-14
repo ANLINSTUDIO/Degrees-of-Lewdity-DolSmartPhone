@@ -103,20 +103,22 @@
                         <div class="phone-desktop">
                             <<phone_wallpaper>>
                             <<for _app_name, _app range PhoneMod.Apps>>
-                                <<if _app.disable and _app.disable.includes($passage)>>
-                                    <<print `
-                                    <div class="phone-app-icon phone-app-icon-disabled">
-                                        <img class="icon" src=`+_app.icon+`>
-                                        `+_app.display_name+`
-                                    </div>
-                                    `>>
-                                <<else>>
-                                    <<print `
-                                    <div class="phone-app-icon" onclick="PhoneMod.toggleApp('`+_app_name+`')">
-                                        <img class="icon" src=`+_app.icon+`>
-                                        `+_app.display_name+`
-                                    </div>
-                                    `>>
+                                <<if !_app.dlock or (_app.dlock and V.Phone.LockedApps.includes(_app_name))>>  <!-- 检测是否安装了此软件 -->
+                                    <<if (_app.disable and _app.disable.includes($passage)) or (_app.disableinevent and V.event)>>  <!-- 检测此软件是否可用 -->
+                                        <<print `
+                                        <div class="phone-app-icon phone-app-icon-disabled">
+                                            <img class="icon" src=`+_app.icon+`>
+                                            `+_app.display_name+`
+                                        </div>
+                                        `>>
+                                    <<else>>
+                                        <<print `
+                                        <div class="phone-app-icon" onclick="PhoneMod.toggleApp('`+_app_name+`')">
+                                            <img class="icon" src=`+_app.icon+`>
+                                            `+_app.display_name+`
+                                        </div>
+                                        `>>
+                                    <</if>>
                                 <</if>>
                             <</for>>
                         </div>
@@ -296,13 +298,13 @@
     <span style="margin-right: 30px"></span>
     <<print `<input type="checkbox" onclick="V.Phone.Settings.WallpaperBlack = this.checked" ` + ($Phone.Settings.WallpaperBlack ? "checked" : "") + `> 加黑效果`>>
     <hr>
-    <h3>使用设置</h3>
+    <!-- <h3>使用设置</h3>
     <<print `<label><input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInAllAreas = this.checked" ` + ($Phone.Settings.CanUsePhoneInAllAreas ? "checked" : "") + `> 可以在非主要区域中使用</label>`>><br>
     <span class="black" style="font-size: small">【实验性！】主要区域是指DoL原版指定的最安全的区域，在这些区域，不会拥有<b class="red">存档破坏性事件</b>。而当玩家处于某些非主要区域时，一旦玩家在执行某一项活动中，<b class="teal">使用游戏、网购等跳转页面的功能时</b>，可能会破坏当前上下文，导致你的存档被破坏。<br>
     当然，开启此选项的风险并不大，但仍然建议谨慎使用。</span><br>
     <<print `<label><input type="checkbox" onclick="V.Phone.Settings.CanUsePhoneInEvent = this.checked" ` + ($Phone.Settings.CanUsePhoneInEvent ? "checked" : "") + `> 可以在事件中使用</label>`>><br>
     <span class="black" style="font-size: small">【实验性！】DoL中的事件貌似判定为只要有NPC出现就属于事件，<b class="teal">当你使用游戏、网购等跳转页面的功能时</b>，非常有可能会触发endevent！一旦如此，那么你正在触发的事件的<b class="red">NPC都会被清除</b>，正常剧情也会报错！</span><br>
-    <hr>
+    <hr> -->
     <h3>其他设置</h3>
     <<print `<input type="checkbox" onclick="V.Phone.Settings.NotificationClose = this.checked" ` + ($Phone.Settings.NotificationClose ? "checked" : "") + `> 关闭所有通知`>><br>
     <<link "重置教程进度">><<run PhoneMod.Guide.resetGuide()>><</link>><br>
@@ -477,6 +479,32 @@
     <div class="depth-ruler" id="rulerContainer"></div>
 
     <div class="info-box" id="infoPanel"></div>
+<</widget>>
+
+<<widget "phone_app_newWest">>
+    <h2>美食屋</h2>
+    <<set _food_keys to Object.keys(setup.plants)>>
+	<<for $_i to 0; $_i lt _food_keys.length; $_i++>>
+        <<set _food_key to _food_keys[$_i]>>
+		<<set _food to setup.plants[_food_key]>>
+        <<if $plants[_food_key].recipe isnot true>>
+            <<capture _food>>
+                <<set _food_difficulty to _food.ingredients.length>>
+                <<set _food_cooktime to AsAPI.getFriendlyTimeText(_food_difficulty*10/60, false)>>
+                <<if _food_difficulty gte 1>>
+                    <<if $options.images is 1 and _food.icon>>
+                        <img class="tending_icon" @src="`img/misc/icon/tending/` + _food.icon">
+                        <<print _food.ingredients_cn ?? ingredients>>
+                        <<button "学习制作 _food.singular (_food_cooktime)" "Phone NewWest">>
+                            <<pass _food_difficulty*10>>
+                            <<run PhoneMod.PhoneTo()>>
+                            <<set $food_to_learn to _food.name>>
+                        <</button>>
+                    <</if>>
+                <</if>>
+            <</capture>>
+        <</if>>
+	<</for>>
 <</widget>>
 
 

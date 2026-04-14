@@ -86,11 +86,11 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     if (V.Phone.PhotoCurrent) return true;  // 
     if (V.Phone.AlarmTriggered) return true;  // 
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
-    if (!V.Phone.Settings.CanUsePhoneInEvent && V.event) return false;  // 活动中不可以操控手机
+    // if (!V.Phone.Settings.CanUsePhoneInEvent && V.event) return false;  // 活动中不可以操控手机
     if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
-    let extraShowPhoneAreas = PhoneMod.extraUsePhoneAreas.slice();
-    extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
-    if (!V.Phone.Settings.CanUsePhoneInAllAreas && !extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
+    // let extraShowPhoneAreas = PhoneMod.extraUsePhoneAreas.slice();
+    // extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
+    // if (!V.Phone.Settings.CanUsePhoneInAllAreas && !extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
 
     if (V.Phone.Using === "null") return false;  // 关机
     const phone = PhoneMod.getPhone(V.Phone.Using)
@@ -232,6 +232,25 @@ PhoneMod.isUsable = function(phone, allow_shutdown=false) { // 检查是否有�
         return phone && phone.usable && phone.newnessmax > 0;
     }
     return phone && phone.usable && phone.newness > 0 && phone.newnessmax > 0;
+}
+PhoneMod.installApp = function(appid) {
+    V.Phone.LockedApps.push(appid)
+    return PhoneMod.Apps[appid];
+}
+PhoneMod.uninstallApp = function(appid) {
+    if (PhoneMod.appIsInstalled(appid)) {
+        V.Phone.LockedApps.filter(i => i != appid);
+        return true
+    } else {
+        return false
+    }
+}
+PhoneMod.appIsInstalled = function(appid) {
+    if (V.Phone.LockedApps.includes(appid)) {
+        return true
+    } else {
+        return false
+    }
 }
 
 // ==================== 下面是关于玩家的工具函数 ====================

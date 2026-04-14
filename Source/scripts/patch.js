@@ -41,6 +41,12 @@ PhoneMod.patchOnPassageRender = function (ev) {
 
     // 3.7 | 关闭通知
     V.Phone.Settings.NotificationClose = V.Phone.Settings.NotificationClose || false;
+
+    // 3.8 | 解锁APP
+    V.Phone.LockedApps = V.Phone.LockedApps || [];
+    // 3.8 | 删除非主要区域和事件中不能使用手机的设定
+    delete V.Phone.Settings.CanUsePhoneInAllAreas;
+    delete V.Phone.Settings.CanUsePhoneInEvent;
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

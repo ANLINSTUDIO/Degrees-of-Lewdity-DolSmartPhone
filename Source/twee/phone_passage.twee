@@ -765,6 +765,46 @@
         <<set $tryOn.autoReset to true>>
     <</link>>
 </div>
+:: Phone NewWest
+经过你努力的跟随视频教程学习，<<learn_recipe $food_to_learn>><br><br>
+<<unset $food_to_learn>>
+<<link [[继续|Phone Back]]>><</link>>
+
+
+
+:: ========GetApp========[widget]
+<<widget "appinstall">>
+    <<set _app to PhoneMod.installApp(_args[0])>>
+    <<note "手机上安装了新的APP <img @src=_app.icon>_app.display_name" "lblue">>
+<</widget>>
+:: Chef Help Get NewWest 1
+<<if !PhoneMod.appIsInstalled("newWest")>>
+    你看着着急的萨姆，低下头回答道："可……可是，我不是很会做厨师的这些事……我是说，我们学校的家务课交不了我太多东西……"<br><br>
+    <<he>>皱起眉头仔细想了一下，拿出<<his>>的手机对你说，“我们内部群有这样一个提供学习食谱的APP，你可以照着学习一下好不好，我实在是遇到了一点麻烦。只是制作小面包对吧，不会很麻烦的，对吗？”
+    <<if PhoneMod.getUsingPhone()>>
+        <<appinstall newWest>>
+    <<else>>
+        <br><br>你耸了耸肩，对<<he>>说<span class="red">你没有手机，无法安装这个APP</span>。<br>
+        但是萨姆还是很期待地看着你，说：“没关系，<span class="teal">我下次还会还有机会你再帮忙的</span>，你什么时候有手机了我再给你就行。只是制作小面包对吧，不会很麻烦的，对吗？”
+    <</if>>
+    <br><br>
+<</if>>
+:: Chef Help Get NewWest 2
+<<if !PhoneMod.appIsInstalled("newWest")>>
+    <<link [[向萨姆询问提供学习食谱的APP|Chef Help Get NewWest 3]]>><</link>><br>
+<</if>>
+:: Chef Help Get NewWest 3
+<<npc Sam>>
+你叫来萨姆，低下头说道："可……可是，我不是很会做厨师的这些事……我是说，我们学校的家务课交不了我太多东西……"<br><br>
+<<he>>皱起眉头仔细想了一下，拿出<<his>>的手机对你说，“我们内部群有这样一个提供学习食谱的APP，你可以照着学习一下好不好，我实在是遇到了一点麻烦。只是制作小面包对吧，不会很麻烦的，对吗？”
+<<if PhoneMod.getUsingPhone()>>
+    <<appinstall newWest>>
+<<else>>
+    <br><br>你耸了耸肩，对<<he>>说你没有手机，无法安装这个APP。<br>
+    但是萨姆还是很期待地看着你，说：“没关系，<span class="teal">我下次还有机会再让你帮忙的</span>，你什么时候有手机了我再给你就行。只是制作小面包对吧，不会很麻烦的，对吗？”
+<</if>>
+<br><br>
+<<link [[继续|Chef Work]]>><<endevent>><</link>>
 
 
 
@@ -1162,14 +1202,14 @@
 :: Library Charge Link
 <<if PhoneMod.isPhoneChargeUnguardedIn("Library", false)>>
     <span class="teal">你的手机正放在柜台的后面充电。</span><br>
-    <<if V.npc.contains("Sydney") and $Phone.SydneyLibraryChargeAsked === undefined>>
+    <<if V.npc.contains("Sydney") and $Phone.SydneyLibraryChargeAsked is undefined>>
         <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
     <<else>>
         <<if V.npc.contains("Sydney")>>
-            <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion === 0>>
+            <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion is 0>>
                 你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
                 <<link [[悄悄看看悉尼在干什么|Library Charge SexPhoto Sydney]]>><</link>>
-            <<elseif $rng gt 70 and $Phone.SydneySexLiveCompanion === 1>>
+            <<elseif $rng gt 70 and $Phone.SydneySexLiveCompanion is 1>>
                 悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
                 <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
             <<else>>
@@ -1184,7 +1224,7 @@
     <<run PhoneMod.Guide.startTutorial("charge")>>
     <span class="teal">你注意到柜台后面有一个插座，也许可以把手机放在这里充电。</span><br>
     <<icon "phone/charge.png">>
-    <<if V.npc.contains("Sydney") and $Phone.SydneyLibraryChargeAsked === undefined>>
+    <<if V.npc.contains("Sydney") and $Phone.SydneyLibraryChargeAsked is undefined>>
         <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>>
     <<else>>
         <<link [[为手机充电|Library Charge]]>><</link>>
