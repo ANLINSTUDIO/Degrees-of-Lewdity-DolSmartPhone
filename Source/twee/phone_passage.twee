@@ -1219,10 +1219,11 @@
         <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
     <<else>>
         <<if V.npc.contains("Sydney")>>
+            <<rng 10>>
             <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion is 0>>
                 你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
                 <<link [[悄悄看看悉尼在干什么|Library Charge SexPhoto Sydney]]>><</link>>
-            <<elseif $rng gt 85 and $Phone.SydneySexLiveCompanion is 1>>
+            <<elseif C.npc.Sydney.love gte 20 and $rng gt 8 and $Phone.SydneySexLiveCompanion is 1>>
                 悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
                 <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
             <<else>>
