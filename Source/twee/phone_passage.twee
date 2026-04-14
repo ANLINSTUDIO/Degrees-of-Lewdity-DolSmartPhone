@@ -215,6 +215,7 @@
 :: === Second Phone Shop ===
 :: Second Phone Shop Link
 <<if C.npc.Feng.init is 0 and validArray($Phone.Owned)>>
+    <<set C.npc.Feng.init to 1>>
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
     <<if $Phone.SecondShopKnown>>
@@ -415,7 +416,7 @@
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>>
         “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
-        “庆幸我不会报警抓你吧。” 你实在无法忍受这里的气味了。<br>
+        “庆幸我不会报警抓你吧。” 你实在无法忍受这里的气味了。
         <<set C.npc.Feng.lust to 1>><<note "--- 老冯的欣赏" "red">>   <!-- 认为你不适合偷手机这行 -->
     <</if>><br>
     “等一下！” 那人叫住了你，“我叫老冯，你下次还有手机就卖到我这吧。”<br>
@@ -425,9 +426,9 @@
     <<if PhoneMod.isCarryingStolenPhone()>>
         “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。<br>
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
-    <<else>>
+    <<else>><br>
         “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！不像你只会偷只会抢！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
-        你实在无法忍受这里的气味了，转身朝门外走去：“我会记住你的。” <br>
+        你实在无法忍受这里的气味了，转身朝门外走去：“我会记住你的。”
         <<set C.npc.Feng.lust to 1>><<note "--- 老冯的欣赏" "red">>   <!-- 认为你不适合偷手机这行 -->
     <</if>><br>
     “等一下！” 那人叫住了你，“你说你也干这行？我叫老冯，你下次有手机就卖到我这吧。”<br>
