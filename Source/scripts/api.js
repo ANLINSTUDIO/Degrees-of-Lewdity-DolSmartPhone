@@ -204,7 +204,9 @@ PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
         const phone = V.Phone.Owned[index];
         let price = PhoneMod.getPhoneInfo(phone.model).price;
         price *= phone.newnessmax / PhoneMod.getPhoneInfo(id).newnessfactory * 0.5; // 根据新旧程度调整价格
-        if (feng) price *= 0.8;
+        if (feng) {
+            price *= 0.8
+        };
         price = Math.floor(price)
         if (price <= 0) price = 1; // 最低售价为1
         return price;

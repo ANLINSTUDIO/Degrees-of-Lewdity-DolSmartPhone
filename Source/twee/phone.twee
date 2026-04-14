@@ -446,7 +446,7 @@
                                             <summary><<print _note.comments.length+"条评论">></summary>
                                             <<for _comment range _note.comments>>
                                                 <div class="note-comments-name">
-                                                    <b><<print _comment.name>></b>
+                                                    <b><<print _comment.name>></b> <<print _comment.last_name? "回复 "+_comment.last_name: "">>
                                                 </div>
                                                 <div @id='_note.id+"*"+_note.comments.indexOf(_comment)' class="note-comment">
                                                     <<print _comment.text>>
@@ -481,30 +481,67 @@
     <div class="info-box" id="infoPanel"></div>
 <</widget>>
 
+<<widget "renderRecipeList">>
+    <<set _list to _args[0]>>
+    <<set _title to _args[1]>>
+    <<set _isCantLearn to _args[2]>>
+    
+    <<if _title>>
+        <h3>_title</h3>
+    <</if>>
+    
+    <<for _item range _list>>
+        <<capture _item>>
+            <<if $options.images is 1 and _item.icon>>
+                <img class="tending_icon" @src="`img/misc/icon/tending/` + _item.icon">
+            <</if>>
+            <<print "原料: "+_item.ingredients>>
+            
+            <<if _isCantLearn>>
+                <<button "无法学习 _item.name (需求家务 _item.required)">><</button>>
+            <<else>>
+                <<if _item.hasLearned>>
+                    <<button "继续学习 _item.name (_item.tt) (_item.hasLearned/_item.difficulty)" "Phone NewWest">>
+                        <<pass _item.t>>
+                        <<run PhoneMod.PhoneTo()>>
+                        <<set $food_to_learn to _item.key>>
+                    <</button>>
+                <<else>>
+                    <<button "开始学习 _item.name (_item.tt)" "Phone NewWest">>
+                        <<pass _item.t>>
+                        <<run PhoneMod.PhoneTo()>>
+                        <<set $food_to_learn to _item.key>>
+                    <</button>>
+                <</if>>
+            <</if>>
+        <</capture>>
+    <</for>>
+<</widget>>
+
 <<widget "phone_app_newWest">>
     <h2>美食屋</h2>
-    <<set _food_keys to Object.keys(setup.plants)>>
-	<<for $_i to 0; $_i lt _food_keys.length; $_i++>>
-        <<set _food_key to _food_keys[$_i]>>
-		<<set _food to setup.plants[_food_key]>>
-        <<if $plants[_food_key].recipe isnot true>>
-            <<capture _food>>
-                <<set _food_difficulty to _food.ingredients.length>>
-                <<set _food_cooktime to AsAPI.getFriendlyTimeText(_food_difficulty*10/60, false)>>
-                <<if _food_difficulty gte 1>>
-                    <<if $options.images is 1 and _food.icon>>
-                        <img class="tending_icon" @src="`img/misc/icon/tending/` + _food.icon">
-                        <<print _food.ingredients_cn ?? ingredients>>
-                        <<button "学习制作 _food.singular (_food_cooktime)" "Phone NewWest">>
-                            <<pass _food_difficulty*10>>
-                            <<run PhoneMod.PhoneTo()>>
-                            <<set $food_to_learn to _food.name>>
-                        <</button>>
-                    <</if>>
-                <</if>>
-            <</capture>>
-        <</if>>
-	<</for>>
+    <<set _lst to PhoneMod.getRecipes()>>
+    <<set _lst_learning to _lst[0]>>
+    <<set _lst_unlearning to _lst[1]>>
+    <<set _lst_cantlearning to _lst[2]>>
+    
+    <!-- 学习中的食谱 -->
+    <<if _lst_learning.length gt 0>>
+        <<renderRecipeList _lst_learning "学习中的食谱" false>>
+        <hr>
+    <</if>>
+    
+    <!-- 可学习的食谱 -->
+    <<if _lst_unlearning.length gt 0>>
+        <<renderRecipeList _lst_unlearning "可学习的食谱" false>>
+        <hr>
+    <</if>>
+    
+    <!-- 无法学习的食谱 -->
+    <<if _lst_cantlearning.length gt 0>>
+        <<renderRecipeList _lst_cantlearning "无法学习的食谱" true>>
+        <hr>
+    <</if>>
 <</widget>>
 
 

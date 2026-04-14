@@ -1,0 +1,137 @@
+<<widget "sydneyLibrary">>
+	<<npc "Sydney">><<person1>>
+	<<run statusCheck("Sydney")>>
+	<<if $schoolShopAction>>
+		<<if $schoolShopAction.includes("wear")>>
+			"Thank you for your purchase! That looks good on you."
+		<<elseif $schoolShopAction.includes("buy")>>
+			"Thank you for your purchase!"
+		<<elseif $schoolShopAction.includes("return")>>
+			"Couldn't find the right size? I'll inform the <<nnpc_title "Leighton">>."
+		<</if>>
+		Sydney leads you back to <<his>> post at the rental counter<<if $daily.sydney.peek>>, looking nervous and trying to conceal <<his>> blush all the while<</if>>.
+		<<unset $schoolShopAction>>
+		<br><br>
+		<<sydneyOptions>>
+	<<elseif $daily.sydney.classWarn and $daily.sydney.classWarn ≥ 3 and !_sydneyStatus.includes("corrupt") and Time.hour isnot 12 and between(Time.hour, 9, 14)>>
+		Sydney shoos you away. "If the <<nnpc_title "Leighton">> catches you skipping class, we'll both be in big trouble!"
+		<br><br>
+		<<getouticon>><<link [[Leave|School Library]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif _counterApproach is 1>>
+		<<if $sydneyChastityRemoveIntro is 1>>
+			Sydney looks eager to talk to you about something.
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif pcAreArmsBound("any")>>
+			Sydney notices your bound arms. "That isn't dress code." <<He>> walks behind you, and cuts your bindings with a pair of scissors. <<unbind>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif ($studyBooks.stolen isnot "none" and $sydneyStolenKnown isnot 1) or $sydneyLibraryEvent is 1>>
+			<<if $sydneyLibraryEvent is 1>>
+				<<set $sydneyLibraryEvent to 2>>
+			<<else>>
+				<<set $sydneyStolenKnown to 1>>
+			<</if>>
+			Sydney searches for something behind the counter. After a few moments, <<he>> stands up, sighs, and lets <<himself>> fall back into <<his>> chair in resignation. A few strands of <<npcHairColour "Sydney">> hair drift from <<his>> head. <<He>> slowly looks up at you.
+			<br><br>
+			"There's a book missing," <<he>> says. "And <<nnpc_title "Leighton">> Leighton is going to hold me responsible for it."
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif $bookReturnedAbsent>>
+			Sydney looks up at you.
+			<<if $bookOverdue>>
+				"Thanks for returning that overdue book, even though I wasn't here." <<bookCriminal>>
+			<<else>>
+				"I respect your punctuality, but next time, just return your books up front.
+				<<if _sydneyStatus.includes("corrupt")>>
+					Don't be scared. I won't bite... hard."
+				<<else>>
+					You don't need to be shy!"
+				<</if>>
+			<</if>>
+			<<unset $bookReturnedAbsent>>
+			<<unset $bookOverdue>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif $bookOverdue and !$daily.sydney.overdueMessage>>
+			Sydney looks up at you. "You've got a book overdue." <<bookCriminal>>
+			<<set $daily.sydney.overdueMessage to true>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif $bookStolenAbsent and $sydneyStolenKnown>>
+			<<unset $bookStolenAbsent>><<unset $sydneyStolenKnown>>
+			Sydney is beaming. "That missing book turned up! I have no idea what happened, but it's back now. I'm so relieved." <<stress 2>><<gstress>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif $bookStolenPolice and $sydneyStolenKnown>>
+			<<unset $bookStolenPolice>><<unset $sydneyStolenKnown>>
+			Sydney is beaming. "That missing book turned up! The police said it had been stolen, and that the thief was apprehended. I hope they faced justice." <<stress 6>><<gstress>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif !$sydneySeen.includes("initiate") and $temple_rank is "initiate">>
+			<<set $sydneySeen.pushUnique("initiate")>>
+			Sydney beams at you. "I heard you joined the temple! I was so happy when I found out." <<He>> hugs you over the counter. <<stress -3>><<lstress>><<npcincr Sydney love 1>><<glove>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif $englishPlay is "ongoing" and $englishPlayRoles.Sydney isnot "none" and !$englishPlayRoles.SydneyKnown>>
+			<<set $englishPlayRoles.SydneyKnown to true>>
+			Sydney waves you over, looking quite excited about something. You quickly approach.
+			<br><br>
+			<<if $englishPlayRoles.Player is "none">>
+				"I signed up for Doren's stage play!
+				I'll be playing that poor little beggar kid, Jazz... or, Jake?" <<He>> opens <<his>> booklet and takes a quick glance at it. "Cass! That's it!" <<He>> tries to laugh it off. "I won't mess it up, promise."
+				<br><br>
+
+				<<He>> pauses for a moment. "You didn't sign up, did you? That's alright. I hope you'll be there to watch, at least!"
+			<<else>>
+				"You're not going to believe it. I signed up for Doren's Christmas stage play, and it looks like we'll be performing together!
+				<<switch $englishPlayRoles.Sydney>>
+					<<case "Sterling">>
+						<<set _playPronoun to (C.npc.Sydney.pronoun is "m" ? "Mr" : "Mrs")>>
+						Looks like I get to be the villain, that rich kid's sibling!" <<He>> stops for a moment, opening the booklet and quickly shuffling through the pages. "No, that's not right... the parent, _playPronoun Sterling!" <<He>> gives you a nervous smile. "I... need to give it a few more reads..."
+					<<default>>
+						I'll be playing that poor little beggar kid, Jazz... or, Jake?" <<He>> opens <<his>> booklet and takes a quick glance at it. "Cass! That's it!" <<He>> tries to laugh it off. "I won't mess it up, promise."
+				<</switch>>
+				<br><br>
+
+				"Oh! Speaking of which." <<His>> eyes light up. "We should meet up one of these days, so we can practise our lines together! <span class="gold">I'll be in the English classroom after school.</span>"
+			<</if>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif $sydney.glasses is "broken" or $sydney.glasses is "playerbroken">>
+			Sydney squints through <<his>> broken glasses as you approach, but smiles when <<he>> realises it's you. <<sydneyGreeting>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif C.npc.Sydney.love ≥ 100 and C.npc.Sydney.lust ≥ 10 and $sydneyromance isnot 1 and !$sydneyFriendZoned>>
+			Sydney's eyes light up upon seeing you. <<He>> seems nervous about something, and looks away with a blush. <<set _sydneyRomanceConfront to true>> <<sydneyGreeting>>
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif C.npc.Sydney.love ≥ 40>>
+			Sydney's eyes light up upon seeing you. <<sydneyGreeting>> <<He>> allows you to step behind the counter with <<him>>. "I can always make time for you."
+			<br><br>
+			<<sydneyOptions>>
+		<<elseif C.npc.Sydney.love ≥ 10>>
+			Sydney smiles upon seeing you. <<sydneyGreeting>>
+			<br><br>
+			<<sydneyOptions>>
+		<<else>>
+			Sydney nods to you. <<sydneyGreeting>>
+			<br><br>
+			<<sydneyOptions>>
+		<</if>>
+	<<else>>
+		<<switch random(1, 6)>>
+			<<case 1>>
+				Sydney tries to focus on <<his>> work, while also paying attention to you. <<if $sydney.glasses.includes("broken")>> <<His>> <<sydneyGlasses>> seem to be making it difficult.<</if>>
+			<<case 2>>
+				Sydney yawns.
+			<<case 3>>
+				Sydney stamps through a stack of papers.
+			<<default>>
+			/* Say Nothing */
+		<</switch>>
+		<br><br>
+		<<sydneyOptions>>
+	<</if>>
+<</widget>>

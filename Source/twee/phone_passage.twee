@@ -1,3 +1,12 @@
+:: ==== Widget ====[widget]
+<<widget "takephoto">>
+    <<run PhoneMod.photoTakeUncommon(_args[0], _args[1], _args[2], _args[3])>>
+    <<if _args.length gt 4>>
+        <<note _args[4] "lblue">>
+    <<else>>
+        <<note "一张照片保存到了你的相册" "lblue">>
+    <</if>>
+<</widget>>
 :: ==== SC Phone Shop ====
 :: Shopping Centre Phone Shop Link
 <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop]]>><<pass 1>><</link>>
@@ -469,16 +478,16 @@
     你在地下手机店里，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 2>><br>
     狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br><br>
     <<if $exposed gt 0>>
-        老冯尽量不看你暴露的身体，但是你发现<<nnpc_he "Feng">>的余光还是不经意往你这边瞟。<br><br>
+        老冯尽量不看你暴露的身体，但是你发现<<nnpc_he "Feng">>的余光还是不经意往你这边瞟。<br>
         <<if C.npc.Feng.love gte 50>>
             <<link [[请求一件衣服|Second Phone Shop Exposed 4]]>><</link>><br>
-        <</if>>
+        <</if>><br>
     <</if>>
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
     <<if validArray($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
         <<if PhoneMod.isCarryingStolenPhone(true)>>
-            <<icon "phone/phone_crack.png">><<link [[刷机 | 破解盗窃而来的手机|Second Phone Crack]]>><</link>><br>
+            <<icon "phone/phone_crack.png">><<link [["刷机 | 破解盗窃而来的手机"|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
     <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop", false)>>
@@ -513,7 +522,7 @@
         <<case 2>>
             “<<girl>>，这已经不是第一次、第二次了，你有暴露癖是吗？” 老冯看着如此暴露的你，“在外面不穿衣服很危险的。”<<gfenglust>><br>
         <<default>>
-            “…………，” 老冯看着你，“这次呢？”<br>
+            “…………” 老冯看着你，“这次呢？”<br>
     <</switch>><br>
 
     <<link [[请求一件衣服|Second Phone Shop Exposed 1]]>><</link>><br>
@@ -541,28 +550,25 @@
     <<case 0>>
         “你……是这么认为的？” 老冯不可思议的看着你，“你觉得你这样裸体出现在我这种即使鸟不拉屎的公共场合是没有问题的？”<br>
         “……嗯，我感觉还不错。” 你弱弱的说。<br>
-        “你注意点安全吧……” 老冯低下了头。<<gfenglove>><br>
-    <<case 1>>
-        ...
-    <<case 2>>
-        ...
+        “你注意点安全吧……” 老冯低下了头。<<gfenglove>>
     <<default>>
-        ...
-<</switch>><br>
+        “你开心就好，只要不影响我做生意，”老冯看了看你，“但是有这样一个光溜溜的<<girl>>在我的店门口，说不定也能引来一波流量……如果你这么乐意的话” 随后<<he>>还是低下头忙着自己的事情。
+<</switch>><br><br>
 <<link [[继续|Second Phone Shop]]>><<endevent>><</link>>
 :: Second Phone Shop Exposed 1
 <<switch $Phone.FengAcceptExposed>>
     <<case 0>>
         “老冯，可以给我一件衣服穿吗？” 你用乞求的目光看着<<he>>。<br>
-    <<case 1>>
-        ...
-    <<case 2>>
-        ...
     <<default>>
-        ...
+        “老冯，我又来了……” 你用乞求的目光看着<<he>>。<br>
 <</switch>>
 <<if C.npc.Feng.love gte 50>>
-    “这是咋搞的呀，”老冯拍着自己的额头，“我这……没有什么特别好的衣服，只有自己穿的背心和短裤啥的，可能破一点，你如果不介意……？”<br><br>
+    <<switch $Phone.FengAcceptExposed>>
+        <<case 0>>
+            “这是咋搞的呀，”老冯拍着自己的额头，“我这……没有什么特别好的衣服，只有自己穿的背心和短裤啥的，可能破一点，你如果不介意……？”
+        <<default>>
+            “你如果依然不介意的话，我这只有自己穿的破一点的背心和短裤啥的……”
+    <</switch>><br><br>
     <<link [[说你不介意|Second Phone Shop Exposed 2]]>><</link>><br>
     <<link [[还是算了吧|Second Phone Shop Exposed 3]]>><</link>>
 <<else>>
@@ -582,7 +588,8 @@
 <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
 <<link [[离开|Elk Street]]><</link>>
 :: Second Phone Shop Exposed 4
-"还是给我一件衣服穿吧，谢谢你。"<<gfenglove>><<gfenglust>><br><br>
+"还是给我一件衣服穿吧，谢谢你。"<br>
+老冯叹了口气：“还是那句话哈，我这只有自己穿的破一点的背心和短裤啥的，你要应急就别介意。”<<gfenglove>><<gfenglust>><br><br>
 <<fengclothes>>
 <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
 <<link [[离开|Elk Street]]><</link>>
@@ -766,7 +773,12 @@
     <</link>>
 </div>
 :: Phone NewWest
-经过你努力的跟随视频教程学习，<<learn_recipe $food_to_learn>><br><br>
+<<if PhoneMod.learnRecipes($food_to_learn)>>
+    经过你努力的跟随视频教程学习，<<learn_recipe $food_to_learn>>
+<<else>>
+    你努力的跟随视频教程学习，但是感觉掌握得还不是很熟练。<br><br>
+    教学视频不止这么多，<span class="green">你还需要抽出更多时间来继续学习</span>。
+<</if>><br><br>
 <<unset $food_to_learn>>
 <<link [[继续|Phone Back]]>><</link>>
 
@@ -1209,7 +1221,7 @@
             <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion is 0>>
                 你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
                 <<link [[悄悄看看悉尼在干什么|Library Charge SexPhoto Sydney]]>><</link>>
-            <<elseif $rng gt 70 and $Phone.SydneySexLiveCompanion is 1>>
+            <<elseif $rng gt 85 and $Phone.SydneySexLiveCompanion is 1>>
                 悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
                 <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
             <<else>>
@@ -1617,7 +1629,7 @@
 <br>
 你微微侧过身，恰好挡住了悉尼的视线，让她无法完全看清手机屏幕上的内容。然而，你嘴角那抹意味深长的微笑，以及那双深邃眼眸中闪烁的玩味光芒，却让她更加确定，你即将发现那个“秘密”。她的呼吸变得有些急促，心跳如鼓，敲击着她的胸腔，几乎要跳出来。她那双白皙的小手不自觉地交握在一起，紧张地揉搓着，指尖变得冰凉。<br>
 <br>
-点开相册，手指在屏幕上轻轻滑动。几张正常的照片一闪而过，然后，一张有些模糊，但主题清晰的照片映入眼帘。<span class="teal">照片中，是悉尼的脸庞。</span> 她似乎是在无意中触碰到了前置摄像头，又或许是好奇心驱使下的“不小心”。她的琥珀色眼睛里带着一丝好奇与玩味，草莓金的马尾有些散乱，嘴唇微微抿着，透着少女的青涩与纯真。照片的光线有些暗，却意外地捕捉到了她脸上那份独特的书卷气，以及一丝罕见的活泼。她的脖颈上，那枚银质十字架在领口处若隐若现，仿佛在无声地诉说着她的虔诚。<br>
+点开相册，手指在屏幕上轻轻滑动。几张正常的照片一闪而过，然后，一张有些模糊，但主题清晰的照片映入眼帘。<span class="teal">照片中，是悉尼的脸庞。</span> 她似乎是在无意中触碰到了前置摄像头，又或许是好奇心驱使下的“不小心”。她的琥珀色眼睛里带着一丝好奇与玩味，草莓金的马尾有些散乱，嘴唇微微抿着，透着少女的青涩与纯真。照片的光线有些暗，却意外地捕捉到了她脸上那份独特的书卷气，以及一丝罕见的活泼。她的脖颈上，那枚银质十字架在领口处若隐若现，仿佛在无声地诉说着她的虔诚。<<takephoto "Sydney/7121c738-bc5a-41e1-bd2e-3bbbbce37cea" 700 100 "她的琥珀色眼睛里带着一丝好奇与玩味，草莓金的马尾有些散乱，嘴唇微微抿着，透着少女的青涩与纯真。照片的光线有些暗，却意外地捕捉到了她脸上那份独特的书卷气，以及一丝罕见的活泼。她的脖颈上，那枚银质十字架在领口处若隐若现，仿佛在无声地诉说着她的虔诚。">><br>
 <br>
 盯着那张照片看了几秒，嘴角微微上扬，眼底闪过一丝不易察觉的宠溺。<br>
 <br>

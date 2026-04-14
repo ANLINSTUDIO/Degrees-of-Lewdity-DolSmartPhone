@@ -47,6 +47,7 @@ PhoneMod.patchOnPassageRender = function (ev) {
     // 3.8 | 删除非主要区域和事件中不能使用手机的设定
     delete V.Phone.Settings.CanUsePhoneInAllAreas;
     delete V.Phone.Settings.CanUsePhoneInEvent;
+    V.Phone.RecipesLearning = V.Phone.RecipesLearning || {};
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

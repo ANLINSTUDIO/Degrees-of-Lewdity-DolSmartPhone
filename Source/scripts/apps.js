@@ -624,6 +624,24 @@ PhoneMod.photoTakeDebug = function(id) {
         V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
     })
 }
+PhoneMod.photoTakeUncommon = function(id, allure, quality, text, havingOrgasm=false) {
+    // PhoneMod.photoTakeUncommon(id, allure100, quality100, text, havingOrgasm)
+    const photo_path = id
+    const photo_attr = PhoneMod.PhonePhotos[photo_path];
+    let photo = {
+        img: `img/photo/${photo_path}.png`,
+        msg: photo_attr.msg,
+        isUsed: false,
+        onceUsed: false,
+        allure: allure,  // 诱惑度
+        quality: quality,   // 照片质量
+        worn: {},
+        worn_text: text,  // 获取衣物显示描述
+        facevariant: false,  // 保存当前表情，根据当前姿态有不同评论，例如高冷 时“姐姐踩我！”
+        havingOrgasm: havingOrgasm,  // 是否正在高潮
+    };
+    V.Phone.Album[id] = photo;
+}
 PhoneMod.photoTake = function() {
     if (!V.Phone.TakingPhotoWill) return;
     if (V.player.gender === "m") {
@@ -806,12 +824,14 @@ PhoneMod.addAlbumTask = function(taskId) {
                     <br>
                     <p style="font-size:12px; color:#666;">
                         <<if ${photo.worn_text !== undefined}>>${photo.worn_text}<</if>>
-                        你摆出${PhoneMod.getFaceVariant(photo.facevariant)}的表情
-                        <<if ${photo.havingOrgasm}>>
-                            ，<span class="pink">正在高潮！</span>
-                        <<else>>
-                            。
-                        <</if>><br>
+                        <<if ${photo.facevariant !== false}>>
+                            你摆出${PhoneMod.getFaceVariant(photo.facevariant)}的表情
+                            <<if ${photo.havingOrgasm}>>
+                                ，<span class="pink">正在高潮！</span>
+                            <<else>>
+                                。
+                            <</if>><br>
+                        <</if>>
                     </p>
                     <<if ${photo.isUsed}>>
                         <p style="font-size:12px; color:#666;">已使用，请前往使用处删除</p>
@@ -1196,7 +1216,8 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
                                 name: PhoneMod.generateNickname(),
                                 text: comment[0],
                                 effect: comment[1],
-                                already_read: false
+                                already_read: false,
+                                last_name: last_comment.name
                             };
                         }
                     }
@@ -1234,6 +1255,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
     };
 };
 PhoneMod.yenoteDebugComment = function(index) {
+    PhoneMod.debug = 1;
     const yenote = V.Phone.Yenotes[index];
     const comment = PhoneMod.yenoteGenerateRandomComment(yenote);
     yenote.comments.push(comment)
@@ -1599,4 +1621,77 @@ PhoneMod.ddCheck = function() {
             }
         }
     }, 100)
+}
+// =================== 美食屋实现 ===================
+PhoneMod.getRecipes = function() {
+    const detailedSkillGrades = [
+        { requiredValue: 0,		level: "None",	color: 'red'},
+        { requiredValue: 1,		level: "F",		color: 'pink'},
+        { requiredValue: 100,	level: "F+",	color: 'pink'},
+        { requiredValue: 200,	level: "D",		color: 'purple'},
+        { requiredValue: 300,	level: "D+",	color: 'purple'},
+        { requiredValue: 400,	level: "C",		color: 'blue'},
+        { requiredValue: 500,	level: "C+",	color: 'blue'},
+        { requiredValue: 600,	level: "B",		color: 'lblue'},
+        { requiredValue: 700,	level: "B+",	color: 'lblue'},
+        { requiredValue: 800,	level: "A",		color: 'teal'},
+        { requiredValue: 900,	level: "A+",	color: 'teal'},
+        { requiredValue: 1000,	level: "S",		color: 'green'}
+    ]
+    const lst_learning = []
+    const lst_unlearning = []
+    const lst_cantlearning = []
+    for (const food_key in setup.plants) {
+        const food = setup.plants[food_key]
+        const food_difficulty = food.ingredients.length
+        if (V.plants[food_key].recipe || food_difficulty <= 0) continue;
+        const item = {
+            key: food_key,
+            name: food.singular,
+            icon: food.icon,
+            difficulty: food_difficulty,
+            t: food_difficulty*10,
+            tt: AsAPI.getFriendlyTimeText(food_difficulty*10/60, false),
+            ingredients: food.ingredients_cn ?? food.ingredients
+        }
+        let grade = detailedSkillGrades[0];
+        for (let i = 0; i < detailedSkillGrades.length; i++) {
+            if (food_difficulty*100 >= detailedSkillGrades[i].requiredValue) {
+                grade = detailedSkillGrades[i];
+            } else {
+                break;
+            }
+        }
+        if (V.Phone.RecipesLearning.hasOwnProperty(food_key)) {
+            item.hasLearned = V.Phone.RecipesLearning[food_key]
+            lst_learning.push(item)
+        } else if (V.housekeeping >= grade.requiredValue) {
+            lst_unlearning.push(item)
+        } else {
+            item.required = `<span class="${grade.color}">${grade.level}</span>`
+            lst_cantlearning.push(item)
+        }
+    }
+    lst_learning.sort(function(a, b){
+        return a.difficulty - b.difficulty
+    })
+    lst_unlearning.sort(function(a, b){
+        return a.difficulty - b.difficulty
+    })
+    lst_cantlearning.sort(function(a, b){
+        return a.difficulty - b.difficulty
+    })
+    return [lst_learning, lst_unlearning, lst_cantlearning]
+}
+PhoneMod.learnRecipes = function(key) {
+    const food = setup.plants[key]
+    if (V.Phone.RecipesLearning.hasOwnProperty(key)) {
+        V.Phone.RecipesLearning[key] += 1
+    } else {
+        V.Phone.RecipesLearning[key] = 1
+    }
+    if (V.Phone.RecipesLearning[key] >= food.ingredients.length) {
+        return true
+    }
+    return false
 }

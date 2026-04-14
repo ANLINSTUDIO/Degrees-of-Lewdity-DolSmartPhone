@@ -610,6 +610,53 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: [],
         conditions: {},
         comments: {
+          "自拍都不会是铸币吗": "<<gstress>><<stress 1>>",
+          "↓": [
+            [
+              ["这张脸长得真漂亮", "<<lstress>><<stress -1>><<ltrauma>><<trauma -3>>"],
+              ["没楼主漂亮", "<<llstress>><<stress -3>><<lltrauma>><<trauma -10>>"],
+              ["没我漂亮", ""],
+              ["谁问你了？", ""],
+              ["一般吧，这颜值都敢发出来？", ""]
+            ], [
+              ["美人归我了，楼主一边去", "<<lstress>><<stress -1>>"],
+              ["不行别和我抢", ""],
+              ["脑婆脑婆恰个v", "<<gcontrol>><<control 1>>"],
+              ["这种烂货都有人要？", "<<ggstress>><<stress 3>>"]
+            ], [
+              ["是学生吗？看起来就很优秀", "<<llstress>><<stress -3>>"],
+              ["我在学校见过这人", ""],
+              ["一直想超一个学生", "<<ggstress>><<stress 3>>"],
+              ["礼顿的狗罢了", "<<ggstress>><<stress 3>>"]
+            ], [
+              ["楼主和这人什么关系", ""],
+              ["我先猜，肯定是情侣", "<<llstress>><<stress -3>><<lltrauma>><<trauma -10>>"],
+              ["我先猜，肯定是炮友", "<<garousal>><<arousal 30>>"],
+              ["真心住院天下有情人终成兄妹", ""]
+            ], [
+              ["啊啊啊啊啊啊宝宝你是一个香香软软可可爱爱中间忘了后面忘了总之啊啊啊啊啊啊", "<<lstress>><<stress -1>>"],
+              ["啊啊啊啊啊啊宝宝你是一个宝宝", ""]
+            ], [
+              ["剧本罢了", "<<gstress>><<stress 1>>"],
+              ["作秀真恶心", "<<gstress>><<stress 1>>"],
+              ["那咋了？", ""]
+            ], [
+              ["我来给大家介绍一下，这是我们镇学校的傻逼图书管理员", "<<ggstress>><<stress 3>><<ggtrauma>><<trauma 10>>"],
+              ["不喜欢就划走，叫什么叫", "<<lstress>><<stress -1>><<ltrauma>><<trauma -3>>"],
+              ["仗着自己是教师子女，攀关系当的官而已", "<<gstress>><<stress 1>>"],
+              ["我上次还被这傻逼用尺子打了", "<<ggstress>><<stress 3>>"]
+            ], [
+              ["上次还看到这人光着屁股被礼顿打", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"],
+              ["我也想打，一听就很涩", "<<garousal>><<arousal 30>><<gstress>><<stress 1>>"],
+              ["私底下早被调好了", "<<gstress>><<stress 1>>"],
+              ["楼主和礼顿谁是牛头人", "<<gstress>><<stress 1>>"]
+            ], [
+              ["这么漂亮的脸不知道被衍射过几次", "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"], 
+              ["我干的", "<<garousal>><<arousal 30>>"],
+              ["我也干了", "<<garousal>><<arousal 30>>"],
+              ["想看被衍射版的，楼主gkd", "<<garousal>><<arousal 30>><<gstress>><<stress 1>>"]
+            ]
+          ]
         }
     },
 
@@ -629,11 +676,11 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           "我看是借着美食的名义发骚，这不是穿条围裙就来勾引人了吗？": "<<gstress>><<stress +15>><<garousal>><<arousal 30>>",
 
           "↓" : [
-            {
-              "呵呵，不敢露脸，谁知道正脸是不是丑八怪啊":  "<<gstress>><<stress +15>>",
-              "前面的是纯喷子吧😓虽然看不到正脸，但是小姐姐这么善良，一定很漂亮的❤️": "<<llstress>><<stress -30>>",
-              "就是就是！": "<<llstress>><<stress -30>>",
-            }
+            [
+              ["呵呵，不敢露脸，谁知道正脸是不是丑八怪啊",  "<<gstress>><<stress +15>>"],
+              ["前面的是纯喷子吧😓虽然看不到正脸，但是小姐姐这么善良，一定很漂亮的❤️", "<<llstress>><<stress -30>>"],
+              ["就是就是！", "<<llstress>><<stress -30>>"],
+            ]
           ],
         }
     },
