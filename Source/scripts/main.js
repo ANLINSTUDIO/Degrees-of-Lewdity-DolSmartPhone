@@ -267,7 +267,7 @@ PhoneMod.PhoneUIInit = function (open=false, reload=false) {
     PhoneMod.PhoneSafeClose(!reload);
     const phoneUI = document.getElementById('phone-wrapper');
     const app = PhoneMod.Apps[V.Phone.CurrentApp]
-    if (app && ((app.disable && app.disable.includes($passage)) || (app.disableinevent && V.event))) {
+    if (app && ((app.disable && app.disable.includes(V.passage)) || (app.disableinevent && V.event))) {
         V.Phone.CurrentApp = "main"
     }
     if (V.passage === "Start") {
