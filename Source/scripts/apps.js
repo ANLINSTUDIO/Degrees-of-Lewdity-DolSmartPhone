@@ -148,20 +148,83 @@ PhoneMod.checkAlarms = function(offset=0) { // 闹钟检查
     return V.Phone.AlarmTriggered;
 };
 PhoneMod.checkAlarmsInSleep = function() {
+    if (V.Phone.cancelAlarmInSleepOnce) return false;
     const shouldTrigger = PhoneMod.checkAlarms(60)
     if (shouldTrigger) {
         let now = PhoneMod.getAbsTime();
         let alarm = V.Phone.AlarmCurrent;
-        let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
-        let alarmDate = new Date(alarm.year, alarm.month - 1, alarm.day, alarm.hour, alarm.minute);
-        let diffMinutes = Math.round((alarmDate - nowDate) / (1000 * 60));
+        
+        let diffMinutes;
+        
+        // 判断闹钟类型，计算正确的 diffMinutes
+        if (alarm.type === "weekly") {
+            // 周闹钟：计算下一个触发时间与现在的分钟差
+            let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
+            
+            // 找到最近的下一个触发日期
+            let nextTriggerDate = PhoneMod.findNextWeeklyTrigger(alarm, nowDate);
+            diffMinutes = Math.round((nextTriggerDate - nowDate) / (1000 * 60));
+        } else {
+            // 单次闹钟（once/date/today类型）
+            let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
+            let alarmDate = new Date(alarm.year, alarm.month - 1, alarm.day, alarm.hour, alarm.minute);
+            diffMinutes = Math.round((alarmDate - nowDate) / (1000 * 60));
+        }
+        
         console.log(diffMinutes);
         
         new Wikifier(null, `<<pass ${diffMinutes}>>`)
     }
     return shouldTrigger
 };
+PhoneMod.findNextWeeklyTrigger = function(alarm, nowDate) {
+    const alarmHour = alarm.hour;
+    const alarmMinute = alarm.minute;
+    const weekDays = alarm.weekDays; // 0-6 周日到周六
+    
+    let currentDay = nowDate.getDay(); // 0=周日, 1=周一...
+    let currentTime = nowDate.getHours() * 60 + nowDate.getMinutes();
+    let alarmTime = alarmHour * 60 + alarmMinute;
+    
+    // 对 weekDays 排序，以便查找
+    let sortedDays = [...weekDays].sort((a, b) => a - b);
+    
+    let daysToAdd = null;
+    
+    // 检查今天是否应该触发（且时间还没过）
+    if (weekDays.includes(currentDay) && alarmTime >= currentTime) {
+        daysToAdd = 0;
+    } else {
+        // 查找下一个可触发的星期几
+        for (let day of sortedDays) {
+            if (day > currentDay) {
+                daysToAdd = day - currentDay;
+                break;
+            }
+        }
+        // 如果本周没有后续的，则找下周第一个
+        if (daysToAdd === null && sortedDays.length > 0) {
+            daysToAdd = 7 - currentDay + sortedDays[0];
+        }
+    }
+    
+    // 计算触发时间
+    let triggerDate = new Date(nowDate);
+    triggerDate.setDate(nowDate.getDate() + daysToAdd);
+    triggerDate.setHours(alarmHour, alarmMinute, 0, 0);
+    
+    return triggerDate;
+};
 PhoneMod.checkAlarmsInSleepText = function() {
+    if (V.Phone.cancelAlarmInSleepOnce) {
+        if (V.Phone.cancelAlarmInSleepOnce === 2) {
+            delete V.Phone.cancelAlarmInSleepOnce
+        } else {
+            V.Phone.cancelAlarmInSleepOnce = 2;
+            return "你临时关闭了这次闹钟，希望你不会被其他的事情吵醒。<br>";
+        }
+    }
+
     if (!V.Phone.Alarms) {
         return ""
     }
@@ -226,11 +289,15 @@ PhoneMod.checkAlarmsInSleepText = function() {
     if (nearestAlarm) {
         let hoursDiff = minDiffMinutes / 60;
         if (hoursDiff <= 8) {
-            return `手机闹钟会在 <span class="def">${hoursDiff.toFixed(0)}小时</span> 后响起。<br><br>`;
+            return `手机闹钟会在 <span class="def">${hoursDiff.toFixed(0)}小时</span> 后响起。<<link 关闭一次>><<run PhoneMod.cancelAlarmInSleep()>><</link>><br><br>`;
         }
     }
     return ""
 };
+PhoneMod.cancelAlarmInSleep = function() {
+    V.Phone.cancelAlarmInSleepOnce = 1;
+    AsAPI.reload();
+}
 PhoneMod.cancelAlarm = function() { // 关闭闹钟
     V.Phone.AlarmTriggered = false;
     delete V.Phone.AlarmCurrent;
@@ -239,8 +306,18 @@ PhoneMod.cancelAlarm = function() { // 关闭闹钟
     PhoneMod.PhoneUIInit();
 };
 PhoneMod.deleteAlarm = function(index) { // 删除闹钟
-    V.Phone.Alarms.splice(index, 1);
-    PhoneMod.PhoneUIInit(true, true);
+    PhoneMod.confirm('确定要删除这个闹钟吗？', '', () => {
+        V.Phone.Alarms.splice(index, 1);
+        PhoneMod.PhoneUIInit(true, true);
+    })
+};
+PhoneMod.editAlarm = function(index) { // 编辑闹钟
+    PhoneMod.confirm('确定要编辑这个闹钟吗？', '编辑过程中如若退出APP，或者尝试编辑其他的闹钟，将会导致正在编辑的闹钟被删除。<br><span class="red">哪怕没有进行更改，也请按下"确认"进行保存。</span>', () => {
+        const alarm = V.Phone.Alarms[index];
+        V.Phone.Alarms.splice(index, 1);
+        PhoneMod.PhoneUIInit(true, true);
+        PhoneMod.populateAlarmForm(alarm)
+    })
 };
 PhoneMod.toggleAlarmType = function(type) {
     document.getElementById('weekly-input').style.display = 'none';
@@ -278,16 +355,45 @@ PhoneMod.submitAlarm = function() {
 
             if(d) {
                 const dateParts = d.split('-');
-                V.Phone.Alarms.push({
-                    type: "once",
-                    year: parseInt(dateParts[0]),  // 添加年份以便更精确
-                    month: parseInt(dateParts[1]),
-                    day: parseInt(dateParts[2]),
-                    hour: parseInt(timeParts[0]),
-                    minute: parseInt(timeParts[1]),
-                    msg: msg,
-                    active: true
-                });
+                const year = parseInt(dateParts[0]);
+                const month = parseInt(dateParts[1]);
+                const day = parseInt(dateParts[2]);
+                const hour = parseInt(timeParts[0]);
+                const minute = parseInt(timeParts[1]);
+                
+                const now = PhoneMod.getAbsTime();
+                let isExpired = false;
+                if (now) {
+                    // 创建闹钟日期对象
+                    const alarmDate = new Date(year, month - 1, day, hour, minute);
+                    const currentDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
+                    
+                    // 如果闹钟时间小于当前时间，说明已过期
+                    if (alarmDate < currentDate) {
+                        isExpired = true;
+                    }
+                }
+
+                const addAlarm = () => {
+                    V.Phone.Alarms.push({
+                        type: "once",
+                        year: year,
+                        month: month,
+                        day: day,
+                        hour: hour,
+                        minute: minute,
+                        msg: msg,
+                        active: !isExpired
+                    });
+                    PhoneMod.PhoneUIInit(true, true);
+                };
+
+                if (isExpired) {
+                    PhoneMod.confirm('选定的时间已过期', '是否仍然要设定这个闹钟？', addAlarm)
+                    return;
+                } else {
+                    addAlarm();
+                }
             }
         } else {
             // 星期模式
@@ -304,10 +410,84 @@ PhoneMod.submitAlarm = function() {
                 msg: msg,
                 active: true
             });
+            PhoneMod.PhoneUIInit(true, true);
         }
     };
-    PhoneMod.PhoneUIInit(true, true);
 }
+PhoneMod.populateAlarmForm = function(alarm) {
+    if (!alarm) return;
+    
+    // 填充时间
+    const hourStr = alarm.hour.toString().padStart(2, '0');
+    const minuteStr = alarm.minute.toString().padStart(2, '0');
+    const timeInput = document.getElementById('phone-alarm-time');
+    if (timeInput) {
+        timeInput.value = `${hourStr}:${minuteStr}`;
+    }
+    
+    // 填充消息
+    const msgInput = document.getElementById('phone-alarm-msg');
+    if (msgInput && alarm.msg) {
+        msgInput.value = alarm.msg;
+    }
+    
+    // 根据闹钟类型填充不同的表单
+    if (alarm.type === 'once') {
+        // 单次闹钟：判断是日期选择还是今天
+        const now = PhoneMod.getAbsTime ? PhoneMod.getAbsTime() : null;
+        const isToday = now && alarm.year === now.year && alarm.month === now.month && alarm.day === now.day;
+        
+        if (isToday) {
+            // 选择 "今天"
+            const todayRadio = document.querySelector('input[name="alarm-type"][value="today"]');
+            if (todayRadio) {
+                todayRadio.checked = true;
+                // 调用切换函数显示对应UI（但今天模式实际上不显示日期选择器）
+                PhoneMod.toggleAlarmType('today');
+            }
+        } else {
+            // 选择 "日期"
+            const dateRadio = document.querySelector('input[name="alarm-type"][value="date"]');
+            if (dateRadio) {
+                dateRadio.checked = true;
+                // 调用切换函数显示日期选择器
+                PhoneMod.toggleAlarmType('date');
+            }
+            
+            // 填充日期输入框
+            const dateInput = document.getElementById('phone-alarm-date-input');
+            if (dateInput && alarm.year && alarm.month && alarm.day) {
+                const year = alarm.year;
+                const month = alarm.month.toString().padStart(2, '0');
+                const day = alarm.day.toString().padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}`;
+            }
+        }
+        
+    } else if (alarm.type === 'weekly') {
+        // 周闹钟
+        const weeklyRadio = document.querySelector('input[name="alarm-type"][value="weekly"]');
+        if (weeklyRadio) {
+            weeklyRadio.checked = true;
+            // 调用切换函数显示星期选择器
+            PhoneMod.toggleAlarmType('weekly');
+        }
+        
+        // 清空所有星期复选框（toggleAlarmType 中已经设置了部分选中，这里需要覆盖）
+        const allWeekdays = document.querySelectorAll('input[name="weekday"]');
+        allWeekdays.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // 根据 alarm.weekDays 勾选对应的复选框
+        if (alarm.weekDays && Array.isArray(alarm.weekDays)) {
+            alarm.weekDays.forEach(dayValue => {
+                const checkbox = document.querySelector(`input[name="weekday"][value="${dayValue}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+    }
+};
 PhoneMod.getAlarmDesc = function(alarm) {
     if (alarm.type === "once") {
         return `${alarm.year}-${alarm.month}-${alarm.day}`
@@ -438,7 +618,7 @@ PhoneMod.memoTogglePriority = function(event) {
 
     // 如果 checkbox 已被勾选，执行删除
     if (checkbox && checkbox.checked) {
-        if (confirm('确定要删除这个待办项吗？')) {
+        PhoneMod.confirm('确定要删除这个待办项吗？', '', () => {
             delete V.Phone.Memos[taskId]
             todoItem.style.transition = 'all 0.3s ease';
             todoItem.style.opacity = '0';
@@ -446,7 +626,7 @@ PhoneMod.memoTogglePriority = function(event) {
             setTimeout(() => {
                 todoItem.remove();
             }, 300);
-        }
+        })
     } else {
         // 否则正常切换重要状态
         dot.classList.toggle('disabled');
@@ -703,10 +883,10 @@ PhoneMod.photoFinish = function() {
 }
 // =================== 相册实现 ====================
 PhoneMod.photoDelete = function(photo_id) {
-    if (confirm('确定要删除这个照片吗？（你可以重新完成此任务以获得更好质量的照片）')) {
+    PhoneMod.confirm('确定要删除这个照片吗', '你可以<span class="pink">让自己变得更加诱人</span>、<span class="green">拍照技术更好</span>或者<span class="blue">使用更好的摄像机</span>重新完成此任务以获得更好质量的照片', () => {
         delete V.Phone.Album[photo_id]
         PhoneMod.PhoneUIInit(true, true);
-    }
+    })
 }
 PhoneMod.initAlbum = function() {
     if (!PhoneMod.photoLoaded) {
@@ -1033,10 +1213,10 @@ PhoneMod.yenoteGetHeat = function (yenote) {
     return heat
 }
 PhoneMod.yenoteRename = function() {
-    if (confirm('确定要重命名？（这不会影响你之前发送过的文章）')) {
+    PhoneMod.confirm('确定要重命名', '这不会影响你之前发送过的文章', () => {
         delete V.Phone.yenoteUsername
         PhoneMod.PhoneUIInit(true, true);
-    }
+    })
 }
 PhoneMod.generateNickname = function(style = 'random') {
     const generator = PhoneMod.NicknameGenerator;
@@ -1169,13 +1349,13 @@ PhoneMod.yenotePostCancel = function() {
     PhoneMod.PhoneUIInit(true, true)
 }
 PhoneMod.yenoteDelete = function(photo_id) {
-    if (confirm('确定要删除这篇文章吗？\n（你可以再次发布这张照片，但是热度会大幅减少；你也可以从相册删除这张照片，从而去拍摄质量更好的照片，且不会导致热度下降）')) {
+    PhoneMod.confirm('确定要删除这篇文章吗', '你可以再次发布这张照片，但是热度会大幅减少；你也可以从相册删除这张照片，从而去拍摄质量更好的照片，且不会导致热度下降', () => {
         const photo = V.Phone.Album[photo_id]
         photo.isUsed = false
         photo.onceUsed = true
         V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
         PhoneMod.PhoneUIInit(true, true)
-    }
+    })
 }
 PhoneMod.yenoteGenerateRandomComment = function(photo) {
     const photo_id = photo.id;

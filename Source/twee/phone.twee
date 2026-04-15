@@ -159,6 +159,17 @@
     <</if>>
 <</widget>>
 
+<<widget "phone_dialog">>
+    <div id="phone-dialog">
+        <div style="font-size: x-large; font-weight: bold;">
+            _args[0]
+        </div>
+        <p>_args[1]</p>
+        <<button "确定">><<run _dialog_func()>><<run document.querySelector("#phone-dialog")?.remove()>><</button>><br>
+        <<button "取消">><<run document.querySelector("#phone-dialog")?.remove()>><</button>>
+    </div>
+<</widget>>
+
 
 :: SmartPhoneAppWidgets [widget]
 <<widget "phone_app_photo">>
@@ -262,16 +273,19 @@
                     <<if _alarm.active>>
                         <div>
                             <div class="phone-alarm-display-time"><<if _alarm.hour < 10>>0<</if>>_alarm.hour:<<if _alarm.minute < 10>>0<</if>>_alarm.minute</div>
-                            <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>></div>
+                            <div class="phone-alarm-display-msg"><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>></div>
                         </div>
                     <<else>>
                         <div style="color: gray">
                             <div class="phone-alarm-display-time"><<if _alarm.hour < 10>>0<</if>>_alarm.hour:<<if _alarm.minute < 10>>0<</if>>_alarm.minute</div>
-                            <div><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>> | 已失效</div>
+                            <div class="phone-alarm-display-msg"><<print PhoneMod.getAlarmDesc(_alarm)>> <<if _alarm.msg>> | _alarm.msg<</if>> | 已失效</div>
                         </div>
                     <</if>>
                     
-                    <<print '<<link "删除">><<run PhoneMod.deleteAlarm('+_i+')>><</link>>'>>
+                    <div style="white-space: nowrap;">
+                        <<print '<<link "编辑">><<run PhoneMod.editAlarm('+_i+')>><</link>>'>>
+                        <<print '<<link "删除">><<run PhoneMod.deleteAlarm('+_i+')>><</link>>'>>
+                    </div>
                 </div>
             <</for>>
         <</if>>

@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.8",
+    "version": "Alpha.3.81",
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
@@ -80,6 +80,11 @@
             "addonName": "TweeReplacerAddon",
             "modVersion": "1.0.0",
             "params": [
+                {
+                    "passage": "Options Overlay",
+                    "findString": "<<if $passage isnot \"Start\">>",
+                    "replaceFile": "twee/game/overlays/Settings.txt"
+                },
                 {
                     "passage": "Characteristics",
                     "findString": "<<set _skulduggeryConfig =",

@@ -14,11 +14,6 @@ PhoneMod.patchOnPassageRender = function (ev) {
     V.Phone.CurrentApp = V.Phone.CurrentApp || "main";
     V.Phone.Guide = V.Phone.Guide || [];
 
-    // 2.95 | 设置变量迁移
-    PhoneMod.patchTV("Phone.SettingsWallpaperPath", "Phone.Settings.WallpaperPath");
-    PhoneMod.patchTV("Phone.SettingsWallpaperBlur", "Phone.Settings.WallpaperBlur");
-    PhoneMod.patchTV("Phone.SettingsWallpaperBlack", "Phone.Settings.WallpaperBlack");
-
     // 3.2 | 手机更新型号、电池充电系统更新
     V.Phone.Owned.forEach(phone => {
         if (!phone.hasOwnProperty("newnessmax")) {
@@ -48,6 +43,9 @@ PhoneMod.patchOnPassageRender = function (ev) {
     delete V.Phone.Settings.CanUsePhoneInAllAreas;
     delete V.Phone.Settings.CanUsePhoneInEvent;
     V.Phone.RecipesLearning = V.Phone.RecipesLearning || {};
+
+    // 3.9 | 增加自定义手机显示大小
+    V.Phone.Settings.Scale = V.Phone.Settings.Scale ?? 1.0
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {

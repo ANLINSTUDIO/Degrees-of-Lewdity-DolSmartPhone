@@ -254,6 +254,10 @@ PhoneMod.appIsInstalled = function(appid) {
         return false
     }
 }
+PhoneMod.confirm = function(title, msg, func) {
+    T.dialog_func = func
+    new Wikifier(document.querySelector("#smart-phone-container"), `<<phone_dialog ${JSON.stringify(title)} ${JSON.stringify(msg)}>>`)
+}
 
 // ==================== 下面是关于玩家的工具函数 ====================
 PhoneMod.AddClothToPlayer = function(cloth, color="black", type="face") {

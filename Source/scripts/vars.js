@@ -210,35 +210,35 @@ PhoneMod.PhonePhotos = {  // 摄像任务
             ],
           ],
 
-          "洗澡还要发情，你真是没救了": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
+          // "洗澡还要发情，你真是没救了": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
 
-          "好想看你洗完澡湿哒哒的样子": "<<garousal>><<arousal 85>><<ltrauma>><<trauma -6>>",
-          "小骚货洗个澡都能高潮，绝了": "<<garousal>><<arousal 95>><<llstress>><<stress -18>><<lcontrol>><<control +8>>",
-          "浴室play懂的都懂，太会了宝贝": "<<garousal>><<arousal 80>><<lstress>><<stress -12>><<lllcontrol>><<control +15>>",
-          "高潮那一下腿软了吧？好可爱": "<<garousal>><<arousal 75>><<ltrauma>><<trauma -8>>",
-          "下次开语音让我听全程好吗": "<<garousal>><<arousal 85>><<llstress>><<stress -20>>",
-          "洗澡都能这么浪，日常很会玩吧": "<<garousal>><<arousal 80>><<lstress>><<stress -10>><<ltrauma>><<trauma -6>>",
+          // "好想看你洗完澡湿哒哒的样子": "<<garousal>><<arousal 85>><<ltrauma>><<trauma -6>>",
+          // "小骚货洗个澡都能高潮，绝了": "<<garousal>><<arousal 95>><<llstress>><<stress -18>><<lcontrol>><<control +8>>",
+          // "浴室play懂的都懂，太会了宝贝": "<<garousal>><<arousal 80>><<lstress>><<stress -12>><<lllcontrol>><<control +15>>",
+          // "高潮那一下腿软了吧？好可爱": "<<garousal>><<arousal 75>><<ltrauma>><<trauma -8>>",
+          // "下次开语音让我听全程好吗": "<<garousal>><<arousal 85>><<llstress>><<stress -20>>",
+          // "洗澡都能这么浪，日常很会玩吧": "<<garousal>><<arousal 80>><<lstress>><<stress -10>><<ltrauma>><<trauma -6>>",
 
-          // 负面 10条（贬低/厌恶，加压加创减控）
-          "恶心死了，洗个澡都能发骚": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
-          "贱货一个，家里都管不住下边": "<<ggstress>><<stress 18>><<gtrauma>><<trauma 10>>",
-          "这么饥渴是没人要吗？真tm丢人": "<<gstress>><<stress 14>><<ggcontrol>><<control -12>>",
-          "录音发网上是想让谁看啊？臭婊": "<<gstress>><<stress 16>><<gtrauma>><<trauma 14>>",
-          "下贱到骨子里了，恶心巴拉": "<<ggstress>><<stress 20>>",
-          "洗澡都能高潮，平时得多空虚": "<<gstress>><<stress 12>><<gtrauma>><<trauma 8>><<gcontrol>><<control -10>>",
-          "这种货色也就敢躲浴室发浪": "<<gstress>><<stress 10>>",
-          "真他妈不要脸，删了吧恶心": "<<ggstress>><<stress 22>><<ggtrauma>><<trauma 16>>",
-          "婊里婊气的，活该单身一辈子": "<<gstress>><<stress 15>><<gcontrol>><<control -14>>",
-          "变态自慰狂，离我远点": "<<ggstress>><<stress 18>><<gtrauma>><<trauma 12>>",
+          // // 负面 10条（贬低/厌恶，加压加创减控）
+          // "恶心死了，洗个澡都能发骚": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
+          // "贱货一个，家里都管不住下边": "<<ggstress>><<stress 18>><<gtrauma>><<trauma 10>>",
+          // "这么饥渴是没人要吗？真tm丢人": "<<gstress>><<stress 14>><<ggcontrol>><<control -12>>",
+          // "录音发网上是想让谁看啊？臭婊": "<<gstress>><<stress 16>><<gtrauma>><<trauma 14>>",
+          // "下贱到骨子里了，恶心巴拉": "<<ggstress>><<stress 20>>",
+          // "洗澡都能高潮，平时得多空虚": "<<gstress>><<stress 12>><<gtrauma>><<trauma 8>><<gcontrol>><<control -10>>",
+          // "这种货色也就敢躲浴室发浪": "<<gstress>><<stress 10>>",
+          // "真他妈不要脸，删了吧恶心": "<<ggstress>><<stress 22>><<ggtrauma>><<trauma 16>>",
+          // "婊里婊气的，活该单身一辈子": "<<gstress>><<stress 15>><<gcontrol>><<control -14>>",
+          // "变态自慰狂，离我远点": "<<ggstress>><<stress 18>><<gtrauma>><<trauma 12>>",
 
-          // 中立 10条（惊讶/调侃/吃瓜，主要是 arousal，偶尔小波动）
-          "洗澡自慰也太常规操作了吧": "<<garousal>><<arousal 25>>",
-          "逆天，洗澡都能玩出花": "<<garousal>><<arousal 45>><<lcontrol>><<control -8>>",
-          "几分钟？报个时长兄弟们好奇": "<<garousal>><<arousal 30>>",
-          "水温多少度？太热了吧这么浪": "<<garousal>><<arousal 28>>",
-          "这属于隐藏技能点满了吧": "<<garousal>><<arousal 38>><<lstress>><<stress -4>>",
-          "浴室瓷砖应该很凉吧腿软不滑": "<<garousal>><<arousal 32>>",
-          "下次试试莲蓬头冲吗？升级版": "<<garousal>><<arousal 40>><<ltrauma>><<trauma -4>>"
+          // // 中立 10条（惊讶/调侃/吃瓜，主要是 arousal，偶尔小波动）
+          // "洗澡自慰也太常规操作了吧": "<<garousal>><<arousal 25>>",
+          // "逆天，洗澡都能玩出花": "<<garousal>><<arousal 45>><<lcontrol>><<control -8>>",
+          // "几分钟？报个时长兄弟们好奇": "<<garousal>><<arousal 30>>",
+          // "水温多少度？太热了吧这么浪": "<<garousal>><<arousal 28>>",
+          // "这属于隐藏技能点满了吧": "<<garousal>><<arousal 38>><<lstress>><<stress -4>>",
+          // "浴室瓷砖应该很凉吧腿软不滑": "<<garousal>><<arousal 32>>",
+          // "下次试试莲蓬头冲吗？升级版": "<<garousal>><<arousal 40>><<ltrauma>><<trauma -4>>"
         }
     }, 
     "44a3e666-7253-40a7-911b-8e0da7a65f7c": {
@@ -258,44 +258,58 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           },
         },
         comments: {
-            "出浴美人！爱爱爱❤️": "<<llstress>><<stress -24>>",
-            "上次没抢到，这次的洗澡水一定是我的！": "<<ltrauma>><<trauma -6>><<lcontrol>><<control -12>>",
+          "就是需要这样敬业的福利姬": "<<lstress>><<stress -1>>",
+          "我下的任务": "<<garousal>><<arousal 30>>",
+          "每日大赛没看到过": "<<garousal>><<arousal 30>>",
+          "总有人觉得自己洗澡是一件大事": "",
+          "炒冷饭无不无聊": "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>",
+          "出浴美人！爱爱爱❤️": "<<llstress>><<stress -3>>",
+          "上次没抢到，这次的洗澡水一定是我的！": "<<ltrauma>><<trauma -3>><<lcontrol>><<control -1>>",
+          "你再发这种骚图我找人弄你": "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>",
 
-            "你再发这种骚图我找人弄你": "<<gstress>><<stress 12>><<gtrauma>><<trauma 12>>",
+          "↓": [
+            [
+              ["这次有没有喊我名字", "<<garousal>><<arousal 30>>"],
+              ["我们玩的窒息play", "<<garousal>><<arousal 30>>"],
+              ["念的太多了记不清了",, "<<garousal>><<arousal 30>>"],
+              ["楼主不语只是一味地哦吼吼吼", "<<ggarousal>><<arousal 100>>"]
+            ]
+          ]
+          
 
-            // 正面 10条（因为上篇爆了500阅读，这篇更被期待/夸爆，减压减创增控更明显一些）
-            "又来洗澡了？上篇直接把我干上天了😭💦": "<<garousal>><<arousal 100>><<lllstress>><<stress -30>>",
-            "连续洗澡高潮系列是吧？爱了爱了": "<<garousal>><<arousal 95>><<llstress>><<stress -24>><<ltrauma>><<trauma -10>>",
-            "上次那篇我反复看了好几遍，这次更期待": "<<garousal>><<arousal 90>><<lstress>><<stress -15>><<lllcontrol>><<control +18>>",
-            "小仙女又来发福利了，浴室女王yyds": "<<garousal>><<arousal 85>><<llstress>><<stress -20>>",
-            "你真的很会，冲啊继续浪": "<<garousal>><<arousal 100>><<ltrauma>><<trauma -12>>",
-            "这身材+这操作，上次就射爆了，这次准备好了": "<<garousal>><<arousal 98>>",
-            "连发洗澡高潮，姐妹你太懂了吧": "<<garousal>><<arousal 92>><<lstress>><<stress -18>><<lcontrol>><<control +12>>",
-            "浴室又湿又滑的样子我脑补了，啊啊啊": "<<garousal>><<arousal 88>><<llstress>><<stress -22>>",
-            "上篇热门不是白来的，继续保持": "<<garousal>><<arousal 80>><<ltrauma>><<trauma -8>><<control +10>>",
-            "洗澡澡❤️ x2，粉丝福利懂的都懂": "<<garousal>><<arousal 85>><<llstress>><<stress -25>>",
+          // // 正面 10条（因为上篇爆了500阅读，这篇更被期待/夸爆，减压减创增控更明显一些）
+          // "又来洗澡了？上篇直接把我干上天了😭💦": "<<garousal>><<arousal 100>><<lllstress>><<stress -30>>",
+          // "连续洗澡高潮系列是吧？爱了爱了": "<<garousal>><<arousal 95>><<llstress>><<stress -24>><<ltrauma>><<trauma -10>>",
+          // "上次那篇我反复看了好几遍，这次更期待": "<<garousal>><<arousal 90>><<lstress>><<stress -15>><<lllcontrol>><<control +18>>",
+          // "小仙女又来发福利了，浴室女王yyds": "<<garousal>><<arousal 85>><<llstress>><<stress -20>>",
+          // "你真的很会，冲啊继续浪": "<<garousal>><<arousal 100>><<ltrauma>><<trauma -12>>",
+          // "这身材+这操作，上次就射爆了，这次准备好了": "<<garousal>><<arousal 98>>",
+          // "连发洗澡高潮，姐妹你太懂了吧": "<<garousal>><<arousal 92>><<lstress>><<stress -18>><<lcontrol>><<control +12>>",
+          // "浴室又湿又滑的样子我脑补了，啊啊啊": "<<garousal>><<arousal 88>><<llstress>><<stress -22>>",
+          // "上篇热门不是白来的，继续保持": "<<garousal>><<arousal 80>><<ltrauma>><<trauma -8>><<control +10>>",
+          // "洗澡澡❤️ x2，粉丝福利懂的都懂": "<<garousal>><<arousal 85>><<llstress>><<stress -25>>",
 
-            // 负面 10条（因为连发+上篇火了，嫉妒/厌恶更强烈，加压加创减控幅度更大）
-            "又来？上篇就够恶心了还连发，贱不贱啊": "<<gggstress>><<stress 30>><<ggtrauma>><<trauma 20>>",
-            "热门了就飘了？臭婊子真把自己当回事": "<<ggstress>><<stress 24>><<gtrauma>><<trauma 15>><<ggcontrol>><<control -20>>",
-            "天天洗澡发骚，现实里没人要吧这么饥渴": "<<ggstress>><<stress 22>><<ggtrauma>><<trauma 18>>",
-            "连着两篇浴室自慰，变态到没救了": "<<gstress>><<stress 18>><<gtrauma>><<trauma 14>>",
-            "上篇热门都是些什么垃圾在看，恶心": "<<ggstress>><<stress 26>>",
-            "又洗又高潮，活该一辈子躲浴室发浪": "<<gggstress>><<stress 28>><<gcontrol>><<control -18>>",
-            "贱货曝光狂，连发还带阅读量炫耀？": "<<gstress>><<stress 20>><<ggtrauma>><<trauma 16>>",
-            "这么不要脸的东西也配有粉丝？吐了": "<<ggstress>><<stress 25>>",
-            "上篇就看吐了，这次还敢来，滚远点": "<<ggstress>><<stress 22>><<gtrauma>><<trauma 12>><<gcontrol>><<control -15>>",
-            "婊子就是婊子，洗澡都能整成系列": "<<gstress>><<stress 16>><<ggcontrol>><<control -22>>",
+          // // 负面 10条（因为连发+上篇火了，嫉妒/厌恶更强烈，加压加创减控幅度更大）
+          // "又来？上篇就够恶心了还连发，贱不贱啊": "<<gggstress>><<stress 30>><<ggtrauma>><<trauma 20>>",
+          // "热门了就飘了？臭婊子真把自己当回事": "<<ggstress>><<stress 24>><<gtrauma>><<trauma 15>><<ggcontrol>><<control -20>>",
+          // "天天洗澡发骚，现实里没人要吧这么饥渴": "<<ggstress>><<stress 22>><<ggtrauma>><<trauma 18>>",
+          // "连着两篇浴室自慰，变态到没救了": "<<gstress>><<stress 18>><<gtrauma>><<trauma 14>>",
+          // "上篇热门都是些什么垃圾在看，恶心": "<<ggstress>><<stress 26>>",
+          // "又洗又高潮，活该一辈子躲浴室发浪": "<<gggstress>><<stress 28>><<gcontrol>><<control -18>>",
+          // "贱货曝光狂，连发还带阅读量炫耀？": "<<gstress>><<stress 20>><<ggtrauma>><<trauma 16>>",
+          // "这么不要脸的东西也配有粉丝？吐了": "<<ggstress>><<stress 25>>",
+          // "上篇就看吐了，这次还敢来，滚远点": "<<ggstress>><<stress 22>><<gtrauma>><<trauma 12>><<gcontrol>><<control -15>>",
+          // "婊子就是婊子，洗澡都能整成系列": "<<gstress>><<stress 16>><<ggcontrol>><<control -22>>",
 
-            // 中立 10条（惊讶/调侃/数据党/吃瓜，因为上篇火了，评论会带点“续集”“数据”元素）
-            "又是洗澡高潮，系列upupup": "<<garousal>><<arousal 38>><<lstress>><<stress -6>>",
-            "大家都很会冲嘛": "<<garousal>><<arousal 40>>",
-            "浴室连载是吧？下一集什么时候": "<<garousal>><<arousal 35>><<lcontrol>><<control -8>>",
-            "上篇我贡献了好几遍，这次继续支持": "<<garousal>><<arousal 42>>",
-            "洗澡澡x2，进度条拉满": "<<garousal>><<arousal 36>>",
-            "这算不算浴室主题挑战赛": "<<garousal>><<arousal 32>>",
-            "上篇火成这样，这次画面感更强了吧": "<<garousal>><<arousal 48>><<lstress>><<stress -8>>",
-            "数据党路过，阅读量继续涨啊": "<<garousal>><<arousal 40>>"
+          // // 中立 10条（惊讶/调侃/数据党/吃瓜，因为上篇火了，评论会带点“续集”“数据”元素）
+          // "又是洗澡高潮，系列upupup": "<<garousal>><<arousal 38>><<lstress>><<stress -6>>",
+          // "大家都很会冲嘛": "<<garousal>><<arousal 40>>",
+          // "浴室连载是吧？下一集什么时候": "<<garousal>><<arousal 35>><<lcontrol>><<control -8>>",
+          // "上篇我贡献了好几遍，这次继续支持": "<<garousal>><<arousal 42>>",
+          // "洗澡澡x2，进度条拉满": "<<garousal>><<arousal 36>>",
+          // "这算不算浴室主题挑战赛": "<<garousal>><<arousal 32>>",
+          // "上篇火成这样，这次画面感更强了吧": "<<garousal>><<arousal 48>><<lstress>><<stress -8>>",
+          // "数据党路过，阅读量继续涨啊": "<<garousal>><<arousal 40>>"
         }
     },
     "31d15586-9bb9-432e-a336-bb52006f0304": {
@@ -310,49 +324,70 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           },
         },
         comments: {
-          "这是我们学校吗？": "<<garousal>><<arousal 100>>",
-          "我出一块赌她没有穿内裤": "<<garousal>><<arousal 100>>",
-          "就是这个校服最对味！": "<<llstress>><<stress -24>>",
+          "这是我们学校吗？": "<<garousal>><<arousal 30>>",
+          "我出一块赌她没有穿内裤": "<<garousal>><<arousal 30>>",
+          "就是这个校服最对味！": "<<llstress>><<stress -3>>",
+          "天呐是我最喜欢的校服！！！": "<<garousal>><<arousal 30>>",
+          "一直想草一个女学生": "<<ggarousal>><<arousal 100>>",
+          "JK爱好者是这样的": "",
+          "真牛逼不会着凉吗？": "<<garousal>><<arousal 30>><<lstress>><<stress -1>>",
 
-          "婊子，不要在我的学校发骚": "<<gstress>><<stress 12>>",
+          "婊子，不要在我的学校发骚": "<<gstress>><<stress 1>>",
 
-          "逆天文案": "<<garousal>><<arousal 50>>",
+          "逆天文案": "<<garousal>><<arousal 30>>",
 
-          // 正面 10条（夸暴露、色情、胆大，减压减创增控，强调刺激/可爱/会玩）
-          "这裙子一坐开，下面肯定是真空的吧？太他妈会了😈": "<<garousal>><<arousal 100>><<lllstress>><<stress -30>><<ltrauma>><<trauma -12>>",
-          "学校楼梯间玩这么大，心跳加速我替你了": "<<garousal>><<arousal 95>><<llstress>><<stress -24>>",
-          "校服+无内+随时被看到，纯度极高的暴露狂": "<<garousal>><<arousal 98>><<lllcontrol>><<control +20>>",
-          "腿张开一点点就全露了，救命好想冲上去": "<<garousal>><<arousal 100>>",
-          "这姿势坐着等被发现？小骚货胆子真肥": "<<garousal>><<arousal 90>><<lstress>><<stress -18>><<ltrauma>><<trauma -10>>",
-          "楼梯间play懂的都懂，姐妹你太懂氛围了": "<<garousal>><<arousal 85>><<llstress>><<stress -22>>",
-          "校服裙这么短，风一吹就走光了吧可爱死了": "<<garousal>><<arousal 88>><<lcontrol>><<control +15>>",
-          "随时有人上来看到下面，刺激拉满yyds": "<<garousal>><<arousal 92>>",
-          "不想上学想上你？这文案直接把我干硬了": "<<garousal>><<arousal 100>><<llstress>><<stress -25>>",
-          "这张图光看就湿了，学校暴露天花板": "<<garousal>><<arousal 96>><<ltrauma>><<trauma -8>>",
+          "↓": [
+            [
+              ["楼主是学生我吃，cosplay吧", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"],
+              ["想吃直说", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"],
+              ["学生哪有这么骚的", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"],
+              ["没上过学就别叫了，谁不知道女学生都是小婊子", "<<ggstress>><<stress 3>><<ggtrauma>><<trauma 10>>"]
+            ], [
+              ["不如女仆装", "<<garousal>><<arousal 30>>"],
+              ["谁问你了", "<<lstress>><<stress -1>>"]
+            ], [
+              ["我下的任务", ""],
+              ["我指使的", ""],
+              ["我寻思着我养的狗应该只有我一个主人啊", "<<garousal>><<arousal 30>><<gstress>><<stress 1>>"]
+            ]
+          ]
+          
 
-          // 负面 10条（骂贱、变态、丢人、道德审判，加压加创减控，强调学校/未成年感更重）
-          "学校里发这种？贱到没边了，滚出校园": "<<gggstress>><<stress 30>><<ggtrauma>><<trauma 22>>",
-          "穿校服不穿内裤坐楼梯间，变态婊子一个": "<<ggstress>><<stress 28>><<ggcontrol>><<control -25>>",
-          "这么不要脸的东西也敢在学校拍？恶心死": "<<gggstress>><<stress 32>><<ggtrauma>><<trauma 20>>",
-          "装什么清纯校花，下面真空还敢坐台阶": "<<ggstress>><<stress 26>>",
-          "被看到就活该，贱货就该被全校围观": "<<ggstress>><<stress 24>><<gtrauma>><<trauma 18>>",
-          "学校是让你发骚的地方？真tm下贱": "<<gggstress>><<stress 30>><<gcontrol>><<control -20>>",
-          "这种货色拍出来发网上，父母知道得气死": "<<ggstress>><<stress 22>><<ggtrauma>><<trauma 16>>",
-          "暴露狂还带校服滤镜，恶心巴拉": "<<ggstress>><<stress 25>>",
-          "随时有人上来看到你逼？活该被轮": "<<gggstress>><<stress 28>><<ggcontrol>><<control -22>>",
-          "校服穿成这样，干脆退学去卖吧": "<<ggstress>><<stress 20>><<gtrauma>><<trauma 15>>",
+          // // 正面 10条（夸暴露、色情、胆大，减压减创增控，强调刺激/可爱/会玩）
+          // "这裙子一坐开，下面肯定是真空的吧？太他妈会了😈": "<<garousal>><<arousal 100>><<lllstress>><<stress -30>><<ltrauma>><<trauma -12>>",
+          // "学校楼梯间玩这么大，心跳加速我替你了": "<<garousal>><<arousal 95>><<llstress>><<stress -24>>",
+          // "校服+无内+随时被看到，纯度极高的暴露狂": "<<garousal>><<arousal 98>><<lllcontrol>><<control +20>>",
+          // "腿张开一点点就全露了，救命好想冲上去": "<<garousal>><<arousal 100>>",
+          // "这姿势坐着等被发现？小骚货胆子真肥": "<<garousal>><<arousal 90>><<lstress>><<stress -18>><<ltrauma>><<trauma -10>>",
+          // "楼梯间play懂的都懂，姐妹你太懂氛围了": "<<garousal>><<arousal 85>><<llstress>><<stress -22>>",
+          // "校服裙这么短，风一吹就走光了吧可爱死了": "<<garousal>><<arousal 88>><<lcontrol>><<control +15>>",
+          // "随时有人上来看到下面，刺激拉满yyds": "<<garousal>><<arousal 92>>",
+          // "不想上学想上你？这文案直接把我干硬了": "<<garousal>><<arousal 100>><<llstress>><<stress -25>>",
+          // "这张图光看就湿了，学校暴露天花板": "<<garousal>><<arousal 96>><<ltrauma>><<trauma -8>>",
 
-          // 中立 10条（吃瓜、猜测、调侃、氛围党，主要是arousal，偶尔小幅正负波动，强调“猜有没有穿”“随时被看到”）
-          "这裙子这么短，真的没穿内裤吗？赌五毛有": "<<garousal>><<arousal 45>>",
-          "楼梯间坐着这姿势，下一秒有人上来就完蛋": "<<garousal>><<arousal 40>><<lstress>><<stress -8>>",
-          "学校暴露经典场景，氛围拉满": "<<garousal>><<arousal 38>>",
-          "文案不想上学想上你，绝了哈哈哈": "<<garousal>><<arousal 35>><<lcontrol>><<control -6>>",
-          "光看腿就知道下面危险了，刺激": "<<garousal>><<arousal 42>>",
-          "有没有人上去过？好奇后续": "<<garousal>><<arousal 30>>",
-          "校服+楼梯间=标准本子剧情": "<<garousal>><<arousal 36>><<ltrauma>><<trauma -4>>",
-          "坐姿这么暧昧，肯定是真空的吧": "<<garousal>><<arousal 48>>",
-          "随时被看到的风险感，这张图懂的": "<<garousal>><<arousal 40>><<lstress>><<stress -6>>",
-          "赌一包辣条：她下面是光的": "<<garousal>><<arousal 44>>"
+          // // 负面 10条（骂贱、变态、丢人、道德审判，加压加创减控，强调学校/未成年感更重）
+          // "学校里发这种？贱到没边了，滚出校园": "<<gggstress>><<stress 30>><<ggtrauma>><<trauma 22>>",
+          // "穿校服不穿内裤坐楼梯间，变态婊子一个": "<<ggstress>><<stress 28>><<ggcontrol>><<control -25>>",
+          // "这么不要脸的东西也敢在学校拍？恶心死": "<<gggstress>><<stress 32>><<ggtrauma>><<trauma 20>>",
+          // "装什么清纯校花，下面真空还敢坐台阶": "<<ggstress>><<stress 26>>",
+          // "被看到就活该，贱货就该被全校围观": "<<ggstress>><<stress 24>><<gtrauma>><<trauma 18>>",
+          // "学校是让你发骚的地方？真tm下贱": "<<gggstress>><<stress 30>><<gcontrol>><<control -20>>",
+          // "这种货色拍出来发网上，父母知道得气死": "<<ggstress>><<stress 22>><<ggtrauma>><<trauma 16>>",
+          // "暴露狂还带校服滤镜，恶心巴拉": "<<ggstress>><<stress 25>>",
+          // "随时有人上来看到你逼？活该被轮": "<<gggstress>><<stress 28>><<ggcontrol>><<control -22>>",
+          // "校服穿成这样，干脆退学去卖吧": "<<ggstress>><<stress 20>><<gtrauma>><<trauma 15>>",
+
+          // // 中立 10条（吃瓜、猜测、调侃、氛围党，主要是arousal，偶尔小幅正负波动，强调“猜有没有穿”“随时被看到”）
+          // "这裙子这么短，真的没穿内裤吗？赌五毛有": "<<garousal>><<arousal 45>>",
+          // "楼梯间坐着这姿势，下一秒有人上来就完蛋": "<<garousal>><<arousal 40>><<lstress>><<stress -8>>",
+          // "学校暴露经典场景，氛围拉满": "<<garousal>><<arousal 38>>",
+          // "文案不想上学想上你，绝了哈哈哈": "<<garousal>><<arousal 35>><<lcontrol>><<control -6>>",
+          // "光看腿就知道下面危险了，刺激": "<<garousal>><<arousal 42>>",
+          // "有没有人上去过？好奇后续": "<<garousal>><<arousal 30>>",
+          // "校服+楼梯间=标准本子剧情": "<<garousal>><<arousal 36>><<ltrauma>><<trauma -4>>",
+          // "坐姿这么暧昧，肯定是真空的吧": "<<garousal>><<arousal 48>>",
+          // "随时被看到的风险感，这张图懂的": "<<garousal>><<arousal 40>><<lstress>><<stress -6>>",
+          // "赌一包辣条：她下面是光的": "<<garousal>><<arousal 44>>"
         }
     },
     "07363819-aebb-4e32-be7e-240d665c7731": {
@@ -366,42 +401,76 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         comments: {
           "我去，这是哪里？我也要去": "<<garousal>><<arousal 100>>",
           "不得了不得了，你一定是一个很欠肏的婊子": "<<garousal>><<arousal 100>><<gstress>><<stress 6>>",
+          "就喜欢被淫液布满的胴体，楼主真是人体艺术模范吧": "<<garousal>><<arousal 30>>",
 
-          // 正面 10条（狂热色情、夸浪、羡慕、推氛围，极高 arousal + 大幅减压减创增控，因为 risk 100 越极端越爽的心理）
-          "这么多人轮着上，爽到飞起吧？画面太他妈顶了😈💦": "<<garousal>><<lllarousal>><<arousal 100>><<lllstress>><<stress -40>><<ltrauma>><<trauma -20>><<lllcontrol>><<control +30>>",
-          "妓院群P天花板，姐妹你直接封神了": "<<garousal>><<arousal 100>><<llstress>><<stress -35>>",
-          "脱衣舞跳到被轮奸，流程完美，爱死这种堕落感": "<<garousal>><<arousal 98>><<lllcontrol>><<control +25>>",
-          "被一群人同时插满的感觉我替你高潮了": "<<garousal>><<arousal 100>><<llstress>><<stress -30>><<ltrauma>><<trauma -15>>",
-          "这才是真正的妓女play，风险100直接爆表yyds": "<<garousal>><<arousal 95>>",
-          "观众冲上去群奸那一刻我鸡巴硬爆，求后续": "<<garousal>><<arousal 100>><<llstress>><<stress -38>>",
-          "这么多人一起上你，骚穴肯定被干肿了吧好爽": "<<garousal>><<arousal 99>><<lcontrol>><<control +20>>",
-          "脱到全裸然后被轮，标准顶级暴露+群交": "<<garousal>><<arousal 96>><<llstress>><<stress -32>>",
-          "哎呀哎呀叫得真贱，爱了，继续被操": "<<garousal>><<arousal 100>><<ltrauma>><<trauma -18>>",
-          "妓院群奸现场直播感拉满，射了三发了": "<<garousal>><<arousal 97>><<llstress>><<stress -28>><<lllcontrol>><<control +28>>",
+          "↓": [
+            [
+              ["我就知道楼主会走上这条路", "<<gstress>><<stress 1>>"],
+              ["本来就是干这个的吧", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"],
+              ["贱货一个，出来卖都亏", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"]
+            ], [
+              ["早知道楼主这么容易被干我就不弯弯绕绕的了", "<<garousal>><<arousal 30>><<gstress>><<stress 1>>"],
+              ["早都被我开发好了", "<<garousal>><<arousal 30>><<gstress>><<stress 1>>"],
+              ["我知道楼主每天的行动路线，跟我一起蹲", "<<ggstress>><<stress 3>>"],
+              ["早就在小巷里草了100遍了", "<<garousal>><<arousal 30>><<gstress>><<stress 1>>"]
+            ], [
+              ["楼主嘴里一次性至少要塞三根牛子才能满足", "<<ggarousal>><<arousal 100>>"],
+              ["骗你的没这么少", "<<garousal>><<arousal 30>>"],
+              ["骗你的下面也要三根", "<<garousal>><<arousal 30>>"],
+              ["都被你们撑开了那我玩什么？", "<<lcontrol>><<control -1>>"],
+              ["你自己对着照片导导得了", "<<ltrauma>><<trauma -3>>"]
+            ], [
+              ["看来普通的性爱已经无法满足这婊子了", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"],
+              ["扣的不够狠导致的", "<<garousal>><<arousal 30>>"],
+              ["都怪你这种小弔满足不了楼主", "<<garousal>><<arousal 30>>"],
+              ["我去还有无能的丈夫", "<<ltrauma>><<trauma -3>>"],
+              ["太精彩了", ""]
+            ],  [
+              ["楼主还有哪些部位没被用过？", "<<gstress>><<stress 1>>"],
+              ["明知故问，早都开发好了", "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"]
+            ], [
+              ["楼主要被灌成泡芙了吧", "<<ggarousal>><<arousal 100>>"],
+              ["楼主一万杀死亿万精兵", "<<llstress>><<stress -3>><<ltrauma>><<trauma -3>>"],
+              ["其实全是我射的", "<<gstress>><<stress 1>>"],
+              ["fw才射这么点", "<<llstress>><<stress -3>>"]
+            ]
+          ]
 
-          // 负面 10条（极端厌恶、道德审判、辱骂更重，因为 risk 100 + 群奸 + 妓院，攻击性拉满，加压加创减控也最狠）
-          "贱到这种地步，妓院里被轮奸还发出来炫？下贱畜生": "<<ggggstress>><<stress 40>><<gggtrauma>><<trauma 30>><<gggcontrol>><<control -35>>",
-          "被一群臭男人轮着操还叫得这么骚，活该烂逼": "<<gggstress>><<stress 35>><<ggtrauma>><<trauma 25>>",
-          "脱衣舞跳成群P婊子，真他妈不要脸到极点": "<<gggstress>><<stress 38>><<gggcontrol>><<control -30>>",
-          "这种垃圾货色也就配在妓院被轮，恶心透顶": "<<ggggstress>><<stress 42>>",
-          "被这么多人上还发帖，父母看到得自杀吧贱货": "<<gggstress>><<stress 36>><<ggtrauma>><<trauma 28>>",
-          "妓女都不如你下贱，被轮奸还这么开心？变态": "<<ggstress>><<stress 32>><<gggcontrol>><<control -32>>",
-          "一群人一起插你逼和嘴，活该得性病烂死": "<<gggstress>><<stress 40>><<ggtrauma>><<trauma 30>>",
-          "脱光了求操的母狗，滚去垃圾堆里发骚": "<<ggggstress>><<stress 45>><<gggcontrol>><<control -38>>",
-          "风险100的群奸婊，现实里就是街头拉客货": "<<gggstress>><<stress 34>>",
-          "这么多人轮你你还浪叫，彻底没救的烂婊": "<<ggstress>><<stress 30>><<ggtrauma>><<trauma 22>><<ggcontrol>><<control -28>>",
+          // // 正面 10条（狂热色情、夸浪、羡慕、推氛围，极高 arousal + 大幅减压减创增控，因为 risk 100 越极端越爽的心理）
+          // "这么多人轮着上，爽到飞起吧？画面太他妈顶了😈💦": "<<garousal>><<lllarousal>><<arousal 100>><<lllstress>><<stress -40>><<ltrauma>><<trauma -20>><<lllcontrol>><<control +30>>",
+          // "妓院群P天花板，姐妹你直接封神了": "<<garousal>><<arousal 100>><<llstress>><<stress -35>>",
+          // "脱衣舞跳到被轮奸，流程完美，爱死这种堕落感": "<<garousal>><<arousal 98>><<lllcontrol>><<control +25>>",
+          // "被一群人同时插满的感觉我替你高潮了": "<<garousal>><<arousal 100>><<llstress>><<stress -30>><<ltrauma>><<trauma -15>>",
+          // "这才是真正的妓女play，风险100直接爆表yyds": "<<garousal>><<arousal 95>>",
+          // "观众冲上去群奸那一刻我鸡巴硬爆，求后续": "<<garousal>><<arousal 100>><<llstress>><<stress -38>>",
+          // "这么多人一起上你，骚穴肯定被干肿了吧好爽": "<<garousal>><<arousal 99>><<lcontrol>><<control +20>>",
+          // "脱到全裸然后被轮，标准顶级暴露+群交": "<<garousal>><<arousal 96>><<llstress>><<stress -32>>",
+          // "哎呀哎呀叫得真贱，爱了，继续被操": "<<garousal>><<arousal 100>><<ltrauma>><<trauma -18>>",
+          // "妓院群奸现场直播感拉满，射了三发了": "<<garousal>><<arousal 97>><<llstress>><<stress -28>><<lllcontrol>><<control +28>>",
 
-          // 中立 10条（震惊、吃瓜、调侃、技术向、氛围分析，arousal 中高，偶尔小波动，强调“群”“多人”“妓院”“轮奸”规模）
-          "妓院群奸？这规模也太夸张了吧…": "<<garousal>><<arousal 60>>",
-          "脱衣舞直接转群P，剧情反转够狠": "<<garousal>><<arousal 55>><<lstress>><<stress -10>>",
-          "观众从看跳舞到冲上去轮，流程丝滑": "<<garousal>><<arousal 58>>",
-          "这么多人一起上，体力够吗姐妹？": "<<garousal>><<arousal 50>><<lcontrol>><<control -12>>",
-          "风险100不是白给的，这张图直接爆炸": "<<garousal>><<arousal 65>>",
-          "妓院设定+群奸，纯度拉满的本子既视感": "<<garousal>><<arousal 62>><<ltrauma>><<trauma -8>>",
-          "被轮的时候还在叫哎呀哎呀，太会演了": "<<garousal>><<arousal 57>>",
-          "多少人一起？目测至少七八个起": "<<garousal>><<arousal 52>>",
-          "从舞台跳舞到被按地上群插，氛围绝了": "<<garousal>><<arousal 60>><<lstress>><<stress -15>>",
-          "这属于终极暴露+多人play了吧，牛": "<<garousal>><<arousal 64>>"
+          // // 负面 10条（极端厌恶、道德审判、辱骂更重，因为 risk 100 + 群奸 + 妓院，攻击性拉满，加压加创减控也最狠）
+          // "贱到这种地步，妓院里被轮奸还发出来炫？下贱畜生": "<<ggggstress>><<stress 40>><<gggtrauma>><<trauma 30>><<gggcontrol>><<control -35>>",
+          // "被一群臭男人轮着操还叫得这么骚，活该烂逼": "<<gggstress>><<stress 35>><<ggtrauma>><<trauma 25>>",
+          // "脱衣舞跳成群P婊子，真他妈不要脸到极点": "<<gggstress>><<stress 38>><<gggcontrol>><<control -30>>",
+          // "这种垃圾货色也就配在妓院被轮，恶心透顶": "<<ggggstress>><<stress 42>>",
+          // "被这么多人上还发帖，父母看到得自杀吧贱货": "<<gggstress>><<stress 36>><<ggtrauma>><<trauma 28>>",
+          // "妓女都不如你下贱，被轮奸还这么开心？变态": "<<ggstress>><<stress 32>><<gggcontrol>><<control -32>>",
+          // "一群人一起插你逼和嘴，活该得性病烂死": "<<gggstress>><<stress 40>><<ggtrauma>><<trauma 30>>",
+          // "脱光了求操的母狗，滚去垃圾堆里发骚": "<<ggggstress>><<stress 45>><<gggcontrol>><<control -38>>",
+          // "风险100的群奸婊，现实里就是街头拉客货": "<<gggstress>><<stress 34>>",
+          // "这么多人轮你你还浪叫，彻底没救的烂婊": "<<ggstress>><<stress 30>><<ggtrauma>><<trauma 22>><<ggcontrol>><<control -28>>",
+
+          // // 中立 10条（震惊、吃瓜、调侃、技术向、氛围分析，arousal 中高，偶尔小波动，强调“群”“多人”“妓院”“轮奸”规模）
+          // "妓院群奸？这规模也太夸张了吧…": "<<garousal>><<arousal 60>>",
+          // "脱衣舞直接转群P，剧情反转够狠": "<<garousal>><<arousal 55>><<lstress>><<stress -10>>",
+          // "观众从看跳舞到冲上去轮，流程丝滑": "<<garousal>><<arousal 58>>",
+          // "这么多人一起上，体力够吗姐妹？": "<<garousal>><<arousal 50>><<lcontrol>><<control -12>>",
+          // "风险100不是白给的，这张图直接爆炸": "<<garousal>><<arousal 65>>",
+          // "妓院设定+群奸，纯度拉满的本子既视感": "<<garousal>><<arousal 62>><<ltrauma>><<trauma -8>>",
+          // "被轮的时候还在叫哎呀哎呀，太会演了": "<<garousal>><<arousal 57>>",
+          // "多少人一起？目测至少七八个起": "<<garousal>><<arousal 52>>",
+          // "从舞台跳舞到被按地上群插，氛围绝了": "<<garousal>><<arousal 60>><<lstress>><<stress -15>>",
+          // "这属于终极暴露+多人play了吧，牛": "<<garousal>><<arousal 64>>"
         }
     },
     "4c5fcd71-92b5-4974-badd-6a1b2de9d8b6": {
@@ -417,40 +486,55 @@ PhoneMod.PhonePhotos = {  // 摄像任务
           "尺度有点大啊！！😱 ": "<<garousal>><<arousal 100>>",
           "这么刺激吗": "<<garousal>><<arousal 100>><<lstress>><<stress -6>><<gcontrol>><<control 6>>",
 
-          // 正面 10条（狂热夸赞暴露程度、身材、胆量，risk 60 所以刺激感很强，减压减创增控幅度较大）
-          "直接全裸下半身在街上晃？胆子爆表了姐妹😈🔥": "<<garousal>><<lllarousal>><<arousal 100>><<lllstress>><<stress -35>><<ltrauma>><<trauma -18>><<lllcontrol>><<control +28>>",
-          "全裸走街，这他妈才是真·暴露狂": "<<garousal>><<arousal 98>><<llstress>><<stress -30>>",
-          "高级骚货认证": "<<garousal>><<arousal 95>><<lllcontrol>><<control +25>>",
-          "光看这张就知道逼都露出来了，好想上去摸一把": "<<garousal>><<arousal 100>><<llstress>><<stress -32>>",
-          "长得这么可爱，下面却全开，纯度拉满": "<<garousal>><<arousal 97>><<ltrauma>><<trauma -15>>",
-          "全裸在街上晃荡，随时被路人看到小穴，太刺激了": "<<garousal>><<arousal 96>><<llstress>><<stress -28>><<lcontrol>><<control +20>>",
-          "身材这么好还敢露下面，街上的风景被你抢光了": "<<garousal>><<arousal 92>>",
-          "几乎全裸走街头，风一吹就全看见了吧？爱了": "<<garousal>><<arousal 99>><<llstress>><<stress -34>>",
-          "这才是露出的正确打开方式": "<<garousal>><<arousal 94>><<ltrauma>><<trauma -12>>",
-          "全露下半身，画面感爆炸，射了": "<<garousal>><<arousal 100>><<llstress>><<stress -30>>",
+          "↓": [
+            [
+              ['我下的任务', ''],
+              ['我去还有露出挑战', "<<garousal>><<arousal 30>>"]
+            ], [
+              ['楼主下面这不塞个跳蛋？', "<<garousal>><<arousal 30>>"],
+              ['一边走一边高潮……', "<<ggarousal>><<arousal 100>>"],
+              ['在等路人的大基霸超她', "<<ggarousal>><<arousal 100>>"]
+            ], [
+              ["楼主真不怕被看光啊", "<<garousal>><<arousal 30>>"],
+              ['楼主就是干这行的', "<<gtrauma>><<trauma 3>>"],
+              ['早都被看光了不知道多少次', "<<gtrauma>><<trauma 3>>"]
+            ]
+          ]
 
-          // 负面 10条（极端辱骂、道德审判、厌恶拉满，因为 risk 60 + 几乎全裸/下体全露在公共街头，攻击更狠）
-          "下贱到骨子里的母狗": "<<gggstress>><<stress 35>><<gggtrauma>><<trauma 25>><<ggcontrol>><<control -30>>",
-          "真他妈不要脸的贱货": "<<ggggstress>><<stress 40>><<ggtrauma>><<trauma 28>>",
-          "高档街区玩这种变态暴露，活该被所有人指指点点": "<<gggstress>><<stress 38>><<gggcontrol>><<control -32>>",
-          "恶心死人的暴露狂": "<<ggstress>><<stress 32>><<ggtrauma>><<trauma 22>>",
-          "这种垃圾在街上晃荡逼，赶紧抓去警察局关起来": "<<ggggstress>><<stress 42>>",
-          "几乎全裸走街上，现实里就是拉客的婊子": "<<gggstress>><<stress 36>><<ggcontrol>><<control -28>>",
-          "露下面还这么嚣张，迟早被路人轮了活该": "<<ggstress>><<stress 34>><<gggtrauma>><<trauma 26>>",
-          "变态到在街上全露下体，父母生你出来干嘛？": "<<ggggstress>><<stress 45>><<ggtrauma>><<trauma 30>>",
-          "叫得再可爱也是街头露逼的贱种": "<<gggstress>><<stress 38>>",
-          "街上露出还发出来炫耀，彻底没救的烂货": "<<ggstress>><<stress 30>><<ggcontrol>><<control -25>>",
+          // // 正面 10条（狂热夸赞暴露程度、身材、胆量，risk 60 所以刺激感很强，减压减创增控幅度较大）
+          // "直接全裸下半身在街上晃？胆子爆表了姐妹😈🔥": "<<garousal>><<lllarousal>><<arousal 100>><<lllstress>><<stress -35>><<ltrauma>><<trauma -18>><<lllcontrol>><<control +28>>",
+          // "全裸走街，这他妈才是真·暴露狂": "<<garousal>><<arousal 98>><<llstress>><<stress -30>>",
+          // "高级骚货认证": "<<garousal>><<arousal 95>><<lllcontrol>><<control +25>>",
+          // "光看这张就知道逼都露出来了，好想上去摸一把": "<<garousal>><<arousal 100>><<llstress>><<stress -32>>",
+          // "长得这么可爱，下面却全开，纯度拉满": "<<garousal>><<arousal 97>><<ltrauma>><<trauma -15>>",
+          // "全裸在街上晃荡，随时被路人看到小穴，太刺激了": "<<garousal>><<arousal 96>><<llstress>><<stress -28>><<lcontrol>><<control +20>>",
+          // "身材这么好还敢露下面，街上的风景被你抢光了": "<<garousal>><<arousal 92>>",
+          // "几乎全裸走街头，风一吹就全看见了吧？爱了": "<<garousal>><<arousal 99>><<llstress>><<stress -34>>",
+          // "这才是露出的正确打开方式": "<<garousal>><<arousal 94>><<ltrauma>><<trauma -12>>",
+          // "全露下半身，画面感爆炸，射了": "<<garousal>><<arousal 100>><<llstress>><<stress -30>>",
 
-          // 中立 10条（震惊、调侃、猜测、氛围吃瓜，arousal 中高，偶尔小幅正负，因为是街头暴露 + 等级2，评论会带“全露”“下体”“随时被看到”）
-          "这胆量": "<<garousal>><<arousal 65>>",
-          "街头本子即视感": "<<garousal>><<arousal 60>><<lstress>><<stress -12>>",
-          "高档街区玩这么大，路人看到不得疯？": "<<garousal>><<arousal 58>>",
-          "刺激过头了": "<<garousal>><<arousal 62>><<lcontrol>><<control -15>>",
-          "风吹一下就全看见了吧，风险感拉满": "<<garousal>><<arousal 68>>",
-          "街上这么优雅的地方被你搞成暴露现场": "<<garousal>><<arousal 55>><<ltrauma>><<trauma -10>>",
-          "下面露着还敢在街上晃，体力真好": "<<garousal>><<arousal 64>>",
-          "这张图光看姿势就知道下面危险了": "<<garousal>><<arousal 66>><<lstress>><<stress -10>>",
-          "下一秒会不会被围观": "<<garousal>><<arousal 60>>"
+          // // 负面 10条（极端辱骂、道德审判、厌恶拉满，因为 risk 60 + 几乎全裸/下体全露在公共街头，攻击更狠）
+          // "下贱到骨子里的母狗": "<<gggstress>><<stress 35>><<gggtrauma>><<trauma 25>><<ggcontrol>><<control -30>>",
+          // "真他妈不要脸的贱货": "<<ggggstress>><<stress 40>><<ggtrauma>><<trauma 28>>",
+          // "高档街区玩这种变态暴露，活该被所有人指指点点": "<<gggstress>><<stress 38>><<gggcontrol>><<control -32>>",
+          // "恶心死人的暴露狂": "<<ggstress>><<stress 32>><<ggtrauma>><<trauma 22>>",
+          // "这种垃圾在街上晃荡逼，赶紧抓去警察局关起来": "<<ggggstress>><<stress 42>>",
+          // "几乎全裸走街上，现实里就是拉客的婊子": "<<gggstress>><<stress 36>><<ggcontrol>><<control -28>>",
+          // "露下面还这么嚣张，迟早被路人轮了活该": "<<ggstress>><<stress 34>><<gggtrauma>><<trauma 26>>",
+          // "变态到在街上全露下体，父母生你出来干嘛？": "<<ggggstress>><<stress 45>><<ggtrauma>><<trauma 30>>",
+          // "叫得再可爱也是街头露逼的贱种": "<<gggstress>><<stress 38>>",
+          // "街上露出还发出来炫耀，彻底没救的烂货": "<<ggstress>><<stress 30>><<ggcontrol>><<control -25>>",
+
+          // // 中立 10条（震惊、调侃、猜测、氛围吃瓜，arousal 中高，偶尔小幅正负，因为是街头暴露 + 等级2，评论会带“全露”“下体”“随时被看到”）
+          // "这胆量": "<<garousal>><<arousal 65>>",
+          // "街头本子即视感": "<<garousal>><<arousal 60>><<lstress>><<stress -12>>",
+          // "高档街区玩这么大，路人看到不得疯？": "<<garousal>><<arousal 58>>",
+          // "刺激过头了": "<<garousal>><<arousal 62>><<lcontrol>><<control -15>>",
+          // "风吹一下就全看见了吧，风险感拉满": "<<garousal>><<arousal 68>>",
+          // "街上这么优雅的地方被你搞成暴露现场": "<<garousal>><<arousal 55>><<ltrauma>><<trauma -10>>",
+          // "下面露着还敢在街上晃，体力真好": "<<garousal>><<arousal 64>>",
+          // "这张图光看姿势就知道下面危险了": "<<garousal>><<arousal 66>><<lstress>><<stress -10>>",
+          // "下一秒会不会被围观": "<<garousal>><<arousal 60>>"
         }
     },
     "6596727a-7882-4665-acdc-5ad967f49360": {

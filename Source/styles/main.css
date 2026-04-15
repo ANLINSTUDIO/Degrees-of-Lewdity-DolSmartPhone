@@ -1,8 +1,7 @@
 :root {
     --phone-width-closed: 60px;
-    --phone-height-closed: 100px;
     --phone-width-open: 300px;
-    --phone-height-open: 500px;
+    --phone-scale: 1.0;
     --phone-ratio: 0.6;
     --phone-disabled-translateY: 40px;
     --popup-offset: 10px; /* 弹窗与手机的距离 */
@@ -60,7 +59,7 @@
     right: 20px;
     bottom: 20px;
     width: var(--phone-width-closed);
-    height: var(--phone-height-closed);
+    aspect-ratio: var(--phone-ratio);
     background-color: #1a1a1a;
     border: 2px solid #444;
     border-radius: 10px;
@@ -74,18 +73,12 @@
 /* 亮屏状态：变大 */
 .phone-main.phone-open {
     width: var(--phone-width-open);
-    height: var(--phone-height-open);
+    aspect-ratio: var(--phone-ratio);
     background-color: #1a1a1a;
     color: #fff;
     cursor: default;
-}
-@media (max-width: 360px) {
-    .phone-main.phone-open {
-        width: calc(100% - 6em);
-        aspect-ratio: var(--phone-ratio);
-        height: auto;
-        max-height: 90%;
-    }
+    scale: var(--phone-scale);
+    transform-origin: right bottom;
 }
 /* 禁用状态 */
 .phone-main.phone-disabled {
@@ -234,6 +227,22 @@
 #phone-wallpaper-cover.black {
     background: #1a1a1a78;
 }
+/* 确认 */
+#phone-dialog {
+    background-color: #000000b5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-inline: 20px;
+    width: calc(100% - 40px);
+    height: 100%;
+    object-fit: cover;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 /* 桌面APP图标 */
 .phone-app-icon {
     width: 60px;
@@ -369,7 +378,11 @@
 
 .phone-alarm-display-time {
     font-size: larger;
-    margin-bottom: -10px;
+    font-weight: bold;
+    margin-bottom: -8px;
+}
+.phone-alarm-display-msg {
+    line-height: 1.2;
 }
 
 

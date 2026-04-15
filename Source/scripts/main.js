@@ -356,6 +356,15 @@ PhoneMod.PhoneSafeCloseFinish = function () {
         console.log("SafeCloseFinishError");
     }
 };
+PhoneMod.PhoneScaleSettings = function() {
+    document.documentElement.style.setProperty('--phone-scale', `${V.Phone.Settings.Scale}`);
+};
+PhoneMod.PhoneScaleSettingsReset = function() {
+    V.Phone.Settings.Scale = 1;
+    document.getElementById("numberslider-input-phonesettingsscale").value = V.Phone.Settings.Scale;
+    document.getElementById("numberslider-value-phonesettingsscale").innerText = V.Phone.Settings.Scale;
+    document.documentElement.style.removeProperty('--phone-scale');
+};
 
 // =================== 弹窗信息 =====================
 PhoneMod.msgSend = function (msg, app=null, func=null) {
