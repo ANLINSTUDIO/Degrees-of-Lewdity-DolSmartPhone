@@ -64,6 +64,12 @@
             <div style="font-size: 16px; font-weight: bold;">
                 <<if !($Phone.Using is "null") and PhoneMod.getUsingPhone().newness gt 0>>
                     <<print PhoneMod.getTimeString()>>
+                    <div id="battery">
+                        <img id="battery_bg" src="img/ui/phone/battery_bg.png">
+                        <<set _battery to PhoneMod.getPhoneBattery()>>
+                        <<print '<img id="battery_cover" src="img/ui/phone/battery.png" style="clip-path: inset(0 '+(100 - _battery)+'% 0 0);">'>>
+                        <<print '<span id="battery_value">'+_battery+'</span>'>>
+                    </div>
                 <</if>>
             </div>
         </div>
@@ -302,7 +308,7 @@
     <</if>>
     <<if $Phone.Settings.WallpaperPath>>
         壁纸图像  <<link "重置壁纸">><<run PhoneMod.resetWallpaper()>><</link>><br>
-        <<print `<img id="phone-wallpaper-preview" src="`+$Phone.Settings.WallpaperPath+`">`>>
+        <<print `<img id="phone-wallpaper-preview" @src=$Phone.Settings.WallpaperPath>`>>
     <</if>>
     <input type="file" 
         id="phome-wallpaper-upload" 
@@ -360,9 +366,16 @@
 
 <<widget "phone_app_yenote">>
     <div class="yenote-status-bar">
-        <img class="yenote-avatar" src="img/ui/phone/app/avatar.png" onclick="PhoneMod.yenoteRename()">
+        <div style="width: 100%; display: flex; align-items: center;">
+            <<set _user to PhoneMod.getUser("{PC}")>>
+            <img class="yenote-avatar pointer" @src=_user.avatar onclick="PhoneMod.yenoteResetAvatar()" onerror="javascript:this.src='img/misc/icon/phone/avatar/pc.png'">
+            <input class="file-upload" type="file" accept="image/*" name="picture" style="display: none" onchange="PhoneMod.handleYenoteAvatarUpload(this)"/>
+            <<if _user.name>>
+                <span class="yenote-username pointer" onclick="PhoneMod.yenoteRename()">_user.name</span>
+            <</if>>
+        </div>
         <img class="yenote-title" src="img/misc/icon/phone/app/yenote_text_full.png">
-        <img class="yenote-add" src="img/ui/phone/app/add.png" onclick="PhoneMod.toggleApp('album')" style="cursor: pointer;">
+        <img class="yenote-add pointer" src="img/ui/phone/app/add.png" onclick="PhoneMod.yenotePosting()">
     </div>
     <<if !$Phone.yenoteUsername>>
         <div class="note-rename">
@@ -377,47 +390,54 @@
     <<elseif $Phone.yenotePosting>>
         <<set _note to $Phone.yenotePosting>>
         <h3>发布你的文章</h3>
-        <div class="note-content">
-            <div class="note-title">
+        <<if _note is true>>
+            <textarea id="yenoteposttextarea" class="body-textarea" placeholder="写下你的故事…" aria-label="文章正文"></textarea>
+            <div class="upload-area" role="button" aria-label="上传照片区域" tabindex="0" onclick="PhoneMod.toggleApp('album')">
+                <div class="plus-icon">+</div>
+            </div>
+        <<else>>
+            <div class="note-content">
                 <div>
-                    吸引度：<<print Math.round(_note.attract*100)>>%
+                    <div>
+                        吸引度：<<print Math.round(_note.attract*100)>>%
+                    </div>
+                    <div class="meter">
+                        <<set _percent to _note.attract * 100>>
+                        <<if _percent gte 90>>
+                            <<set _statColor to "greenbar">>
+                        <<elseif _percent gte 80>>
+                            <<set _statColor to "tealbar">>
+                        <<elseif _percent gte 60>>
+                            <<set _statColor to "lbluebar">>
+                        <<elseif _percent gte 40>>
+                            <<set _statColor to "bluebar">>
+                        <<elseif _percent gte 20>>
+                            <<set _statColor to "purplebar">>
+                        <<elseif _percent gte 10>>
+                            <<set _statColor to "pinkbar">>
+                        <<else>>
+                            <<set _statColor to "redbar">>
+                        <</if>>
+                        <div @class="_statColor" @style="'width:' + _percent + '%'"></div>
+                    </div>
+                    <div id="yenote_heat">
+                    </div>
+                    <div>
+                        定价：<span id="price_text" class="gold">免费</span>
+                    </div>
+                    <input type="range" id="price_input" value="0" min="0" @max="_note.attract*100" step="1" onchange="PhoneMod.yenoteChangePrice()">
+                    <<run setTimeout(PhoneMod.yenoteChangePrice, 10)>>
                 </div>
-                <div class="meter">
-                    <<set _percent to _note.attract * 100>>
-                    <<if _percent gte 90>>
-                        <<set _statColor to "greenbar">>
-                    <<elseif _percent gte 80>>
-                        <<set _statColor to "tealbar">>
-                    <<elseif _percent gte 60>>
-                        <<set _statColor to "lbluebar">>
-                    <<elseif _percent gte 40>>
-                        <<set _statColor to "bluebar">>
-                    <<elseif _percent gte 20>>
-                        <<set _statColor to "purplebar">>
-                    <<elseif _percent gte 10>>
-                        <<set _statColor to "pinkbar">>
-                    <<else>>
-                        <<set _statColor to "redbar">>
-                    <</if>>
-                    <div @class="_statColor" @style="'width:' + _percent + '%'"></div>
+                <br>
+                <div class="note-passage">
+                    <<print _note.msg>>
                 </div>
-                <div id="yenote_heat">
+                <br>
+                <div class="note-image-container">
+                    <img class="note-image" @src=_note.img onerror="javascript:this.remove()">
                 </div>
-                <div>
-                    定价：<span id="price_text" class="gold">免费</span>
-                </div>
-                <input type="range" id="price_input" value="0" min="0" @max="_note.attract*100" step="1" onchange="PhoneMod.yenoteChangePrice()">
-                <<run setTimeout(PhoneMod.yenoteChangePrice, 10)>>
             </div>
-            <br>
-            <div class="note-passage">
-                <<print _note.msg>>
-            </div>
-            <br>
-            <div class="note-image-container">
-                <img class="note-image" @src=_note.img>
-            </div>
-        </div>
+        <</if>>
         <div class="note-rename-actions">
             <button onclick="PhoneMod.yenotePostCancel()">取消</button>
             <div>
@@ -430,29 +450,42 @@
                 <<for _note range $Phone.Yenotes>>
                     <<capture _note>>
                         <div class="yenote-content">
+                            <<set _user to PhoneMod.getUser(_note.name)>>
                             <div class="note-avatar">
-                                <img class="yenote-avatar yenote-note" src="img/ui/phone/app/avatar.png">
+                                <img class="yenote-avatar yenote-note" @src=_user.avatar onerror="javascript:this.src='img/misc/icon/phone/avatar/pc.png'">
                             </div>
                             <div class="note-content">
                                 <div class="note-title">
-                                    <b><<print _note.name>></b>
-                                </div>
-                                <div class="note-passage">
-                                    <<print _note.msg>>
+                                    <b>_user.name</b>
                                     <<if _note.price>>
                                         <img class="note-premium" src="img/ui/phone/app/premium.png">
                                     <</if>>
                                 </div>
+                                <div class="note-passage">
+                                    <<print _note.msg>>
+                                </div>
                                 <div class="note-image-container">
-                                    <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @src=_note.img>'>>
-                                    <<if _note.price>>
-                                        <div class="note-locked-text">付费内容</div>
+                                    <<if _note.img isnot null>>
+                                        <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>> 
+                                        <<if _note.price>>
+                                            <div class="note-locked-text">付费内容</div>
+                                        <</if>>
                                     <</if>>
                                 </div>
                                 <div class="note-info"> 
-                                    <<print '阅读'+_note.view+'&nbsp;&nbsp;点赞'+_note.like+"&nbsp;&nbsp;">> 
-                                    <<if _note.earned>><<print '获利<span class="gold">£'+_note.earned+'</span>&nbsp;&nbsp;'>><</if>> 
-                                    <<if !_note.npc>><<link "删除此文章">><<run PhoneMod.yenoteDelete(_note.id)>><</link>><</if>> 
+                                    <<if _note.npc>>
+                                        <<print '点赞'+_note.like+"&nbsp;&nbsp;">> 
+                                        <<if _note.price>>
+                                            <<print '定价<span class="gold">£'+_note.price+'</span>&nbsp;&nbsp;'>>
+                                            <<if !_note.unlocked>>
+                                                <<link "购买文章">><<run PhoneMod.yenoteUnlock(_note.id)>><</link>>
+                                            <</if>>
+                                        <</if>>
+                                    <<else>>
+                                        <<print '阅读'+_note.view+'&nbsp;&nbsp;点赞'+_note.like+"&nbsp;&nbsp;">> 
+                                        <<if _note.earned>><<print '获利<span class="gold">£'+_note.earned+'</span>&nbsp;&nbsp;'>><</if>> 
+                                        <<link "删除此文章">><<run PhoneMod.yenoteDelete(_note.id)>><</link>>
+                                    <</if>>
                                 </div>
                                 <<if validArray(_note.comments)>>
                                     <div class="note-commends">
@@ -563,7 +596,7 @@
 <<widget "smartphone_debug_switch">>
     <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()">
         <<icon "phone/phone.png">>
-        <span style="position: absolute; right: -15px; top: 20px; font-size: 5px; background-color: black;"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
+        <span style="position: absolute; right: 15px; top: 20px; font-size: 5px; background-color: black;"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
     </div>
 <</widget>>
 

@@ -9,25 +9,39 @@
 
 .yenote-avatar {
     border-radius: 50%;
-    background: rgb(0, 0, 0);
     height: 25px;
+    aspect-ratio: 1;
     margin-right: 8px;
-    cursor: pointer;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
 }
 .yenote-avatar.yenote-note {
     height: 30px;
 }
+.yenote-username {
+    max-width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+.yenote-title {
+    left: 50%;
+    position: fixed;
+    filter: drop-shadow(0px 0px 3px #ff0);
+}
 .yenote-title, .yenote-add {
     height: 15px;
+    transform: translateX(-50%);
 }
 .yenote-content {
     display: flex;
     flex-direction: row;
     margin-top: 5px;
     margin-bottom: 20px;
-}
-.note-title, .note-passage {
-    line-height: normal;
 }
 #price_input {
     width: 90%;
@@ -46,12 +60,17 @@
     color: #888;
     margin-top: 5px;
 }
-.note-passage {
+.note-title, .note-passage {
+    line-height: normal;
+}
+.note-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
     word-wrap: break-word;
+}
+.note-passage {
+    margin-bottom: 5px;
 }
 .note-image-container {
     position: relative;
@@ -63,6 +82,7 @@
 }
 .note-image.locked {
     filter: blur(8px);
+    -webkit-user-drag: none;
 }
 .note-premium {
     height: 15px;
@@ -136,3 +156,119 @@
     display: inline;
     width: auto;
 }
+
+
+    /* 主卡片：模拟一个干净的发布面板 */
+    .publish-card {
+      max-width: 700px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(0, 0, 0, 0.03);
+      padding: 32px 28px 36px;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* 文章输入区域（上方） */
+    .article-input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 标题输入框 - 大而清晰的样式 */
+    .title-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 28px;
+      font-weight: 600;
+      color: #2d2d2c;
+      background: transparent;
+      padding: 8px 0;
+      border-bottom: 2px solid #ece9e2;
+      transition: border-color 0.2s;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+
+    .title-input::placeholder {
+      color: #c2bdb2;
+      font-weight: 400;
+      font-size: 26px;
+    }
+
+    .title-input:focus {
+      border-bottom-color: #c7b7a0;
+    }
+
+    /* 正文文本域 */
+    .body-textarea {
+      width: calc(100% - 20px);
+      min-width: unset !important;
+      border: none;
+      outline: none;
+      resize: vertical;
+      color: #3b3a38;
+      background: transparent;
+      padding: 12px 10px;
+      border-bottom: 2px solid #ece9e2;
+      transition: border-color 0.2s;
+    }
+
+    .body-textarea::placeholder {
+      color: #bfb9ac;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+
+    .body-textarea:focus {
+      border-bottom-color: #c7b7a0;
+    }
+
+    /* 照片上传区域（下方）—— 虚线加号风格 */
+    .photo-upload-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* 上传容器：由虚线和加号组成，虚线边框 + 内部加号图标 */
+    .upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #d6cec0;
+      border-radius: 24px;
+      padding: 10px;
+      margin: 20px;
+      cursor: pointer; /* 模拟可点击，但不含逻辑 */
+      color: #8f8779;
+      gap: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+    }
+
+    /* 加号图标 —— 使用纯CSS绘制，也可以使用文本+号，这里采用大号文本加号保持清晰 */
+    .plus-icon {
+      font-size: 52px;
+      font-weight: 300;
+      line-height: 1;
+      color: #b9ae9a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 6px;
+    }
+
+    /* 可选的 micro 交互细节 */
+    .upload-area:active {
+      background: #f5f0e8;
+      border-color: #c6b59b;
+    }

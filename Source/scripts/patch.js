@@ -44,8 +44,32 @@ PhoneMod.patchOnPassageRender = function (ev) {
     delete V.Phone.Settings.CanUsePhoneInEvent;
     V.Phone.RecipesLearning = V.Phone.RecipesLearning || {};
 
-    // 3.9 | 增加自定义手机显示大小
+    // 3.81 | 增加自定义手机显示大小
     V.Phone.Settings.Scale = V.Phone.Settings.Scale ?? 1.0
+
+    // 3.82 | 小黄书用户集成
+    V.Phone.YenoteUsers = {
+        // "识别ID": ["用户名", "头像"]
+        // 此值将随着剧情的更改而修改，比如与某个Li成为恋人后，Ta可能改为 xxx超爱xxx 之类的
+        "{PC}": ["{PC}", "{PC}"],
+        "A": ["𝑨", "img/misc/icon/phone/avatar/A.png"],
+        "Landry": ["BLACK MARKETEER", "img/misc/icon/phone/avatar/landry0.png"],
+    }
+    // 3.82 | Landry发文
+    PhoneMod.yenoteNPCPost({
+        id: "Landry-AD0",
+        name: "Landry",
+        msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
+        attarct: 2.0,
+    })
+    PhoneMod.yenoteNPCPost({
+        id: "A-Update382",
+        name: "A",
+        msg: "哈喽哈喽，感谢各位的支持呀！<br>给大家放一张之前没有用到的摄像图片当做福利啦！<br>如果你看不到的话，那就是没有使用最新的图包哦！",
+        img: "img/photo/submission-1772783983529-h.png",
+        price: 52,
+        attarct: 10.0,
+    })
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {
@@ -78,7 +102,7 @@ PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) 
     if (oldValue !== undefined) {
         setNestedValue(V, newPath, oldValue);
         deleteNested(V, oldPath);
-        console.log(`| [SmartPhone] Patch：变量转移成功: ${oldPath} -> ${newPath}`);
+        AsAPI.log("SmartPhone", `Patch：变量转移成功: ${oldPath} -> ${newPath}`);
         return true;
     }
     

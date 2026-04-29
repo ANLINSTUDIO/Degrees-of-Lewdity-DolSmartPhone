@@ -1,4 +1,4 @@
-console.log("| [SmartPhone] DoL万能的智能手机 正在加载：main.js");
+AsAPI.log("SmartPhone", "正在加载：main.js");
 
 
 // ================== passage 注入 ==================
@@ -40,7 +40,7 @@ PhoneMod.eventsLoad_ = function(event_or_id) {  // 可以提供event或者eventi
     if (typeof(event_or_id) === "string") {
         event = PhoneMod.events.find(event_ => event_.eventid === event)
         if (!event) {
-            console.log(`| [SmartPhone] 没有找到次事件 ${event_or_id}，注入失败`);
+            AsAPI.error("SmartPhone", `没有找到次事件 ${event_or_id}，注入失败`);
         }
     }
     if (!event) return
@@ -69,10 +69,10 @@ PhoneMod.eventsLoad_ = function(event_or_id) {  // 可以提供event或者eventi
                 }
             } else {
                 if (event.f) {
-                    console.log(`| [SmartPhone] 注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`);
+                    AsAPI.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`);
                     PhoneMod.eventsLoad_(event.f)
                 } else {
-                    console.log(`| [SmartPhone] 注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`);
+                    AsAPI.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`);
                 }
             }
         }
@@ -345,7 +345,7 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
             phoneContainerOld.remove()
         }
     } else {
-        console.log("SafeCloseError");
+        AsAPI.error("SmartPhone", "SafeCloseError");
     }
 };
 PhoneMod.PhoneSafeCloseFinish = function () {
@@ -353,7 +353,7 @@ PhoneMod.PhoneSafeCloseFinish = function () {
     if (phoneContainerOld) {
         phoneContainerOld.remove()
     } else {
-        console.log("SafeCloseFinishError");
+        AsAPI.error("SmartPhone", "SafeCloseFinishError");
     }
 };
 PhoneMod.PhoneScaleSettings = function() {
@@ -384,7 +384,6 @@ PhoneMod.msgSend = function (msg, app=null, func=null) {
             V.Phone.msgLine = []
         }
     } else {
-        console.log(2, msg);
         V.Phone.msgLine.push(msg)
     }
 }
@@ -460,7 +459,7 @@ PhoneMod.DebugExcuteJs = function() {
                 try {
                     PhoneMod.DebugShowMsg(eval(command), "JS")
                 } catch (err) {
-                    console.log(err.message, err);
+                    AsAPI.error("SmartPhone", err);
                     const msg = document.createElement("span")
                     msg.className = 'red';
                     const match = err.message.match(/^[\d.]+\s*出错\s*\(::\s*[^)]+\):\s*(.+?)Export$/);
@@ -492,10 +491,8 @@ PhoneMod.DebugExcuteSugerCube = function() {
                         html += node.outerHTML;     // 元素节点加 outerHTML
                         }
                     });
-                    console.log(html, tmp);
                     PhoneMod.DebugShowMsg(html, "SC")
                 } catch (err) {
-                    console.log(err.message, err);
                     const msg = document.createElement("span")
                     msg.className = 'red';
                     const match = err.message.match(/^[\d.]+\s*出错\s*\(::\s*[^)]+\):\s*(.+?)Export$/);
@@ -596,10 +593,9 @@ PhoneMod.effectsstealPhone = function () {
     }
 }
 PhoneMod.StolePhoneOnCombat = function () {
-    console.log(0);
+    AsAPI.log("SmartPhone", "StolePhoneOnCombat");
 }
 PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
-    console.log("Attempting to sell phone with id:", id);
     if (!V.Phone.Owned) return;
     const index = V.Phone.Owned.findIndex(p => p.id === id);
     if (index !== -1) {
@@ -746,7 +742,7 @@ PhoneMod.PhoneChargeUnguardedFinish = function(position) {
     PhoneMod.changeUsingPhone(phone)
     delete V.Phone.Charger[position]
 }
-PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
+PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
     if (Time === undefined) return;
     if (V.Phone.Charger.hasOwnProperty(position)) {
         if (apply) {
@@ -760,7 +756,16 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=true) {
             const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
             const fromStartedText = AsAPI.getFriendlyTimeText(ageHoursFromStarted)
 
-            return {phone: phone, hours: ageHours, fromStarted: ageHoursFromStarted, fromStartedText: fromStartedText, wear: wear}
+            var beenStolen = false;
+            if (PhoneMod.手机充电中被盗地点.includes(position)) {
+                if (position === "Library" && sydneySchedule() === undefined && T.sydney_location === "library") {
+                } else {
+                    beenStolen = Math.random() <= PhoneMod.手机充电中被盗概率;
+                    if (beenStolen) delete V.Phone.Charger[position];
+                }
+            }
+
+            return {phone: phone, hours: ageHours, fromStarted: ageHoursFromStarted, fromStartedText: fromStartedText, wear: wear, beenStolen: beenStolen}
         }
         
         return true

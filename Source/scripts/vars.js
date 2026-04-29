@@ -1,4 +1,4 @@
-console.log("| [SmartPhone] DoL万能的智能手机 正在加载：vars.js");
+AsAPI.log("SmartPhone", "正在加载：vars.js");
 
 
 // === 版本 =======================================================
@@ -8,7 +8,7 @@ PhoneMod.notice = ""
 PhoneMod.debug = 0
 
 async function getLastedVersion() {
-  console.log(`| [SmartPhone] 正在取求最新版本号`)
+  AsAPI.log("SmartPhone", `正在取求最新版本号`)
   try {
     const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion`, {
       mode: 'cors',  // 明确指定 cors 模式
@@ -19,7 +19,7 @@ async function getLastedVersion() {
     }
     const data = await response.json();
     if (data.error) {
-      console.error('| [SmartPhone] 获取最新版本失败:', data.error);
+      AsAPI.error("SmartPhone", '获取最新版本失败:'+data.error);
     } else {
       PhoneMod.latestVersion = data.value;
       if (V.passage === "Start") {
@@ -27,7 +27,7 @@ async function getLastedVersion() {
       }
     }
   } catch (error) {
-    console.error('| [SmartPhone] 请求最新版本出错:', error);
+    AsAPI.error("SmartPhone", '请求最新版本出错:'+error);
   }
 }
 getLastedVersion()
@@ -1016,10 +1016,12 @@ PhoneMod.评论概率百分之 = 5;
 PhoneMod.打赏概率百分之 = 10;
 PhoneMod.充电速度每小时 = 500;
 PhoneMod.充电损害每度电比 = 0.01;
-PhoneMod.DD免费等待时间 = 10
-PhoneMod.DD最大等待时间 = 30
-PhoneMod.DD等待全额费用 = 5
-PhoneMod.DD每距离费用 = 2
+PhoneMod.DD免费等待时间 = 10;
+PhoneMod.DD最大等待时间 = 30;
+PhoneMod.DD等待全额费用 = 5;
+PhoneMod.DD每距离费用 = 2;
+PhoneMod.手机充电中被盗概率 = 0.2;
+PhoneMod.手机充电中被盗地点 = ["OceanBreeze", "Library"];
 PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",
   "Yenotes" // 必须禁用，否则内部的effect会重新作用

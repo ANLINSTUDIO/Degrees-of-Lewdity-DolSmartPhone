@@ -1,0 +1,13 @@
+	<<elseif PhoneMod.isCarryingStolenPhone()>>
+		"天哪！",
+		<!-- <br>
+		"记录，发现嫌疑人的胯部周围全是一种带有强烈精液气味的可疑白色液态物质，\"<<person2>><<person>>陈述道：\"可能是卖淫的证据。\"
+		<br>
+		<<person1>><<person>>分开你的臀瓣，用<<his>>的拇指撑开。一团精液顺着你的腿流下。
+		<br>
+		<<person2>><<person>>拍了张照片作为“证据”。
+		<br>
+		“收集样本，”<<person1>><<person>>说道，“我会呼叫总部请求下一步指示。” -->
+
+
+<!-- <<widget "streetpolice">> -->

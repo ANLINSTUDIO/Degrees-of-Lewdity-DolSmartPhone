@@ -7,6 +7,11 @@
     --popup-offset: 10px; /* 弹窗与手机的距离 */
 }
 
+/* 工具css */
+.pointer {
+    cursor: pointer;
+}
+
 
 /* DEBUG：固定在右下角 */
 #smart-phone-debug-switch {
@@ -305,7 +310,7 @@
 .phone-popup {
     position: fixed;
     right: 20px;
-    bottom: calc(20px + var(--phone-height-closed) + var(--popup-offset));
+    bottom: calc(20px + var(--phone-width-closed) / var(--phone-ratio) + var(--popup-offset));
     
     -webkit-tap-highlight-color: transparent;
     display: flex;
@@ -326,21 +331,22 @@
     width: 0px;
     transform: translateX(200px);
 }
+#phone-wrapper:has(.phone-main.phone-open) + .phone-popup{
+    bottom: calc(20px + var(--phone-width-open) / var(--phone-ratio) * var(--phone-scale) + var(--popup-offset));
+}
 .phone-popup.active {
     pointer-events: all;
     opacity: 1;
     width: 300px;
     transform: translateX(0);
-}
-/* 当手机打开时，调整弹窗位置 */
-#phone-wrapper:has(.phone-main.phone-open) + .phone-popup{
-    bottom: calc(20px + var(--phone-height-open) + var(--popup-offset));
+
 }
 #phone-wrapper:has(.phone-main.phone-disabled) + .phone-popup{
     transform: translateY(var(--phone-disabled-translateY));
 }
 .phone-popup-content {
     width: 90%;
+    white-space: nowrap;
 }
 
 

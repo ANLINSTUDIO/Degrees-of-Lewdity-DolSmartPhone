@@ -1,4 +1,4 @@
-console.log("| [SmartPhone] DoL万能的智能手机 apps.js");
+AsAPI.log("SmartPhone", "正在加载：apps.js");
 
 // ==================== 闹钟实现 ====================
 PhoneMod.initAlarm = function() {
@@ -170,8 +170,6 @@ PhoneMod.checkAlarmsInSleep = function() {
             let alarmDate = new Date(alarm.year, alarm.month - 1, alarm.day, alarm.hour, alarm.minute);
             diffMinutes = Math.round((alarmDate - nowDate) / (1000 * 60));
         }
-        
-        console.log(diffMinutes);
         
         new Wikifier(null, `<<pass ${diffMinutes}>>`)
     }
@@ -1071,11 +1069,6 @@ PhoneMod.albumToggleFinished = function(event) {
 PhoneMod.YenoteLockedObserver = new IntersectionObserver((entries) => {PhoneMod.yenoteLockedObserver(entries)}, {
     threshold: 0.5,
 });
-PhoneMod.initYenote = function() {
-    document.querySelectorAll('.note-image.locked').forEach(article => {
-        PhoneMod.YenoteLockedObserver.observe(article);
-    });
-}
 PhoneMod.yenoteLockedObserver = function(entries) {
     entries.forEach(entry => {
         const article = entry.target;
@@ -1088,13 +1081,22 @@ PhoneMod.yenoteLockedObserver = function(entries) {
         }
     });
 }
+PhoneMod.initYenote = function() {
+    document.querySelectorAll('.note-image.locked').forEach(article => {
+        const notes = V.Phone.Yenotes.filter(yenote => yenote.id === article.dataset.id)[0]
+        if (notes.npc && notes.price > 0 && !notes.unlocked) {
+            
+        } else {
+            PhoneMod.YenoteLockedObserver.observe(article);
+        }
+    });
+}
 PhoneMod.toggleYenote = function(open) {
     if (open) {
         V.Phone.Yenotes.forEach(yenote => {
             yenote.comments.forEach(comment => {
                 if (!comment.already_read) {
                     comment.already_read = true
-                    console.log(0, comment, comment.effect);
                     new Wikifier(document.getElementById(yenote.id+"*"+yenote.comments.indexOf(comment)), `<<print \`${comment.effect}\`>>`)
                 }
             })
@@ -1104,11 +1106,9 @@ PhoneMod.toggleYenote = function(open) {
 PhoneMod.yenotesCheck = function() {
     V.Phone.Yenotes.forEach(yenote => {
         const heat = PhoneMod.yenoteGetHeat(yenote)
-        
         const viewInc = Math.floor(heat * (5 + 10 * Math.random()));       // 5~15 * heat
         let likeInc = 0;
         let commentInc = 0;
-        
         for (let index = 0; index < viewInc; index++) {
             if (Math.random()*100 <= PhoneMod.点赞概率百分之) {
                 likeInc += 1
@@ -1118,71 +1118,84 @@ PhoneMod.yenotesCheck = function() {
             }
         }
 
-        // console.log(`heat=${heat}, viewInc=${viewInc}, likeInc=${likeInc}, commentInc=${commentInc}`);
+        if (yenote.npc) {
+            yenote.view += viewInc;
+            yenote.like += likeInc;
+            // if (commentInc > 0) {
+            //     for (let i = 0; i < commentInc; i++) {
+            //         yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote));
+            //     }
+            // }
+        } else {
+            // console.log(`heat=${heat}, viewInc=${viewInc}, likeInc=${likeInc}, commentInc=${commentInc}`);
 
-        yenote.fames.forEach(_fame => {  // 计算名声
-            V.fame[_fame] = parseFloat((V.fame[_fame] + viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1).toFixed(2))
-        })
-        
-        const oldHundredsview = Math.floor(yenote.view / 100);
-        yenote.view += viewInc;
-        const newHundredsview = Math.floor(yenote.view / 100);
-        
-        if (newHundredsview > oldHundredsview) {
-            setTimeout(() => {
-                PhoneMod.msgSend(`你的文章达到了<span class="gold">${yenote.view}</span>阅读量`, "yenote", () => {
-                    if (PhoneMod.shouldUsePhone()){
-                        PhoneMod.toggleApp('yenote')
-                    }
-                })
+            yenote.fames?.forEach(_fame => {  // 计算名声
+                V.fame[_fame] = parseFloat((V.fame[_fame] + viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1).toFixed(2))
             })
-        }
-
-        if (yenote.price) {
-            const earned = yenote.price * viewInc
-            yenote.earned += earned
-            new Wikifier(null, `<<money ${earned*100}>>`)
-        }
-
-        const oldHundredslike = Math.floor(yenote.like / 100);
-        yenote.like += likeInc;
-        const newHundredslike = Math.floor(yenote.like / 100);
-        if (newHundredslike > oldHundredslike) {
-            setTimeout(() => {
-                PhoneMod.msgSend(`你的文章达到了<span class="gold">${yenote.like}</span>点赞量`, "yenote", () => {
-                    if (PhoneMod.shouldUsePhone()){
-                        PhoneMod.toggleApp('yenote')
-                    }
+            
+            const oldHundredsview = Math.floor(yenote.view / 100);
+            yenote.view += viewInc;
+            const newHundredsview = Math.floor(yenote.view / 100);
+            
+            if (newHundredsview > oldHundredsview) {
+                setTimeout(() => {
+                    PhoneMod.msgSend(`你的文章达到了<span class="gold">${yenote.view}</span>阅读量`, "yenote", () => {
+                        if (PhoneMod.shouldUsePhone()){
+                            PhoneMod.toggleApp('yenote')
+                        }
+                    })
                 })
-            })
-        }
-        if (!yenote.price) {  // 判定在每一位喜欢，百分之10的概率获得打赏
-            for (let index = 0; index < likeInc; index++) {
-                if (Math.random()*100 <= PhoneMod.打赏概率百分之) {
-                    const earned = Math.max(Math.round((yenote.attract * 100) * Math.random()), 1)
-                    yenote.earned += earned
-                    new Wikifier(null, `<<money ${earned*100}>>`)
+            }
+
+            if (yenote.price) {
+                const earned = yenote.price * viewInc
+                yenote.earned += earned
+                new Wikifier(null, `<<money ${earned*100}>>`)
+            }
+
+            const oldHundredslike = Math.floor(yenote.like / 100);
+            yenote.like += likeInc;
+            const newHundredslike = Math.floor(yenote.like / 100);
+            if (newHundredslike > oldHundredslike) {
+                setTimeout(() => {
+                    PhoneMod.msgSend(`你的文章达到了<span class="gold">${yenote.like}</span>点赞量`, "yenote", () => {
+                        if (PhoneMod.shouldUsePhone()){
+                            PhoneMod.toggleApp('yenote')
+                        }
+                    })
+                })
+            }
+
+            if (yenote.msg != null) {  // 自定义文章没有打赏和评论
+                if (!yenote.price) {  // 判定在每一位喜欢，百分之10的概率获得打赏
+                    for (let index = 0; index < likeInc; index++) {
+                        if (Math.random()*100 <= PhoneMod.打赏概率百分之) {
+                            const earned = Math.max(Math.round((yenote.attract * 100) * Math.random()), 1)
+                            yenote.earned += earned
+                            new Wikifier(null, `<<money ${earned*100}>>`)
+                            setTimeout(() => {
+                                PhoneMod.msgSend(`你的文章收到了一笔<span class="gold">£${earned}</span>的打赏`, "yenote", () => {
+                                    if (PhoneMod.shouldUsePhone()){
+                                        PhoneMod.toggleApp('yenote')
+                                    }
+                                })
+                            }, 10);
+                        }
+                    }
+                }
+
+                if (commentInc > 0) {
                     setTimeout(() => {
-                        PhoneMod.msgSend(`你的文章收到了一笔<span class="gold">£${earned}</span>的打赏`, "yenote", () => {
+                        PhoneMod.msgSend(`你的文章收到了${commentInc}条新的评论`, "yenote", () => {
                             if (PhoneMod.shouldUsePhone()){
                                 PhoneMod.toggleApp('yenote')
                             }
                         })
                     }, 10);
-                }
-            }
-        }
-
-        if (commentInc > 0) {
-            setTimeout(() => {
-                PhoneMod.msgSend(`你的文章收到了${commentInc}条新的评论`, "yenote", () => {
-                    if (PhoneMod.shouldUsePhone()){
-                        PhoneMod.toggleApp('yenote')
+                    for (let i = 0; i < commentInc; i++) {
+                        yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote));
                     }
-                })
-            }, 10);
-            for (let i = 0; i < commentInc; i++) {
-                yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote));
+                }
             }
         }
     })
@@ -1193,7 +1206,7 @@ PhoneMod.yenoteGetHeat = function (yenote) {
     const baseHeat = yenote.attract * decayFactor;
 
     let fame = 0
-    yenote.fames.forEach(_fame => {
+    yenote?.fames.forEach(_fame => {
         fame += V.fame[_fame] / 2000
     })
     let heat = baseHeat * Math.pow(3, fame);
@@ -1212,8 +1225,39 @@ PhoneMod.yenoteGetHeat = function (yenote) {
 
     return heat
 }
+PhoneMod.yenoteResetAvatar = function() {
+    PhoneMod.confirm('确定要设置头像？', '', () => {
+        $('.file-upload').click();
+    })
+}
+PhoneMod.handleYenoteAvatarUpload = function(input) {
+    if (!input.files || !input.files[0]) {
+        PhoneMod.confirm('确定要重置为默认头像？', '', () => {
+            delete V.Phone.Settings.YenoteAvatar
+            PhoneMod.PhoneUIInit(true, true);
+        })
+    } else {
+        const file = input.files[0];
+        
+        // 检查文件类型
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            alert('不支持的文件格式！请上传 JPG, PNG, GIF 或 WebP 格式的图片。');
+            input.value = ''; // 清空选择
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // 保存到SugarCube变量
+            V.Phone.Settings.YenoteAvatar = e.target.result;
+            PhoneMod.PhoneUIInit(true, true);
+        };
+        reader.readAsDataURL(file);
+    }
+}
 PhoneMod.yenoteRename = function() {
-    PhoneMod.confirm('确定要重命名', '这不会影响你之前发送过的文章', () => {
+    PhoneMod.confirm('确定要重命名', '', () => {
         delete V.Phone.yenoteUsername
         PhoneMod.PhoneUIInit(true, true);
     })
@@ -1331,17 +1375,42 @@ PhoneMod.yenoteChangePrice = function() {
     )
 }
 PhoneMod.yenotePostSubmit = function() {
-    const photo = V.Phone.Album[V.Phone.yenotePosting.id]
-    photo.isUsed = true
-    V.Phone.Yenotes.unshift({
-        ...V.Phone.yenotePosting,
-        name: V.Phone.yenoteUsername,
-        npc: false,
-        view: 0,
-        like: 0,
-        comments: []
-    })
+    if (V.Phone.yenotePosting === true) {
+        const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+        V.Phone.Yenotes.unshift({
+            id: uniqueId,
+            msg: $("#yenoteposttextarea")[0].value.replace("\n", "<br>"),
+            img: null,
+            onceUsed: false,
+            attract: 0.5,
+            price: 0,
+            earned: 0,
+            fames: [],
+            date: Time.date,
+
+            name: "{PC}",
+            npc: false,
+            view: 0,
+            like: 0,
+            comments: []
+        })
+    } else {
+        const photo = V.Phone.Album[V.Phone.yenotePosting.id]
+        photo.isUsed = true
+        V.Phone.Yenotes.unshift({
+            ...V.Phone.yenotePosting,
+            name: "{PC}",
+            npc: false,
+            view: 0,
+            like: 0,
+            comments: []
+        })
+    }
     delete V.Phone.yenotePosting
+    PhoneMod.PhoneUIInit(true, true)
+}
+PhoneMod.yenotePosting = function() {
+    V.Phone.yenotePosting = true;
     PhoneMod.PhoneUIInit(true, true)
 }
 PhoneMod.yenotePostCancel = function() {
@@ -1349,13 +1418,24 @@ PhoneMod.yenotePostCancel = function() {
     PhoneMod.PhoneUIInit(true, true)
 }
 PhoneMod.yenoteDelete = function(photo_id) {
-    PhoneMod.confirm('确定要删除这篇文章吗', '你可以再次发布这张照片，但是热度会大幅减少；你也可以从相册删除这张照片，从而去拍摄质量更好的照片，且不会导致热度下降', () => {
-        const photo = V.Phone.Album[photo_id]
-        photo.isUsed = false
-        photo.onceUsed = true
-        V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
-        PhoneMod.PhoneUIInit(true, true)
-    })
+    const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
+    if (notes.length > 0) {
+        const note = notes[0];
+        if (note.img === null) {
+            PhoneMod.confirm('确定要删除这篇文章吗', '', () => {
+                V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
+                PhoneMod.PhoneUIInit(true, true)
+            })
+        } else {
+            PhoneMod.confirm('确定要删除这篇文章吗', '你可以再次发布这张照片，但是热度会大幅减少；你也可以从相册删除这张照片，从而去拍摄质量更好的照片，且不会导致热度下降', () => {
+                const photo = V.Phone.Album[photo_id]
+                photo.isUsed = false
+                photo.onceUsed = true
+                V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
+                PhoneMod.PhoneUIInit(true, true)
+            })
+        }
+    }
 }
 PhoneMod.yenoteGenerateRandomComment = function(photo) {
     const photo_id = photo.id;
@@ -1386,7 +1466,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
                 putChain(comment, value, commentChain);
             }
             if (commentChain.length > 0) {
-                if (PhoneMod.debug) console.log("跟评链", commentChain);
+                if (PhoneMod.debug) AsAPI.log("SmartPhone", "跟评链" + commentChain);
                 if (last_comment) {
                     for (let index = 0; index < commentChain.length; index++) {
                         const commentR = commentChain[index];
@@ -1425,7 +1505,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
         putComments(comment, photoData.comments[comment], commentPool)
     }
     
-    if (PhoneMod.debug) console.log("评论池", commentPool);
+    if (PhoneMod.debug) AsAPI.log("SmartPhone", "评论池" + commentPool);
     const randomKey = Object.keys(commentPool)[Math.floor(Math.random() * Object.keys(commentPool).length)];
     return {
         name: PhoneMod.generateNickname(),
@@ -1441,6 +1521,69 @@ PhoneMod.yenoteDebugComment = function(index) {
     yenote.comments.push(comment)
     return comment
 };
+PhoneMod.getUser = function(id) {
+    if (id === "{PC}") {
+        return {name: V.Phone.yenoteUsername, avatar: V.Phone.Settings.YenoteAvatar??"img/misc/icon/phone/avatar/pc.png"}
+    } else if (Object.keys(V.Phone.YenoteUsers).includes(id)) {
+        const user = V.Phone.YenoteUsers[id]
+        return {name: user[0], avatar: user[1]}
+    } else {
+        // 如果是旧版本的小黄书，发布时的ID是用户名而不是{PC}
+        return {name: V.Phone.yenoteUsername, avatar: V.Phone.Settings.YenoteAvatar??"img/misc/icon/phone/avatar/pc.png"}
+    }
+}
+PhoneMod.yenoteNPCPost = function(note) {
+    // name, msg, id=null, repost=false, img=null, price=null
+    // PhoneMod.yenoteNPCPost({
+    //     id: "LandryAD0",
+    //     name: "Landry",
+    //     msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
+    //     repost: true,
+    // })
+    const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    if (note.id) {
+        const existing = V.Phone.Yenotes.find(note_ => note_.id === note.id);
+        if (existing) {
+            if (note.repost) {
+                V.Phone.Yenotes = V.Phone.Yenotes.filter(note_ => note_.id !== note.id);
+            } else {
+                return;
+            }
+        }
+    }
+    V.Phone.Yenotes.unshift({
+        id: note.id ?? uniqueId,
+        msg: note.msg,
+        img: note.img ?? null,
+        onceUsed: false,
+        attract: note.attract ?? 0.5,
+        price: note.price ?? 0,
+        unlocked: false,
+        date: Time.date,
+
+        name: note.name,
+        npc: true,
+        view: 0,
+        like: 0,
+        comments: [],
+        fames: [],
+    })
+}
+PhoneMod.yenoteUnlock = function(photo_id) {
+    const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
+    if (notes.length > 0) {
+        const note = notes[0];
+        if (V.money < note.price * 100) {
+            PhoneMod.confirm(`你的账户中没有足够的<span class="gold">£${note.price}</span>以购买这篇文章`, '', () => {})
+        } else {
+            PhoneMod.confirm(`确定要花费<span class="gold">£${note.price}</span>购买这篇文章吗？`, '注意，这将延迟付款。支付通知我们会稍后发送给您。', () => {
+                new Wikifier(null, `<<money -${note.price * 100}>>`)
+                note.unlocked = true;
+                PhoneMod.PhoneUIInit(true, true)
+            })
+        }
+    }
+}
 
 // =================== 地图实现 ===================
 PhoneMod.initMap = function() {
@@ -1741,8 +1884,7 @@ PhoneMod.ddCalculateFare = function() {
     return PhoneMod.ddCalculateDistance() * PhoneMod.DD每距离费用;
 }
 PhoneMod.ddGetTheNearestBoardingPoint = function() {
-    const key = Object.keys(PhoneMod.ddBoardingPoints).find(key => PhoneMod.ddBoardingPoints[key].passage === V.safePassage)
-    return PhoneMod.ddBoardingPoints[key];
+    return V.Phone.ddLastBoardingPoint
 }
 PhoneMod.ddSubmit = function() {
     V.Phone.ddstart = {passage: PhoneMod.ddGetTheNearestBoardingPoint()?.passage, time: Time.date}
@@ -1781,6 +1923,12 @@ PhoneMod.ddGetWaitTime = function() {
     return ageMin
 }
 PhoneMod.ddCheck = function() {
+    // 记录最后可停车地点
+    const key = Object.keys(PhoneMod.ddBoardingPoints).find(key => PhoneMod.ddBoardingPoints[key].passage === V.safePassage)
+    if (key) {
+        V.Phone.ddLastBoardingPoint = PhoneMod.ddBoardingPoints[key]
+    }
+
     setTimeout(() => {
         if (PhoneMod.ddIsSubmited()) {
             if (PhoneMod.ddGetWaitTime() > PhoneMod.DD最大等待时间) {

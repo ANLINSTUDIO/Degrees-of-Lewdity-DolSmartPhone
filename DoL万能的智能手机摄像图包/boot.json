@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone PhotoPack",
     "nickName": "万能的智能手机 摄像图包",
-    "version": "Alpha.3.7a",
+    "version": "Alpha.3.82",
     "styleFileList": [],
     "scriptFileList": [
         "smartphonephotopack.js"
@@ -25,6 +25,7 @@
         "img/photo/submission-1772759964692-m.png",
         "img/photo/submission-1772760217366.png",
         "img/photo/submission-1772762023345.png",
+        "img/photo/submission-1772783983529-h.png",
         "img/photo/submission-1772783983529.png",
         "img/photo/submission-1772793749698.png",
         "img/photo/submission-1772794747373.png",

@@ -82,5 +82,23 @@ window.AsAPI = {
             return true;
         }
         return false;
+    },
+    // 颜色打印
+    log: function(title, content, title_color = 'green', content_color = 'white') {
+        let text = "";
+        const styles = [];
+        if (title) {
+            text += `%c ${title} %c`;
+            styles.push(`background: ${title_color}; color: black; padding: 2px 4px; border-radius: 3px;`);
+        }
+        if (content) {
+            text += ` ${content}`;
+            styles.push(`color: ${content_color};`);
+        }
+        console.log(text, ...styles);
+    },
+    // 错误警告
+    error: function(title, content) {
+        this.log(title, content, 'yellow', 'red');
     }
 }

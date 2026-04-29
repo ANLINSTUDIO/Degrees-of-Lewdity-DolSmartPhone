@@ -1,4 +1,4 @@
-console.log("| [SmartPhone] DoL万能的智能手机 正在加载：api.js");
+AsAPI.log("SmartPhone", "正在加载：api.js");
 
 // ==================== 这是提供给其他模块调用的API，工具函数 ====================
 PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefault=false) {  // 遭遇战选项增加API
@@ -46,7 +46,7 @@ PhoneMod.reload = function(open=false) {
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 PhoneMod.getIsLatestVersion = function() {
-    console.log(`| [SmartPhone] 最新版本 ${PhoneMod.latestVersion}`);
+    AsAPI.log("SmartPhone", `最新版本 ${PhoneMod.latestVersion}`);
     const isLatestVersion = PhoneMod.currentVersion === PhoneMod.latestVersion;
     return PhoneMod.latestVersion === null || isLatestVersion
 };

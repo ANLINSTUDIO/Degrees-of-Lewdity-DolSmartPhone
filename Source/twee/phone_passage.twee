@@ -491,7 +491,7 @@
             <<icon "phone/phone_crack.png">><<link [["刷机 | 破解盗窃而来的手机"|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
-    <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop", false)>>
+    <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop")>>
         <br><span class="teal">你的手机正放在老冯这里充电。</span><br>
         <<icon "phone/charge.png">>
         <<link [[返回充电的地方|Second Phone Shop Charge]]>><</link>><br><br>
@@ -634,7 +634,13 @@
     <<capture _Phone>>
         <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
         <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
-        <<icon "phone/phone.png">>
+        <<if $Phone.Using and _Phone.id eq $Phone.Using>>
+            <<icon "phone/phone.png">> [正在使用]
+        <<elseif _Phone.stolen and _Phone.usable>>
+            <<icon "phone/phone_forbid.png">>
+        <<else>>
+            <<icon "phone/phone_disabled.png">>
+        <</if>>
         一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
         <<if _Phone.stolen>>
             <span class="red">由你盗窃而来，</span>
@@ -652,22 +658,70 @@
 
 :: Second Phone Sell Finish
 <<set _Phone to PhoneMod.getPhone($SellPhone)>>
-<<if _Phone.stolen>>
-    “不错不错”
-    <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
-    <<set C.npc.Feng.lust to Math.min(74, C.npc.Feng.lust + 1)>><<note "+ 老冯的欣赏" "green">>
-<<else>>
-    你把手机卖给了老冯，虽然到手的价格比官方店那边低了一点，但是你觉得老冯很开心。
-    <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
-    <!-- 74是 有点信任你 之前的值，即到这个时候必须通过完成任务才能加信任了 -->
-<</if>><br>
+
+<<set _special to 0>>
+<<switch $Phone.FengLine>>
+    <<case undefined>>
+        “我看看……大概就值这么多。”老冯端详了一下你给他的手机，随后拉开沾满油渍的柜子，从中点出了一些沾了手汗和污油的钞票给你。<br><br>
+        你看着这些钞票，皱了皱眉头，最终还是把钱收了起来。<br><br>
+        “钱一直都是钱，就算沾了屎都有人抢着要呢。”老冯注意到了你的神情，对着你爽快地笑了笑。
+        <<set $Phone.FengLine to 1>>
+    <<case 1>>
+        <<if C.npc.Feng.love >= 15>>
+            <<set _special to 1>>
+            你熟练地把手机拿了出来。老冯瞟了一眼手机，有些欣赏地看了看你，一边数着钞票，一边对你说：“你还真是个小行家。”<br><br>
+            老冯点好钞票，把它们叠成一叠，伸出手来递给你。你正要接过去，老冯突然弯下身来又抽出一张钞票，拍在了手心的那叠钱上一并交给你。“合作愉快，多亏了你这些货，让我赚到了不少钱。”<br><br>
+            你抬头看向老冯的眼睛，他正用信任的眼神看着你。虽然你分辨不出他是否真心信任你，但钞票确真不假。你获得了额外的<span class="gold">￡100</span>。<<ggfenglust>>
+            <<money 10000>>
+            <<set $Phone.FengLine to 2>>
+        <</if>>
+    <<case 2>>
+        <<if C.npc.Feng.love >= 30>>
+            <<set _special to 1>>
+            你把手机放在了柜台上。老冯看到这批价值不菲的货后，对你露出了笑容。他清算了一下手机的价值，随后拉开抽屉，仔细挑选了一些还算干净的钞票给你。<br>
+            “我知道你喜欢体面一点，”老冯向你展示了这些钞票的表面，它们看上去都比柜台里的其他钱要干净得多，“希望这些钱能让你觉得稍微干净一点，别总是觉得这一行很脏。”<br><br>
+            你听了这番话，心脏忽然不规律地抽动了几下。你也很难说清自己历来的偷窃行为算些什么。<br>
+            “……我也是需要钱的。”你试图正当化你的行为。<br><br>
+            老冯听了你的话，笑得前仰后合，他毫无顾忌的笑让你感到有些不安。“你果然还只是个新手，这么认真地计较着良心，”老冯拍了拍你的肩膀，“你不去偷那些手机，早晚也会有别人来偷的。这个社会就是这样。”老冯故作高深地盯着你看了好几眼。<<gggfenglust>><br><br>
+            你没有说话。你意识到自己的行为正在和自己的心理作着矛盾而尖锐的斗争。<br><br>
+            “那些有钱的人也是花着不义之财，他们压榨、掠夺、欺骗别人的财富，然后心安理得地过着有钱人的生活，我们也只是把他们抢劫来的财富重新放入市场流通而已。”老冯向你摇了摇手指，眼眸深处放射出一股令你感到敬畏的神色。<br><br>
+            你对此感到无所适从。但你明白，只要选择了走上这条路，就没有回头是岸的机会了。你需要钱。<br>
+            见你陷入思考的认真模样，老冯忽然感到有些无趣了，“好了好了，不聊这些了，要是你哪天被条子盯上了，我老冯还是能帮你的，你只需要好好想想怎么弄到你需要的钱。”老冯使劲揉了揉你的双肩，你疼得不断地向上缩着。
+            <<set $Phone.FengLine to 3>>
+        <</if>>
+<</switch>>
+
+<<if !_special>>
+    <<if _Phone.stolen>>
+        <<if C.npc.Feng.love >= 74>>
+            你把手机放在了柜台上。老冯看到这批价值不菲的货后，对你露出了笑容。他清算了一下手机的价值，随后拉开抽屉，仔细挑选了一些还算干净的钞票给你。
+        <<elseif C.npc.Feng.love >= 30>>
+            你把手机放在了柜台上。老冯看到这批价值不菲的货后，对你露出了笑容。他清算了一下手机的价值，随后拉开抽屉，仔细挑选了一些还算干净的钞票给你。
+            <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
+            <<set C.npc.Feng.lust to Math.min(74, C.npc.Feng.lust + 1)>><<note "+ 老冯的欣赏" "green">>
+        <<elseif C.npc.Feng.love >= 15>>
+            你熟练地把手机拿了出来。老冯瞟了一眼手机，有些欣赏地看了看你，一边数着钞票，一边对你说：“你还真是个小行家。”
+            <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
+            <<set C.npc.Feng.lust to Math.min(74, C.npc.Feng.lust + 1)>><<note "+ 老冯的欣赏" "green">>
+        <<else>>
+            “我看看……大概就值这么多。”老冯端详了一下你给他的手机，随后拉开沾满油渍的柜子，从中点出了一些沾了手汗和污油的钞票给你。
+            <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 1)>><<note "+ 老冯的信任" "green">>
+            <<set C.npc.Feng.lust to Math.min(74, C.npc.Feng.lust + 1)>><<note "+ 老冯的欣赏" "green">>
+        <</if>>
+    <<else>>
+        你把你不要的手机卖给了老冯，虽然到手的价格比官方店那边低了一点。 
+        <<set C.npc.Feng.love to Math.min(74, C.npc.Feng.love + 2)>><<note "++ 老冯的信任" "green">>
+        <!-- 74是 有点信任你 之前的值，即到这个时候必须通过完成任务才能加信任了 -->
+    <</if>>
+<</if>><br><br>
 <<set $Phone.SellMoney to PhoneMod.SellPhone($SellPhone, true)>>
 <<money $Phone.SellMoney>>
-你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
+你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br><br>
 <<if validArray($Phone.Owned)>>
-    <<highicon>><<link [[继续|Second Phone Sell]]>><</link>><br>
+    <<include "Second Phone Sell">>
+<<else>>
+    <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 <</if>>
-<<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack
 <<for _Phone range $Phone.Owned>>
@@ -700,6 +754,65 @@
 <</if>>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
+:: Feng Task 1 0
+你来到了地下手机店。与以往不同的是，你看到角落里堆了许多箱子，老冯正双手叉着腰对着它们沉思，一副非常伤脑的样子。听到你进来的声音，老冯转过头去。<br><br>
+“你来了啊，小扒手。”老冯浅浅地笑了笑，随后指着箱子对你说：“这几天出货有点困难，这批手机都被警方登记严抓了，我的老客户们都不敢碰。”老冯露出了一副无可奈何的表情。“你认识兰德里吗，经常在酒吧里出现的那个，处理脏货的家伙。如果你方便的话，帮我把这些东西带给他。我已经和他联系过了，你直接拿给他就行。”<br><br>
+
+这批货看起来并不安全，如果选择帮忙，你很有可能在中途被警方截获。这批脏货的价值足够你被判上相对严重的罪行。<br><br>
+<<link [[接受|Feng Task 1 1]]>><</link>>| <span class="purple">如果选择接受，玩家在街上受到警方调查的可能性将<span class="red">增加约25%</span>，并且如果被带走调查，盗窃犯罪金额将增加10000￡，这将并入罪行结算的数值。</span>
+<br>
+<<link [[拒绝|Feng Task 1 -1]]>><</link>>| <span class="red">如果第一次选择拒绝，此后将不再触发老冯的委托</span>
+:: Feng Task 1 1
+“好吧，我来帮你这个忙。”你点头答应。<br><br>
+“太好了。不愧是我看中的家伙。”老冯对你赞赏地点了点头，随后又想起了些什么，用叉着的手拍了拍他的腰，“事成之后，我会给你酬劳的。”<br>
+“天呐，老冯你看上去可不是这么好的人。”你为老冯这种地下人员的契约精神而感到惊讶。<br><br>
+“那可是，我老冯可不是那种坑蒙拐骗的混子，”老冯得意地拍了拍胸脯，“毕竟也是做过老大的人。”<br><br>
+<<link [[继续|Second Phone Shop]]>><</link>>
+:: Feng Task 1 -1
+不行，你都知道这批货很危险，还要把它们栽给我？”你摇了摇头。<br><br>
+“好吧，我再想想办法。”老冯扭回了头，又恢复了垂头丧气的模样。<br><br>
+你感到了一丝歉疚，不过也许你的安全更重要。<br><br>
+<<link [[继续|Second Phone Shop]]>><</link>>
+:: Feng Task 1 Landry 0
+“我有一批货要给你，”你坐到兰德里旁边的位置上，“是老冯给你的。”<br><br>
+“老冯？哦，他给我发过消息了。交给我吧。”兰德里招呼来了两个小弟，你将手机交给了他们。<br><br>
+“不过，没想到你也会认识老冯那家伙。不过想想也是。”兰德里看着小弟们带着货从酒吧后门离开，又转向你诡秘地笑了笑。<br><br>
+你对这奇怪的目光感到一丝不适。“是啊……老冯怎么了吗？”<br>
+兰德里没有说话，又转回头喝了一口闷酒。<br><br>
+<<link [[追问老冯的来历|Feng Task 1 Landry 1]]>><</link>><br>
+<<link [[询问老冯和兰德里的关系|Feng Task 1 Landry 2]]>><</link>><br>
+<<link [[不说话|Feng Task 1 Landry 3]]>><</link>>
+:: Feng Task 1 Landry 1
+“老冯是什么人？”你好奇地问。<br><br>
+“嗯……他以前还是个小贼，后来拉了一个盗窃团队，直到团队的规模足够他不必亲自下手盗窃了，于是就开了一家地下手机店，专门从事盗窃手机的处理。”兰德里煞有其事地想了想，开口说道，“不过之前他们团队有个人干活不够小心，被警方抓住了证据，一整个团队都锒铛入狱了。”<br>
+“那他为什么没被抓走？”<br>
+“还得是他运气好，警方没发现和他有关的证据。那些被抓进去的家伙嘴还算严实，没把老冯供出来。”<br><br>
+你想到在学校学过的知识。如果对犯罪事实供认不讳并且协助警方的话，获得减刑的机会会大很多。如果你是那个团队的成员，你很可能会为了明哲保身而把老冯招供出来。想到这里，你问道：<br><br>
+“为什么没有招供老冯？”<br><br>
+兰德里停顿了一会儿，思索了一番，字斟句酌地回答：“老冯他……可能是帮忙抚养了那些人的老妈之类的吧。”听到这里，你感到有些诧异，不敢相信自己看到的这个职业扒手竟然是这样的人。虽然你从未有过家人，但你从悉尼身上能模糊地感受到这种感觉。你不免钦佩起了老冯。<br><br>
+兰德里注意到了你眼中落寞的情感，忙打趣道：“也可能是他绑架了他们的老妈吧，这我也不清楚。你别把老冯想得那么高尚。”<br><br>
+你礼貌地笑了笑。<br><br>
+<<link [[继续|Pub Landry]]>><</link>>
+:: Feng Task 1 Landry 2
+“你和老冯是什么关系？”你好奇地问。<br><br>
+“嗯……他以前还在做小偷的时候经常把货卖给我，直到他学精了，自己去找到了那些买家，之后就只有偶尔找我处理点货。就像现在这样。”兰德里摇了摇酒杯，“不过他有一次犯了错，差点还被我切了手指。”<br><br>
+“这么说，你以前是他的头头？”联想到老冯平日里一副老资历的模样，你感到一丝滑稽。<br><br>
+“算是吧，不过他也只是想利用我的关系。现在只要他别影响到我的生意，我们姑且也算合作吧。”兰德里思考了一会儿，回答道。<br><br>
+<<link [[继续|Pub Landry]]>><</link>>
+:: Feng Task 1 Landry 3
+“难道你还有什么事吗？” 兰德里放下酒杯看着你。<br><br>
+<<link [[追问老冯的来历|Feng Task 1 Landry 1]]>><</link>><br>
+<<link [[询问老冯和兰德里的关系|Feng Task 1 Landry 2]]>><</link>><br>
+<<link [[离开|Pub Landry]]>><</link>>
+:: Feng Task 1 2
+你推开店门，只见老冯不知从哪儿搞来了一副茶盘，提着一只瓷壶，专心致志地泡着茶。见你回来，老冯微微一笑，随即自信地一扬手，为你沏了半杯茶。你看着杯中的黄色液体，小心翼翼地抿了一口，茶的香气混合着水蒸气冲进了你的鼻中，连同口中微苦的味道一并刺激着你的感官。你感到相当舒畅。<br><br>
+“这可是中国的传统饮品，你肯定没喝过。”老冯见你陶醉的样子，露出了自豪的微笑。“这样算起来，我老冯也得是个中国人。”<br><br>
+你品鉴了几口，随后告诉老冯事情已经顺利完成了。老冯一边听一边用白色瓷盖拨弄着冲壶中浮起的茶叶，随后满意地“嗯”的一声，将瓷盖利落地一扣，提起冲壶便又沏了一杯茶，痛快地一饮而尽。<br><br>
+“不愧是我的好帮手，祝我们合作愉快。”老冯在裤兜里摸索了几下，抽出了几张钞票，点也没点地放在了你面前。“算是一点意思，也希望下次你能多多关照了。”<br><br>
+你获得了<span class="gold">￡800</span><<money 80000>>。<br><br>
+<<link [[继续|Second Phone Shop]]>><</link>>
+
+
 
 
 :: ========AtPlace========
@@ -711,7 +824,7 @@
 <<else>>
     <<icon "phone/drawer.png">><span class="teal">这里有一个床头柜，你也许可以把一些贵重的东西放在这里。</span>
 <</if>><br>
-<<if PhoneMod.isPhoneChargeUnguardedIn("Bedroom", false)>>
+<<if PhoneMod.isPhoneChargeUnguardedIn("Bedroom")>>
     <<icon "phone/charge.png">>
     <<link [[返回充电的地方|Bedroom Charge]]>><</link>>
 <<elseif PhoneMod.isCarryingUsablePhone()>>
@@ -1134,27 +1247,32 @@
 
 :: ==========Charge========== [widget]
 <<widget "charge">>
-    <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn(_args[0])>>
+    <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn(_args[0], true)>>
     <<if _UnguardedCharge>>
         <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
         <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
-        你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
-        <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
-            <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
-            <<if _UnguardedChargeHours>>
-                <br><br>
-                你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
-            <</if>>
+        <<if _UnguardedCharge.beenStolen>>
+            你记得你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电来着， <span class="red">但是你找不到它了</span> ！<br><br>
+            你的手机被盗，而且你还找不到是谁偷的。<br><br>
         <<else>>
-            当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
-            <<if _UnguardedChargeHours>>
-                <br><br>
-                你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
-                <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
-                <<phonewear _UnguardedCharge.wear>>
-            <</if>>
-        <</if>><br><br>
-        <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+            你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
+            <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
+                <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
+                <<if _UnguardedChargeHours>>
+                    <br><br>
+                    你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
+                <</if>>
+            <<else>>
+                当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
+                <<if _UnguardedChargeHours>>
+                    <br><br>
+                    你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
+                    <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
+                    <<phonewear _UnguardedCharge.wear>>
+                <</if>>
+            <</if>><br><br>
+            <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+        <</if>>
     <<else>>
         <<set _phone to PhoneMod.getUsingPhone()>>
         <<if _phone>>
@@ -1175,16 +1293,18 @@
 <</widget>>
 <<widget "phonecharge">>
     <<if _args.length gt 0>>
-        | <span class="green">+<<print Math.round(eval(_args[1])/_args[0].newnessmax*100)>>%</span>
+        <<set _charge to Math.round(eval(_args[1])/_args[0].newnessmax*100)>>
+        <<note "+_charge%" "green">>
     <</if>>
 <</widget>>
 <<widget "phonewear">>
     <<if _args.length gt 0 and _args[0] gt 0>>
-        | <span class="red">+<<print Math.round(_args[0])>>手机损耗</span>
+        <<set _wear to Math.round(_args[0])>>
+        <<note "+_wear手机损耗" "red">>
     <</if>>
 <</widget>>
 :: Ocean Breeze Charge Link
-<<if PhoneMod.isPhoneChargeUnguardedIn("OceanBreeze", false)>>
+<<if PhoneMod.isPhoneChargeUnguardedIn("OceanBreeze")>>
     <span class="teal">你的手机正放在咖啡馆的这个角落充电。</span><br>
     <<icon "phone/charge.png">>
     <<link [[返回充电的地方|Ocean Breeze Charge]]>><</link>>
@@ -1213,12 +1333,12 @@
 <<icon "unused_stonebuilding1.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
 
 :: Library Charge Link
-<<if PhoneMod.isPhoneChargeUnguardedIn("Library", false)>>
+<<if PhoneMod.isPhoneChargeUnguardedIn("Library")>>
     <span class="teal">你的手机正放在柜台的后面充电。</span><br>
-    <<if V.npc.contains("Sydney") and $Phone.SydneyLibraryChargeAsked is undefined>>
+    <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
         <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
     <<else>>
-        <<if V.npc.contains("Sydney")>>
+        <<if _sydney_location is "library">>
             <<rng 10>>
             <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion is 0>>
                 你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
@@ -1238,7 +1358,7 @@
     <<run PhoneMod.Guide.startTutorial("charge")>>
     <span class="teal">你注意到柜台后面有一个插座，也许可以把手机放在这里充电。</span><br>
     <<icon "phone/charge.png">>
-    <<if V.npc.contains("Sydney") and $Phone.SydneyLibraryChargeAsked is undefined>>
+    <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
         <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>>
     <<else>>
         <<link [[为手机充电|Library Charge]]>><</link>>
@@ -1248,9 +1368,10 @@
 <</if>>
 <br><br>
 :: Library Charge
+<<sydneySchedule>>
 <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn("Library")>>
 <<if _UnguardedCharge>>
-    <<if V.npc.contains("Sydney")>>
+    <<if _sydney_location is "library">>
         <<if _UnguardedChargeHours gt 0>>
             “看吧！还好好的呢！”悉尼骄傲地看着你，“我一直看着呢！”<br><br>
         <<else>>
@@ -1258,7 +1379,7 @@
         <</if>>
     <</if>>
 <<else>>
-    <<if V.npc.contains("Sydney")>>
+    <<if _sydney_location is "library">>
         “是不是很贵重啊？”悉尼嘟起嘴看着你把充电头插进插座，“我……可以帮你看着的…………如果我在这里的话”<br><br>
     <</if>>
 <</if>>
@@ -1497,7 +1618,11 @@
             <</if>>
         <</for>>
     <<else>>
-        请所在的位置暂不支持DD打车服务。
+        <div style="width: 100%;height: 80%;text-align: center;display: flex;flex-direction: column;align-items: center;justify-content: center;">
+            <img src="img\misc\icon\prison_run.png">
+            当前所在的位置暂不支持DD打车服务。<br>
+            <span class="black">当前位置信号差，请移步空旷地带再重新试试呢……</span>
+        </div>
     <</if>>
 <</widget>>
 

@@ -14,6 +14,10 @@
 							<span class="lblue">有点欣赏你</span>
 						<<elseif C.npc.Feng.love gte 50>>
 							对你<span class="purple">印象很深</span>
+						<<elseif C.npc.Feng.love gte 30>>
+							对你<span class="purple">很感兴趣</span>
+						<<elseif C.npc.Feng.love gte 15>>
+							对你<span class="purple">期待与你的合作</span>
 						<<elseif C.npc.Feng.love gte 1>>
 							对你<span class="red">保持着警惕</span>
 						<</if>>
