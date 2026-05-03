@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>DoL · 摄像任务编辑器</title>
+  <style>
+    :root {
+      --bg-page: #f2f1ed;
+      --bg-surface: #e6e5e0;
+      --bg-lighter: #f7f7f4;
+      --text-primary: #26251e;
+      --text-secondary: rgba(38, 37, 30, 0.55);
+      --text-tertiary: rgba(38, 37, 30, 0.35);
+      --accent: #f54e00;
+      --accent-hover: #cf2d56;
+      --positive: #2e7d32;
+      --negative: #c62828;
+      --success: #1f8a65;
+      --border-light: oklab(0.263 -0.002 0.012 / 0.1);
+      --border-medium: oklab(0.263 -0.002 0.012 / 0.2);
+      --shadow-card: 0 28px 70px rgba(0,0,0,0.14), 0 14px 32px rgba(0,0,0,0.1), 0 0 0 1px oklab(0.263 -0.002 0.012 / 0.1);
+      --radius: 12px;
+      --sidebar-width: 280px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:var(--bg-page);color:var(--text-primary);
+      font-family:Georgia,'Times New Roman',ui-serif,serif;
+      display:flex;min-height:100vh;
+    }
+    button{font-family:Inter,system-ui,sans-serif;cursor:pointer;}
+    input,textarea,select{font-family:inherit;}
+    .app-layout{display:flex;width:100%;min-height:100vh;position:relative;}
+
+    /* 侧边栏 */
+    .sidebar{
+      width:var(--sidebar-width);background:var(--bg-surface);
+      border-right:1px solid var(--border-light);
+      flex-shrink:0;display:flex;flex-direction:column;
+      transition:transform 0.25s ease;
+      z-index:20;padding:1.2rem;
+    }
+    .sidebar-header{display:flex;gap:8px;margin-bottom:1rem;}
+    .sidebar-header button{flex:1;white-space:nowrap;}
+    .task-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px;}
+    .task-item{
+      padding:0.7rem;border-radius:8px;cursor:pointer;
+      border:1px solid transparent;background:var(--bg-lighter);
+      transition:all 0.15s;
+    }
+    .task-item.active{background:#fff;border-color:var(--accent);}
+    .task-item h4{font-size:0.9rem;font-weight:500;margin-bottom:0.2rem;color:var(--text-primary);}
+    .task-item .meta{font-size:0.7rem;color:var(--text-tertiary);}
+    .no-tasks{font-size:0.8rem;color:var(--text-tertiary);text-align:center;padding:1rem;}
+
+    /* 主区域 */
+    .main{
+      flex:1;display:flex;flex-direction:column;
+      max-width:860px;width:100%;margin:0 auto;padding:2rem 1.5rem;
+    }
+    .card{
+      background:var(--bg-surface);border-radius:var(--radius);
+      border:1px solid var(--border-light);padding:1.5rem;margin-bottom:1.5rem;
+    }
+    .card-header h2{font-size:1.4rem;font-weight:400;}
+    label{
+      display:inline-flex;align-items:center;gap:0.4rem;
+      font-size:0.75rem;text-transform:uppercase;color:var(--text-secondary);
+      margin-bottom:0.25rem;
+    }
+    input,textarea{
+      background:var(--bg-lighter);border:1px solid var(--border-light);
+      border-radius:10px;padding:0.6rem 0.8rem;width:100%;font-size:0.9rem;
+    }
+    input:focus,textarea:focus{outline:none;border-color:var(--border-medium);box-shadow:0 4px 16px rgba(0,0,0,0.05);}
+    .slider-group{display:flex;gap:1rem;align-items:center;}
+    .slider-group input[type=range]{flex:1;accent-color:var(--accent);}
+    .risk-value{width:80px;text-align:center;font-family:monospace;}
+    .fame-section h3{font-size:0.85rem;margin-bottom:0.4rem;color:var(--text-secondary);}
+    .fame-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:0.4rem;}
+    .fame-chip{
+      background:var(--bg-lighter);border:1px solid var(--border-light);border-radius:999px;
+      padding:0.3rem 0.5rem;text-align:center;font-size:0.75rem;cursor:pointer;
+    }
+    .fame-chip.positive{background:rgba(46,125,50,0.12);}
+    .fame-chip.negative{background:rgba(198,40,40,0.12);}
+    .fame-chip.selected.positive{background:var(--positive);color:#fff;}
+    .fame-chip.selected.negative{background:var(--negative);color:#fff;}
+    .kv-list{display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem;}
+    .kv-row{display:flex;gap:0.4rem;align-items:center;}
+    .kv-row input{flex:1;}
+    .icon-btn{
+      background:var(--bg-surface);border:1px solid var(--border-light);border-radius:8px;
+      width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;
+      font-size:1rem;color:var(--text-secondary);flex-shrink:0;
+    }
+    .btn-primary,.btn-outline,.btn-success{
+      border-radius:999px;padding:0.5rem 1.2rem;font-size:0.8rem;border:none;
+    }
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-outline{background:transparent;border:1px solid var(--border-medium);color:var(--text-secondary);}
+    .btn-success{background:var(--success);color:#fff;}
+
+    .comment-section{background:var(--bg-lighter);border-radius:var(--radius);padding:1rem;margin-top:1rem;}
+    .comment-item{display:flex;gap:8px;padding:0.5rem;border-bottom:1px solid var(--border-light);border-radius:6px;cursor:pointer;}
+    .comment-item:hover{background:rgba(245,78,0,0.04);}
+    .comment-avatar{width:32px;height:32px;border-radius:50%;background:var(--bg-surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:bold;color:var(--accent);}
+    .comment-body{flex:1;}
+    .comment-author-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+    .comment-author{font-size:0.7rem;color:var(--text-secondary);}
+    .effect-badge{background:var(--accent);color:#fff;font-size:0.6rem;border-radius:10px;padding:1px 6px;margin-left:4px;}
+    .comment-actions{display:flex;gap:4px;}
+    .action-btn{background:transparent;border:1px solid var(--border-light);border-radius:999px;padding:0.1rem 0.6rem;font-size:0.65rem;color:var(--text-secondary);}
+    .action-btn:hover{background:#fff;border-color:var(--border-medium);}
+    .effect-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+    .effect-cat-btn{
+      background:var(--bg-surface);border:1px solid var(--border-light);border-radius:20px;
+      padding:3px 10px;font-size:0.7rem;
+    }
+    .effect-cat-btn.has-value{background:var(--accent);color:#fff;}
+    .sub-panel{
+      position:absolute;background:#fff;border:1px solid var(--border-medium);border-radius:10px;
+      padding:4px;display:flex;gap:4px;z-index:30;box-shadow:var(--shadow-card);
+    }
+    .sub-option{
+      background:var(--bg-lighter);border:1px solid var(--border-light);border-radius:14px;
+      padding:2px 8px;font-size:0.65rem;cursor:pointer;
+    }
+    .sub-option.selected{background:var(--accent);color:#fff;}
+    .toast{position:fixed;top:20px;right:20px;background:var(--accent);color:#fff;padding:0.6rem 1.2rem;border-radius:30px;z-index:9999;opacity:0;transition:0.2s;}
+    .toast.show{opacity:1;}
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(38,37,30,0.3);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:100;}
+    .modal-card{background:var(--bg-page);border-radius:18px;max-width:540px;width:92%;padding:1.8rem;box-shadow:var(--shadow-card);}
+    .save-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 4px 20px rgba(31,138,101,0.3);z-index:50;border:none;}
+    .mobile-sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:25;gap:8px;}
+    .mobile-sidebar-toggle button{width:40px;height:40px;border-radius:50%;background:var(--bg-surface);border:1px solid var(--border-medium);}
+    @media(max-width:768px){
+      .sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%);z-index:20;box-shadow:var(--shadow-card);}
+      .sidebar.open{transform:translateX(0);}
+      .mobile-sidebar-toggle{display:flex;}
+      .main{padding:1rem;}
+      .save-fab{bottom:16px;right:16px;}
+    }
+    .hidden{display:none;}
+    .flex-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- 移动端切换按钮 -->
+  <div class="mobile-sidebar-toggle">
+    <button id="menuToggleBtn">☰</button>
+    <button id="mobileNewTaskBtn">＋</button>
+  </div>
+
+  <!-- 侧边栏 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <button class="btn-outline" id="newTaskBtn">＋ 新建</button>
+      <button class="btn-outline" id="importTaskBtn">📥 导入</button>
+    </div>
+    <div class="task-list" id="taskList"></div>
+  </aside>
+
+  <!-- 主编辑区 -->
+  <main class="main" id="mainContent">
+    <div class="card">
+      <div class="card-header"><h2>任务元数据</h2></div>
+      <div><label>发布文案</label><textarea id="taskMsg" rows="2"></textarea></div>
+      <div class="mt-3"><label>任务简述</label><input id="taskDesc"></div>
+      <div class="mt-3"><label>风险 (1-100)</label>
+        <div class="slider-group"><input type="range" id="riskSlider" min="1" max="100"><input type="number" id="riskInput" class="risk-value" min="1" max="100"></div>
+      </div>
+      <div class="flex-row mt-3">
+        <label><input type="checkbox" id="hideCheck"> 未完成时隐藏（特殊任务）</label>
+        <label><input type="checkbox" id="uncommonCheck"> 不出现普通评论（通常是没有使自己入镜）</label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>相关名声</h2></div>
+      <div class="fame-section"><h3>正面</h3><div class="fame-grid" id="famePositive"></div></div>
+      <div class="fame-section"><h3>负面</h3><div class="fame-grid" id="fameNegative"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>完成条件</h2></div>
+      <div id="conditionsList" class="kv-list"></div>
+      <button class="btn-outline mt-2" id="addConditionBtn">+ 条件</button>
+      <div class="flex-row mt-2" style="gap:6px;">
+        <button class="quick-key-btn" data-key="$" data-value="() => { return |*|}" data-action="cursor">$</button>
+        <button class="quick-key-btn" data-key="passage" data-action="focus">passage</button>
+        <button class="quick-key-btn" data-key="$v" data-action="select" data-select="v">$v</button>
+        <button class="quick-key-btn" data-key="_v" data-action="select" data-select="v">_v</button>
+        <button class="quick-key-btn" data-key="v非" data-action="select" data-select="v">v非</button>
+        <span class="quick-separator"></span>
+        <button class="quick-key-btn" data-key="$havingOrgasm" data-value="true">正在高潮</button>
+        <button class="quick-key-btn" data-key="exposed" data-value="1">一级暴露</button>
+        <button class="quick-key-btn" data-key="combat" data-value="1">正在遭遇战</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>评论区</h2></div>
+      <div class="comment-section" id="commentSection"><div id="commentList"></div></div>
+      <div class="input-area" style="margin-top:1rem;">
+        <textarea id="commentInput" rows="2" placeholder="输入评论…"></textarea>
+        <div class="flex-row" style="justify-content:space-between;margin-top:8px;">
+          <div class="effect-bar" id="effectBar"></div>
+          <div class="flex-row">
+            <button class="btn-outline" id="cancelReplyBtn2" style="display:none;">取消回复</button>
+            <button class="btn-primary" id="publishBtn">📝 发布</button>
+          </div>
+        </div>
+        <div class="reply-indicator" id="replyIndicator" style="display:none;">↩️ 回复 <strong id="replyTargetName"></strong><button class="cancel-reply-btn" id="cancelReplyBtn">✕</button></div>
+      </div>
+    </div>
+    <div class="card export-area">
+      <div class="flex-row">
+        <button class="btn-primary" id="exportBtn">📋 生成对象</button>
+        <button class="btn-outline" id="copyBtn">复制</button>
+      </div>
+      <pre id="outputPreview" class="mt-3">// 点击生成</pre>
+    </div>
+  </main>
+</div>
+
+<button class="save-fab" id="saveFabBtn" title="保存任务">💾</button>
+
+<!-- 各种模态框 -->
+<div id="editModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card"> ... </div>
+</div>
+<div id="confirmModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card" style="max-width:360px;text-align:center;">
+    <p id="confirmMessage"></p>
+    <div class="flex-row" style="justify-content:center;gap:12px;">
+      <button class="btn-outline" id="confirmCancel">取消</button>
+      <button class="btn-primary" id="confirmOk">确定</button>
+    </div>
+  </div>
+</div>
+<div id="importModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <h3>📥 导入任务数据</h3>
+    <textarea id="importJson" rows="12" placeholder="粘贴JSON..."></textarea>
+    <div class="flex-row mt-3" style="justify-content:flex-end;">
+      <button class="btn-outline" id="importCancel">取消</button>
+      <button class="btn-primary" id="importConfirm">导入</button>
+    </div>
+  </div>
+</div>
+<div id="unsavedModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card" style="max-width:380px;text-align:center;">
+    <p>当前任务有未保存的更改</p>
+    <div class="flex-row mt-3" style="justify-content:center;gap:12px;">
+      <button class="btn-outline" id="unsavedSave">保存</button>
+      <button class="btn-outline" id="unsavedDiscard">不保存</button>
+      <button class="btn-primary" id="unsavedCancel">取消</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

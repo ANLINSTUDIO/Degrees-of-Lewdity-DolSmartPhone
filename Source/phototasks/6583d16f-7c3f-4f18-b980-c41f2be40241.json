@@ -1,0 +1,158 @@
+{
+  "msg": "洗澡~洗澡~洗澡澡❤️",
+  "taskDesc": "在家里洗澡时<span class='pink'>自慰达到高潮</span>",
+  "risk": 1,
+  "fames": [
+    "sex"
+  ],
+  "conditions": {
+    "passage": "Bath Masturbation",
+    "$havingOrgasm": "true"
+  },
+  "comments": [
+    [
+      "洗完澡都是香香的哦",
+      "<<lstress>><<stress -1>>"
+    ],
+    [
+      "这阿黑颜……顶爆了！",
+      "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"
+    ],
+    [
+      "洗澡还要发情，你真是没救了",
+      "<<ggstress>><<stress 3>><<ggtrauma>><<trauma 10>>"
+    ],
+    [
+      "我愿意出200高价购买这位女士的洗澡水，有人与我竞价吗",
+      "<<garousal>><<arousal 30>>",
+      [
+        [
+          "没钱还想吃好的？我出500",
+          "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"
+        ]
+      ]
+    ],
+    [
+      "()=>V.player.gender==\"f\"&&V.player.penisExist",
+      [
+        "我去，下面那是根啥？",
+        "<<garousal>><<arousal 30>>",
+        [
+          [
+            "应该是八级甲吧",
+            "<<garousal>><<arousal 30>>",
+            [
+              [
+                "我感觉不像",
+                "<<ggarousal>><<arousal 100>>",
+                [
+                  [
+                    "破案了，lz其实是扶她",
+                    "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>",
+                    [
+                      [
+                        "没我长",
+                        "<<insecurity \"penis_small\" 1>><<ginsecurity \"penis_small\">>"
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ],
+    [
+      "想玩浴室play",
+      "<<garousal>><<arousal 30>>",
+      [
+        [
+          "加我一个",
+          "<<garousal>><<arousal 30>>",
+          [
+            [
+              "做的时候记得喊我名字",
+              "<<ggarousal>><<arousal 100>>"
+            ]
+          ]
+        ]
+      ]
+    ],
+    [
+      "身材管理方法发一个",
+      "<<lstress>><<stress -1>>",
+      [
+        [
+          "楼主拿刀砍出来的",
+          "<<lstress>><<stress -1>>",
+          [
+            [
+              "楼主腰比我脖子都细",
+              "<<lstress>><<stress -1>>"
+            ]
+          ]
+        ],
+        [
+          "也就一般吧",
+          "<<gstress>><<stress 1>>"
+        ]
+      ]
+    ],
+    [
+      "()=>V.player.gender==\"f\"",
+      [
+        "妹妹看看b",
+        "<<garousal>><<arousal 30>>",
+        [
+          [
+            "不准看我老婆",
+            "<<garousal>><<arousal 30>>",
+            [
+              [
+                "那我更喜欢了",
+                "<<ggarousal>><<arousal 100>>",
+                [
+                  [
+                    "我去还有ntr",
+                    "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "还有人没看过这骚货的？",
+            "<<gstress>><<stress 1>>"
+          ]
+        ]
+      ],
+      [
+        "弟弟看看鸟",
+        "<<garousal>><<arousal 30>>",
+        [
+          [
+            "不准看我老公",
+            "<<garousal>><<arousal 30>>",
+            [
+              [
+                "那我更喜欢了",
+                "<<ggarousal>><<arousal 100>>",
+                [
+                  [
+                    "我去还有ntr",
+                    "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"
+                  ]
+                ]
+              ]
+            ]
+          ],
+          [
+            "还有人没看过这骚货的？",
+            "<<gstress>><<stress 1>>"
+          ]
+        ]
+      ]
+    ]
+  ]
+}

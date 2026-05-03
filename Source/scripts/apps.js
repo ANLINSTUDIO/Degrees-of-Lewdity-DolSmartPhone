@@ -1166,7 +1166,7 @@ PhoneMod.yenotesCheck = function() {
                 })
             }
 
-            if (yenote.msg != null) {  // 自定义文章没有打赏和评论
+            if (yenote.img != null) {  // 自定义文章没有打赏和评论
                 if (!yenote.price) {  // 判定在每一位喜欢，百分之10的概率获得打赏
                     for (let index = 0; index < likeInc; index++) {
                         if (Math.random()*100 <= PhoneMod.打赏概率百分之) {
