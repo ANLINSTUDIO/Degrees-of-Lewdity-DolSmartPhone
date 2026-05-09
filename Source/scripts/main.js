@@ -560,12 +560,14 @@ PhoneMod.Phone = class {
 // === 手机控制 ==========================================
 PhoneMod.BuyPhone = function(model) { // 购买一部手机
     const phone = new PhoneMod.Phone().newBuy(model);
+    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     PhoneMod.changeUsingPhone();
     return phone;
 }
 PhoneMod.BuySecondPhone = function(model, newnessK) { // 购买一部二手手机
     const phone = new PhoneMod.Phone().newBuySecond(model, newnessK);
+    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     PhoneMod.changeUsingPhone();
     V.Phone.SecondPhoneShopGoods = V.Phone.SecondPhoneShopGoods.filter(item => !(item.model === model && item.newnessK === newnessK));
@@ -584,6 +586,7 @@ PhoneMod.RefreshSecondPhone = function() {
 }
 PhoneMod.StolePhone = function() { // 盗窃一部手机
     const phone = new PhoneMod.Phone().newStolen();
+    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     return phone;
 }
@@ -606,7 +609,8 @@ PhoneMod.SellPhone = function(id, feng=false) { // 出售手机
     }
     return 0
 }
-PhoneMod.AppendPhone = function(phone) { // 删除手机
+PhoneMod.AppendPhone = function(phone) { // 加入手机
+    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     PhoneMod.changeUsingPhone();
 }
@@ -775,7 +779,7 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
             const fromStartedText = AsAPI.getFriendlyTimeText(ageHoursFromStarted)
 
             var beenStolen = false;
-            if (PhoneMod.手机充电中被盗地点.includes(position)) {
+            if (!PhoneMod.手机充电中安全地点.includes(position)) {
                 if (position === "Library" && sydneySchedule() === undefined && T.sydney_location === "library") {
                 } else {
                     beenStolen = Math.random() <= PhoneMod.手机充电中被盗概率;
@@ -791,29 +795,33 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
     return false
 }
 PhoneMod.PhonePowerPass = function() {
-    if (V.Phone.PowerPassLast) {
-        const minutesPassed = (Time.date.timeStamp - V.Phone.PowerPassLast.timeStamp) / 60; // 分钟差
-        AsAPI.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * PhoneMod.自然电量损失每分钟}`);
-        if (minutesPassed > 0) {
-            PhoneMod.PhoneConsumption(minutesPassed * PhoneMod.自然电量损失每分钟);
-        } else {
-            return;
-        }
-        
-        if (V.Phone.Charging && V.Phone.PowerBank.newness > 0) {
-            const phone = PhoneMod.getUsingPhone();
-            let chargingValue = minutesPassed * PhoneMod.充电宝充电每分钟;
-            // 计算最低充电量（预计充电，手机剩余充电空间，充电宝剩余电量）
-            chargingValue = Math.min(chargingValue, phone.newnessmax - phone.newness, V.Phone.PowerBank.newness);
-            PhoneMod.PhoneCharge(chargingValue, phone);
-            V.Phone.PowerBank.newness -= chargingValue;
-            AsAPI.log("SmartPhone", `充电宝充电: ${chargingValue}`);
-            if (V.Phone.PowerBank.newness <= 0) {
-                PhoneMod.PhoneCharging(false, true);
+    if (V.Phone.Using) {
+        if (V.Phone.PowerPassLast) {
+            const minutesPassed = (Time.date.timeStamp - V.Phone.PowerPassLast.timeStamp) / 60; // 分钟差
+            AsAPI.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * PhoneMod.自然电量损失每分钟}`);
+            if (minutesPassed > 0) {
+                PhoneMod.PhoneConsumption(minutesPassed * PhoneMod.自然电量损失每分钟);
+            } else {
+                return;
+            }
+            
+            if (V.Phone.Charging && V.Phone.PowerBank && V.Phone.PowerBank.newness > 0) {
+                const phone = PhoneMod.getUsingPhone();
+                let chargingValue = minutesPassed * PhoneMod.充电宝充电每分钟;
+                // 计算最低充电量（预计充电，手机剩余充电空间，充电宝剩余电量）
+                chargingValue = Math.min(chargingValue, phone.newnessmax - phone.newness, V.Phone.PowerBank.newness);
+                PhoneMod.PhoneCharge(chargingValue, phone);
+                V.Phone.PowerBank.newness -= chargingValue;
+                AsAPI.log("SmartPhone", `充电宝充电: ${chargingValue}`);
+                if (V.Phone.PowerBank.newness <= 0) {
+                    PhoneMod.PhoneCharging(false, true);
+                }
             }
         }
+        V.Phone.PowerPassLast = Time.date;
+    } else {
+        V.Phone.Charging = false
     }
-    V.Phone.PowerPassLast = Time.date;
 }
 // === 手机存放 ====================================
 PhoneMod.PhoneStore = function(position, id) {
@@ -976,7 +984,7 @@ PhoneMod.PhoneCharging = function(charging=true, batterysonly=false) {
 PhoneMod.PhoneChargingInit = function() {
     const line = Array.prototype.slice.call(document.querySelectorAll("#smart-phone-charge-line"), -1)[0];
     const batterys = document.querySelectorAll("#battery");
-    if (V.Phone.PowerBank) {
+    if (V.Phone.PowerBank && V.Phone.Using) {
         if (V.Phone.Charging) {
             if (V.Phone.PowerBank.newness > 0) {  // 充电宝有电才显示充电
                 batterys.forEach(battery => battery.classList.add("battery_charge"))

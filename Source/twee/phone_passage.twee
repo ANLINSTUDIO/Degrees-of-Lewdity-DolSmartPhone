@@ -7,6 +7,29 @@
         <<note "一张照片保存到了你的相册" "lblue">>
     <</if>>
 <</widget>>
+<<widget "phonetext">>
+    <<if _args.length > 1>>
+        <<set _Phone to _args[0]>>
+    <</if>>
+    <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
+    <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
+    <<if $Phone.Using and _Phone.id eq $Phone.Using>>
+        <<icon "phone/phone.png">> [正在使用]
+    <<elseif _Phone.stolen and _Phone.usable>>
+        <<icon "phone/phone_forbid.png">>
+    <<else>>
+        <<icon "phone/phone_disabled.png">>
+    <</if>>
+    一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
+    <<if _Phone.stolen>>
+        <span class="red">由你盗窃而来，</span>
+        <<if _Phone.usable>>
+            <span class="green">但你已经破解了密码，</span>
+        <</if>>
+    <</if>>
+    官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
+    现在可以以<span class="gold">£_money</span>的价格在
+<</widget>>
 :: ==== SC Phone Shop ====
 :: Shopping Centre Phone Shop Link
 <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop]]>><<pass 1>><</link>>
@@ -14,13 +37,38 @@
 :: Shopping Centre Phone Shop
 你在手机店里。五颜六色，各种款式的手机陈列在柜台。
 <br><br>
-“您好，欢迎光临，请问是需要购买手机还是出售二手机？”一名店员微笑着朝你走来。
+
+<<switch $daily.PhoneShopState>>
+<<case undefined>>
+    “您好，欢迎光临，有什么能够帮忙？”一名店员微笑着朝你走来。
+    <<set $daily.PhoneShopState to 1>>
+<<case 1>>
+    “还有什么能够帮忙的？”店员微笑着。
+<<case 2>>
+    “感谢您的购买，还有什么我能够帮忙的？”店员微笑着。
+<<case 3>>
+    “你还敢来？我已经报警了，警察马上回来抓你！”店员看着你说道。
+<<case 4>>
+    “还有什么事吗？”店员看着你说。
+<</switch>>
 <br><br>
-<<icon "phone/phone.png">><<link [[购买手机或充电宝|Shopping Centre Phone Buy]]>><</link>><br>
-<<if validArray($Phone.Owned)>>
-    <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
+<<if $daily.PhoneShopState is 3>>
+    <<rng>>
+    <<if $rng gte 50>>
+        <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><</link>>
+    <<else>>
+        <<link [[逃跑|Shopping Centre]]><</link>>
+    <</if>>
+<<else>>
+    <<icon "phone/phone.png">><<link [[购买手机或充电宝|Shopping Centre Phone Buy]]>><</link>><br>
+    <<if validArray($Phone.Owned)>>
+        <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
+    <</if>>
+    <<if validArray($Phone.Owned)>>
+        <<icon "hammer_nails.png">><<link [[修复手机|Shopping Centre Phone Rrepair]]>><</link>><br>
+    <</if>>
+    <<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
 <</if>>
-<<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
 
 :: Shopping Centre Phone Buy
 <!-- “这款新上市的 Neme 12 pro max 手机，原价<span class="red"><del>£6999</del></span>，现在活动期间只要<span class="gold">£4399</span>！”<br><br> -->
@@ -31,6 +79,7 @@
     <<if $money gte (_phone_info.price * 100)>>
         <<capture _phone_info _phone_model>>
             <<link [[_phone_model (£_phone_info.price)|Shopping Centre Phone Shop]]>>
+                <<set $daily.PhoneShopState to 2>>
                 <<print '<<money -'+_phone_info.price*100+'>>'>>
                 <<run PhoneMod.BuyPhone(_phone_model)>>
             <</link>><br>
@@ -44,7 +93,7 @@
 <<if !$Phone.PowerBank>>
     <<icon "phone/power_bank.png">>
     <<if $money gte 799>>
-        <<link [[购买充电宝 (£7.99)|Shopping Centre Phone Shop]]>><<money -799>><<run PhoneMod.GetPowerBank()>><</link>>
+        <<link [[购买充电宝 (£7.99)|Shopping Centre Phone Shop]]>><<set $daily.PhoneShopState to 2>><<money -799>><<run PhoneMod.GetPowerBank()>><</link>>
     <<else>>
         <span class="red">购买充电宝 (£100)</span>
     <</if>><br>
@@ -55,18 +104,7 @@
 :: Shopping Centre Phone Sell
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
-        <<set _money to PhoneMod.getSellPhonePrice(_Phone.id)>>
-        <<icon "phone/phone.png">>
-        一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
-        <<if _Phone.stolen>>
-            <span class="red">由你盗窃而来，</span>
-            <<if _Phone.usable>>
-                <span class="green">但你已经破解了密码，</span>
-            <</if>>
-        <</if>>
-        官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
-        现在可以以<span class="gold">£_money</span>的价格在官方手机店
+        <<phonetext>>官方手机店
         <<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
         <br>
     <</capture>>
@@ -116,15 +154,18 @@
     <</if>>
     <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 <<else>>
+    <<set $daily.PhoneShopState to 3>>
     <<switch random(1, 3)>>
         <<case 1>>
             “你以为你能骗过我吗？这部手机是被盗的，我现在就要报警！” 店员一边说着，一边拿起电话准备报警。<br><br>
+            <<rng>>
             <<if $rng gte 50>>
                 <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
             <<else>>
                 <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
             <</if>>
         <<case 2>>
+            <<set $daily.PhoneShopState to 4>>
             “对不起，我们不能收购盗窃的手机。” 店员说完之后就把手机还给了你。<br><br>
             <<endevent>>
             <<if validArray($Phone.Owned)>>
@@ -134,8 +175,9 @@
         <<case 3>>
             <<he>>冷冷地看了你一眼：“<<girl>>，<span class="gold">要是你肯付出些什么，我可以当做什么都没看见</span>。”<br><br>
             <<if $money gte 100000>>
-                <<link [[贿赂（£1000）|Shopping Centre Phone Shop]]>><<money -100000>><<endevent>><</link>><br>
+                <<link [[贿赂（£1000）|Shopping Centre Phone Shop]]>><<set $daily.PhoneShopState to 4>><<money -100000>><<endevent>><</link>><br>
             <</if>>
+            <<rng>>
             <<if $rng gte 50>>
                 <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
             <<else>>
@@ -202,6 +244,16 @@
 	<<link [[静坐|Hospital Arrest Sit]]>><</link>>
 	<br>
 <</if>>
+
+:: Shopping Centre Phone Rrepair
+<<for _Phone range $Phone.Owned>>
+    <<capture _Phone>>
+        <<phonetext>>官方手机店
+        <<link [[修复|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
+        <br>
+    <</capture>>
+<</for>><br>
+<<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Shop Link Lock
 <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop Lock]]>><<pass 1>><</link>>
@@ -632,24 +684,7 @@
 :: Second Phone Sell
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
-        <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
-        <<if $Phone.Using and _Phone.id eq $Phone.Using>>
-            <<icon "phone/phone.png">> [正在使用]
-        <<elseif _Phone.stolen and _Phone.usable>>
-            <<icon "phone/phone_forbid.png">>
-        <<else>>
-            <<icon "phone/phone_disabled.png">>
-        <</if>>
-        一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
-        <<if _Phone.stolen>>
-            <span class="red">由你盗窃而来，</span>
-            <<if _Phone.usable>>
-                <span class="green">但你已经破解了密码，</span>
-            <</if>>
-        <</if>>
-        官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
-        现在可以以<span class="gold">£_money</span>的价格在老冯这里
+        <<phonetext>>老冯这里
         <<link [[出售|Second Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
         <br>
     <</capture>>
@@ -727,15 +762,7 @@
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
         <<if _Phone.stolen and !_Phone.usable>>
-            <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
-            <<set _money to Math.round(PhoneMod.getSellPhonePrice(_Phone.id) * PhoneMod.破解费用比例)>>
-            <<icon "phone/phone.png">>
-            一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
-            <<if _Phone.stolen>>
-                <span class="red">由你盗窃而来，</span>
-            <</if>>
-            官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
-            现在你可以以<span class="gold">£_money</span>的价格在老冯这里
+            <<phonetext>>老冯这里
             <<link [[破解密码|Second Phone Crack Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
             <br>
         <</if>>

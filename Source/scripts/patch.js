@@ -60,7 +60,7 @@ PhoneMod.patchOnPassageRender = function (ev) {
         id: "Landry-AD0",
         name: "Landry",
         msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
-        attarct: 2.0,
+        attract: 2.0,
     })
     PhoneMod.yenoteNPCPost({
         id: "A-Update382",
@@ -68,10 +68,10 @@ PhoneMod.patchOnPassageRender = function (ev) {
         msg: "哈喽哈喽，感谢各位的支持呀！<br>给大家放一张之前没有用到的摄像图片当做福利啦！<br>如果你看不到的话，那就是没有使用最新的图包哦！",
         img: "img/photo/submission-1772783983529-h.png",
         price: 52,
-        attarct: 10.0,
+        attract: 10.0,
     })
 
-    // 3.83 | 手机价格调整
+    // 3.83 | 手机价格调整 (其他处亦有调整)
     const PhoneModelsOri = {  // 手机品牌
         "斯达特3 限量型": {
             price: 4999,
@@ -122,18 +122,23 @@ PhoneMod.patchOnPassageRender = function (ev) {
     V.Phone.价格调整理赔 = V.Phone.价格调整理赔 ?? [];
     V.Phone.Owned.forEach(phone => {
         if (V.Phone.价格调整理赔.includes(phone.id)) return;  // 已经理赔过的手机不再理赔
-        if (!phone.usable) return;  // 不可用的手机不理赔（包括未解锁的盗窃手机）
-        const oldPrice = PhoneModelsOri[phone.model]?.price ?? 0;
-        const newPrice = PhoneMod.getPhoneInfo(phone.model)?.price ?? 0;
-        const relPrice = oldPrice - newPrice;
-        if (relPrice) {
-            setTimeout(() => {
-                PhoneMod.msgSend(`尊敬的客户您好：您的手机<span class="teal">(${phone.id})</span>的市场价已经降价，<span class="purple">遇欲NDMT保险公司</span>依据规定对其进行合法理赔，预计<span class="gold">£${relPrice}</span>将会稍后汇款到您的账户。`);
-            }, 10);
-            Wikifier.wikifyEval(`<<money ${relPrice * 100}>>`);
+        if (phone.usable) {// 不可用的手机不理赔（包括未解锁的盗窃手机）
+            const oldPrice = PhoneModelsOri[phone.model]?.price ?? 0;
+            const newPrice = PhoneMod.getPhoneInfo(phone.model)?.price ?? 0;
+            const relPrice = oldPrice - newPrice;
+            if (relPrice) {
+                setTimeout(() => {
+                    PhoneMod.msgSend(`尊敬的客户您好：您的手机<span class="teal">(${phone.id})</span>的市场价已经降价，<span class="purple">遇欲NDMT保险公司</span>依据规定对其进行合法理赔，预计<span class="gold">£${relPrice}</span>将会稍后汇款到您的账户。`);
+                }, 10);
+                Wikifier.wikifyEval(`<<money ${relPrice * 100}>>`);
+            }
         }
         V.Phone.价格调整理赔.push(phone.id);
     })
+
+    // 3.83 | NPC发文吸引度纠错
+    V.Phone.Yenotes.find(y => y.id == "Landry-AD0").attract = 2.0;
+    V.Phone.Yenotes.find(y => y.id == "A-Update382").attract = 10.0;
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {
