@@ -155,7 +155,9 @@
     </div>
 
     <div id="smart-phone-toolbar" class="phone-toolbar" style="transform: translateY(100px)">
-        <img src="img/ui/phone/powerbank.png" style="width: 40px" onclick="PhoneMod.PhoneCharging(!V.Phone.Charging)">
+        <<if $Phone.PowerBank>>
+            <img src="img/ui/phone/powerbank.png" style="width: 40px" onclick="PhoneMod.PhoneCharging(!V.Phone.Charging)">
+        <</if>>
     </div>
 <</widget>>
 

@@ -962,7 +962,7 @@ PhoneMod.Contacts = [  // 联系人P
 ];
 PhoneMod.PhoneModels = {  // 手机品牌
     "斯达特3 限量型": {
-        price: 4999,
+        price: 699,
         newnessfactory: 1000,
         photography: 1,
         desc: "拥有这一部手机，说明您是测试版就开始游玩的天选之人。感谢您的支持~❤"
@@ -974,31 +974,31 @@ PhoneMod.PhoneModels = {  // 手机品牌
         desc: "内部测试机，此型号严禁外传，不知道你是从哪里搞来的"
     },
     "Neme 12": {
-        price: 2999,
+        price: 199,
         newnessfactory: 600,
         photography: 0.6,
         desc: "性价比超高的实惠之选！"
     },
     "Neme 12 Pro": {
-        price: 3599,
+        price: 299,
         newnessfactory: 1000,
         photography: 1,
         desc: "全新电池容量，更大，更实惠！拍摄更清晰！"
     },
     "Neme 12 Pro Max": {
-        price: 4399,
+        price: 399,
         newnessfactory: 1400,
         photography: 1.4,
         desc: "8000mAh / 给用户提供了全方位的极致体验 / 摄影新科技，拍照更清晰！"
     },
     "Mimi 17": {
-        price: 4799,
+        price: 599,
         newnessfactory: 1500,
         photography: 1.6,
         desc: "极具质感的小尺寸旗舰 / 第五代萧隆 8 至尊版移动平台，性能跨代 / 专业影像，定格光影 / 低功耗超级阳光屏，亮眼更护眼 / 多瑙河电池，续航超越想象 / 友商都是傻逼"
     },
     "Photographer 3": {
-        price: 4999,
+        price: 799,
         newnessfactory: 500,
         photography: 3,
         desc: "专业摄像手机，捕捉每一刻艺术的瞬间"
@@ -1024,6 +1024,7 @@ PhoneMod.手机充电中被盗概率 = 0.2;
 PhoneMod.手机充电中被盗地点 = ["OceanBreeze", "Library"];
 PhoneMod.自然电量损失每分钟 = 0.5;
 PhoneMod.充电宝充电每分钟 = 5;
+PhoneMod.破解费用比例 = 0.5;
 PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",
   "Yenotes" // 必须禁用，否则内部的effect会重新作用

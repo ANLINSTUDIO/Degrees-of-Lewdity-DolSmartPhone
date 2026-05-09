@@ -233,6 +233,7 @@
     transition: all 0.3s ease, background-color 0.4s ease;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     width: 200px;
+    height: 40px;
     padding: 5px;
 }
 /* 充电线显示 */
@@ -419,7 +420,6 @@
 }
 .phone-popup-content {
     width: 90%;
-    white-space: nowrap;
 }
 
 

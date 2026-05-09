@@ -740,18 +740,34 @@ PhoneMod.PhoneChargeUnguarded = function(position) {
 }
 PhoneMod.PhoneChargeUnguardedFinish = function(position) {
     const phone = V.Phone.Charger[position].phone
-    V.Phone.Owned.push(phone)
-    PhoneMod.changeUsingPhone(phone)
+    if (phone.id === "PowerBank") {
+        const powerbank = V.Phone.Charger[position].phone
+        V.Phone.PowerBank = {
+            newness: powerbank.newness,
+            newnessmax: powerbank.newnessmax,
+        }
+    } else {
+        V.Phone.Owned.push(phone)
+        PhoneMod.changeUsingPhone(phone)
+    }
     delete V.Phone.Charger[position]
 }
 PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
     if (Time === undefined) return;
     if (V.Phone.Charger.hasOwnProperty(position)) {
         if (apply) {
-            const phone = V.Phone.Charger[position].phone
-            
+            const phone = V.Phone.Charger[position].phone;
             const ageHours = (Time.date.timeStamp - V.Phone.Charger[position].date.timeStamp) / 3600; // 小时差
-            const wear = PhoneMod.PhoneCharge(ageHours * PhoneMod.充电速度每小时, phone)
+            const charge_value = ageHours * PhoneMod.充电速度每小时;
+            let wear = 0;
+
+            if (phone.id === "PowerBank") {
+                V.Phone.PowerBank.newness = Math.min(V.Phone.PowerBank.newness + charge_value, V.Phone.PowerBank.newnessmax)
+                T.PowerBankCharging = true;
+            } else {
+                wear = PhoneMod.PhoneCharge(ageHours * PhoneMod.充电速度每小时, phone)
+                T.PowerBankCharging = false;
+            }
             
             V.Phone.Charger[position].date = Time.date
             
@@ -898,8 +914,20 @@ PhoneMod.GetPowerBank = function() {
         newnessmax: 10000
     }
 }
-PhoneMod.PowerBankChargeIn = function() {
-    V.Phone.PowerBank.newness = V.Phone.PowerBank.newnessmax
+// PhoneMod.PowerBankChargeIn = function() {
+//     V.Phone.PowerBank.newness = V.Phone.PowerBank.newnessmax
+// }
+PhoneMod.PowerBankChargeIn = function(position) {
+    V.Phone.Charger[position] = {
+        phone: {
+            id: "PowerBank",
+            newness: V.Phone.PowerBank.newness,
+            newnessmax: V.Phone.PowerBank.newnessmax,
+        },
+        date: Time.date,
+        started: Time.date
+    }
+    delete V.Phone.PowerBank
 }
 PhoneMod.PhoneCharging = function(charging=true, batterysonly=false) {
     const line = document.getElementById("smart-phone-charge-line");
@@ -948,11 +976,15 @@ PhoneMod.PhoneCharging = function(charging=true, batterysonly=false) {
 PhoneMod.PhoneChargingInit = function() {
     const line = Array.prototype.slice.call(document.querySelectorAll("#smart-phone-charge-line"), -1)[0];
     const batterys = document.querySelectorAll("#battery");
-    if (V.Phone.Charging) {
-        if (V.Phone.PowerBank.newness > 0) {  // 充电宝有电才显示充电
-            batterys.forEach(battery => battery.classList.add("battery_charge"))
+    if (V.Phone.PowerBank) {
+        if (V.Phone.Charging) {
+            if (V.Phone.PowerBank.newness > 0) {  // 充电宝有电才显示充电
+                batterys.forEach(battery => battery.classList.add("battery_charge"))
+            }
+            line.style.display = "block"
         }
-        line.style.display = "block"
+    } else {
+        V.Phone.Charging = false
     }
 }
 // === 日志 ==========================================

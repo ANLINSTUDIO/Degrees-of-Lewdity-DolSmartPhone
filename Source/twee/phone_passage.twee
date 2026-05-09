@@ -43,8 +43,8 @@
 <</for>>
 <<if !$Phone.PowerBank>>
     <<icon "phone/power_bank.png">>
-    <<if $money gte 10000>>
-        <<link [[购买充电宝 (£100)|Shopping Centre Phone Shop]]>><<money -10000>><<run PhoneMod.GetPowerBank()>><</link>>
+    <<if $money gte 799>>
+        <<link [[购买充电宝 (£7.99)|Shopping Centre Phone Shop]]>><<money -799>><<run PhoneMod.GetPowerBank()>><</link>>
     <<else>>
         <span class="red">购买充电宝 (£100)</span>
     <</if>><br>
@@ -492,7 +492,7 @@
         <</if>>
     <</if>>
     <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop")>>
-        <br><span class="teal">你的手机正放在老冯这里充电。</span><br>
+        <br><span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在老冯这里充电。</span><br>
         <<icon "phone/charge.png">>
         <<link [[返回充电的地方|Second Phone Shop Charge]]>><</link>><br><br>
     <<elseif PhoneMod.getUsingPhone()>>
@@ -728,7 +728,7 @@
     <<capture _Phone>>
         <<if _Phone.stolen and !_Phone.usable>>
             <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
-            <<set _money to Math.round(PhoneMod.getSellPhonePrice(_Phone.id) * 0.2)>>
+            <<set _money to Math.round(PhoneMod.getSellPhonePrice(_Phone.id) * PhoneMod.破解费用比例)>>
             <<icon "phone/phone.png">>
             一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
             <<if _Phone.stolen>>
@@ -744,7 +744,7 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack Finish
-<<set _money to Math.round(PhoneMod.getSellPhonePrice($SellPhone) * 0.2)>>
+<<set _money to Math.round(PhoneMod.getSellPhonePrice($SellPhone) * PhoneMod.破解费用比例)>>
 <<if $money gte _money*100>>
     <<set PhoneMod.getPhone($SellPhone).usable to true>>
     <<print '<<money -'+_money*100+'>>'>>
@@ -1251,35 +1251,52 @@
     <<if _UnguardedCharge>>
         <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
         <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
-        <<if _UnguardedCharge.beenStolen>>
-            你记得你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电来着， <span class="red">但是你找不到它了</span> ！<br><br>
-            你的手机被盗，而且你还找不到是谁偷的。<br><br>
-        <<else>>
-            你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
-            <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
-                <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
-                <<if _UnguardedChargeHours>>
-                    <br><br>
-                    你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
-                <</if>>
+        <<if _PowerBankCharging>>
+            <<if _UnguardedCharge.beenStolen>>
+                你记得你把你的充电宝放在这里充电来着， <span class="red">但是你找不到它了</span> ！<br><br>
+                你的充电宝被盗，而且你还找不到是谁偷的。<br><br>
             <<else>>
+                你把你的充电宝放在这里充电。
                 当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
                 <<if _UnguardedChargeHours>>
                     <br><br>
-                    你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
+                    你的充电宝已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
                     <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
-                    <<phonewear _UnguardedCharge.wear>>
-                <</if>>
-            <</if>><br><br>
-            <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+                <</if>><br><br>
+                <<link [[把放在这里充电的充电宝拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+            <</if>>
+        <<else>>
+            <<if _UnguardedCharge.beenStolen>>
+                你记得你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电来着， <span class="red">但是你找不到它了</span> ！<br><br>
+                你的手机被盗，而且你还找不到是谁偷的。<br><br>
+            <<else>>
+                你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
+                <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
+                    <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
+                    <<if _UnguardedChargeHours>>
+                        <br><br>
+                        你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
+                    <</if>>
+                <<else>>
+                    当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
+                    <<if _UnguardedChargeHours>>
+                        <br><br>
+                        你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
+                        <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
+                        <<phonewear _UnguardedCharge.wear>>
+                    <</if>>
+                <</if>><br><br>
+                <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+            <</if>>
         <</if>>
+        
     <<else>>
         <<set _phone to PhoneMod.getUsingPhone()>>
         <<if _phone>>
             你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
             <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run PhoneMod.PhoneChargeUnguarded(_args[0])>><</link>>
             <<if $Phone.PowerBank>>
-                <br><<icon "phone/power_bank.png">> <<link [[为充电宝充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn()>><</link>>
+                <br><<icon "phone/power_bank.png">> <<link [[把充电宝放在这里充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn(_args[0])>><</link>>
             <</if>>
             <br><br>
             <<link [[守着充电5分钟 (0:05)|_args[1]]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
@@ -1305,7 +1322,7 @@
 <</widget>>
 :: Ocean Breeze Charge Link
 <<if PhoneMod.isPhoneChargeUnguardedIn("OceanBreeze")>>
-    <span class="teal">你的手机正放在咖啡馆的这个角落充电。</span><br>
+    <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在咖啡馆的这个角落充电。</span><br>
     <<icon "phone/charge.png">>
     <<link [[返回充电的地方|Ocean Breeze Charge]]>><</link>>
 <<elseif PhoneMod.getUsingPhone()>>
@@ -1334,7 +1351,7 @@
 
 :: Library Charge Link
 <<if PhoneMod.isPhoneChargeUnguardedIn("Library")>>
-    <span class="teal">你的手机正放在柜台的后面充电。</span><br>
+    <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在柜台的后面充电。</span><br>
     <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
         <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
     <<else>>
