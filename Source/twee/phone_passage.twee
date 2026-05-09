@@ -12,7 +12,6 @@
         <<set _Phone to _args[0]>>
     <</if>>
     <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
-    <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
     <<if $Phone.Using and _Phone.id eq $Phone.Using>>
         <<icon "phone/phone.png">> [正在使用]
     <<elseif _Phone.stolen and _Phone.usable>>
@@ -28,6 +27,13 @@
         <</if>>
     <</if>>
     官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
+<</widget>>
+<<widget "phoneat">>
+    <<if _args.length > 1>>
+        <<set _Phone to _args[0]>>
+    <</if>>
+    <<phonetext>>
+    <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
     现在可以以<span class="gold">£_money</span>的价格在
 <</widget>>
 :: ==== SC Phone Shop ====
@@ -104,15 +110,15 @@
 :: Shopping Centre Phone Sell
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<phonetext>>官方手机店
-        <<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
+        <<phoneat>>官方手机店
+        <<link [[出售|Shopping Centre Phone Sell Finish]]>> <<set $PhoneToSell to _Phone.id>> <</link>>
         <br>
     <</capture>>
 <</for>><br>
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell Finish
-<<set _Phone to PhoneMod.getPhone($SellPhone)>>
+<<set _Phone to PhoneMod.getPhone($PhoneToSell)>>
 <<generate1>><<person1>>
 <<if _Phone.stolen>>
     店员拿起手机，走到柜台后面，用你看不懂的仪器检查着手机。<br>
@@ -146,7 +152,7 @@
 <</if>>
 <<if _sold>>
     <<endevent>>
-    <<set $Phone.SellMoney to PhoneMod.SellPhone($SellPhone)>>
+    <<set $Phone.SellMoney to PhoneMod.SellPhone($PhoneToSell)>>
     <<money $Phone.SellMoney>>
     你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
     <<if validArray($Phone.Owned)>>
@@ -160,9 +166,9 @@
             “你以为你能骗过我吗？这部手机是被盗的，我现在就要报警！” 店员一边说着，一边拿起电话准备报警。<br><br>
             <<rng>>
             <<if $rng gte 50>>
-                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($PhoneToSell)>><</link>>
             <<else>>
-                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
+                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($PhoneToSell)>><<endevent>><</link>>
             <</if>>
         <<case 2>>
             <<set $daily.PhoneShopState to 4>>
@@ -179,9 +185,9 @@
             <</if>>
             <<rng>>
             <<if $rng gte 50>>
-                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($SellPhone)>><</link>>
+                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($PhoneToSell)>><</link>>
             <<else>>
-                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($SellPhone)>><<endevent>><</link>>
+                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($PhoneToSell)>><<endevent>><</link>>
             <</if>>
     <</switch>>
 <</if>>
@@ -246,14 +252,51 @@
 <</if>>
 
 :: Shopping Centre Phone Rrepair
+"我想要修一下我的手机，"你对店员说，“它使用起来总感觉哪里不对劲。”<br><br>
+"没问题，请和我来，"店员答应道。<br><br>
+<<set _PhoneToRepair to null>>
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<phonetext>>官方手机店
-        <<link [[修复|Shopping Centre Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
-        <br>
+        <<set _condition to PhoneMod.getPhoneConditionInfo(_Phone).value>>
+        <<if _condition < 0.9>>
+            <<set _PhoneToRepair to _Phone.id>>
+            <<phonetext>>
+            <<set _money to PhoneMod.getRepairPhonePrice(_Phone.id)>>
+            现在可以以<span class="gold">£_money</span>的价格在
+            官方手机店
+            <<link [[修复|Shopping Centre Phone Rrepair Finish]]>> <<set $PhoneToRepair to _Phone.id>> <</link>>
+            <br>
+        <</if>>
     <</capture>>
-<</for>><br>
+<</for>>
+<<if !_PhoneToRepair>>
+    和店员走到柜台，你拿出你的手机。<br><br>
+    店员接过手机疑惑地看着你，说："你认为你的这个手机需要修？如果你想来给我送钱的话就算了吧……我看你的手机问题不大，完全不影响正常使用"<br>
+<</if>>
+<br>
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
+
+:: Shopping Centre Phone Rrepair Finish
+<<set _Phone to PhoneMod.getPhone($PhoneToRepair)>>
+<<generate1>><<person1>>
+店员带你来到柜台前，让你拿出手机，你没有防备的把你的手机递给<<he>>。<br><br>
+随后<<he>>用你看不懂的仪器检查着手机。<br><br>
+<<set _condition to PhoneMod.getPhoneConditionInfo(_Phone).value>>
+<<if _condition < 0.5>>
+    检查之后，<<he>>拿出起子拆卸了手机的背板
+<</if>>
+<<if _condition < 0.3>>
+    ，然后又拆下了你的显示屏
+<</if>>
+<<if _condition < 0.1>>
+    ，左拆拆，右补补，<<he>>把你的整个手机好像都拆了一遍
+<</if>>
+。
+<br><br>
+你的目光始终没有移开<<he>>，既是感到好奇，又不太相信这些公司狗的人品。<br><br>
+过了一会，店员拿起手机抬起头对你说："好了，现在它没有什么问题了。之后使用的时候记得不要过度充电，同时避免磨损。"<br><br>
+<<run PhoneMod.repairPhone(_Phone)>>
+<<getouticon>> <<link [[继续|Shopping Centre Phone Shop]]>> <<endevent>> <</link>>
 
 :: Shopping Centre Phone Shop Link Lock
 <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop Lock]]>><<pass 1>><</link>>
@@ -684,15 +727,15 @@
 :: Second Phone Sell
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<phonetext>>老冯这里
-        <<link [[出售|Second Phone Sell Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
+        <<phoneat>>老冯这里
+        <<link [[出售|Second Phone Sell Finish]]>> <<set $PhoneToSell to _Phone.id>> <</link>>
         <br>
     <</capture>>
 <</for>><br>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Sell Finish
-<<set _Phone to PhoneMod.getPhone($SellPhone)>>
+<<set _Phone to PhoneMod.getPhone($PhoneToSell)>>
 
 <<set _special to 0>>
 <<switch $Phone.FengLine>>
@@ -749,7 +792,7 @@
         <!-- 74是 有点信任你 之前的值，即到这个时候必须通过完成任务才能加信任了 -->
     <</if>>
 <</if>><br><br>
-<<set $Phone.SellMoney to PhoneMod.SellPhone($SellPhone, true)>>
+<<set $Phone.SellMoney to PhoneMod.SellPhone($PhoneToSell, true)>>
 <<money $Phone.SellMoney>>
 你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br><br>
 <<if validArray($Phone.Owned)>>
@@ -762,8 +805,8 @@
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
         <<if _Phone.stolen and !_Phone.usable>>
-            <<phonetext>>老冯这里
-            <<link [[破解密码|Second Phone Crack Finish]]>> <<set $SellPhone to _Phone.id>> <</link>>
+            <<phoneat>>老冯这里
+            <<link [[破解密码|Second Phone Crack Finish]]>> <<set $PhoneToSell to _Phone.id>> <</link>>
             <br>
         <</if>>
      <</capture>>
@@ -771,9 +814,9 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack Finish
-<<set _money to Math.round(PhoneMod.getSellPhonePrice($SellPhone) * PhoneMod.破解费用比例)>>
+<<set _money to Math.round(PhoneMod.getSellPhonePrice($PhoneToSell) * PhoneMod.破解费用比例)>>
 <<if $money gte _money*100>>
-    <<set PhoneMod.getPhone($SellPhone).usable to true>>
+    <<set PhoneMod.getPhone($PhoneToSell).usable to true>>
     <<print '<<money -'+_money*100+'>>'>>
     “好了，这部手机已经被我破解了。不过我警告你，<<girl>>，它随时有可能被条子的网络给标记，这我不负责。” 老冯说完之后就把手机还给了你。<br><br>
 <<else>>

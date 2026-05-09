@@ -766,7 +766,7 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
             let wear = 0;
 
             if (phone.id === "PowerBank") {
-                V.Phone.PowerBank.newness = Math.min(V.Phone.PowerBank.newness + charge_value, V.Phone.PowerBank.newnessmax)
+                phone.newness = Math.min(phone.newness + charge_value, phone.newnessmax)
                 T.PowerBankCharging = true;
             } else {
                 wear = PhoneMod.PhoneCharge(ageHours * PhoneMod.充电速度每小时, phone)

@@ -211,8 +211,20 @@ PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
             return Math.max(price, 1);
         };
         price *= phone.newnessmax / PhoneMod.getPhoneInfo(id).newnessfactory * 0.5; // 根据新旧程度调整价格
+        return Math.floor(Math.max(price, 1)); // 最低售价为1
+    }
+}
+PhoneMod.getRepairPhonePrice = function(id) { // 出售手机
+    if (!V.Phone.Owned) return;
+    const index = V.Phone.Owned.findIndex(p => p.id === id);
+    if (index !== -1) {
+        const phone = V.Phone.Owned[index];
+        const wear = PhoneMod.getPhoneInfo(id).newnessfactory - phone.newnessmax
+
+        let price = PhoneMod.getPhoneInfo(phone.model).price;
+        price *= wear / PhoneMod.getPhoneInfo(id).newnessfactory; // 根据新旧程度调整价格
         price = Math.floor(price)
-        return Math.max(price, 1); // 最低售价为1
+        return Math.floor(Math.max(price, 5)); // 最低修复价为5
     }
 }
 PhoneMod.getUsingPhone = function() {  // 获取正在使用的手机
@@ -262,7 +274,7 @@ PhoneMod.confirm = function(title, msg, func) {
     new Wikifier(document.querySelector("#smart-phone-container"), `<<phone_dialog ${JSON.stringify(title)} ${JSON.stringify(msg)}>>`)
 }
 PhoneMod.repairPhone = function(phone) {
-    phone.newnessmax = PhoneMod.getPhoneInfo(phone.model).newnessfactory
+    phone.newnessmax = PhoneMod.getPhoneInfo(phone.model).newnessfactory * 0.9
 }
 
 // ==================== 下面是关于玩家的工具函数 ====================
