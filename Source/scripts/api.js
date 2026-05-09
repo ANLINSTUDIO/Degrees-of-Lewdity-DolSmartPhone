@@ -86,18 +86,19 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
     if (V.Phone.PhotoCurrent) return true;  // 
     if (V.Phone.AlarmTriggered) return true;  // 
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
-    // if (!V.Phone.Settings.CanUsePhoneInEvent && V.event) return false;  // 活动中不可以操控手机
-    if (V.Phone.ReturnPassage) return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
-    // let extraShowPhoneAreas = PhoneMod.extraUsePhoneAreas.slice();
-    // extraShowPhoneAreas.push(...setup.majorAreas);  // 主要区域也应该可以操控手机
-    // if (!V.Phone.Settings.CanUsePhoneInAllAreas && !extraShowPhoneAreas.includes(V.passage)) return false;  // 在非主要区域和额外指定区域操控手机可能会破坏存档
-
+    if (V.Phone.ReturnPassage) {
+        if (!V.passage.startsWith("Phone ") && V.Phone.ReturnPassage !== V.passage) {  // 如果正在从手机界面操作进入APP，自动Back回去，避免重复打开手机界面（经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back）
+            PhoneMod.PhoneBack();   // 经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back
+        } else {
+            return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
+        }
+    }
     if (V.Phone.Using === "null") return false;  // 关机
     const phone = PhoneMod.getPhone(V.Phone.Using)
     if (phone && phone.newness > 0) return true;  // 检查是否有可用的手机
     return false;
 };
-PhoneMod.PhoneTo =  function() {
+PhoneMod.PhoneTo = function() {
     if (!V.Phone.ReturnPassage) {
         V.Phone.ReturnPassage = V.passage;
         V.Phone.ReturnOutside = V.outside;
@@ -105,7 +106,7 @@ PhoneMod.PhoneTo =  function() {
         V.location = "phone";
     }
 }
-PhoneMod.PhoneBack =  function() {
+PhoneMod.PhoneBack = function() {
     if (V.Phone.ReturnLocation) {
         const passage = V.Phone.ReturnPassage
         V.outside = V.Phone.ReturnOutside;
@@ -258,6 +259,9 @@ PhoneMod.confirm = function(title, msg, func) {
     T.dialog_func = func
     new Wikifier(document.querySelector("#smart-phone-container"), `<<phone_dialog ${JSON.stringify(title)} ${JSON.stringify(msg)}>>`)
 }
+PhoneMod.repairPhone = function(phone) {
+    phone.newnessmax = PhoneMod.getPhoneInfo(phone.model).newnessfactory
+}
 
 // ==================== 下面是关于玩家的工具函数 ====================
 PhoneMod.AddClothToPlayer = function(cloth, color="black", type="face") {
@@ -308,13 +312,9 @@ PhoneMod.haveSexPhotoInPhone = function() {
 
 
 // ==================== 下面是任务钩子 ====================
-PhoneMod.reset_task_state = function() {
-    V.Phone.havingOrgasm = false;
-    V.Phone.makingRecipe = false;
-}
 PhoneMod.orgasm = function() {
-    V.Phone.havingOrgasm = true;
+    T.havingOrgasm = true;
 }
 PhoneMod.make_recipe = function() {
-    V.Phone.makingRecipe = true;
+    T.makingRecipe = true;
 }

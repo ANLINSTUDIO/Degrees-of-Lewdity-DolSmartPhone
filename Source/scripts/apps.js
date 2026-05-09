@@ -862,7 +862,7 @@ PhoneMod.photoDesc = function() {
         worn: V.worn,  // 保存当前穿戴，可以随机：“你的xxx很适合你”。如果是naked，那么可以说：“xxx真漂亮！”
         worn_text: worn_text,  // 获取衣物显示描述
         facevariant: V.facevariant,  // 保存当前表情，根据当前姿态有不同评论，例如高冷时“姐姐踩我！”
-        havingOrgasm: V.Phone.havingOrgasm,  // 是否正在高潮
+        havingOrgasm: T.havingOrgasm,  // 是否正在高潮
     };
     V.Phone.PhotoCurrentPath = photo_path;
     V.Phone.PhotoCurrent = photo;
@@ -1321,7 +1321,7 @@ PhoneMod.yenotePost = function(photo_id) {
     const photo_base = PhoneMod.PhonePhotos[photo_id]
     if (photo.isUsed) return
     const attract = (photo_base.risk / 100) * 0.2 + (photo.allure / 1000) * 0.5 + (photo.quality / 1000) * 0.3
-    V.Phone.yenotePosting = {
+    T.yenotePosting = {
         id: photo_id,
         msg: photo.msg,
         img: photo.img,
@@ -1339,7 +1339,7 @@ PhoneMod.yenoteChangePrice = function() {
     const price_text = document.getElementById('price_text');
     const price = parseInt(range.value)
     price_text.innerText = price === 0 ? "免费": `£${range.value}`
-    V.Phone.yenotePosting.price = price
+    T.yenotePosting.price = price
     
     const yenote_heat = document.getElementById('yenote_heat');
     yenote_heat.innerHTML = ""
@@ -1375,7 +1375,7 @@ PhoneMod.yenoteChangePrice = function() {
     )
 }
 PhoneMod.yenotePostSubmit = function() {
-    if (V.Phone.yenotePosting === true) {
+    if (T.yenotePosting === true) {
         const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
         V.Phone.Yenotes.unshift({
             id: uniqueId,
@@ -1395,10 +1395,10 @@ PhoneMod.yenotePostSubmit = function() {
             comments: []
         })
     } else {
-        const photo = V.Phone.Album[V.Phone.yenotePosting.id]
+        const photo = V.Phone.Album[T.yenotePosting.id]
         photo.isUsed = true
         V.Phone.Yenotes.unshift({
-            ...V.Phone.yenotePosting,
+            ...T.yenotePosting,
             name: "{PC}",
             npc: false,
             view: 0,
@@ -1406,15 +1406,15 @@ PhoneMod.yenotePostSubmit = function() {
             comments: []
         })
     }
-    delete V.Phone.yenotePosting
+    delete T.yenotePosting
     PhoneMod.PhoneUIInit(true, true)
 }
 PhoneMod.yenotePosting = function() {
-    V.Phone.yenotePosting = true;
+    T.yenotePosting = true;
     PhoneMod.PhoneUIInit(true, true)
 }
 PhoneMod.yenotePostCancel = function() {
-    delete V.Phone.yenotePosting
+    delete T.yenotePosting
     PhoneMod.PhoneUIInit(true, true)
 }
 PhoneMod.yenoteDelete = function(photo_id) {

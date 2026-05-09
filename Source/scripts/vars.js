@@ -1022,6 +1022,8 @@ PhoneMod.DD等待全额费用 = 5;
 PhoneMod.DD每距离费用 = 2;
 PhoneMod.手机充电中被盗概率 = 0.2;
 PhoneMod.手机充电中被盗地点 = ["OceanBreeze", "Library"];
+PhoneMod.自然电量损失每分钟 = 0.5;
+PhoneMod.充电宝充电每分钟 = 5;
 PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",
   "Yenotes" // 必须禁用，否则内部的effect会重新作用

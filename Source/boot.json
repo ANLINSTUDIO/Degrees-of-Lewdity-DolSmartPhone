@@ -30,6 +30,7 @@
         "img/ui/phone/battery_bg.png",
         "img/ui/phone/home.png",
         "img/ui/phone/lock.png",
+        "img/ui/phone/shutdown.png",
 
         "img/ui/phone/app/add.png",
         "img/ui/phone/app/correct.png",
@@ -47,6 +48,8 @@
         "img/misc/icon/phone/app/newWest.png",
 
         "img/photo/photonone.png",
+
+        "img/ui/phone/powerbank.png",
 
         "img/misc/icon/phone/avatar/pc.png",
         "img/misc/icon/phone/avatar/landry0.png",

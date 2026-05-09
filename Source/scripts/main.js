@@ -10,7 +10,6 @@ $(document).one(":passageinit", function () {
 $(document).on(":passagerender", function (ev) {PhoneMod.onPassageRender(ev)});
 PhoneMod.onPassageRender = function (ev) {
     PhoneMod.ev = ev
-    PhoneMod.varClean()
 
     const phoneDebugSwitchUI = document.createElement('div');
     phoneDebugSwitchUI.id = "smartphone_debug_switch"
@@ -31,6 +30,8 @@ PhoneMod.onPassageRender = function (ev) {
     PhoneMod.photoFinish();
     PhoneMod.photoCheck();  // 检测完成任务并执行拍照
     PhoneMod.ddCheck();
+
+    PhoneMod.PhonePowerPass();
 }
 PhoneMod.eventsLoad = function() {
     PhoneMod.events.forEach(PhoneMod.eventsLoad_)
@@ -116,11 +117,6 @@ PhoneMod.eventsLoadInsert_ = function(target, insert_target, position="after", o
         insertTarget.after(insert_target);
     }
 }
-PhoneMod.varClean = function() {
-    V.Phone.open = false
-    PhoneMod.reset_task_state()
-    delete V.Phone.yenotePosting
-}
 
 // ================== 原版函数注入 ==================
 dayPassed = new Proxy(dayPassed, {
@@ -168,16 +164,16 @@ PhoneMod.togglePhone = function(force=null) {
 
     if (force === true) {
         phone.classList.add("phone-open");
-        V.Phone.open = true
+        T.phoneopen = true
     }
     else if (force === false) {
         phone.classList.remove("phone-open");
-        V.Phone.open = false
+        T.phoneopen = false
     } else {
 
         if (V.Phone.PhotoCurrent) {  // 在触发任务时点击
             phone.classList.remove("phone-open");
-            V.Phone.open = false
+            T.phoneopen = false
             PhoneMod.photoFinish();
             PhoneMod.toggleApp("main", false);
             return;
@@ -185,10 +181,10 @@ PhoneMod.togglePhone = function(force=null) {
 
         if (PhoneMod.shouldUsePhone() || V.Phone.TakingPhotoWill) {
             phone.classList.toggle("phone-open");
-            V.Phone.open = phone.classList.contains("phone-open");
+            T.phoneopen = phone.classList.contains("phone-open");
         } else {
             phone.classList.remove("phone-open");
-            V.Phone.open = false
+            T.phoneopen = false
         }
     }
 
@@ -215,7 +211,6 @@ PhoneMod.toggleApp = function(AppName, open=true) {
     PhoneMod.appInit();
 };
 PhoneMod.appInit = function(togglePhone=false) {
-    if (!PhoneMod.PhoneConsumption(1)) return;
     const AppName = V.Phone.CurrentApp
     const app = PhoneMod.Apps[AppName]
     if (!V.Phone.AlarmTriggered && app) {
@@ -224,7 +219,7 @@ PhoneMod.appInit = function(togglePhone=false) {
         }
         if (togglePhone) {
             if (app.toggle) {
-                PhoneMod[app.toggle](V.Phone.open)
+                PhoneMod[app.toggle](T.phoneopen)
             }
         } else {
             if (app.init) {
@@ -232,7 +227,7 @@ PhoneMod.appInit = function(togglePhone=false) {
             }
         }
     }
-    if (V.Phone.MsgApp && V.Phone.open && V.Phone.MsgApp === AppName) {
+    if (V.Phone.MsgApp && T.phoneopen && V.Phone.MsgApp === AppName) {
         PhoneMod.msgClose()
     }
 };
@@ -291,6 +286,9 @@ PhoneMod.PhoneUIInit = function (open=false, reload=false) {
     if (reload) {
         PhoneMod.appInit()
     }
+
+    PhoneMod.PhoneLiftInit();
+    PhoneMod.PhoneChargingInit();
 };
 PhoneMod.PhonePopupInit = function() {
     new Wikifier(PhoneMod.ev.content, "<<smartphone_popup>>");
@@ -329,6 +327,7 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
     const phoneContainerOld = document.getElementById("smart-phone-container")
     const phoneContentOld = document.getElementById("phone-content")
     if (phoneContainerOld) {
+        document.getElementById("smart-phone-toolbar")?.remove();
         if (anim && phoneContainerOld && phoneContentOld && phoneContainerOld.classList.contains("phone-open")) {
             phoneContentOld.id = "phone-content-old"
             if (V.Phone.CurrentApp === "main") {
@@ -344,8 +343,6 @@ PhoneMod.PhoneSafeClose = function (anim=true) {
         } else {
             phoneContainerOld.remove()
         }
-    } else {
-        AsAPI.error("SmartPhone", "SafeCloseError");
     }
 };
 PhoneMod.PhoneSafeCloseFinish = function () {
@@ -357,6 +354,9 @@ PhoneMod.PhoneSafeCloseFinish = function () {
     }
 };
 PhoneMod.PhoneScaleSettings = function() {
+    const PhoneScale = T.PhoneScale
+    AsAPI.reload();
+    V.Phone.Settings.Scale = PhoneScale;
     document.documentElement.style.setProperty('--phone-scale', `${V.Phone.Settings.Scale}`);
 };
 PhoneMod.PhoneScaleSettingsReset = function() {
@@ -664,6 +664,8 @@ PhoneMod.changeUsingPhone = function(phone=undefined) { // 切换正在使用的
 }
 // === 手机电量与磨损 ====================================
 PhoneMod.PhoneConsumption = function(value) {
+    AsAPI.log("SmartPhone", `电量损耗: ${value}`);
+    
     const phone = PhoneMod.getUsingPhone()
     if (phone && phone.newness > 0) {
         phone.newness = Math.round(phone.newness - value);
@@ -772,6 +774,31 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
     }
     return false
 }
+PhoneMod.PhonePowerPass = function() {
+    if (V.Phone.PowerPassLast) {
+        const minutesPassed = (Time.date.timeStamp - V.Phone.PowerPassLast.timeStamp) / 60; // 分钟差
+        AsAPI.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * PhoneMod.自然电量损失每分钟}`);
+        if (minutesPassed > 0) {
+            PhoneMod.PhoneConsumption(minutesPassed * PhoneMod.自然电量损失每分钟);
+        } else {
+            return;
+        }
+        
+        if (V.Phone.Charging && V.Phone.PowerBank.newness > 0) {
+            const phone = PhoneMod.getUsingPhone();
+            let chargingValue = minutesPassed * PhoneMod.充电宝充电每分钟;
+            // 计算最低充电量（预计充电，手机剩余充电空间，充电宝剩余电量）
+            chargingValue = Math.min(chargingValue, phone.newnessmax - phone.newness, V.Phone.PowerBank.newness);
+            PhoneMod.PhoneCharge(chargingValue, phone);
+            V.Phone.PowerBank.newness -= chargingValue;
+            AsAPI.log("SmartPhone", `充电宝充电: ${chargingValue}`);
+            if (V.Phone.PowerBank.newness <= 0) {
+                PhoneMod.PhoneCharging(false, true);
+            }
+        }
+    }
+    V.Phone.PowerPassLast = Time.date;
+}
 // === 手机存放 ====================================
 PhoneMod.PhoneStore = function(position, id) {
     const phone = PhoneMod.getPhone(id)
@@ -795,6 +822,75 @@ PhoneMod.isPhoneStoreIn = function(position) {
 PhoneMod.getPhonesStoreIn = function(position) {
     return V.Phone.Store[position] ?? []
 }
+// === 手机抬起 ===================================
+PhoneMod.PhoneLiftInit = function() {
+    const phonescreenlocked = document.getElementById("smart-phone-container");
+    const phonestoolbar = document.getElementById("smart-phone-toolbar");
+    if (phonescreenlocked) {
+        PhoneMod.startY = 0;
+        const threshold = 50; // 滑动距离阈值
+        const thresholdontrigger = 20; // 触发距离
+        
+        const start = function(event) {
+            if (T.phoneopen) return;
+            event.preventDefault();
+            T.PhoneTool = false;
+            T.PhoneDragging = true;
+            PhoneMod.startY = event.touches ? event.touches[0].clientY : event.clientY;
+            if (!event.touches) phonescreenlocked.style.transition = "none";
+            phonestoolbar.style.transform = `translateY(calc(100% + 5px))`;
+        };
+        const move = function(event) {
+            if (T.phoneopen) return;
+            if (!T.PhoneDragging) return;
+            event.preventDefault();
+            PhoneMod.endY = event.touches ? event.touches[0].clientY : event.clientY;
+
+            if (PhoneMod.startY - PhoneMod.endY > threshold) {
+                phonescreenlocked.style.transform = `translateY(-${threshold+thresholdontrigger}px)`;
+                if (!T.PhoneTool) {
+                    T.PhoneTool = true;
+                    phonestoolbar.style.transform = `translateY(80%)`;
+                }
+            } else {
+                phonescreenlocked.style.transform = `translateY(${Math.min(0, PhoneMod.endY - PhoneMod.startY)}px)`;
+                if (T.PhoneTool) {
+                    T.PhoneTool = false;
+                    phonestoolbar.style.transform = `translateY(calc(100% + 5px))`;
+                }
+            }
+        };
+        const end = function(event) {
+            if (T.phoneopen) return;
+            event.preventDefault();
+            PhoneMod.endY = event.touches ? event.touches[0].clientY : event.clientY;
+            T.PhoneDragging = false;
+            phonescreenlocked.style.transition = "all 0.3s ease, background-color 0.4s ease";
+            
+            if (PhoneMod.startY - PhoneMod.endY > threshold) {
+                phonestoolbar.style.transform = `translateY(0)`;
+            } else {
+                PhoneMod.togglePhone(true);
+                phonescreenlocked.style.transform = `translateY(0px)`;
+                phonestoolbar.style.transform = `translateY(calc(100% + 20px))`;
+            }
+        };
+        phonescreenlocked.addEventListener('touchstart', start, false);
+        phonescreenlocked.addEventListener('mousedown', start, false);
+        phonescreenlocked.addEventListener('touchmove', move, false);
+        phonescreenlocked.addEventListener('mousemove', move, false);
+        phonescreenlocked.addEventListener('touchend', end, false);
+        phonescreenlocked.addEventListener('mouseup', end, false);
+        phonescreenlocked.addEventListener('mouseleave', function(event) {
+            if (T.PhoneDragging) {
+                T.PhoneDragging = false;
+                phonescreenlocked.style.transition = "all 0.3s ease, background-color 0.4s ease";
+                phonescreenlocked.style.transform = `translateY(0px)`;
+                phonestoolbar.style.transform = `translateY(calc(100% + 20px))`;
+            }
+        }, false);
+    }
+}
 // === 充电宝 =====================================
 PhoneMod.GetPowerBank = function() {
     V.Phone.PowerBank = {
@@ -802,21 +898,62 @@ PhoneMod.GetPowerBank = function() {
         newnessmax: 10000
     }
 }
-PhoneMod.PowerBankChargeOut = function() {
-    if (V.Phone.PowerBank && V.Phone.PowerBank.newness > 0) {
-        const phone = this.getUsingPhone();
-        if (phone) {
-            const charge_value = Math.min((phone.newnessmax - phone.newness), V.Phone.PowerBank.newness)
-            if (charge_value) {
-                phone.newness += charge_value;
-                V.Phone.PowerBank.newness -= charge_value;
-                PhoneMod.phoneJournalChange();
-            }
-        }
-    }
-}
 PhoneMod.PowerBankChargeIn = function() {
     V.Phone.PowerBank.newness = V.Phone.PowerBank.newnessmax
+}
+PhoneMod.PhoneCharging = function(charging=true, batterysonly=false) {
+    const line = document.getElementById("smart-phone-charge-line");
+    const batterys = document.querySelectorAll("#battery");
+    if (!(line && batterys)) return;
+    if (charging) {
+        if (batterysonly) {
+            batterys.forEach(battery => battery.classList.add("battery_charge"));
+            return;
+        }
+        V.Phone.Charging = true;
+        line.classList.add("line-start")
+        line.style.display = "block"
+        line.style.transition = "transform 0.4s ease, opacity 0.4s ease"
+        setTimeout(() => {
+            line.classList.remove("line-start")
+            setTimeout(() => {
+                if (V.Phone.Charging) {
+                    line.style.transition = "";
+                    if (V.Phone.PowerBank.newness > 0) {
+                        batterys.forEach(battery => battery.classList.add("battery_charge"))
+                    }
+                }
+            }, 400)
+        }, 10);
+    } else {
+        if (batterysonly) {
+            batterys.forEach(battery => battery.classList.remove("battery_charge"));
+            return;
+        }
+        V.Phone.Charging = false;
+        batterys.forEach(battery => battery.classList.remove("battery_charge"))
+        line.style.transition = "transform 0.4s ease, opacity 0.4s ease"
+        setTimeout(() => {
+            line.classList.add("line-start")
+            setTimeout(() => {
+                if (!V.Phone.Charging) {
+                    line.style.transition = "";
+                    line.classList.remove("line-start")
+                    line.style.display = "none"
+                }
+            }, 400)
+        }, 10);
+    }
+}
+PhoneMod.PhoneChargingInit = function() {
+    const line = Array.prototype.slice.call(document.querySelectorAll("#smart-phone-charge-line"), -1)[0];
+    const batterys = document.querySelectorAll("#battery");
+    if (V.Phone.Charging) {
+        if (V.Phone.PowerBank.newness > 0) {  // 充电宝有电才显示充电
+            batterys.forEach(battery => battery.classList.add("battery_charge"))
+        }
+        line.style.display = "block"
+    }
 }
 // === 日志 ==========================================
 PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
@@ -860,7 +997,11 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                         <</if>>
                     <</if>>
                     <<if ${phone.newnessmax > 0}>>
-                        [ ${PhoneMod.getPhoneBattery(phone)}% ] 
+                        <<if $Phone.Using and "${phone.id}" eq $Phone.Using and $Phone.Charging>>
+                            <span style="background-color: green; border-radius: 3px;">[ ${PhoneMod.getPhoneBattery(phone)}% ]</span>
+                        <<else>>
+                            [ ${PhoneMod.getPhoneBattery(phone)}% ] 
+                        <</if>>
                     <<else>>
                         [ --- ] 
                     <</if>>
@@ -891,7 +1032,11 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                     [ ${Math.round(V.Phone.PowerBank.newness / V.Phone.PowerBank.newnessmax * 100)}% ]
                     <<if ${V.Phone.PowerBank.newness > 0}>>
                         <<if ${PhoneMod.getUsingPhone() !== null}>>
-                            <<link "为当前正在使用的手机充电">> <<run PhoneMod.PowerBankChargeOut()>> <</link>>
+                            <<if $Phone.Charging>>
+                                <<link "停止为当前正在使用的手机充电">> <<run PhoneMod.PhoneCharging(false)>> <<run PhoneMod.phoneJournalChange()>> <</link>>
+                            <<else>>
+                                <<link "为当前正在使用的手机充电">> <<run PhoneMod.PhoneCharging(true)>> <<run PhoneMod.phoneJournalChange()>> <</link>>
+                            <</if>>
                         <<else>>
                             <span class='teal'>选择使用一部手机，之后可以对其充电</span>
                         <</if>>
@@ -909,16 +1054,23 @@ PhoneMod.phoneJournalChange = function(id) { // 日志中更新手机信息
         if (phone) {
             PhoneMod.changeUsingPhone(phone);
         }
+        PhoneMod.PhoneUIInit();
     } else if (id === null) {
         PhoneMod.changeUsingPhone(null);
+        PhoneMod.PhoneUIInit();
     }
     
     const Div = document.getElementById("phone-journal");
     if (Div) {
         Div.remove();
-        PhoneMod.showPhoneJournal();
     }
-    PhoneMod.PhoneUIInit()
+    PhoneMod.showPhoneJournal();
+}
+PhoneMod.shutdown = function() { // 关机
+    PhoneMod.confirm('确定要关机吗', '', () => {
+        PhoneMod.togglePhone(false)
+        PhoneMod.phoneJournalChange(null);
+    })
 }
 // === 内容 ==========================================
 PhoneMod.SchoolLockersSneakOnNPC = function(npc) {

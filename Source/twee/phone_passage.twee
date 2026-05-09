@@ -1277,7 +1277,7 @@
         <<set _phone to PhoneMod.getUsingPhone()>>
         <<if _phone>>
             你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
-            <<link [[把手机放在这里充电|_args[1]]]>><<run PhoneMod.PhoneChargeUnguarded(_args[0])>><</link>>
+            <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run PhoneMod.PhoneChargeUnguarded(_args[0])>><</link>>
             <<if $Phone.PowerBank>>
                 <br><<icon "phone/power_bank.png">> <<link [[为充电宝充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn()>><</link>>
             <</if>>

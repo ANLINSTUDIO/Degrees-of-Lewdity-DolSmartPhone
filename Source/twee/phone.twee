@@ -59,7 +59,14 @@
 
 :: SmartPhoneWidgets [widget]
 <<widget "smartphone_render">>
-    <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">
+    <div id="smart-phone-container" class="phone-main">
+        <div id="smart-phone-charge-line-container">
+            <div id="smart-phone-charge-line" style="display: none">
+                <div id="smart-phone-charge-line-line"/>
+                <div id="smart-phone-charge-line-top"/>
+            </div>
+        </div>
+        
         <div class="phone-screen-locked">
             <div style="font-size: 16px; font-weight: bold;">
                 <<if !($Phone.Using is "null") and PhoneMod.getUsingPhone().newness gt 0>>
@@ -139,9 +146,16 @@
                     <span onclick="PhoneMod.togglePhone()" style="cursor:pointer">
                         <img class="toolbar-icon" src="img/ui/phone/lock.png">
                     </span>
+                    <span onclick="PhoneMod.shutdown()" style="cursor:pointer">
+                        <img class="toolbar-icon" src="img/ui/phone/shutdown.png">
+                    </span>
                 </div>
             <</if>>
         </div>
+    </div>
+
+    <div id="smart-phone-toolbar" class="phone-toolbar" style="transform: translateY(100px)">
+        <img src="img/ui/phone/powerbank.png" style="width: 40px" onclick="PhoneMod.PhoneCharging(!V.Phone.Charging)">
     </div>
 <</widget>>
 
@@ -613,7 +627,9 @@
     <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone("特斯特2 测试型")>><<run Engine.play(passage())>><</link>><br>
     <<link "通过老冯购买手机">><<run PhoneMod.BuySecondPhone("特斯特2 测试型", 0.8)>><<run Engine.play(passage())>><</link>><br>
     <<link "通过盗窃获得手机">><<run PhoneMod.StolePhone()>><<run Engine.play(passage())>><</link>><br>
-    <<link "修复当前使用的手机">><<run PhoneMod.getUsingPhone().newness = PhoneMod.getUsingPhone().newnessmax>><<run Engine.play(passage())>><</link>>
+    <hr>
+    <h3 class="gold">手机操作</h3>
+    <<link "修复当前使用的手机">><<run PhoneMod.repairPhone(PhoneMod.getUsingPhone())>><<run Engine.play(passage())>><</link>>
     <hr>
     <h3 class="gold">剧情变量</h3>
     <<link "清空咖啡店盗窃警戒">><<run delete V.Phone.StealPhoneAlertOceanBreeze>><<run Engine.play(passage())>><</link>><br>

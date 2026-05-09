@@ -3,9 +3,9 @@
 		<div class="settingsHeader options">万能的智能手机模组设置</div>
 		<div class="settingsToggleItemWide">
 			手机缩放
-			<span class="tooltip-anchor linkBlue" tooltip="允许调节动态显示模块距离顶部的高度">(?)</span>
 			<br>
-			<<numberslider "$Phone.Settings.Scale" $Phone.Settings.Scale 0.01 2.00 0.01>>
+			<<set _PhoneScale to $Phone.Settings.Scale ?? 1.0>>
+			<<numberslider "_PhoneScale" _PhoneScale 0.3 2.00 0.01>>
 			<br>
 			<input type="button" value="设置" onclick='PhoneMod.PhoneScaleSettings()'/>
 			<input type="button" value="重设" onclick='PhoneMod.PhoneScaleSettingsReset()'/>
