@@ -60,10 +60,10 @@
 :: SmartPhoneWidgets [widget]
 <<widget "smartphone_render">>
     <div id="smart-phone-container" class="phone-main">
-        <div id="smart-phone-charge-line-container">
-            <div id="smart-phone-charge-line" style="display: none">
-                <div id="smart-phone-charge-line-line"/>
-                <div id="smart-phone-charge-line-top"/>
+        <div class="smart-phone-charge-line-container">
+            <div id="smart-phone-charge-line" class="smart-phone-charge-line" style="display: none">
+                <div class="smart-phone-charge-line-line"/>
+                <div class="smart-phone-charge-line-top"/>
             </div>
         </div>
         
@@ -156,7 +156,18 @@
 
     <div id="smart-phone-toolbar" class="phone-toolbar" style="transform: translateY(100px)">
         <<if $Phone.PowerBank>>
-            <img src="img/ui/phone/powerbank.png" style="width: 40px" onclick="PhoneMod.PhoneCharging(!V.Phone.Charging)">
+            <div style="position: absolute; width: 30px; height: 30px;">
+                <div class="smart-phone-charge-line-container" style="bottom: -192px;">
+                    <div id="smart-phone-charge-line" class="smart-phone-charge-line" style="display: none">
+                        <div class="smart-phone-charge-line-line"/>
+                        <div class="smart-phone-charge-line-top"/>
+                    </div>
+                </div>
+                <img src="img/ui/phone/powerbank.png" class="smart-phone-toolbar-icon" onclick="PhoneMod.PhoneCharging(!V.Phone.Charging)">
+            </div>
+            <div id="smart-phone-list">
+
+            </div>
         <</if>>
     </div>
 <</widget>>

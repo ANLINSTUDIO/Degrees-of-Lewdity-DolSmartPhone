@@ -232,12 +232,55 @@
     font-size: 12px;
     transition: all 0.3s ease, background-color 0.4s ease;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    width: 200px;
-    height: 40px;
+    width: fit-content;
+    min-width: 30px;
+    max-width: 200px;
+    height: 35px;
     padding: 5px;
+    display: flex;
+    align-items: center;
+}
+.smart-phone-toolbar-icon {
+    width: 30px;
+    position: sticky;
+    user-select: none;
+    cursor: pointer;
+}
+.smart-phone-toolbar-icon > img {
+    pointer-events: none;
+}
+#smart-phone-list {
+    margin-left: 30px;
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    height: stretch;
+    overflow-y: hidden;
+}
+#smart-phone-list:not(:empty) {
+    margin-left: 40px;
+    padding-inline: 5px;
+}
+#smart-phone-list::-webkit-scrollbar {
+    height: 2px;
+    border-radius: 1px;
+}
+.smart-phone-toolbar-title {
+    position: absolute;
+    bottom: 0;
+    font-size: 5px;
+    transform: translateY(6px);
+    line-height: normal;
+}
+.smart-phone-toolbar-subtitle {
+    position: absolute;
+    top: 0;
+    font-size: 7px;
+    transform: translateY(-2px);
+    white-space: nowrap;
 }
 /* 充电线显示 */
-#smart-phone-charge-line {
+.smart-phone-charge-line {
     transition: none;
 
     width: 100%;
@@ -245,7 +288,7 @@
     position: absolute;
     bottom: 3px;
 }
-#smart-phone-charge-line-line {
+.smart-phone-charge-line-line {
     background-color: #fff;
     left: 25%;
     width: 50%;
@@ -254,7 +297,7 @@
     bottom: 3px;
     border-radius: 3px;
 }
-#smart-phone-charge-line-top {
+.smart-phone-charge-line-top {
     background-color: #fff;
     width: 100%;
     height: 12px;
@@ -262,7 +305,7 @@
     top: 0;
     border-radius: 3px;
 }
-#smart-phone-charge-line-container {
+.smart-phone-charge-line-container {
     width: 8px;
     height: 200px;
     position: absolute;
@@ -270,7 +313,7 @@
     bottom: -202px;
     overflow: hidden;
 }
-#smart-phone-charge-line.line-start {
+.smart-phone-charge-line.line-start {
     transform: translateY(20px);
     opacity: 0;
 }
