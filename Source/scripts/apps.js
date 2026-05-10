@@ -1437,6 +1437,16 @@ PhoneMod.yenoteDelete = function(photo_id) {
         }
     }
 }
+PhoneMod.yenoteDeleteComment = function(photo_id) {
+    const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
+    if (notes.length > 0) {
+        const note = notes[0];
+        PhoneMod.confirm('确定要删除这篇文章的所有评论吗？', '这样做可以减少卡顿，不会造成副作用。', () => {
+            note.comments = []
+            PhoneMod.PhoneUIInit(true, true)
+        })
+    }
+}
 PhoneMod.yenoteGenerateRandomComment = function(photo) {
     const photo_id = photo.id;
     const photoData = PhoneMod.PhonePhotos[photo_id];

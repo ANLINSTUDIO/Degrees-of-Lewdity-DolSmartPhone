@@ -165,10 +165,14 @@
                 </div>
                 <img src="img/ui/phone/powerbank.png" class="smart-phone-toolbar-icon" onclick="PhoneMod.PhoneCharging(!V.Phone.Charging)">
             </div>
-            <div id="smart-phone-list">
-
+        <<else>>
+            <div style="position: absolute; width: 30px; height: 30px;">
+                <img src="img/misc/icon/phone/phones.png" class="smart-phone-toolbar-icon">
             </div>
         <</if>>
+        <div id="smart-phone-list">
+
+        </div>
     </div>
 <</widget>>
 
@@ -414,8 +418,8 @@
                 <button onclick="PhoneMod.yenoteSetNewName()">确定</button>
             </div>
         </div>
-    <<elseif $Phone.yenotePosting>>
-        <<set _note to $Phone.yenotePosting>>
+    <<elseif _yenotePosting>>
+        <<set _note to _yenotePosting>>
         <h3>发布你的文章</h3>
         <<if _note is true>>
             <textarea id="yenoteposttextarea" class="body-textarea" placeholder="写下你的故事…" aria-label="文章正文"></textarea>
@@ -511,7 +515,9 @@
                                     <<else>>
                                         <<print '阅读'+_note.view+'&nbsp;&nbsp;点赞'+_note.like+"&nbsp;&nbsp;">> 
                                         <<if _note.earned>><<print '获利<span class="gold">£'+_note.earned+'</span>&nbsp;&nbsp;'>><</if>> 
-                                        <<link "删除此文章">><<run PhoneMod.yenoteDelete(_note.id)>><</link>>
+                                        <br>
+                                        <<link "删除此文章">><<run PhoneMod.yenoteDelete(_note.id)>><</link>>&nbsp;&nbsp;
+                                        <<link "删除所有评论">><<run PhoneMod.yenoteDeleteComment(_note.id)>><</link>>
                                     <</if>>
                                 </div>
                                 <<if validArray(_note.comments)>>
@@ -623,7 +629,7 @@
 <<widget "smartphone_debug_switch">>
     <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()">
         <<icon "phone/phone.png">>
-        <span style="position: absolute; right: 15px; top: 20px; font-size: 5px; background-color: black;"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
+        <span style="position: absolute; right: 15px; top: 20px; font-size: 0.25em; background-color: black; border-radius: 2px;"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
     </div>
 <</widget>>
 

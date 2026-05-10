@@ -268,14 +268,18 @@
 .smart-phone-toolbar-title {
     position: absolute;
     bottom: 0;
-    font-size: 5px;
+    font-size: 12px;
+    width: 75px;
+    scale: 0.4;
+    transform-origin: left bottom;
     transform: translateY(6px);
     line-height: normal;
+    word-break: break-all;
 }
 .smart-phone-toolbar-subtitle {
     position: absolute;
     top: 0;
-    font-size: 7px;
+    font-size: 0.6em;
     transform: translateY(-2px);
     white-space: nowrap;
 }

@@ -1024,6 +1024,7 @@ PhoneMod.手机充电中被盗概率 = 0.2;
 PhoneMod.手机充电中安全地点 = ["Bedroom", "SecondPhoneShop"];
 PhoneMod.自然电量损失每分钟 = 0.3;
 PhoneMod.充电宝充电每分钟 = 5;
+PhoneMod.充电宝充入倍数 = 5;
 PhoneMod.破解费用比例 = 0.5;
 PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",

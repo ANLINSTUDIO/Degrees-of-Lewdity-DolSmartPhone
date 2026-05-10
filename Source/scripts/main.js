@@ -766,7 +766,7 @@ PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
             let wear = 0;
 
             if (phone.id === "PowerBank") {
-                phone.newness = Math.min(phone.newness + charge_value, phone.newnessmax)
+                phone.newness = Math.min(phone.newness + charge_value * PhoneMod.充电宝充入倍数, phone.newnessmax)
                 T.PowerBankCharging = true;
             } else {
                 wear = PhoneMod.PhoneCharge(ageHours * PhoneMod.充电速度每小时, phone)
@@ -977,7 +977,11 @@ PhoneMod.PhoneLoadList = function() {
                     `);
                 Div.appendChild(DivC);
             }
-        })
+        });
+        Div.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            Div.scrollLeft += event.deltaY;
+        });
     }
 }
 // === 充电宝 =====================================
