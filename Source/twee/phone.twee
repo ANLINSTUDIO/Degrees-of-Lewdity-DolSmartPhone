@@ -629,7 +629,7 @@
 <<widget "smartphone_debug_switch">>
     <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()">
         <<icon "phone/phone.png">>
-        <span style="position: absolute; right: 15px; top: 20px; font-size: 0.25em; background-color: black; border-radius: 2px;"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
+        <span class="smart-phone-debug-switch-version"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
     </div>
 <</widget>>
 

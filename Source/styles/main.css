@@ -32,6 +32,16 @@
     right: 15px;
     background-color: #fff;
 }
+#smart-phone-debug-switch-version {
+    position: absolute; 
+    right: 15px; 
+    top: 20px; 
+    font-size: 12px; 
+    scale: 0.4;
+    transform-origin: right top;
+    background-color: black; 
+    border-radius: 2px;
+}
 #smart-phone-debug-container {
     position: fixed;
     padding: 10px;
