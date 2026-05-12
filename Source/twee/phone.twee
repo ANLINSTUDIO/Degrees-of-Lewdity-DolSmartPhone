@@ -639,8 +639,8 @@
     <<link "刷新">><<run PhoneMod.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run PhoneMod.DebugExcuteJs()>><</link>>
     <hr>
-    <input type="text" id="excute-sugercube-path" placeholder="执行位置 ?? #smartphone_debug_msg">
-    <input type="text" id="excute-sugercube" placeholder="执行SugerCube命令"><<link "执行">><<run PhoneMod.DebugExcuteSugerCube()>><</link>>
+    <input type="text" id="excute-sugarcube-path" placeholder="执行位置 ?? #smartphone_debug_msg">
+    <input type="text" id="excute-sugarcube" placeholder="执行SugarCube命令"><<link "执行">><<run PhoneMod.DebugExcuteSugarCube()>><</link>>
     <hr>
     <h3 class="gold">获取手机</h3>
     <<link "通过官方店购买手机">><<run PhoneMod.BuyPhone("特斯特2 测试型")>><<run Engine.play(passage())>><</link>><br>

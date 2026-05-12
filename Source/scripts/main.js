@@ -470,10 +470,10 @@ PhoneMod.DebugExcuteJs = function() {
         }
     }, 1)
 }
-PhoneMod.DebugExcuteSugerCube = function() {
+PhoneMod.DebugExcuteSugarCube = function() {
     setTimeout(() => {
-        const input = document.getElementById("excute-sugercube")
-        const path_input = document.getElementById("excute-sugercube-path")
+        const input = document.getElementById("excute-sugarcube")
+        const path_input = document.getElementById("excute-sugarcube-path")
         if (input) {
             const command = input.value
             let path = "#smartphone_debug_msg"
@@ -820,10 +820,10 @@ PhoneMod.PhonePowerPass = function() {
                 }
             }
         }
-        V.Phone.PowerPassLast = Time.date;
     } else {
         V.Phone.Charging = false
     }
+    V.Phone.PowerPassLast = Time.date;
 }
 // === 手机存放 ====================================
 PhoneMod.PhoneStore = function(position, id) {

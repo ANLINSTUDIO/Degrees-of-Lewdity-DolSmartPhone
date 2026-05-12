@@ -160,7 +160,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["sex"],
         conditions: {
           passage: "Bath Masturbation",
-          $havingOrgasm: true
+          _havingOrgasm: true
         },
         comments: {
           "洗完澡都是香香的哦": `<<lstress>><<stress -1>>`,
@@ -248,7 +248,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["sex"],
         conditions: {
           passage: "Bath Masturbation",
-          $havingOrgasm: true,
+          _havingOrgasm: true,
           $: () => {
             const yenote = V.Phone.Yenotes.find(item => item.id === "6583d16f-7c3f-4f18-b980-c41f2be40241")
             if (yenote) {
@@ -813,7 +813,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["sex"],
         conditions: {
           passage: "Home Masturbation",
-          $havingOrgasm: true
+          _havingOrgasm: true
         },
         comments: {
           "粉粉的，好可爱呀": "<<lstress>><<stress -15>>",
@@ -848,7 +848,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         fames: ["exhibitionism" ,"sex"],
         conditions: {
           passage: "Temple Masturbation",
-          $havingOrgasm: true,
+          _havingOrgasm: true,
           $: () => {
             return V.worn.upper.name === "sexy nun's habit" && V.worn.lower.name === "sexy nun's habit skirt"
           },

@@ -207,10 +207,9 @@ PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
         if (feng) {
             price *= 0.8
         };
-        if (phone.newnessmax == PhoneMod.getPhoneInfo(id).newnessfactory) {
-            return Math.max(price, 1);
+        if (phone.newnessmax != PhoneMod.getPhoneInfo(id).newnessfactory) {
+            price *= phone.newnessmax / PhoneMod.getPhoneInfo(id).newnessfactory * 0.5; // 根据新旧程度调整价格
         };
-        price *= phone.newnessmax / PhoneMod.getPhoneInfo(id).newnessfactory * 0.5; // 根据新旧程度调整价格
         return Math.floor(Math.max(price, 1)); // 最低售价为1
     }
 }

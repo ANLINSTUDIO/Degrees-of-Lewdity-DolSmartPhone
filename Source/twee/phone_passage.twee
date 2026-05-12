@@ -29,11 +29,12 @@
     官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
 <</widget>>
 <<widget "phoneat">>
-    <<if _args.length > 1>>
-        <<set _Phone to _args[0]>>
-    <</if>>
     <<phonetext>>
-    <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, true)>>
+    <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, _args[0] ?? false)>>
+    <<run console.log(_args)>>
+    <<if _args[1]>>
+        <<set _money to _money*_args[1]>>
+    <</if>>
     现在可以以<span class="gold">£_money</span>的价格在
 <</widget>>
 :: ==== SC Phone Shop ====
@@ -727,7 +728,7 @@
 :: Second Phone Sell
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<phoneat>>老冯这里
+        <<phoneat true>>老冯这里
         <<link [[出售|Second Phone Sell Finish]]>> <<set $PhoneToSell to _Phone.id>> <</link>>
         <br>
     <</capture>>
@@ -805,7 +806,8 @@
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
         <<if _Phone.stolen and !_Phone.usable>>
-            <<phoneat>>老冯这里
+            <<set _pjfybl to PhoneMod.破解费用比例>>
+            <<phoneat false _pjfybl>>老冯这里
             <<link [[破解密码|Second Phone Crack Finish]]>> <<set $PhoneToSell to _Phone.id>> <</link>>
             <br>
         <</if>>
