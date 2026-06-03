@@ -15,9 +15,13 @@
     <<link [[再玩一局 (0:30)|$Phone.GameAgain]]>><</link>>
     <br>
     <<if !$Phone.ReturnPassage>>
-        <<link [[返回卧室|Bedroom]]>><</link>>
+        <<link [[返回|$safePassage]]>><</link>>
     <<else>>
-        <<link [[退出游戏|Phone Back]]>><</link>>
+        <<link [[退出游戏|Phone Back]]>>
+            <<unset $Phone.GamePassed>>
+            <<unset $Phone.GameAgain>>
+            <<PhoneBack>>
+        <</link>>
     <</if>>
     <br><br>
     <<scienceicon>><<link [[玩科学实验室 (0:30)|Phone Game Science]]>><</link>><<gscience>>
@@ -37,9 +41,9 @@
     <<switch random(1,2)>>
         <<case 1>>
             <<tiredness 12>><<ggtiredness>>
-            <<set $Phone.GamePassChance to $science + $science_exam>>
-            <br>游戏通关率：<span class="black"><<print Math.trunc($Phone.GamePassChance / 800 * 100)>>%</span><br>
-            <<if $Phone.GamePassChance gt random(1, 800)>>
+            <<set _GamePassChance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc(_GamePassChance / 800 * 100)>>%</span><br>
+            <<if _GamePassChance gt random(1, 800)>>
                 你认为游戏中出现的各种实验内容和题目对你来说易如反掌，你很有通过的把握！<br>
                 <<set $Phone.GamePassed to 1>>
             <<else>>
@@ -51,10 +55,10 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set $Phone.GameQuestion to window.PhoneMod.getGameQuestion("Science")>>
-            <<print $Phone.GameQuestion.title>>
+            <<set _GameQuestion to window.PhoneMod.getGameQuestion("Science")>>
+            <<print _GameQuestion.title>>
             <br>
-            <<for _i, _question range $Phone.GameQuestion.options>>
+            <<for _i, _question range _GameQuestion.options>>
                 <<if _question.isCorrect>>
                     <<link [[_question.text|Phone Game Finish]]>><<set $Phone.GamePassed to 1>><</link>><br>
                 <<else>>
@@ -72,9 +76,9 @@
     <<switch random(1,2)>>
         <<case 1>>
             <<tiredness 12>><<ggtiredness>>
-            <<set $Phone.GamePassChance to $science + $science_exam>>
-            <br>游戏通关率：<span class="black"><<print Math.trunc($Phone.GamePassChance / 800 * 100)>>%</span><br>
-            <<if $Phone.GamePassChance gt random(1, 800)>>
+            <<set _GamePassChance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc(_GamePassChance / 800 * 100)>>%</span><br>
+            <<if _GamePassChance gt random(1, 800)>>
                 你认为游戏中出现的各种方程和题目对你来说易如反掌，你很有通过的把握！<br>
                 <<set $Phone.GamePassed to 1>>
             <<else>>
@@ -86,10 +90,10 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set $Phone.GameQuestion to window.PhoneMod.getGameQuestion("Maths")>>
-            <<print $Phone.GameQuestion.title>>
+            <<set _GameQuestion to window.PhoneMod.getGameQuestion("Maths")>>
+            <<print _GameQuestion.title>>
             <br>
-            <<for _i, _question range $Phone.GameQuestion.options>>
+            <<for _i, _question range _GameQuestion.options>>
                 <<if _question.isCorrect>>
                     <<link [[_question.text|Phone Game Finish]]>><<set $Phone.GamePassed to 1>><</link>><br>
                 <<else>>
@@ -107,9 +111,9 @@
     <<switch random(1,2)>>
         <<case 1>>
             <<tiredness 12>><<ggtiredness>>
-            <<set $Phone.GamePassChance to $science + $science_exam>>
-            <br>游戏通关率：<span class="black"><<print Math.trunc($Phone.GamePassChance / 800 * 100)>>%</span><br>
-            <<if $Phone.GamePassChance gt random(1, 800)>>
+            <<set _GamePassChance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc(_GamePassChance / 800 * 100)>>%</span><br>
+            <<if _GamePassChance gt random(1, 800)>>
                 你认为游戏中出现的各种诗词和文人对你来说易如反掌，你很有通过的把握！<br>
                 <<set $Phone.GamePassed to 1>>
             <<else>>
@@ -121,10 +125,10 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set $Phone.GameQuestion to window.PhoneMod.getGameQuestion("English")>>
-            <<print $Phone.GameQuestion.title>>
+            <<set _GameQuestion to window.PhoneMod.getGameQuestion("English")>>
+            <<print _GameQuestion.title>>
             <br>
-            <<for _i, _question range $Phone.GameQuestion.options>>
+            <<for _i, _question range _GameQuestion.options>>
                 <<if _question.isCorrect>>
                     <<link [[_question.text|Phone Game Finish]]>><<set $Phone.GamePassed to 1>><</link>><br>
                 <<else>>
@@ -142,9 +146,9 @@
     <<switch random(1,2)>>
         <<case 1>>
             <<tiredness 12>><<ggtiredness>>
-            <<set $Phone.GamePassChance to $science + $science_exam>>
-            <br>游戏通关率：<span class="black"><<print Math.trunc($Phone.GamePassChance / 800 * 100)>>%</span><br>
-            <<if $Phone.GamePassChance gt random(1, 800)>>
+            <<set _GamePassChance to $science + $science_exam>>
+            <br>游戏通关率：<span class="black"><<print Math.trunc(_GamePassChance / 800 * 100)>>%</span><br>
+            <<if _GamePassChance gt random(1, 800)>>
                 你认为游戏中出现的各种历史事件和年号、条约对你来说易如反掌，你很有通过的把握！<br>
                 <<set $Phone.GamePassed to 1>>
             <<else>>
@@ -156,10 +160,10 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set $Phone.GameQuestion to window.PhoneMod.getGameQuestion("History")>>
-            <<print $Phone.GameQuestion.title>>
+            <<set _GameQuestion to window.PhoneMod.getGameQuestion("History")>>
+            <<print _GameQuestion.title>>
             <br>
-            <<for _i, _question range $Phone.GameQuestion.options>>
+            <<for _i, _question range _GameQuestion.options>>
                 <<if _question.isCorrect>>
                     <<link [[_question.text|Phone Game Finish]]>><<set $Phone.GamePassed to 1>><</link>><br>
                 <<else>>

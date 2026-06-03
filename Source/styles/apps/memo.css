@@ -199,13 +199,13 @@
     color: #1a1a1a;
 }
 
-.footer-actions button#memo_enable_sort.active{
+.footer-actions button.memo_enable_sort.active{
     background: green !important;
     border-color: #a4a4a4 !important;
     color: white !important;
 }
 
-.footer-actions input.active ~ button#memo_enable_sort {
+.footer-actions input.active ~ button.memo_enable_sort {
     display: none;
 }
 

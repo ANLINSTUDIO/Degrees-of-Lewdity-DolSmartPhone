@@ -2,6 +2,7 @@
     --phone-width-closed: 60px;
     --phone-width-open: 300px;
     --phone-scale: 1.0;
+    --phone-margin: 20px;
     --phone-ratio: 0.6;
     --phone-disabled-translateY: 40px;
     --popup-offset: 10px; /* 弹窗与手机的距离 */
@@ -26,7 +27,7 @@
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     transition: all 0.3s ease;
-    z-index: 999;
+    z-index: 998;
 }
 #smart-phone-debug-switch.active {
     right: 15px;
@@ -56,9 +57,8 @@
     overflow-y: auto;
     overflow-wrap: anywhere;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    z-index: 998;
+    z-index: 997;
 }
-
 
 
 #phone-wrapper * {
@@ -66,12 +66,16 @@
 }
 #phone-wrapper {
     position: fixed;
-    z-index: 200;
+    z-index: 996;
+}
+.doli-float-btn {
+    /* 不好意思哈，我必须得改一下你的z，你的z太高了，挡住了手机的显示，而且甚至高于模组加载器 */
+    z-index: 995 !important;
 }
 /* 手机容器：固定在右下角 */
 .phone-main {
     position: fixed;
-    right: 20px;
+    right: var(--phone-margin);
     bottom: 20px;
     width: var(--phone-width-closed);
     aspect-ratio: var(--phone-ratio);
@@ -87,6 +91,7 @@
 /* 亮屏状态：变大 */
 .phone-main.phone-open {
     width: var(--phone-width-open);
+    right: 20px;
     aspect-ratio: var(--phone-ratio);
     background-color: #1a1a1a;
     color: #fff;
@@ -233,7 +238,7 @@
 }
 #smart-phone-toolbar {
     position: fixed;
-    right: 20px;
+    right: var(--phone-margin);
     bottom: 20px;
     background-color: #1a1a1a;
     border: 2px solid #444;
@@ -326,6 +331,7 @@
     right: calc(50% - 4px);
     bottom: -202px;
     overflow: hidden;
+    pointer-events: none;
 }
 .smart-phone-charge-line.line-start {
     transform: translateY(20px);
@@ -366,6 +372,7 @@
 /* 确认 */
 #phone-dialog {
     background-color: #000000b5;
+    border-radius: 10px;
     position: absolute;
     top: 0;
     left: 0;
@@ -438,11 +445,23 @@
 }
 
 /* 信息弹窗 */
-.phone-popup {
+#phone-popup-container {
     position: fixed;
     right: 20px;
     bottom: calc(20px + var(--phone-width-closed) / var(--phone-ratio) + var(--popup-offset));
+    transition: bottom 0.3s ease;
     
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: auto;
+    color: white;
+    font-size: 12px;
+}
+#phone-render:has(#smart-phone-container.phone-main.phone-open) ~ #phone-popup-container{
+    bottom: calc(20px + var(--phone-width-open) / var(--phone-ratio) * var(--phone-scale) + var(--popup-offset));
+}
+.phone-popup {
     -webkit-tap-highlight-color: transparent;
     display: flex;
     height: auto;
@@ -450,27 +469,21 @@
     background-color: #1a1a1a;
     border: 2px solid #444;
     border-radius: 10px 10px 0px 10px;
-    color: white;
-    font-size: 12px;
     transition: all 0.3s ease;
+    word-break: break-all;
     overflow: hidden;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     
     pointer-events: none;
     opacity: 0;
-    width: 0px;
+    width: 300px;
     transform: translateX(200px);
-}
-#phone-wrapper:has(.phone-main.phone-open) + .phone-popup{
-    bottom: calc(20px + var(--phone-width-open) / var(--phone-ratio) * var(--phone-scale) + var(--popup-offset));
 }
 .phone-popup.active {
     pointer-events: all;
     opacity: 1;
-    width: 300px;
     transform: translateX(0);
-
 }
 #phone-wrapper:has(.phone-main.phone-disabled) + .phone-popup{
     transform: translateY(var(--phone-disabled-translateY));
@@ -558,7 +571,7 @@
     padding: 20px;
     border: 5px solid #444;
     border-radius: 10px;
-    width: calc(500px * 0.8);
+    height: calc(100vh * 0.8);
     aspect-ratio: 9 / 16;
     margin: 0 auto;
     display: flex;
@@ -566,7 +579,7 @@
 }
 @media (max-width: 500px) {
     .phone-call-overlay {
-        width: 80%;
+        height: 80%;
     }
 }
 

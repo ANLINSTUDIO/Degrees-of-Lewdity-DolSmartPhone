@@ -916,9 +916,39 @@
 
 :: ========APP========
 :: Phone Shop
+<div class="phone-call-overlay">
+    <h2 style="display: flex; gap: 10px;"> <img src="img/misc/icon/phone/app/taobao.png"> 淘桃网购</h2>
+    <hr>
+    
+    <div id="phone-call-content">
+        <<shopicon "clothing">><<link [[服装专柜|Phone Shop BuyClothes]]>><<set $Phone.ReturnWorn to $worn>><</link>><br>
+        <<supermarketicon>><<link [[小桃帮买菜|Phone Shop BuyFood]]>><</link>><br>
+    </div>
+
+    <div id="phone-call-hang-up">
+        <<getouticon>><<link [[退出淘桃网购|Phone Back]]>><<PhoneBack>><</link>>
+    </div>
+</div>
+:: Phone Shop BuyClothes
 <div class="phone-overlay">
     <<effects>>
-    你处于网购平台。
+    <h2>服装专柜</h2> <br>
+    <<getouticon>><<link [[返回主页|Phone Shop]]>>
+        <<set $worn to $Phone.ReturnWorn>>
+        <<unset $Phone.ReturnWorn>>
+        <<updatesidebarimg>>
+        <<updatesidebardescription>>
+        <<updateallure>>
+        <<updatewarmthscale>>
+        <<updatewarmthdescription>>
+        <<updateclothingshop>>
+        <<run updateMoment()>>
+        <<shopClothingFilterReset>>
+        <<ShowUnderEquip "normal">>
+        <<ShowUnderEquip "over">>
+        <<set $tryOn.autoReset to true>>
+    <</link>>
+    <hr>
 
     <<if $tryOn.autoReset isnot false>><<tryOnReset>><</if>>
     <<set $shopName = "clothing">>
@@ -940,23 +970,19 @@
         <<run linkifyDivs('.button-back-to-shop')>>
     </div>
     <<set $outside to _outside>>
-
-    <<getouticon>>
-    <<link [[退出网购商城|Phone Back]]>>
-        <<set $worn to $Phone.ReturnWorn>>
-        <<unset $Phone.ReturnWorn>>
-        <<updatesidebarimg>>
-        <<updatesidebardescription>>
-        <<updateallure>>
-        <<updatewarmthscale>>
-        <<updatewarmthdescription>>
-        <<updateclothingshop>>
-        <<run updateMoment()>>
-        <<shopClothingFilterReset>>
-        <<ShowUnderEquip "normal">>
-        <<ShowUnderEquip "over">>
-        <<set $tryOn.autoReset to true>>
+</div>
+:: Phone Shop BuyFood
+<div class="phone-overlay">
+    <<effects>>
+    <h2>小桃帮买菜</h2>
+    ~~小桃买菜拥有最专业的骑手，Ta们会从购物中心的超市取回您购买的商品并快速送到您的手上；如果超市缺货，线上APP会同步更新。~~<br>
+    <<getouticon>><<link [[返回主页|Phone Shop]]>>
+        <<unset $shoppingBasket>>
     <</link>>
+    <hr>
+
+    <<supermarketDisplay "supermarket">>
+
 </div>
 :: Phone NewWest
 <<if PhoneMod.learnRecipes($food_to_learn)>>
@@ -966,7 +992,7 @@
     教学视频不止这么多，<span class="green">你还需要抽出更多时间来继续学习</span>。
 <</if>><br><br>
 <<unset $food_to_learn>>
-<<link [[继续|Phone Back]]>><</link>>
+<<link [[继续|Phone Back]]>><<PhoneBack>><</link>>
 
 
 

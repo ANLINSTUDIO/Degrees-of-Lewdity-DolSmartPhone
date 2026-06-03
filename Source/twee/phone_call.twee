@@ -36,7 +36,7 @@
     </div>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<unset $Phone.CallLandry>><<endevent>><</link>>
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<unset $Phone.CallLandry>><<endevent>><<PhoneBack>><</link>>
     </div>
 </div>
 
@@ -97,7 +97,7 @@
     <hr>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><<PhoneBack>><</link>>
     </div>
 </div>
 
@@ -123,7 +123,7 @@
     <hr>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><<PhoneBack>><</link>>
     </div>
 </div>
 
@@ -149,7 +149,7 @@
     <hr>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><<PhoneBack>><</link>>
     </div>
 </div>
 
@@ -175,7 +175,7 @@
     <hr>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><</link>>
+        <<getouticon>><<link [[挂断电话|Phone Back]]>><<endevent>><<PhoneBack>><</link>>
     </div>
 </div>
 

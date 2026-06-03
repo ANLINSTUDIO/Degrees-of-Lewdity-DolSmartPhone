@@ -149,6 +149,7 @@ PhoneMod.checkAlarms = function(offset=0) { // 闹钟检查
 };
 PhoneMod.checkAlarmsInSleep = function() {
     if (V.Phone.cancelAlarmInSleepOnce) return false;
+    if (!PhoneMod.getUsingPhone()) return false;
     const shouldTrigger = PhoneMod.checkAlarms(60)
     if (shouldTrigger) {
         let now = PhoneMod.getAbsTime();
@@ -871,8 +872,11 @@ PhoneMod.photoSubmit = function() {
     V.Phone.PhotoCurrent.facevariant = V.facevariant;
     V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
     PhoneMod.togglePhone();
-    V.Phone.photography = Math.min(V.Phone.photography + 20, 1000)
-    PhoneMod.msgSend("你稍微掌握了一点摄影的技巧")
+    V.Phone.photography = Math.min(V.Phone.photography + 20, 1000);
+    PhoneMod.msgSend("你稍微掌握了一点摄影的技巧");
+
+    // 兼容极致动态
+    Dynamicest?.onPassageRender(Dynamicest.ev);
 }
 PhoneMod.photoFinish = function() {
     delete V.Phone.PhotoCurrentPath;
@@ -886,15 +890,165 @@ PhoneMod.photoDelete = function(photo_id) {
         PhoneMod.PhoneUIInit(true, true);
     })
 }
+PhoneMod.filterMode = {
+    "无": (taskId) => true,
+    "已完成": (taskId) => taskId in V.Phone.Album,
+    "未完成": (taskId) => !(taskId in V.Phone.Album),
+    "未使用": (taskId) => (taskId in V.Phone.Album) && !V.Phone.Album[taskId].isUsed,
+    "已使用": (taskId) => (taskId in V.Phone.Album) && V.Phone.Album[taskId].isUsed,
+    "人外": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("bestiality")),
+    "露出": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("exhibitionism")),
+    "授孕": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("impreg")),
+    "皮条客": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("pimp")),
+    "怀孕": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("pregnancy")),
+    "卖淫": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("prostitution")),
+    "强暴": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("rape")),
+    "淫乱": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("sex")),
+    "商业": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("business")),
+    "善良": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("good")),
+    "模特": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("model")),
+    "战斗": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("scrap")),
+    "社交": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("social")),
+}
 PhoneMod.initAlbum = function() {
     if (!PhoneMod.photoLoaded) {
         document.querySelector("#photononetip").style.display = ""
     }
-    for (let taskId in PhoneMod.PhonePhotos) {
-        PhoneMod.addAlbumTask(taskId)
+    const nonetext = Object.keys(PhoneMod.filterMode)[0];
+    if(V.Phone.filterMode === undefined) {
+        V.Phone.filterMode = nonetext
     }
-    PhoneMod.reorderTodoItems();
-}
+    for (let taskId in PhoneMod.PhonePhotos) {
+        if (
+            (PhoneMod.filterMode[V.Phone.filterMode] === undefined || PhoneMod.filterMode[V.Phone.filterMode](taskId)) &&
+            (V.Phone.searchAlbumKeyword === undefined || (PhoneMod.PhonePhotos[taskId].msg.includes(V.Phone.searchAlbumKeyword) || PhoneMod.PhonePhotos[taskId].taskDesc.includes(V.Phone.searchAlbumKeyword)))
+        ) {
+            PhoneMod.addAlbumTask(taskId)
+        }
+    }
+
+    const filterButton = document.getElementById('album_filter');
+    if (!filterButton) return;
+    filterButton.innerText = `筛选：${V.Phone.filterMode??nonetext}`;
+    if (V.Phone.filterMode === nonetext || PhoneMod.filterMode[V.Phone.filterMode] === undefined) {
+        filterButton.classList.remove("active")
+    } else {
+        filterButton.classList.add("active")
+    }
+
+    PhoneMod.reorderAlbumItems();
+};
+PhoneMod.reorderAlbumItems = function() {
+    const todoList = document.querySelector('.todo-list');
+    if (!todoList) return;
+    
+    const items = Array.from(todoList.children);
+    
+    // FLIP - 记录当前位置
+    const positions = new Map();
+    items.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        positions.set(item, {
+            top: rect.top,
+            left: rect.left
+        });
+    });
+    
+    // 排序逻辑（不重建 DOM）
+    const sortedItems = [...items].sort((a, b) => {
+        const aDot = a.querySelector('.priority-dot');
+        const bDot = b.querySelector('.priority-dot');
+        const aChecked = a.querySelector('input[type="checkbox"]')?.checked || false;
+        const bChecked = b.querySelector('input[type="checkbox"]')?.checked || false;
+        
+        const aImportant = aDot && !aDot.classList.contains('disabled');
+        const bImportant = bDot && !bDot.classList.contains('disabled');
+        
+        const getWeight = (important, checked) => {
+            if (important && !checked) return 3;
+            if (important && checked) return 2;
+            if (!important && !checked) return 1;
+            return 0;
+        };
+        
+        return getWeight(bImportant, bChecked) - getWeight(aImportant, aChecked);
+    });
+    
+    // 检查顺序是否已正确
+    let needsReorder = false;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i] !== sortedItems[i]) {
+            needsReorder = true;
+            break;
+        }
+    }
+    
+    if (!needsReorder) return;
+    
+    // 使用 DOM 移动而不是重建
+    sortedItems.forEach(item => {
+        todoList.appendChild(item); // 如果元素已在列表中，appendChild 会移动它
+    });
+    
+    // 动画：从旧位置平滑移动到新位置
+    items.forEach(item => {
+        const oldPos = positions.get(item);
+        const newPos = item.getBoundingClientRect();
+        
+        const diff = {
+            top: oldPos.top - newPos.top,
+            left: oldPos.left - newPos.left
+        };
+        
+        if (Math.abs(diff.top) > 1 || Math.abs(diff.left) > 1) {
+            // 临时禁用过渡
+            item.style.transition = 'none';
+            item.style.transform = `translate(${diff.left}px, ${diff.top}px)`;
+            
+            // 强制重绘
+            item.offsetHeight;
+            
+            // 播放动画
+            item.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1)';
+            item.style.transform = '';
+            
+            const onTransitionEnd = () => {
+                item.style.transition = '';
+                item.removeEventListener('transitionend', onTransitionEnd);
+            };
+            item.addEventListener('transitionend', onTransitionEnd, { once: true });
+        }
+    });
+};
+PhoneMod.searchAlbum = function() {
+    const searchInput = document.getElementById('album_search');
+    if (!searchInput) return;
+    if (searchInput.classList.contains("active")) {
+        searchInput.classList.remove("active")
+        if (searchInput.value) {
+            V.Phone.searchAlbumKeyword = searchInput.value;
+        } else {
+            delete V.Phone.searchAlbumKeyword;
+        }
+        searchInput.value = "";
+        PhoneMod.PhoneUIInit(true, true);
+    } else {
+        searchInput.classList.add("active");
+        searchInput.focus();
+        delete V.Phone.filterMode;
+    }
+};
+PhoneMod.filterAlbum = function() {
+    const modes = Object.keys(PhoneMod.filterMode);
+    let currentIndex = modes.indexOf(V.Phone.filterMode);
+    if (currentIndex === -1) {
+        currentIndex = 0;
+    }
+    const nextIndex = (currentIndex + 1) % modes.length;
+    V.Phone.filterMode = modes[nextIndex];
+
+    PhoneMod.PhoneUIInit(true, true);
+};
 PhoneMod.photoError = function(element) {
     element.remove();
     const photononetip = document.querySelector("#photononetip");

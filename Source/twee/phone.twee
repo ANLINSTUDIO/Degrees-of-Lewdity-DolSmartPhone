@@ -1,9 +1,13 @@
 :: Phone Back
-你放下了手机。<br><br>
-<<link [[继续|$Phone.ReturnPassage]]>>
-    <<run PhoneMod.PhoneBack()>>
-<</link>>
-<<print '<<goto "'+PhoneMod.PhoneBack()+'">>'>>
+<<PhoneBack>>
+:: Phone Back Widget [widget]
+<<widget "PhoneBack">>
+    你放下了手机。<br><br>
+    <<link [[继续|$Phone.ReturnPassage]]>>
+        <<run PhoneMod.PhoneBack()>>
+    <</link>>
+    <<print '<<goto "'+PhoneMod.PhoneBack()+'">>'>>
+<</widget>>
 
 :: SmartPhonePreviewWidgets [widget]
 <<widget "smartphone_render_preview">>
@@ -153,6 +157,10 @@
             <</if>>
         </div>
     </div>
+<</widget>>
+
+<<widget "smartphone_add">>
+    <div id="phone-popup-container"></div>
 
     <div id="smart-phone-toolbar" class="phone-toolbar" style="transform: translateY(100px)">
         <<if $Phone.PowerBank>>
@@ -177,11 +185,12 @@
 <</widget>>
 
 <<widget "smartphone_popup">>
-    <div class="phone-popup" onclick="PhoneMod.msgClick(event)">
-        <div class="phone-popup-content"></div>
-        <div class="customOverlayClose" onclick="PhoneMod.msgClose()">
+    <<capture _msg>>
+        <div @id="'phone-popup-'+_msg.id" class="phone-popup" onclick="PhoneMod.msgClick(event)" @data-msg=_msg.id @data-func=_msg.func>
+            <div class="phone-popup-content">_msg.msg</div>
+            <div class="customOverlayClose" onclick="PhoneMod.msgCloseClick(event)" @data-msg=_msg.id></div>
         </div>
-    </div>
+    <</capture>>
 <</widget>>
 
 <<widget "phone_wallpaper">>
@@ -229,7 +238,12 @@
 <</widget>>
 
 <<widget "phone_app_album">>
-    <h3>相册</h3>
+    <h2>相册</h2>
+    <div class="footer-actions">
+        <input type="text" id="album_search" placeholder="搜索任务描述或文案" onkeydown="if (event.keyCode === 13) {PhoneMod.searchAlbum()}">
+        <button onclick="PhoneMod.searchAlbum()">搜索</button>
+        <button id="album_filter" class="memo_enable_sort" onclick="PhoneMod.filterAlbum()">筛选：无</button>
+    </div>
     <div class="album-content-container">
         <span class="def" id="photononetip" style="display:none">某些甚至全部的摄像图像将不可见</span>
         <ul class="todo-list"></ul>
@@ -366,13 +380,12 @@
     <div class="footer-actions">
         <input type="text" id="new_task_text" placeholder="输入任务文本" onkeydown="if (event.keyCode === 13) {PhoneMod.addNewMemoTask()}">
         <button onclick="PhoneMod.addNewMemoTask()">+ 新建任务</button>
-        <button id="memo_enable_sort" onclick="PhoneMod.memoToggleEnableSort()">自动排序</button>
+        <button id="memo_enable_sort" class="memo_enable_sort" onclick="PhoneMod.memoToggleEnableSort()">自动排序</button>
     </div>
     <ul class="todo-list" style="overflow: hidden;"></ul>
 <</widget>>
 
 <<widget "phone_app_game">>
-    <<set $Phone.ReturnPassageTmp to passage()>>
     玩家在非活动期间可以游玩游戏| 大幅消耗时间<<ggtiredness>><<llstress>><<lltrauma>><<ggcontrol>>
     <br><br>
     游戏分为科学、数学、语文和历史四类，对应着学校的四门学科，相应更高的成绩能够取得更好的治愈效果，而且不论怎样，都可以少量提高相应学科的进度。
@@ -391,7 +404,6 @@
     <<run PhoneMod.PhoneTo()>>
     <<set $Phone.CurrentApp to 'main'>>
     <<run PhoneMod.PhoneSafeCloseFinish()>>
-    <<set $Phone.ReturnWorn to $worn>>
     <<goto 'Phone Shop'>>
 <</widget>>
 
@@ -653,7 +665,7 @@
     <h3 class="gold">剧情变量</h3>
     <<link "清空咖啡店盗窃警戒">><<run delete V.Phone.StealPhoneAlertOceanBreeze>><<run Engine.play(passage())>><</link>><br>
     <<link "刷新二手手机店货物">><<run PhoneMod.RefreshSecondPhone()>><<run Engine.play(passage())>><</link>><br>
-    <<link "一键最高摄影技能">><<run V.Phone.photography = 1000>><</link>><br>
+    <<link "一键最高摄影技能" $passage>><<run V.Phone.photography = 1000>><</link>><br>
     <<link "一键解锁所有照片">><<run PhoneMod.photoTakeDebug()>><</link>>
     <hr>
     <h3 class="gold">调试对话</h3><span class="red">注意！这可能会破坏你的存档 至少会改变你的位置</span><br>

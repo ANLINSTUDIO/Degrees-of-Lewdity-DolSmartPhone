@@ -10,6 +10,15 @@
 			<input type="button" value="设置" onclick='PhoneMod.PhoneScaleSettings()'/>
 			<input type="button" value="重设" onclick='PhoneMod.PhoneScaleSettingsReset()'/>
 		</div>
+		<div class="settingsToggleItemWide">
+			手机边距
+			<br>
+			<<set _PhoneMargin to $Phone.Settings.Margin ?? 20>>
+			<<numberslider "_PhoneMargin" _PhoneMargin 0 500 5>>
+			<br>
+			<input type="button" value="设置" onclick='PhoneMod.PhoneMarginSettings()'/>
+			<input type="button" value="重设" onclick='PhoneMod.PhoneMarginSettingsReset()'/>
+		</div>
 	</div>
 
 	<<if $passage isnot "Start">>

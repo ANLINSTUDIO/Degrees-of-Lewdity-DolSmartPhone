@@ -131,6 +131,9 @@ PhoneMod.patchOnPassageRender = function (ev) {
                     PhoneMod.msgSend(`尊敬的客户您好：您的手机<span class="teal">(${phone.id})</span>的市场价已经降价，<span class="purple">遇欲NDMT保险公司</span>依据规定对其进行合法理赔，预计<span class="gold">£${relPrice}</span>将会稍后汇款到您的账户。`);
                 }, 10);
                 Wikifier.wikifyEval(`<<money ${relPrice * 100}>>`);
+
+                // 兼容极致动态
+                Dynamicest?.onPassageRender(Dynamicest.ev);
             }
         }
         V.Phone.价格调整理赔.push(phone.id);
@@ -139,6 +142,15 @@ PhoneMod.patchOnPassageRender = function (ev) {
     // 3.83 | NPC发文吸引度纠错
     V.Phone.Yenotes.find(y => y.id == "Landry-AD0").attract = 2.0;
     V.Phone.Yenotes.find(y => y.id == "A-Update382").attract = 10.0;
+
+    // 3.84 | 变量优化
+    delete V.Phone.GamePassChance;
+    delete V.Phone.GameQuestion;
+    delete V.Phone.ReturnPassageTmp;
+    if (window.modSC2DataManager.getModLoader().getModZip("DOLI") && V.Phone.Settings.Margin === undefined) {
+        V.Phone.Settings.Margin = 85;
+        document.documentElement.style.setProperty('--phone-margin', `${V.Phone.Settings.Margin}px`);
+    }
 }
 
 PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {
