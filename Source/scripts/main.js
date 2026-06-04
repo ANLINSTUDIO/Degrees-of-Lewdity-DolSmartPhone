@@ -9,14 +9,13 @@ $(document).one(":passageinit", function () {
 });
 $(document).on(":passagerender", function (ev) {PhoneMod.onPassageRender(ev)});
 PhoneMod.onPassageRender = function (ev) {
-    PhoneMod.ev = ev
+    PhoneMod.ev = ev;
 
     const phoneDebugSwitchUI = document.createElement('div');
-    phoneDebugSwitchUI.id = "smartphone_debug_switch"
     new Wikifier(phoneDebugSwitchUI, "<<smartphone_debug_switch>>");
     $(PhoneMod.ev.content).append(phoneDebugSwitchUI);
 
-    PhoneMod.yenotesCheck()
+    PhoneMod.yenotesCheck();
 
     const phoneUI = document.createElement('div');
     phoneUI.id = "phone-wrapper";
@@ -56,7 +55,11 @@ PhoneMod.eventsLoad_ = function(event_or_id) {  // 可以提供event或者eventi
         }
         if (pass === null) {
             if (event.chance) {
-                pass = Math.random() < event.chance
+                if (Math.random() < event.chance) {
+                    pass = true
+                } else {
+                    pass = false
+                }
             } else {
                 pass = true
             }
@@ -492,6 +495,8 @@ PhoneMod.msgClose = function (id) {
 PhoneMod.toggleDebug = function(reload = false) {
     const phoneDebugSwitchUIOld = document.getElementById("smart-phone-debug-switch")
     const phoneDebugUIOld = document.getElementById("smartphone_debug")
+    phoneDebugSwitchUIOld.style.right = '';
+    phoneDebugSwitchUIOld.style.bottom = '';
     if (phoneDebugUIOld) {
         phoneDebugSwitchUIOld.classList.remove("active")
         phoneDebugUIOld.remove()
@@ -574,6 +579,91 @@ PhoneMod.DebugExcuteSugarCube = function() {
             }
         }
     }, 1)
+}
+PhoneMod.DebugDrag = function() {
+    const elmnt = document.getElementById("smart-phone-debug-switch");
+    if (!elmnt) return;
+
+    let originalRight = null;
+    let originalBottom = null;
+    let startX = 0;
+    let startY = 0;
+    let startRight = 0;
+    let startBottom = 0;
+    let moveHandler = null;
+    let upHandler = null;
+
+    const target = document.getElementById(elmnt.id + "header") || elmnt;
+    target.style.touchAction = 'none';
+    target.addEventListener('pointerdown', dragPointerDown, { passive: false });
+
+    function parsePx(value) {
+        return value === '' || value === 'auto' || value === null ? NaN : parseFloat(value);
+    }
+
+    function getComputedRightBottom() {
+        const cs = window.getComputedStyle(elmnt);
+        let right = parsePx(cs.right);
+        let bottom = parsePx(cs.bottom);
+
+        if (isNaN(right)) {
+            const parentWidth = (cs.position === 'fixed') ? window.innerWidth : (elmnt.offsetParent ? elmnt.offsetParent.clientWidth : document.documentElement.clientWidth);
+            right = parentWidth - (elmnt.offsetLeft + elmnt.offsetWidth);
+        }
+        if (isNaN(bottom)) {
+            const parentHeight = (cs.position === 'fixed') ? window.innerHeight : (elmnt.offsetParent ? elmnt.offsetParent.clientHeight : document.documentElement.clientHeight);
+            bottom = parentHeight - (elmnt.offsetTop + elmnt.offsetHeight);
+        }
+        return { right, bottom };
+    }
+
+    function dragPointerDown(e) {
+        e.preventDefault();
+        const pos = getComputedRightBottom();
+        originalRight = pos.right;
+        originalBottom = pos.bottom;
+        startX = e.clientX;
+        startY = e.clientY;
+        startRight = pos.right;
+        startBottom = pos.bottom;
+
+        moveHandler = elementPointerMove;
+        upHandler = closePointerDrag;
+        document.addEventListener('pointermove', moveHandler, { passive: false });
+        document.addEventListener('pointerup', upHandler);
+
+        try { elmnt.setPointerCapture(e.pointerId); } catch (err) {}
+        elmnt.style.transition = 'none';
+    }
+
+    function elementPointerMove(e) {
+        e.preventDefault();
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const newRight = startRight - dx;
+        const newBottom = startBottom - dy;
+        elmnt.style.right = Math.round(newRight) + 'px';
+        elmnt.style.bottom = Math.round(newBottom) + 'px';
+        elmnt.style.top = '';
+        elmnt.style.left = '';
+        console.log(Math.sqrt(dx*dx + dy*dy));
+    }
+
+    function closePointerDrag(e) {
+        document.removeEventListener('pointermove', moveHandler);
+        document.removeEventListener('pointerup', upHandler);
+        try { if (e && typeof e.pointerId !== 'undefined') elmnt.releasePointerCapture(e.pointerId); } catch (err) {}
+
+        elmnt.style.transition = 'right 0.25s cubic-bezier(.22,.9,.34,1), bottom 0.25s cubic-bezier(.22,.9,.34,1)';
+        if (originalRight !== null) elmnt.style.right = Math.round(originalRight) + 'px';
+        if (originalBottom !== null) elmnt.style.bottom = Math.round(originalBottom) + 'px';
+
+        function cleanup() {
+            elmnt.style.transition = '';
+            elmnt.removeEventListener('transitionend', cleanup);
+        }
+        elmnt.addEventListener('transitionend', cleanup);
+    }
 }
 
 // ================== 游戏内容 ==================

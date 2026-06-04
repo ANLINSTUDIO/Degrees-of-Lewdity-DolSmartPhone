@@ -12,9 +12,14 @@
 :: SmartPhonePreviewWidgets [widget]
 <<widget "smartphone_render_preview">>
     <div id="smart-phone-container" class="phone-main" onclick="if(!this.classList.contains('phone-open')) PhoneMod.togglePhone()">
+        <<if PhoneMod.betaVersion>><div class="betaVersion"/><</if>>
         <div class="phone-screen-locked">
             <div style="font-size: 16px; font-weight: bold;">
-                你好👋
+                <<if PhoneMod.betaVersion>>
+                    内测😛
+                <<else>>
+                    你好👋
+                <</if>>
             </div>
         </div>
 
@@ -356,7 +361,7 @@
         <<print `<img id="phone-wallpaper-preview" @src=$Phone.Settings.WallpaperPath>`>>
     <</if>>
     <input type="file" 
-        id="phome-wallpaper-upload" 
+        id="phone-wallpaper-upload" 
         accept="image/*,.gif,.jpg,.jpeg,.png,.webp"
         onchange="PhoneMod.handleWallpaperUpload(this)"><br><br>
     <<print `<input type="checkbox" onclick="V.Phone.Settings.WallpaperBlur = this.checked" ` + ($Phone.Settings.WallpaperBlur ? "checked" : "") + `> 模糊效果`>>
@@ -383,6 +388,75 @@
         <button id="memo_enable_sort" class="memo_enable_sort" onclick="PhoneMod.memoToggleEnableSort()">自动排序</button>
     </div>
     <ul class="todo-list" style="overflow: hidden;"></ul>
+<</widget>>
+
+<<widget "phone_app_appstore">>
+    <div class="appstorecontainer">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h2>应用商店</h2>
+            <a onclick="PhoneMod.doloadlocalexts()">加载本地文件</a>
+            <input type="file" 
+                id="phone-ext-upload" 
+                accept=".json, .zip"
+                onchange="PhoneMod.loadlocalexts(this)"
+                style="display: none">
+        </div>
+        <div class="tab appstoretab">
+            <button id="tablinksdefault" class="appstoretablinks" onclick="PhoneMod.openCity(event, 'app')">应用</button>
+            <button class="appstoretablinks" onclick="PhoneMod.openCity(event, 'task')">摄像任务</button>
+            <button class="appstoretablinks" onclick="PhoneMod.openCity(event, 'extension')">脚本拓展</button>
+        </div>
+
+        <div id="appstoretabcontentcontainer" class="appstoretabcontentcontainer">
+            <div id="app" class="appstoretabcontent">
+                <h3>应用</h3>
+                <<phone_app_appstore_loading>>
+                <div class="appstorcardcontainer"></div>
+            </div>
+
+            <div id="task" class="appstoretabcontent">
+                <h3>摄像任务</h3>
+                <<phone_app_appstore_loading>>
+                <div class="appstorcardcontainer"></div>
+                <a class="link-external" href="https://dol.alseece.top/tasks/" target="_blank">让想法变成现实？点此处来创建来自你的任务</a>
+            </div>
+
+            <div id="extension" class="appstoretabcontent">
+                <h3>脚本拓展</h3>
+                <<phone_app_appstore_loading>>
+                <div class="appstorcardcontainer"></div>
+            </div>
+        </div>
+    </div>
+<</widget>>
+
+<<widget "phone_app_appstore_loading">>
+    <div class="loadingtext">
+        <div class="loading">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        正在联网向远程服务器请求下载列表
+    </div>
+<</widget>>
+
+<<widget "phone_app_appstore_card">>
+    <div @id=_args[3][1] class="appstorcard">
+        <img @src=_args[2]>
+        <div class="appstorcardinfo">
+            <span class="appstorcardtitle"> _args[0] </span>
+            <span class="appstorcarddesc"> _args[1] </span>
+            <<capture _args>>
+                <div> 
+                    <<if _args[3]>> <a onclick="PhoneMod.removeext(this)" @data-id=_args[3]>卸载</a>
+                    <<else>> <a>下载并安装</a>
+                    <</if>>
+                </div>
+            <</capture>>
+        </div>
+    </div>
 <</widget>>
 
 <<widget "phone_app_game">>
@@ -643,6 +717,7 @@
         <<icon "phone/phone.png">>
         <span id="smart-phone-debug-switch-version"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
     </div>
+    <<run setTimeout(PhoneMod.DebugDrag, 1)>>
 <</widget>>
 
 <<widget "smartphone_debug">> <div id="smart-phone-debug-container">

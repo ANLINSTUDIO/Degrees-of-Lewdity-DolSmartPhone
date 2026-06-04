@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.84a",
+    "version": "Alpha.3.84b",
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
@@ -10,7 +10,16 @@
         "styles/apps/memo.css",
         "styles/apps/map.css"
     ],
-    "scriptFileList": ["scripts/AsAPI.js", "scripts/patch.js", "scripts/guide.js", "scripts/vars.js", "scripts/api.js", "scripts/apps.js", "scripts/main.js"],
+    "scriptFileList": [
+        "scripts/AsAPI.js", 
+        "scripts/patch.js", 
+        "scripts/guide.js", 
+        "scripts/vars.js", 
+        "scripts/api.js", 
+        "scripts/apps.js", 
+        "scripts/main.js",
+        "scripts/extension.js"
+    ],
     "tweeFileList": [
         "twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"
     ],
@@ -47,6 +56,7 @@
         "img/misc/icon/phone/app/DD.png",
         "img/misc/icon/phone/app/newWest.png",
         "img/misc/icon/phone/app/taobao.png",
+        "img/misc/icon/phone/app/appstore.png",
 
         "img/photo/photonone.png",
 
@@ -74,7 +84,9 @@
         "img/guide/secondphoneshop/1.png",
         "img/guide/charge/1.png"
     ],
-    "additionFile": ["README.md"],
+    "additionFile": [
+        "README.md"
+    ],
     "addonPlugin": [
         {
             "modName": "BeautySelectorAddon",

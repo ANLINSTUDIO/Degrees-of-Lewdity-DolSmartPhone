@@ -29,19 +29,23 @@
     transition: all 0.3s ease;
     z-index: 998;
 }
+#smart-phone-debug-switch * {
+    pointer-events: none;
+}
 #smart-phone-debug-switch.active {
     right: 15px;
     background-color: #fff;
 }
 #smart-phone-debug-switch-version {
     position: absolute; 
-    right: 15px; 
-    top: 20px; 
+    right: 50%; 
+    top: 60%; 
     font-size: 12px; 
     scale: 0.4;
     transform-origin: right top;
     background-color: black; 
-    border-radius: 2px;
+    border-radius: 4px;
+    padding-inline: 4px;
 }
 #smart-phone-debug-container {
     position: fixed;
@@ -67,6 +71,7 @@
 #phone-wrapper {
     position: fixed;
     z-index: 996;
+    user-select: none;
 }
 .doli-float-btn {
     /* 不好意思哈，我必须得改一下你的z，你的z太高了，挡住了手机的显示，而且甚至高于模组加载器 */
@@ -87,6 +92,11 @@
     transition: all 0.3s ease, background-color 0.4s ease;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+.phone-main:has(.betaVersion) {
+    background-color: #efefef;
+    box-shadow: 0 4px 8px #1296db;
+    color: black;
 }
 /* 亮屏状态：变大 */
 .phone-main.phone-open {
@@ -597,7 +607,7 @@
     object-fit: cover; 
 }
 
-/* 摄像 */
+/*==================== 摄像实现 ====================*/
 .photo-image {
     position: absolute;
     width: 100%;
@@ -607,8 +617,7 @@
     border-radius: 10px;
 }
 
-
-/* 相册 */
+/*==================== 相册实现 ====================*/
 .album-content-container {
     padding: 3px;
 }
@@ -639,6 +648,206 @@
     position: absolute;
     right: 10px;
     top: -10px;
+}
+
+/*================== 应用商店实现 ==================*/
+.appstorecontainer {
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.appstoretab {
+    width: calc(100% - 1px);
+}
+.appstoretabcontentcontainer {
+    flex: 1;
+    overflow-y: auto;
+}
+.appstoretabcontent {
+    display: none;
+    padding: 12px;
+    background-color: var(--850);
+    border: 1px solid #ccc;
+    border-top: none;
+}
+.appstoretablinks {
+    min-width: fit-content !important;
+}
+.appstorcardcontainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+}
+.appstorcard {
+    display: flex;
+    align-items: center;
+    width: stretch;
+    padding: 10px;
+    gap: 10px;
+    border-radius: 7px;
+    background-color: #333;
+    border: 1px solid #ccc;
+    animation: appstorcard-enter 0.6s ease-in-out 1;
+}
+@keyframes appstorcard-enter {
+  0% {
+    background-color: #1296db;
+  }
+
+  40% {
+    background-color: #53a7d5;
+  }
+
+  100% {
+    background-color: #333;
+  }
+}
+/* .appstorcard > img {
+} */
+.appstorcardinfo {
+    display: flex;
+    flex-direction: column;
+}
+.appstorcardtitle {
+    font-weight: bold;
+}
+.appstorcarddesc {
+    height: stretch;
+    word-break: break-word;
+}
+
+.loadingtext {
+    height: 60px;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: anchor-center;
+}
+.loading,
+.loading > div {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.loading {
+  display: block;
+  font-size: 0;
+  color: #fff;
+}
+
+.loading.la-dark {
+  color: #333;
+}
+
+.loading > div {
+  display: inline-block;
+  float: none;
+  background-color: currentColor;
+  border: 0 solid currentColor;
+}
+
+.loading {
+  width: 42px;
+  height: 32px;
+}
+
+.loading > div:nth-child(1) {
+  position: absolute;
+  bottom: 32%;
+  left: 18%;
+  width: 14px;
+  height: 14px;
+  border-radius: 100%;
+  transform-origin: center bottom;
+  animation: ball-climbing-dot-jump 0.6s ease-in-out infinite;
+}
+
+.loading > div:not(:nth-child(1)) {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 2px;
+  border-radius: 0;
+  transform: translate(60%, 0);
+  animation: ball-climbing-dot-steps 1.8s linear infinite;
+}
+
+.loading > div:not(:nth-child(1)):nth-child(2) {
+  animation-delay: 0ms;
+}
+
+.loading > div:not(:nth-child(1)):nth-child(3) {
+  animation-delay: -600ms;
+}
+
+.loading > div:not(:nth-child(1)):nth-child(4) {
+  animation-delay: -1200ms;
+}
+
+@keyframes ball-climbing-dot-jump {
+  0% {
+    transform: scale(1, 0.7);
+  }
+
+  20% {
+    transform: scale(0.7, 1.2);
+  }
+
+  40% {
+    transform: scale(1, 1);
+  }
+
+  50% {
+    bottom: 125%;
+  }
+
+  46% {
+    transform: scale(1, 1);
+  }
+
+  80% {
+    transform: scale(0.7, 1.2);
+  }
+
+  90% {
+    transform: scale(0.7, 1.2);
+  }
+
+  100% {
+    transform: scale(1, 0.7);
+  }
+}
+
+@keyframes ball-climbing-dot-steps {
+  0% {
+    top: 0;
+    right: 0;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.2;
+  }
+
+  60% {
+    opacity: 0.2;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    right: 100%;
+    opacity: 0;
+  }
 }
 
 

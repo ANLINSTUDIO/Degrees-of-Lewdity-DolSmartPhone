@@ -752,7 +752,7 @@ PhoneMod.photoCheck = function() {
                 const photo = PhoneMod.PhonePhotos[photo_path];
                 const result = Object.entries(photo.conditions).every(([key, expectedValue]) => {
                     if (key === "$") {
-                        return expectedValue()
+                        return typeof expectedValue === "function" ? expectedValue() : eval(expectedValue)();
                     } else {
                         let obj = V
                         let not = false
@@ -854,7 +854,7 @@ PhoneMod.photoDesc = function() {
     }
 
     let photo = {
-        img: `img/photo/${photo_path}.png`,
+        img: photo_attr.img ? photo_attr.img : `img/photo/${photo_path}.png`,
         msg: photo_attr.msg,
         isUsed: false,
         onceUsed: false,
@@ -1177,7 +1177,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                         <</if>>
                     <</if>>
                 </div>
-                <img class="album-photo-image" src='${(isFinished)? `img/photo/${taskId}.png`: "img/ui/phone/app/photo.png"}' onerror="javascript:PhoneMod.photoError(this)">
+                <img class="album-photo-image" src='${(isFinished)? (photo.img ? photo.img : `img/photo/${taskId}.png`): "img/ui/phone/app/photo.png"}'>
             </div>
         `);
     } else {
@@ -2186,4 +2186,43 @@ PhoneMod.learnRecipes = function(key) {
         return true
     }
     return false
+}
+// ==================== 应用商店实现 ====================
+PhoneMod.initAppstore = function() {
+    document.getElementById("tablinksdefault")?.click();
+}
+PhoneMod.openCity = function(evt, cityName) {
+    const container = document.getElementById("appstoretabcontentcontainer");
+    
+    // 声明所有变量
+    var i, tabcontent, tablinks;
+
+    // 获取所有带有 class="tabcontent" 的元素并隐藏它们
+    tabcontent = container.querySelectorAll(".appstoretabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // 获取所有带有 class="tablinks" 的元素并删除类 "active"
+    tablinks = document.getElementsByClassName("appstoretablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" tab-selected", "");
+    }
+
+    // 显示当前标签页，并向打开该标签页的按钮添加 "active" 类
+    container.querySelector(`#${cityName}`).style.display = "block";
+    evt.currentTarget.className += " tab-selected";
+
+    const appstorcardcontainer = container.querySelector(`#${cityName}`).querySelector(".appstorcardcontainer");
+    PhoneMod.exts[cityName].forEach(ext => {
+        const c = ext.c;
+        T.title = c.title ?? c.msg ?? "未知脚本";
+        T.content = c.content ?? c.taskDesc ?? "无描述";
+        T.img = c.img ?? "img/misc/icon/phone/app/appstore.png";
+        const id = md5(ext.fn + T.title + T.content);
+        T.removeitem = [cityName, id];
+        if (!document.getElementById(id)) {
+            new Wikifier(appstorcardcontainer, '<<phone_app_appstore_card _title _content _img _removeitem>>')
+        }
+    })
 }

@@ -17,6 +17,7 @@
     let selectedFames = [];
     let conditions = [];
     let topLevelComments = [];
+    let imageBase64 = null;
 
     const EFFECT_MAP = {
         '+ 性奋': '<<garousal>><<arousal 30>>',
@@ -90,6 +91,13 @@
     const outputPreview = document.getElementById('outputPreview');
     const effectBar = document.getElementById('effectBar');
 
+    // 图像上传 DOM
+    const imageUploadArea = document.getElementById('imageUploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
+    const imageRemoveBtn = document.getElementById('imageRemoveBtn');
+
     const editModal = document.getElementById('editModal');
     const editModalTitle = document.getElementById('editModalTitle');
     const editText = document.getElementById('editText');
@@ -150,6 +158,43 @@
         v = Math.min(100, Math.max(1, v));
         riskSlider.value = v;
         riskInput.value = v;
+    });
+
+    // ---------- 图像上传 ----------
+    imageUploadArea.addEventListener('click', (e) => {
+        if (e.target.closest('.image-remove-btn')) return;
+        if (imageBase64) return; // 已有图片时不触发选择
+        imageInput.click();
+    });
+
+    imageInput.addEventListener('change', () => {
+        const file = imageInput.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showToast('请选择图片文件');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            imageBase64 = evt.target.result;
+            imagePreview.src = imageBase64;
+            imagePreview.style.display = 'block';
+            imagePlaceholder.style.display = 'none';
+            imageRemoveBtn.style.display = 'inline-flex';
+            imageUploadArea.classList.add('has-image');
+        };
+        reader.readAsDataURL(file);
+    });
+
+    imageRemoveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        imageBase64 = null;
+        imagePreview.src = '';
+        imagePreview.style.display = 'none';
+        imagePlaceholder.style.display = 'flex';
+        imageRemoveBtn.style.display = 'none';
+        imageUploadArea.classList.remove('has-image');
+        imageInput.value = '';
     });
 
     function renderFames(){
@@ -681,7 +726,8 @@
 
         const comments = topLevelComments.map(node => buildNested(node));
 
-        const obj = { msg, taskDesc: desc, risk, fames: selectedFames };
+        const obj = { type: "task", msg, taskDesc: desc, risk, fames: selectedFames };
+        if (imageBase64) obj.image = imageBase64;
         if (hide) obj.hide = true;
         if (uncommon) obj.uncommon = true;
         if (Object.keys(condObj).length) obj.conditions = condObj;
@@ -701,6 +747,24 @@
 
     document.getElementById('exportBtn').addEventListener('click', () => {
         outputPreview.textContent = JSON.stringify(buildExport(), null, 2);
+    });
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+        const t = outputPreview.textContent;
+        if (!t || !t.startsWith('{')) {
+            showToast('请先点击"生成对象"');
+            return;
+        }
+        const blob = new Blob([t], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const filename = document.getElementById('taskDesc').value.trim() || `task_${Date.now()}`;
+        a.download = `${filename}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('✅ 文件已下载');
     });
     document.getElementById('copyBtn').addEventListener('click', () => {
         const t = outputPreview.textContent;
@@ -735,6 +799,16 @@
         // 名声
         selectedFames = data.fames || [];
         renderFames();
+
+        // 图像
+        if (data.image) {
+            imageBase64 = data.image;
+            imagePreview.src = imageBase64;
+            imagePreview.style.display = 'block';
+            imagePlaceholder.style.display = 'none';
+            imageRemoveBtn.style.display = 'inline-flex';
+            imageUploadArea.classList.add('has-image');
+        }
 
         // 条件
         conditions = [];

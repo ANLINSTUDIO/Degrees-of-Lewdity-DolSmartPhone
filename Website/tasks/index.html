@@ -56,7 +56,7 @@
         </div>
 
         <div class="card">
-            <div class="card-header"><h2>💬 评论区</h2></div>
+            <div class="card-header"><h2>评论区</h2></div>
             <div class="comment-section" id="commentSection">
                 <div id="commentList"></div>
             </div>
@@ -76,9 +76,26 @@
             </div>
         </div>
 
+        <div class="card">
+            <div class="card-header"><h2>任务图像</h2></div>
+            <!-- 图像上传区域 -->
+            <div class="image-upload-section">
+                <div class="image-upload-area" id="imageUploadArea">
+                    <div class="image-upload-placeholder" id="imagePlaceholder">
+                        <span class="upload-icon">🖼️</span>
+                        <span class="upload-text">点击上传任务图片</span>
+                    </div>
+                    <img id="imagePreview" class="image-preview" style="display:none;" alt="任务图片预览">
+                    <button class="btn-outline image-remove-btn" id="imageRemoveBtn" style="display:none;">✕ 移除图片</button>
+                    <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                </div>
+            </div>
+        </div>
+
         <div class="card export-area">
             <div class="flex-row">
                 <button class="btn-primary" id="exportBtn">📋 生成对象</button>
+                <button class="btn-outline" id="downloadBtn">⬇️ 下载</button>
                 <button class="btn-outline" id="copyBtn">复制</button>
                 <button class="btn-outline" id="importBtn">📥 导入</button>
             </div>

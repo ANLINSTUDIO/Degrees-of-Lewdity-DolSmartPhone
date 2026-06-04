@@ -1,0 +1,98 @@
+{
+  "type": "task",
+  "msg": "不想上学呀~想上你❤️",
+  "taskDesc": "穿着<span class='teal'>校服裙且不穿内裤</span>在<span class='gold'>学校</span>登上天台",
+  "risk": 20,
+  "fames": [
+    "exhibitionism"
+  ],
+  "conditions": {
+    "passage": "School Roof",
+    "$": "() => { return V.worn.lower.name === \"school skirt\" && V.worn.under_lower.name === \"naked\" }"
+  },
+  "comments": [
+    [
+      "这是我们学校吗？",
+      "<<garousal>><<arousal 30>>"
+    ],
+    [
+      "我出一块赌她没有穿内裤",
+      "<<garousal>><<arousal 30>>"
+    ],
+    [
+      "就是这个校服最对味！",
+      "<<lstress>><<stress -1>>"
+    ],
+    [
+      "天呐是我最喜欢的校服！！！",
+      "<<garousal>><<arousal 30>>"
+    ],
+    [
+      "一直想草一个女学生",
+      "<<ggarousal>><<arousal 100>>"
+    ],
+    [
+      "JK爱好者是这样的",
+      ""
+    ],
+    [
+      "真牛逼不会着凉吗？",
+      "<<garousal>><<arousal 30>><<lstress>><<stress -1>>"
+    ],
+    [
+      "婊子，不要在我的学校发骚",
+      "<<gstress>><<stress 1>>"
+    ],
+    [
+      "逆天文案",
+      "<<garousal>><<arousal 30>>"
+    ],
+    [
+      "楼主是学生我吃，cosplay吧",
+      "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>",
+      [
+        [
+          "想吃直说",
+          "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>"
+        ],
+        [
+          "学生哪有这么骚的",
+          "<<gstress>><<stress 1>><<gtrauma>><<trauma 3>>",
+          [
+            [
+              "没上过学就别叫了，谁不知道女学生都是小婊子",
+              "<<ggstress>><<stress 3>><<ggtrauma>><<trauma 10>>"
+            ]
+          ]
+        ]
+      ]
+    ],
+    [
+      "不如女仆装",
+      "<<garousal>><<arousal 30>>",
+      [
+        [
+          "谁问你了",
+          "<<lstress>><<stress -1>>"
+        ]
+      ]
+    ],
+    [
+      "我下的任务",
+      "<<garousal>><<arousal 30>>",
+      [
+        [
+          "我指使的",
+          "<<garousal>><<arousal 30>>",
+          [
+            [
+              "我寻思着我养的狗应该只有我一个主人啊",
+              "<<ggarousal>><<arousal 100>><<gstress>><<stress 1>>"
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  "img": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAE7mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgOS4xLWMwMDMgNzkuOTY5MGE4NywgMjAyNS8wMy8wNi0xOToxMjowMyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDI3LjAgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNi0wNi0wNFQxMjo0OTozNyswODowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjYtMDYtMDRUMTI6NTA6MzErMDg6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjYtMDYtMDRUMTI6NTA6MzErMDg6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZjMjc3OTI3LTUyMGYtODI0NS04MDRmLTQ5ZDIzMGZiNmVmMSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2YzI3NzkyNy01MjBmLTgyNDUtODA0Zi00OWQyMzBmYjZlZjEiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo2YzI3NzkyNy01MjBmLTgyNDUtODA0Zi00OWQyMzBmYjZlZjEiPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjZjMjc3OTI3LTUyMGYtODI0NS04MDRmLTQ5ZDIzMGZiNmVmMSIgc3RFdnQ6d2hlbj0iMjAyNi0wNi0wNFQxMjo0OTozNyswODowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDI3LjAgKFdpbmRvd3MpIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PlSHUyEAAAKYSURBVEiJxZdLqE1hFMd//+UmUSLP8kihm/IYMRBSXiUDlIGREmHmNVKkhAHqzshUXiNKKcpzoFDuwARFuaQbim5JHvf769vn3NMZXOee7d5z/Qd7n732963ft9a3ztp7yzb/Q235MP7cC0SAtUCwDmkc8GvIGPY3pIfGj0ziy+72CriqMSLOgFfhvIqhlMA8QWwBurKlAIgRC+S4DV7TZ2uBlsh6JmJDDRzWJmAprdcEofU1sMVIhk+/a+CShfQNcbnu+irwtcT83nyoL67mJPaYdAG5E7eNRemw7JUQ98q4aSsNNguLKlU6FU6Y3AdiUVk3URoMB0Hz5TYskaSJQMdwgEHsTTJJKf8jbv6Li/iXSSYdg4TQWsvvwV0tBxtOgt7mFitHh/Fmy3uLfW8h+DOkQyog2geeF0QusGvg7paBLe+s/DAyJ6rGiXLe796tZaKOEtznhuuWs/vzwKjqck7DCCDdh3SrWXg0Cc2dbWNOsYg5oErkFW1DsTS7SurdDv45GPAHxBLEJMRUxGSLN5Vb6kHMQkzJ9y2vhrQLIof6AaW+OfncDjztD9Bv5zK8Bj9V3ctJXQI/1o8VvmPFtDCHrDgO0WPUk7taEp+R7sosbgosWI51CZwhnZVxmg/u6S9pMusgO4/jiZSNcyH2y87+dzQdcVVFlVpuB3/HOiJiZpGPv+uw8THhTyZ2Nyq0aOTFYhn4FdY7wY8BoDnyoyJGQ3xNSrMbjY0BHI0tznC2kr4BFWFdLNqLNX4wj8WbcrwDZtC8NlbnTG+4QgZeQBlonxpBox5crsMPTiNrYJNuAK+GAdpr/KAe/NhKa0AvWwjttlhhdCVf1O2tu6x0QNYKVDwAik4wBMrb+Mu4E/SoZvxfH21/AFvP5tI8WbJtAAAAAElFTkSuQmCC"
+}
