@@ -926,7 +926,7 @@
     </div>
 
     <div id="phone-call-hang-up">
-        <<getouticon>><<link [[退出淘桃网购|Phone Back]]>><<PhoneBack>><</link>>
+        <<getouticon>><<link [[退出淘桃网购|$Phone?.ReturnPassage]]>><<PhoneBack>><</link>>
     </div>
 </div>
 :: Phone Shop BuyClothes
@@ -992,7 +992,7 @@
     教学视频不止这么多，<span class="green">你还需要抽出更多时间来继续学习</span>。
 <</if>><br><br>
 <<unset $food_to_learn>>
-<<link [[继续|Phone Back]]>><<PhoneBack>><</link>>
+<<link [[继续|$Phone?.ReturnPassage]]>><<PhoneBack>><</link>>
 
 
 

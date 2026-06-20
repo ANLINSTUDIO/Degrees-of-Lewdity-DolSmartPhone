@@ -133,7 +133,7 @@ PhoneMod.patchOnPassageRender = function (ev) {
                 Wikifier.wikifyEval(`<<money ${relPrice * 100}>>`);
 
                 // 兼容极致动态
-                Dynamicest?.onPassageRender(Dynamicest.ev);
+                if (window.Dynamicest) Dynamicest.onPassageRender(Dynamicest.ev);
             }
         }
         V.Phone.价格调整理赔.push(phone.id);

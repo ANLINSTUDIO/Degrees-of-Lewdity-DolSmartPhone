@@ -433,11 +433,13 @@ PhoneMod.msgSend = function(msg_text, app=null, func=null, confirmationrequired=
     }, 10)
 }
 PhoneMod.msgShowLine = function(anim=true) {
-    setTimeout(() => {
-        V.Phone.msgLine.forEach(msg_ => {
-            PhoneMod.msgShow(msg_, anim)
-        })
-    }, 10)
+    if (PhoneMod.getUsingPhone()) {
+        setTimeout(() => {
+            V.Phone.msgLine.forEach(msg_ => {
+                PhoneMod.msgShow(msg_, anim)
+            })
+        }, 10)
+    }
 }
 PhoneMod.msgShow = function(msg, anim=true) {
     PhoneMod.msgPop(msg, anim)

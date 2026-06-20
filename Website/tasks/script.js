@@ -104,6 +104,7 @@
     const editCond = document.getElementById('editCond');
     const editCondBlock = document.getElementById('editCondBlock');
     const editEnableElse = document.getElementById('editEnableElse');
+    const editAutoFunc = document.getElementById('editAutoFunc');
     const editCondReadonly = document.getElementById('editCondReadonly');
     const readonlyCondText = document.getElementById('readonlyCondText');
     const editEffectPanel = document.getElementById('editEffectPanel');
@@ -565,6 +566,23 @@
         return state;
     }
 
+    function stripFuncWrapper(cond) {
+        if (!cond) return cond;
+        const trimmed = cond.trim();
+        const pattern = /^\(\)\s*=>\s*\{?\s*return\s+/;
+        if (pattern.test(trimmed)) {
+            const rest = trimmed.replace(pattern, '');
+            // Remove trailing optional semicolon and closing brace
+            let result = rest.replace(/\s*;?\s*\}\s*$/, '');
+            // If the original had no braces, just strip the arrow prefix
+            if (result === rest) {
+                result = rest.replace(/\s*\}\s*$/, '');
+            }
+            return result.trim();
+        }
+        return cond;
+    }
+
     function openEditModal(node, isElse){
         editTarget = node;
         editIsElse = isElse;
@@ -587,7 +605,10 @@
         } else {
             editCondBlock.style.display = 'block';
             editCondReadonly.style.display = 'none';
-            editCond.value = node.condition || '';
+            const rawCond = node.condition || '';
+            editCond.value = stripFuncWrapper(rawCond);
+            // 如果条件已经是函数格式，取消勾选"自动转为函数"
+            editAutoFunc.checked = rawCond !== stripFuncWrapper(rawCond) ? false : (node.autoFunc !== false);
             editEnableElse.checked = !!node.elseNode;
         }
         currentEditState = renderEffectEditor(editEffectPanel, node.effectsTags || []);
@@ -638,7 +659,10 @@
         editTarget.text = editText.value.trim();
         const enableElse = editIsElse ? false : editEnableElse.checked;
         if (!editIsElse) {
-            editTarget.condition = editCond.value.trim() || null;
+            const condRaw = editCond.value.trim();
+            editTarget.rawCond = condRaw;
+            editTarget.autoFunc = editAutoFunc.checked;
+            editTarget.condition = condRaw || null;
             if (editTarget.condition && enableElse) {
                 if (!editTarget.elseNode) {
                     editTarget.elseNode = { id: 'n' + Date.now() + Math.random(), text: '', effectsTags: [], condition: null, elseNode: null, replies: [] };
@@ -700,6 +724,15 @@
         const condObj = {};
         conditions.forEach(c => { if (c.key) condObj[c.key] = c.value; });
 
+        function getExportCond(node) {
+            const raw = node.rawCond || node.condition || '';
+            if (!raw) return raw;
+            if (node.autoFunc) {
+                try { eval(raw)(); return raw; } catch(e) { return `() => { return ${raw} }`; }
+            }
+            return raw;
+        }
+
         function buildNested(node){
             const code = codeFromTags(node.effectsTags);
             if (!node.condition) {
@@ -709,6 +742,7 @@
                 }
                 return children.length ? [node.text, code, children] : [node.text, code];
             } else {
+                const exportCond = getExportCond(node);
                 const thenChildren = [];
                 if (node.replies) node.replies.forEach(r => thenChildren.push(buildNested(r)));
                 const thenEntry = thenChildren.length ? [node.text, code, thenChildren] : [node.text, code];
@@ -717,9 +751,9 @@
                     const elseChildren = [];
                     if (node.elseNode.replies) node.elseNode.replies.forEach(r => elseChildren.push(buildNested(r)));
                     const elseEntry = elseChildren.length ? [node.elseNode.text, elseCode, elseChildren] : [node.elseNode.text, elseCode];
-                    return [node.condition, thenEntry, elseEntry];
+                    return [exportCond, thenEntry, elseEntry];
                 } else {
-                    return [node.condition, thenEntry];
+                    return [exportCond, thenEntry];
                 }
             }
         }
@@ -835,6 +869,8 @@
                     const elseNode = node[2] ? parseNested(node[2]) : null;
                     if (thenNode) {
                         thenNode.condition = cond;
+                        thenNode.rawCond = cond;
+                        thenNode.autoFunc = false;
                         thenNode.elseNode = elseNode;
                     }
                     return thenNode;

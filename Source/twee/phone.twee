@@ -1,12 +1,6 @@
-:: Phone Back
-<<PhoneBack>>
 :: Phone Back Widget [widget]
 <<widget "PhoneBack">>
-    你放下了手机。<br><br>
-    <<link [[继续|$Phone.ReturnPassage]]>>
-        <<run PhoneMod.PhoneBack()>>
-    <</link>>
-    <<print '<<goto "'+PhoneMod.PhoneBack()+'">>'>>
+    <<run PhoneMod.PhoneBack()>>
 <</widget>>
 
 :: SmartPhonePreviewWidgets [widget]

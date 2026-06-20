@@ -876,7 +876,7 @@ PhoneMod.photoSubmit = function() {
     PhoneMod.msgSend("你稍微掌握了一点摄影的技巧");
 
     // 兼容极致动态
-    Dynamicest?.onPassageRender(Dynamicest.ev);
+    if (window.Dynamicest) Dynamicest.onPassageRender(Dynamicest.ev);
 }
 PhoneMod.photoFinish = function() {
     delete V.Phone.PhotoCurrentPath;

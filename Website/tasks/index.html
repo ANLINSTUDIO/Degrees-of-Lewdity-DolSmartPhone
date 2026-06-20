@@ -110,9 +110,10 @@
             <div><label>文本</label><textarea id="editText" rows="2"></textarea></div>
             <div class="mt-2"><label>影响标签</label><div id="editEffectPanel"></div></div>
             <div class="mt-2" id="editCondBlock">
-                <label>条件 (箭头函数)</label>
+                <label>条件 ( 条件表达式 如 "V.fame.social&gt;400" 或 "C.npc.Avery.love&lt;50" )</label>
                 <input id="editCond">
                 <div class="flex-row mt-2 horizontal-check">
+                    <label><input type="checkbox" id="editAutoFunc" checked> 自动转为函数</label>
                     <label><input type="checkbox" id="editEnableElse"> 启用否条件评论</label>
                 </div>
             </div>

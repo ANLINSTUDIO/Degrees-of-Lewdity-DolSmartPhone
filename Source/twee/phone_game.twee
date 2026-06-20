@@ -17,7 +17,7 @@
     <<if !$Phone.ReturnPassage>>
         <<link [[返回|$safePassage]]>><</link>>
     <<else>>
-        <<link [[退出游戏|Phone Back]]>>
+        <<link [[退出游戏|$Phone?.ReturnPassage]]>>
             <<unset $Phone.GamePassed>>
             <<unset $Phone.GameAgain>>
             <<PhoneBack>>

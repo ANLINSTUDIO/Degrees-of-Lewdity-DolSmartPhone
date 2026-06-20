@@ -1,11 +1,12 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.84b",
+    "version": "Alpha.3.84.2",
+    "vv": "03842",
+    "betaVersion": false,
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
-
         "styles/apps/yenote.css",
         "styles/apps/memo.css",
         "styles/apps/map.css"
@@ -123,9 +124,16 @@
                     "all": true
                 },
                 {
+                    "Tip": "网购衣服 避免盗取出现",
                     "passage": "Clothing Shop v2 Widgets",
                     "findString": "<<elseif (Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride>>",
                     "replace": "<<elseif $location isnot \"phone\" and ((Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride)>>"
+                },
+                {
+                    "Tip": "网购超市 避免盗取出现",
+                    "passage": "Widgets Shop",
+                    "findString": "\t\t<<if Time.dayState is \"night\" and Time.hour isnot 21>>",
+                    "replace": "\t\t<<if $location isnot \"phone\" and Time.dayState is \"night\" and Time.hour isnot 21>>"
                 },
                 {
                     "passage": "School Lockers Sneak",

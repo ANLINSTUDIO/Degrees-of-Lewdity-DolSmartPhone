@@ -4,7 +4,7 @@ AsAPI.log("SmartPhone", "正在加载：vars.js");
 // === 版本 =======================================================
 PhoneMod.currentVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.version
 PhoneMod.latestVersion = null
-PhoneMod.betaVersion = true
+PhoneMod.betaVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.bootJson.betaVersion
 PhoneMod.notice = ""
 PhoneMod.debug = 0
 
@@ -940,7 +940,8 @@ PhoneMod.PhonePhotos = {  // 摄像任务
 PhoneMod.Apps = {  // APP
     alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
     memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: "memo"},
-    appstore: {display_name: "应用商店", icon: "img/misc/icon/phone/app/appstore.png", app_widget: "phone_app_appstore", init: "initAppstore"},
+    shop: {display_name: "淘桃网购", icon: "img/misc/icon/phone/app/taobao.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
+    // appstore: {display_name: "应用商店", icon: "img/misc/icon/phone/app/appstore.png", app_widget: "phone_app_appstore", init: "initAppstore"},
 
     photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: "photo"},
     album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: "photo"},
@@ -951,7 +952,6 @@ PhoneMod.Apps = {  // APP
     settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
 
     // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
-    shop: {display_name: "淘桃网购", icon: "img/misc/icon/phone/app/taobao.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
     DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD", disableinevent: true},
     newWest: {display_name: "美食屋", icon: "img/misc/icon/phone/app/newWest.png", app_widget: "phone_app_newWest", disableinevent: true, dlock: true},
 };

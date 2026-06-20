@@ -90,6 +90,7 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
         if (!V.passage.startsWith("Phone ") && V.Phone.ReturnPassage !== V.passage) {  // 如果正在从手机界面操作进入APP，自动Back回去，避免重复打开手机界面（经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back）
             PhoneMod.PhoneBack();   // 经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back
         } else {
+            V.location = "phone";
             return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
         }
     }
@@ -103,8 +104,8 @@ PhoneMod.PhoneTo = function() {
         V.Phone.ReturnPassage = V.passage;
         V.Phone.ReturnOutside = V.outside;
         V.Phone.ReturnLocation = V.location;
-        V.location = "phone";
     }
+    V.location = "phone";
 }
 PhoneMod.PhoneBack = function() {
     if (V.Phone.ReturnLocation) {

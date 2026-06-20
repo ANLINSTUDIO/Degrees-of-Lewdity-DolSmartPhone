@@ -268,7 +268,6 @@
 .smart-phone-toolbar-icon {
     width: 30px;
     position: sticky;
-    user-select: none;
     cursor: pointer;
 }
 .smart-phone-toolbar-icon > img {
