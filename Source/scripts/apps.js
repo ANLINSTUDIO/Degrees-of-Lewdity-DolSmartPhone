@@ -1356,6 +1356,9 @@ PhoneMod.yenotesCheck = function() {
 }
 PhoneMod.yenoteGetHeat = function (yenote) {
     const ageHours = (Time.date.timeStamp - yenote.date.timeStamp) / 3600; // 小时差
+    if (ageHours < 0) {
+        return 0
+    }
     const decayFactor = Math.exp(-PhoneMod.热度衰减系数 * ageHours);        // 衰减系数可调
     const baseHeat = yenote.attract * decayFactor;
 

@@ -452,7 +452,7 @@ PhoneMod.msgPop = function(msg, anim=true) {
         if (anim) {
             (function(id) { setTimeout(() => {
                 phone_popup.classList.add("active")
-            }, 10) })(msg.id)
+            }, 100) })(msg.id)
         } else {
             phone_popup.classList.add("active")
         }
@@ -805,15 +805,9 @@ PhoneMod.changeUsingPhone = function(phone=undefined) { // 切换正在使用的
             if (!V.Phone.Owned || V.Phone.Owned.length === 0) {
                 V.Phone.Using = null;
             } else {
-                V.Phone.Using = null
+                V.Phone.Using = "null";
                 for (var i = 0; i < V.Phone.Owned.length; i++) {
                     if (PhoneMod.isUsable(V.Phone.Owned[i])) {
-                        V.Phone.Using = V.Phone.Owned[i].id;
-                        break;
-                    }
-                }
-                for (var i = 0; i < V.Phone.Owned.length; i++) {
-                    if (PhoneMod.isUsable(V.Phone.Owned[i], true)) {
                         V.Phone.Using = V.Phone.Owned[i].id;
                         break;
                     }

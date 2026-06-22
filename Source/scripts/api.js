@@ -83,6 +83,7 @@ PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示
 PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
+    if (V.Phone.TakingPhotoWill) return true;  // 
     if (V.Phone.PhotoCurrent) return true;  // 
     if (V.Phone.AlarmTriggered) return true;  // 
     if (V.combat === 1) return false;  // 战斗中不可以操控手机
