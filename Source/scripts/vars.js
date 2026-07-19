@@ -938,7 +938,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
     },
 };
 PhoneMod.Apps = {  // APP
-    alarm: {display_name: "闹钟", icon: "img/misc/icon/birdTower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
+    alarm: {display_name: "闹钟", icon: "img/misc/icon/bird-tower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
     memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: "memo"},
     shop: {display_name: "淘桃网购", icon: "img/misc/icon/phone/app/taobao.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
     // appstore: {display_name: "应用商店", icon: "img/misc/icon/phone/app/appstore.png", app_widget: "phone_app_appstore", init: "initAppstore"},
@@ -948,8 +948,8 @@ PhoneMod.Apps = {  // APP
     yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", toggle: "toggleYenote", guide: "yenote"},
 
     contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: "contacts", disableinevent: true},
-    game: {display_name: "游戏", icon: "img/misc/icon/robin_controller.png", app_widget: "phone_app_game", disableinevent: true},
-    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper_cow_girls.png", app_widget: "phone_app_settings"},
+    game: {display_name: "游戏", icon: "img/misc/icon/robin-controller.png", app_widget: "phone_app_game", disableinevent: true},
+    settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper-cow-girls.png", app_widget: "phone_app_settings"},
 
     // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
     DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD", disableinevent: true},
@@ -1300,7 +1300,23 @@ PhoneMod.PhoneGameQuestions = {  // 小游戏题库
 }
 setup.LocationImages.phone = {  // 使用手机时的背景图
   folder: "phone",
-  base: {default: {image: "base.png"}}
+  base: {default: {image: "base.png"}},
+  weather: {
+			fogDistributionCurve: 1.2,
+			rainSplashEnabled: true,
+			fogEnabled: true,
+
+			groundBounds: {
+				splashes: {
+					top: 6,
+					bottom: 0,
+				},
+				fog: {
+					top: 12,
+					bottom: 0,
+				},
+			},
+		},
 }
 PhoneMod.phoneConditionLevels = [  // 手机磨损度
     { threshold: 0.8, text: "崭新出厂", color: "green" },

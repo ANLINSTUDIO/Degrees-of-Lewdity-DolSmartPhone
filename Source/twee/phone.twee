@@ -69,8 +69,8 @@
                 <div class="smart-phone-charge-line-top"/>
             </div>
         </div>
-        
-        <div class="phone-screen-locked">
+
+        <div class="phone-screen-locked"><<if $location is "phone">><div class="phone-screen-on"/><</if>>
             <div style="font-size: 16px; font-weight: bold;">
                 <<if !($Phone.Using is "null") and PhoneMod.getUsingPhone().newness gt 0>>
                     <<print PhoneMod.getTimeString()>>
@@ -652,28 +652,33 @@
     
     <<for _item range _list>>
         <<capture _item>>
-            <<if $options.images is 1 and _item.icon>>
-                <img class="tending_icon" @src="`img/misc/icon/tending/` + _item.icon">
-            <</if>>
-            <<print "原料: "+_item.ingredients>>
-            
-            <<if _isCantLearn>>
-                <<button "无法学习 _item.name (需求家务 _item.required)">><</button>>
-            <<else>>
-                <<if _item.hasLearned>>
-                    <<button "继续学习 _item.name (_item.tt) (_item.hasLearned/_item.difficulty)" "Phone NewWest">>
-                        <<pass _item.t>>
-                        <<run PhoneMod.PhoneTo()>>
-                        <<set $food_to_learn to _item.key>>
-                    <</button>>
-                <<else>>
-                    <<button "开始学习 _item.name (_item.tt)" "Phone NewWest">>
-                        <<pass _item.t>>
-                        <<run PhoneMod.PhoneTo()>>
-                        <<set $food_to_learn to _item.key>>
-                    <</button>>
+            <div class="newwestcard">
+                <<if $options.images is 1 and _item.icon>>
+                    <img class="tending_icon" @src="`img/misc/icon/tending/` + _item.icon">
                 <</if>>
-            <</if>>
+                <span sytle="word-break: break-word;"><b>_item.name</b><br> _item.ingredients</span>
+                
+                <<if _isCantLearn>>
+                    <div class="c0"/>
+                    <<button "无法学习 _item.name (需求家务 _item.required)">><</button>>
+                <<else>>
+                    <<if _item.hasLearned>>
+                        <div class="c1"/>
+                        <<button "继续学习 _item.name (_item.tt) (_item.hasLearned/_item.difficulty)" "Phone NewWest">>
+                            <<pass _item.t>>
+                            <<run PhoneMod.PhoneTo()>>
+                            <<set $food_to_learn to _item.key>>
+                        <</button>>
+                    <<else>>
+                        <div class="c2"/>
+                        <<button "开始学习 _item.name (_item.tt)" "Phone NewWest">>
+                            <<pass _item.t>>
+                            <<run PhoneMod.PhoneTo()>>
+                            <<set $food_to_learn to _item.key>>
+                        <</button>>
+                    <</if>>
+                <</if>>
+            </div>
         <</capture>>
     <</for>>
 <</widget>>
@@ -709,7 +714,7 @@
 <<widget "smartphone_debug_switch">>
     <div id="smart-phone-debug-switch" onclick="PhoneMod.toggleDebug()">
         <<icon "phone/phone.png">>
-        <span id="smart-phone-debug-switch-version"><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
+        <span id="smart-phone-debug-switch-version"><<if PhoneMod.betaVersion>><div class="betaVersion"/><</if>><<print PhoneMod.currentVersion.replace("Alpha", "A");>></span>
     </div>
     <<run setTimeout(PhoneMod.DebugDrag, 1)>>
 <</widget>>

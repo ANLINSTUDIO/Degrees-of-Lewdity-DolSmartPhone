@@ -545,6 +545,7 @@ PhoneMod.resetWallpaper = function() {
 }
 // =================== 备忘录实现 ===================
 PhoneMod.initMemo = function() {
+    V.Phone.Memos = V.Phone.Memos || {};
     for (let taskId in V.Phone.Memos) {
         const memo = V.Phone.Memos[taskId]
         PhoneMod.addMemoTask(taskId, memo.text, memo.isImportant, memo.isFinished)
@@ -553,6 +554,7 @@ PhoneMod.initMemo = function() {
     PhoneMod.reorderTodoItems();
 }
 PhoneMod.addNewMemoTask = function() {
+    V.Phone.Memos = V.Phone.Memos || {};
     const new_task_text = document.querySelector('#new_task_text');
     if (!new_task_text) return;
     if (new_task_text.classList.contains("active")) {
@@ -596,12 +598,14 @@ PhoneMod.addMemoTask = function(taskId, text = "新任务", isImportant = false,
     return li;
 };
 PhoneMod.memoToggleFinished = function(event) {
+    V.Phone.Memos = V.Phone.Memos || {};
     const checkbox = event.currentTarget;
     const taskId = checkbox.id;
     V.Phone.Memos[taskId].isFinished = checkbox.checked;
     PhoneMod.reorderTodoItems();
 }
 PhoneMod.memoTogglePriority = function(event) {
+    V.Phone.Memos = V.Phone.Memos || {};
     event.stopPropagation();
     event.preventDefault();
     
@@ -2136,18 +2140,18 @@ PhoneMod.getRecipes = function() {
     const lst_learning = []
     const lst_unlearning = []
     const lst_cantlearning = []
-    for (const food_key in setup.plants) {
-        const food = setup.plants[food_key]
-        const food_difficulty = food.ingredients.length
-        if (V.plants[food_key].recipe || food_difficulty <= 0) continue;
+    for (const food_key in setup.foodstuff) {
+        const food = setup.foodstuff[food_key]
+        if (!food.recipe) continue;
+        const food_difficulty = food.recipe.difficulty * 2;
         const item = {
             key: food_key,
-            name: food.singular,
+            name: food.plural ?? food.name,
             icon: food.icon,
             difficulty: food_difficulty,
-            t: food_difficulty*10,
-            tt: AsAPI.getFriendlyTimeText(food_difficulty*10/60, false),
-            ingredients: food.ingredients_cn ?? food.ingredients
+            t: food.recipe.cook_minutes,
+            tt: AsAPI.getFriendlyTimeText(food.recipe.cook_minutes/60, false),
+            ingredients: food.recipe.ingredients
         }
         let grade = detailedSkillGrades[0];
         for (let i = 0; i < detailedSkillGrades.length; i++) {
@@ -2168,24 +2172,24 @@ PhoneMod.getRecipes = function() {
         }
     }
     lst_learning.sort(function(a, b){
-        return a.difficulty - b.difficulty
+        return a.t - b.t
     })
     lst_unlearning.sort(function(a, b){
-        return a.difficulty - b.difficulty
+        return a.t - b.t
     })
     lst_cantlearning.sort(function(a, b){
-        return a.difficulty - b.difficulty
+        return a.t - b.t
     })
     return [lst_learning, lst_unlearning, lst_cantlearning]
 }
 PhoneMod.learnRecipes = function(key) {
-    const food = setup.plants[key]
+    const food = setup.foodstuff[key]
     if (V.Phone.RecipesLearning.hasOwnProperty(key)) {
         V.Phone.RecipesLearning[key] += 1
     } else {
         V.Phone.RecipesLearning[key] = 1
     }
-    if (V.Phone.RecipesLearning[key] >= food.ingredients.length) {
+    if (V.Phone.RecipesLearning[key] >= food.recipe.difficulty * 2) {
         return true
     }
     return false

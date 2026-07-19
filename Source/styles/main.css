@@ -47,6 +47,11 @@
     border-radius: 4px;
     padding-inline: 4px;
 }
+#smart-phone-debug-switch-version:has(.betaVersion) {
+    background-color: #efefef;
+    box-shadow: 0 4px 8px #1296db;
+    color: black;
+}
 #smart-phone-debug-container {
     position: fixed;
     padding: 10px;
@@ -135,6 +140,11 @@
     height: 100%;
     flex-direction: column;
     pointer-events: none; /* 让点击穿透到容器 */
+}
+.phone-screen-locked:has(.phone-screen-on) {
+    background: #ffffff88;
+    border-radius: inherit;
+    color: black;
 }
 /* 亮屏内容区 */
 .phone-screen-unlocked {
@@ -647,6 +657,23 @@
     position: absolute;
     right: 10px;
     top: -10px;
+}
+
+/*================== 美食屋实现 ==================*/
+.newwestcard {
+    margin-bottom: 10px;
+    background-color: var(--850);
+    border: 1px solid var(--700);
+    border-radius: 6px;
+    padding: 5px;
+}
+
+.newwestcard:has(.c0) {
+    background: linear-gradient(135deg, #ff0000 20px, #ff000088 0);
+}
+.newwestcard:has(.c0)>button {
+    background-color: #00000050;
+    pointer-events: none;
 }
 
 /*================== 应用商店实现 ==================*/

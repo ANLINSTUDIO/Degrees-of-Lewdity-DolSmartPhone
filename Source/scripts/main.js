@@ -314,6 +314,7 @@ PhoneMod.PhoneAddInit = function (open=false, reload=false) {
     PhoneMod.PhoneChargingInit();
 };
 PhoneMod.PhonePopupInit = function() {
+    V.Phone.msgLine = V.Phone.msgLine || [];
     if (V.Phone.msgLine.length > 0) {
         const msgLine = V.Phone.msgLine;
         V.Phone.msgLine = [];
@@ -924,6 +925,7 @@ PhoneMod.PhoneChargeUnguardedFinish = function(position) {
 }
 PhoneMod.isPhoneChargeUnguardedIn = function(position, apply=false) {
     if (Time === undefined) return;
+    V.Phone.Charger = V.Phone.Charger || {};
     if (V.Phone.Charger.hasOwnProperty(position)) {
         if (apply) {
             const phone = V.Phone.Charger[position].phone;
@@ -993,6 +995,7 @@ PhoneMod.PhonePowerPass = function() {
 }
 // === 手机存放 ====================================
 PhoneMod.PhoneStore = function(position, id) {
+    V.Phone.Store = V.Phone.Store || {};
     const phone = PhoneMod.getPhone(id)
     V.Phone.Store[position] = V.Phone.Store[position] || {}
     V.Phone.Store[position][id] = phone
@@ -1000,6 +1003,7 @@ PhoneMod.PhoneStore = function(position, id) {
     PhoneMod.changeUsingPhone()
 }
 PhoneMod.PhoneStoreFinish = function(position, id) {
+    V.Phone.Store = V.Phone.Store || {};
     const phone = V.Phone.Store[position][id]
     V.Phone.Owned.push(phone)
     PhoneMod.changeUsingPhone(phone)
@@ -1009,9 +1013,11 @@ PhoneMod.PhoneStoreFinish = function(position, id) {
     }
 }
 PhoneMod.isPhoneStoreIn = function(position) {
+    V.Phone.Store = V.Phone.Store || {};
     return V.Phone.Store.hasOwnProperty(position)
 }
 PhoneMod.getPhonesStoreIn = function(position) {
+    V.Phone.Store = V.Phone.Store || {};
     return V.Phone.Store[position] ?? []
 }
 // === 手机抬起 ===================================

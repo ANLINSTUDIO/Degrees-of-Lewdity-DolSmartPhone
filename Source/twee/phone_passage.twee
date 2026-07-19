@@ -315,14 +315,14 @@
     <<goto "Second Phone Shop Meet Feng First">>
 <<else>>
     <<if $Phone.SecondShopKnown>>
-        <br><<icon "unused_stonebuilding1.png">>
+        <br><<icon "phone/second-phone-shop.png">>
         <<if $exposed gt 0>>
             <<link [[地下手机店 (0:01)|Second Phone Shop Exposed]]>><<pass 1>><</link>>
         <<else>>
             <<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
         <</if>>
     <<else>>
-        <br><<icon "unused_stonebuilding1.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
+        <br><<icon "phone/second-phone-shop.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
     <</if>>
 <</if>>
 
@@ -348,7 +348,7 @@
 黑衣人眼看着顿了一下，随即停下了脚步。<br>
 你决定上前查看，但你没走过几步，<<he>>便开始加速向麋鹿街的尽头那间<span class="teal">神秘的房子</span>走去。<br>
 <<he>>的步伐太快，你有点追不上了。<br><br>
-<<icon "unused_stonebuilding1.png">><<link [[追随神秘人的脚步进入神秘的房子 (0:01)|Second Phone Shop Meet Feng First 2]]>><<pass 1>><</link>><br>
+<<icon "phone/second-phone-shop.png">><<link [[追随神秘人的脚步进入神秘的房子 (0:01)|Second Phone Shop Meet Feng First 2]]>><<pass 1>><</link>><br>
 <<getouticon>><<link [[算了|Second Phone Shop Meet Feng First Finish]]>><<endevent>><</link>>
 
 :: Second Phone Shop Meet Feng First Finish
@@ -508,10 +508,10 @@
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
     <<if PhoneMod.isCarryingStolenPhone()>>
-        “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了<<he>>一番，说明了这部手机的来历后就准备离开。<br>
+        “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了<<he>>一番，说明了这部手机的来历后就准备离开。
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>>
-        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
+        “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”
         “庆幸我不会报警抓你吧。” 你实在无法忍受这里的气味了。
         <<set C.npc.Feng.lust to 1>><<note "--- 老冯的欣赏" "red">>   <!-- 认为你不适合偷手机这行 -->
     <</if>><br>
@@ -520,7 +520,7 @@
     <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
     “敢抢我的手机？” 那人放下狠话。<br>
     <<if PhoneMod.isCarryingStolenPhone()>>
-        “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。<br>
+        “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>><br>
         “真是服了，光天化日之下哪有人像你这样明抢的，这可是我花血汗钱自己买的手机！不像你只会偷只会抢！” 你羞辱了<<he>>一番后就准备离开，“要是我，我就会去撬储物柜，而不是跟你个傻逼一样。”<br>
@@ -947,6 +947,8 @@
         <<ShowUnderEquip "normal">>
         <<ShowUnderEquip "over">>
         <<set $tryOn.autoReset to true>>
+        <<set $location to "phone">>
+        <<set $outside to $Phone.ReturnOutside>>
     <</link>>
     <hr>
 
@@ -964,12 +966,12 @@
     </div>
     <br><br>
 
-    <<set _outside to $outside>>
     <div id="clothingShop-div">
         <<AllShop>>
         <<run linkifyDivs('.button-back-to-shop')>>
     </div>
-    <<set $outside to _outside>>
+    <<set $location to "phone">>
+    <<set $outside to $Phone.ReturnOutside>>
 </div>
 :: Phone Shop BuyFood
 <div class="phone-overlay">
@@ -1445,7 +1447,7 @@
 :: Second Phone Shop Charge
 <<charge "SecondPhoneShop" "Second Phone Shop Charge">>
 <br><br>
-<<icon "unused_stonebuilding1.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
+<<icon "storage-unit.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
 
 :: Library Charge Link
 <<if PhoneMod.isPhoneChargeUnguardedIn("Library")>>

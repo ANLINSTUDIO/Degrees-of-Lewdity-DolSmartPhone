@@ -1,4 +1,4 @@
+	<<switch $NPCNameList[_args[0]]>>
 		<<case "Feng">>
 			/* Has anal, oral, penile/vaginal, and kiss virginities. Missing handholding. */
 			<<set $NPCName[_args[0]].virginity.handholding to false>>
-		<<case "Gwylan" "Zephyr">>

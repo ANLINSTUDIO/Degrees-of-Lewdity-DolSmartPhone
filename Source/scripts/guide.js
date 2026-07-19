@@ -131,6 +131,7 @@ PhoneMod.Guide.stealphone = [
 
 // 启动教程
 PhoneMod.Guide.startTutorial = function(key) {
+    V.Phone.Guide = V.Phone.Guide || [];
     if (V.Phone.Guide.includes(key)) {
         return;
     }
@@ -279,6 +280,7 @@ PhoneMod.Guide.goToStep = function(step) {
 // 完成教程
 PhoneMod.Guide.completeTutorial = function() {
     PhoneMod.Guide.closeTutorial();
+    V.Phone.Guide = V.Phone.Guide || [];
     V.Phone.Guide.push(PhoneMod.Guide.currentDataKey)
     delete PhoneMod.Guide.currentDataKey
 }

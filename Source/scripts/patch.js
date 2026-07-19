@@ -8,31 +8,13 @@ PhoneMod.patchOnPassageRender = function (ev) {
     V.Phone.Yenotes = V.Phone.Yenotes || [];
     V.Phone.AlarmsToTrigger = V.Phone.AlarmsToTrigger || [];
     V.Phone.KnownContacts = V.Phone.KnownContacts || [];
-    V.Phone.Memos = V.Phone.Memos || {};
     V.Phone.Settings = V.Phone.Settings || {};
     V.Phone.photography = V.Phone.photography || 0;
     V.Phone.CurrentApp = V.Phone.CurrentApp || "main";
-    V.Phone.Guide = V.Phone.Guide || [];
 
-    // 3.2 | 手机更新型号、电池充电系统更新
-    V.Phone.Owned.forEach(phone => {
-        if (!phone.hasOwnProperty("newnessmax")) {
-            phone.model = "斯达特3 限量型"
-            phone.newnessmax = PhoneMod.PhoneModels["斯达特3 限量型"].newnessfactory;
-            phone.newness = Math.round(phone.newness * phone.newnessmax)
-        }
-    });
-    if (!V.Phone.SecondPhoneShopGoods) PhoneMod.RefreshSecondPhone();
-    V.Phone.Charger = V.Phone.Charger || {};
-
-    // 3.3 | 修复信息列队
-    V.Phone.msgLine = V.Phone.msgLine || [];
     // 3.3 | 悉尼色播伴侣
     V.Phone.SydneySexLiveCompanion = V.Phone.SydneySexLiveCompanion ?? 0;
     PhoneMod.patchTV("Phone.SydneySexPhoto", "Phone.SydneySexLiveCompanion");
-
-    // 3.4 | 手机存储
-    V.Phone.Store = V.Phone.Store || {};
 
     // 3.7 | 关闭通知
     V.Phone.Settings.NotificationClose = V.Phone.Settings.NotificationClose || false;

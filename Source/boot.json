@@ -1,9 +1,9 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.84.2",
-    "vv": "03842",
-    "betaVersion": false,
+    "version": "Alpha.3.85",
+    "vv": "03850",
+    "betaVersion": true,
     "styleFileList": [
         "styles/main.css", 
         "styles/guide.css", 
@@ -25,6 +25,7 @@
         "twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"
     ],
     "imgFileList": [
+        "img/misc/icon/phone/second-phone-shop.png",
         "img/misc/icon/phone/phone.png",
         "img/misc/icon/phone/phones.png",
         "img/misc/icon/phone/phone_disabled.png",
@@ -189,7 +190,7 @@
                 },
                 {
                     "passage": "npcNamed",
-                    "findString": "\t\t<<case \"Gwylan\" \"Zephyr\">>",
+                    "findString": "\t<<switch $NPCNameList[_args[0]]>>",
                     "replaceFile": "twee/game/npc/Feng_3.twee"
                 },
                 {
@@ -209,7 +210,7 @@
                 },
                 {
                     "passage": "Widgets",
-                    "findString": "\t<<set _i to $NPCNameList.indexOf(\"Zephyr\")>>",
+                    "findString": "<<widget \"relationshipclamp\">>",
                     "replaceFile": "twee/game/npc/Feng_8.twee"
                 },
                 {
@@ -227,7 +228,7 @@
         },
         {
             "modName": "GameVersion",
-            "version": "^0.5.7.9"
+            "version": "^0.5.10.12"
         },
         {
             "modName": "BeautySelectorAddon",
