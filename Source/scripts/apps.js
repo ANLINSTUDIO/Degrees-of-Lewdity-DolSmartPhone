@@ -2107,7 +2107,7 @@ PhoneMod.ddCheck = function() {
             } else if (V.passage === V.Phone.ddstart.passage) {
                 const Div = document.createElement("div");
                 Div.style.display = "inline";
-                let text = "<<icon 'phone/app/DD.png'>>"
+                let text = "<<icon 'phone/app/dd.png'>>"
                 
                 if (V.event) {
                     text += '<span class="red">你需要先忙完当前的事情</span>'

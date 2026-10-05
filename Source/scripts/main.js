@@ -1130,7 +1130,7 @@ PhoneMod.PhoneLoadList = function() {
                         <<if $Phone.Using and "${phone.id}" eq $Phone.Using>>
                             <<icon "phone/phone.png">>
                         <<else>>
-                            <<icon "phone/phone_disabled.png">>
+                            <<icon "phone/phone-disabled.png">>
                         <</if>>
                         <div class="smart-phone-toolbar-subtitle">
                             <<if ${phone.newnessmax > 0}>>
@@ -1271,10 +1271,10 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                             <span class='red'>已经关机</span> |
                         <</if>>
                     <<elseif ${phone.stolen && !phone.usable}>>
-                        <<icon "phone/phone_forbid.png">>
+                        <<icon "phone/phone-forbid.png">>
                         <span class='red'>无法使用</span> | 
                     <<else>>
-                        <<icon "phone/phone_disabled.png">> 
+                        <<icon "phone/phone-disabled.png">> 
                         <<if ${phone.newnessmax > 0}>>
                             <<link "切换到">> <<run PhoneMod.phoneJournalChange("${phone.id}")>> <</link>> | 
                         <<elseif ${phone.newnessmax === 0}>>
@@ -1313,7 +1313,7 @@ PhoneMod.showPhoneJournal = function() {  // 日志中显示手机信息
                 const Li = document.createElement("li");
                 new Wikifier(Li, `
                     <span style="margin-right: 20px"></span>
-                    <<icon "phone/power_bank.png">> <span class="yellow">持有充电宝</span> 
+                    <<icon "phone/power-bank.png">> <span class="yellow">持有充电宝</span> 
                     [ ${Math.round(V.Phone.PowerBank.newness / V.Phone.PowerBank.newnessmax * 100)}% ]
                     <<if ${V.Phone.PowerBank.newness > 0}>>
                         <<if ${PhoneMod.getUsingPhone() !== null}>>

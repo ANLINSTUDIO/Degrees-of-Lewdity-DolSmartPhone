@@ -15,9 +15,9 @@
     <<if $Phone.Using and _Phone.id eq $Phone.Using>>
         <<icon "phone/phone.png">> [正在使用]
     <<elseif _Phone.stolen and _Phone.usable>>
-        <<icon "phone/phone_forbid.png">>
+        <<icon "phone/phone-forbid.png">>
     <<else>>
-        <<icon "phone/phone_disabled.png">>
+        <<icon "phone/phone-disabled.png">>
     <</if>>
     一部<<print _phone_condition.html>>的 <<print _Phone.model>>，
     <<if _Phone.stolen>>
@@ -36,6 +36,62 @@
         <<set _money to _money*_args[1]>>
     <</if>>
     现在可以以<span class="gold">£_money</span>的价格在
+<</widget>>
+<<widget "Fengrelationshiptext">>
+    <<if C.npc.Feng.name_known>>
+        <<if C.npc.Feng.love gt 0 or C.npc.Feng.lust gt 0>>
+            <<if C.npc.Feng.love gt 0>>
+                <<if C.npc.Feng.love gte 99>>
+                    <span class="green">放心把任何事情交给你做</span>
+                <<elseif C.npc.Feng.love gte 95>>
+                    <span class="teal">非常欣赏你</span>
+                <<elseif C.npc.Feng.love gte 85>>
+                    <span class="blue">比较欣赏你</span>
+                <<elseif C.npc.Feng.love gte 75>>
+                    <span class="lblue">有点欣赏你</span>
+                <<elseif C.npc.Feng.love gte 50>>
+                    对你<span class="purple">印象很深</span>
+                <<elseif C.npc.Feng.love gte 30>>
+                    对你<span class="purple">很感兴趣</span>
+                <<elseif C.npc.Feng.love gte 15>>
+                    对你<span class="purple">期待与你的合作</span>
+                <<elseif C.npc.Feng.love gte 1>>
+                    对你<span class="red">保持着警惕</span>
+                <</if>>
+            <</if>>
+            <<if C.npc.Feng.lust gt 0>>
+                <<if C.npc.Feng.love gt 0>>
+                    ，
+                    <<if ((C.npc.Feng.love gte 50) and (C.npc.Feng.lust gte 50)) or ((C.npc.Feng.love lt 50) and (C.npc.Feng.lust lt 50))>>
+                        并且
+                    <<else>>
+                        但是
+                    <</if>>
+                <</if>>
+                <<if C.npc.Feng.lust gte 99>>
+                    <span class="green">完全认为你是偷手机的天才</span>。
+                <<elseif C.npc.Feng.lust gte 95>>
+                    <span class="teal">很佩服你的能力</span>。
+                <<elseif C.npc.Feng.lust gte 85>>
+                    <span class="blue">佩服你的手法</span>。
+                <<elseif C.npc.Feng.lust gte 75>>
+                    <span class="lblue">很看好你的能力</span>。
+                <<elseif C.npc.Feng.lust gte 50>>
+                    认为<span class="lblue">你的能力还不错</span>。
+                <<elseif C.npc.Feng.lust gte 20>>
+                    认为<span class="purple">你的能力有所欠缺</span>。
+                <<elseif C.npc.Feng.lust gte 10>>
+                    认为<span class="pink">你的能力拙劣</span>。
+                <<elseif C.npc.Feng.lust gte 1>>
+                    认为<span class="red">你不适合偷手机这行</span>。
+                <</if>>
+            <</if>>
+        <<else>>
+            对你保持警惕。
+        <</if>>
+    <<else>>
+        <span class="red">与你擦肩而过</span>。
+    <</if>>
 <</widget>>
 :: ==== SC Phone Shop ====
 :: Shopping Centre Phone Shop Link
@@ -98,7 +154,7 @@
     <span style="margin-right: 50px"></span><<print _phone_info.desc>><br><br>
 <</for>>
 <<if !$Phone.PowerBank>>
-    <<icon "phone/power_bank.png">>
+    <<icon "phone/power-bank.png">>
     <<if $money gte 799>>
         <<link [[购买充电宝 (£7.99)|Shopping Centre Phone Shop]]>><<set $daily.PhoneShopState to 2>><<money -799>><<run PhoneMod.GetPowerBank()>><</link>>
     <<else>>
@@ -584,7 +640,7 @@
     <<if validArray($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
         <<if PhoneMod.isCarryingStolenPhone(true)>>
-            <<icon "phone/phone_crack.png">><<link [["刷机 | 破解盗窃而来的手机"|Second Phone Crack]]>><</link>><br>
+            <<icon "phone/phone-crack.png">><<link [["刷机 | 破解盗窃而来的手机"|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
     <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop")>>
@@ -1396,7 +1452,7 @@
             你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
             <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run PhoneMod.PhoneChargeUnguarded(_args[0])>><</link>>
             <<if $Phone.PowerBank>>
-                <br><<icon "phone/power_bank.png">> <<link [[把充电宝放在这里充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn(_args[0])>><</link>>
+                <br><<icon "phone/power-bank.png">> <<link [[把充电宝放在这里充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn(_args[0])>><</link>>
             <</if>>
             <br><br>
             <<link [[守着充电5分钟 (0:05)|_args[1]]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
@@ -1535,9 +1591,9 @@
     <<capture _Phone>>
         <<set _info to PhoneMod.getPhoneConditionInfo(_Phone)>>
         <<if _Phone.stolen and !_Phone.usable>>
-            <<icon "phone/phone_forbid.png">>
+            <<icon "phone/phone-forbid.png">>
         <<else>>
-            <<icon "phone/phone_disabled.png">> 
+            <<icon "phone/phone-disabled.png">> 
         <</if>>
         <<link [[取出|Bedroom Store Phone]]>> <<run PhoneMod.PhoneStoreFinish("Bedroom", _Phone.id)>> <</link>>
         <<if _Phone.newnessmax gt 0>>
@@ -1568,9 +1624,9 @@
         <<if $Phone.Using and _Phone.id eq $Phone.Using>>
             <<icon "phone/phone.png">>
         <<elseif _Phone.stolen and !_Phone.usable>>
-            <<icon "phone/phone_forbid.png">>
+            <<icon "phone/phone-forbid.png">>
         <<else>>
-            <<icon "phone/phone_disabled.png">> 
+            <<icon "phone/phone-disabled.png">> 
         <</if>>
         <<link [[存放|Bedroom Store Phone]]>> <<run PhoneMod.PhoneStore("Bedroom", _Phone.id)>> <</link>>
         <<if _Phone.newnessmax gt 0>>
@@ -1700,7 +1756,7 @@
         <<ddcostinfo>>
         现在已经等待了<span class="yellow"><<print PhoneMod.ddGetWaitTime()>>分钟</span>。<br>
         <<ddinfo>><br>
-        <<icon "phone/app/DD.png">><<link "取消叫车">><<run PhoneMod.ddCancel('用户取消了订单')>><</link>><br>
+        <<icon "phone/app/dd.png">><<link "取消叫车">><<run PhoneMod.ddCancel('用户取消了订单')>><</link>><br>
     <<elseif $Phone.dd>>
         <<ddlocationinfodestination>>
         <<ddcostinfo>>
@@ -1710,7 +1766,7 @@
         <<elseif $money lt PhoneMod.DD等待全额费用*100>>
             <span class="red">你支付不起最大等待费定价。</span>
         <<else>>
-            <<icon "phone/app/DD.png">><<link "确定叫车">><<run PhoneMod.ddSubmit()>><</link>>
+            <<icon "phone/app/dd.png">><<link "确定叫车">><<run PhoneMod.ddSubmit()>><</link>>
         <</if>><br>
         <<getouticon>><<link 取消>><<run PhoneMod.ddSetDestination()>><</link>><br>
     <<elseif _theNearestBoardingPoint>>

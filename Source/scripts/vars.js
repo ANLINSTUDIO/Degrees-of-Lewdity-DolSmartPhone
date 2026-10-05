@@ -58,7 +58,7 @@ PhoneMod.events = [
     // 地点组
     {passage: "Bedroom", target: "Mirror", event: "Bedroom Corner"},
     // 直播
-    // {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},
+    // {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},  // 集成在Bedroom Corner中
     // 盗窃手机
     {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Steal Phone", chance: 0.1, condition: "SchoolLockersSneakCondition", position: "before"},
     {eventid: "School Lockers Sneak Kylar", target: "School Lockers", event: "School Lockers Sneak Kylar", position: "before", offset: 3},
@@ -77,12 +77,12 @@ PhoneMod.events = [
     {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
     // 充电
     {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Charge Link", position: "before", offset: 1},
-    // {passage: "Bedroom", target: "Live Bedroom", event: "Bedroom Charge Link", f:"Bedroom Charge NOLIVE"},
-    // {eventid: "Bedroom Charge NOLIVE", target: "Mirror", event: "Bedroom Charge Link", offset: 1},
+    // {passage: "Bedroom", target: "Live Bedroom", event: "Bedroom Charge Link", f:"Bedroom Charge NOLIVE"},  // 集成在Bedroom Corner中
+    // {eventid: "Bedroom Charge NOLIVE", target: "Mirror", event: "Bedroom Charge Link", offset: 1},  // 集成在Bedroom Corner中
     {passage: "Library Rental Counter", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
     {passage: "Sydney Leighton Spank 4", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
     // 储存手机
-    // {passage: "Bedroom", target: "Bed", event: "Bedroom Store Phone Link", position: "before", offset: 3},
+    // {passage: "Bedroom", target: "Bed", event: "Bedroom Store Phone Link", position: "before", offset: 3},  // 集成在Bedroom Corner中
     // 获取APP
     {passage: "Ocean Breeze Work", target: "Chef Help", event: "Chef Help Get NewWest 1", position: "before"},
     {passage: "Chef Work", target: "Chef Work 2", event: "Chef Help Get NewWest 2", position: "before"},

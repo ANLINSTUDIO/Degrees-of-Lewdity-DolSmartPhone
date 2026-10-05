@@ -485,7 +485,7 @@
                 <span class="yenote-username pointer" onclick="PhoneMod.yenoteRename()">_user.name</span>
             <</if>>
         </div>
-        <img class="yenote-title" src="img/misc/icon/phone/app/yenote_text_full.png">
+        <img class="yenote-title" src="img/misc/icon/phone/app/yenote-text-full.png">
         <img class="yenote-add pointer" src="img/ui/phone/app/add.png" onclick="PhoneMod.yenotePosting()">
     </div>
     <<if !$Phone.yenoteUsername>>
