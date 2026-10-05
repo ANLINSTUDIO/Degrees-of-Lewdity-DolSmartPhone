@@ -1,4 +1,3 @@
-window.PhoneMod = window.PhoneMod || {};
 PhoneMod.STORAGE_KEY = 'phoneext';
 PhoneMod.exts = {
     app: [],

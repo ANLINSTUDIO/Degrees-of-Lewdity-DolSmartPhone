@@ -1,6 +1,39 @@
 AsAPI.log("SmartPhone", "正在加载：main.js");
 
 
+// NPC注入
+maplebirch.npc.add({
+    nam: "Feng",
+    gender: 'm',
+    title: "Pickpocket",
+    description: "Feng",
+    type: "human",
+    adult: 1,
+    age: 32,
+    insecurity: "skill",
+
+    hairColour: "black",
+
+    love: 0,
+    lust: 0,
+    
+    init: 0,
+}, {
+    love: { maxValue: 100 },
+    loveAlias: ['Trust', '信任'],
+    lust: { name: "欣赏", maxValue: 100, activeIcon : "img/ui/sym-confidence.png", inactiveIcon : undefined, iconOrientation : undefined }
+}, {
+    "Feng": {
+        CN: "老冯",
+        EN: "Feng"
+    },
+    "Pickpocket": {
+        CN: "扒手",
+        EN: "Pickpocket"
+    }
+});
+
+
 // ================== passage 注入 ==================
 $(document).one(":passageinit", function () {
     PhoneMod.events_on_macro.forEach(function(event) {

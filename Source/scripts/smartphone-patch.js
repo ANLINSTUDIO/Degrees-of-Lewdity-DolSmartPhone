@@ -1,5 +1,3 @@
-window.PhoneMod = window.PhoneMod || {};
-
 $(document).on(":passagerender", function (ev) {PhoneMod.patchOnPassageRender(ev)});
 PhoneMod.patchOnPassageRender = function (ev) {
     V.Phone = V.Phone || {};

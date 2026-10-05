@@ -5,86 +5,85 @@
     "vv": "03850",
     "betaVersion": true,
     "styleFileList": [
-        "styles/main.css", 
-        "styles/guide.css", 
+        "styles/main.css",
+        "styles/guide.css",
         "styles/apps/yenote.css",
         "styles/apps/memo.css",
         "styles/apps/map.css"
     ],
     "scriptFileList": [
-        "scripts/AsAPI.js", 
-        "scripts/patch.js", 
-        "scripts/guide.js", 
-        "scripts/vars.js", 
-        "scripts/api.js", 
-        "scripts/apps.js", 
-        "scripts/main.js",
-        "scripts/extension.js"
+        "scripts/smartphone-patch.js",
+        "scripts/smartphone-guide.js",
+        "scripts/smartphone-vars.js",
+        "scripts/smartphone-api.js",
+        "scripts/smartphone-apps.js",
+        "scripts/smartphone-main.js",
+        "scripts/smartphone-extension.js"
+    ],
+    "scriptFileList_inject_early": [
+        "scripts/smartphone-early-inject.js"
     ],
     "tweeFileList": [
-        "twee/phone.twee", "twee/phone_call.twee", "twee/phone_game.twee", "twee/phone_passage.twee"
+        "twee/phone.twee",
+        "twee/phone_call.twee",
+        "twee/phone_game.twee",
+        "twee/phone_passage.twee"
     ],
     "imgFileList": [
-        "img/misc/icon/phone/second-phone-shop.png",
-        "img/misc/icon/phone/phone.png",
-        "img/misc/icon/phone/phones.png",
-        "img/misc/icon/phone/phone_disabled.png",
-        "img/misc/icon/phone/phone_forbid.png",
-        "img/misc/icon/phone/phone_crack.png",
-        "img/misc/icon/phone/power_bank.png",
-        "img/misc/icon/phone/live.png",
-        "img/misc/icon/phone/theft.png",
-        "img/misc/icon/phone/charge.png",
-        "img/misc/icon/phone/drawer.png",
-        "img/misc/locations/phone/base.png",
-        "img/ui/phone/battery.png",
-        "img/ui/phone/battery_bg.png",
-        "img/ui/phone/home.png",
-        "img/ui/phone/lock.png",
-        "img/ui/phone/shutdown.png",
-
-        "img/ui/phone/app/add.png",
-        "img/ui/phone/app/correct.png",
-        "img/ui/phone/app/photo.png",
-        "img/ui/phone/app/premium.png",
-        "img/ui/phone/app/map/forest_map.png",
-        
-        "img/misc/icon/phone/app/yenote.png",
-        "img/misc/icon/phone/app/yenote_text.png",
-        "img/misc/icon/phone/app/yenote_text_full.png",
-        "img/misc/icon/phone/app/album.png",
-        "img/misc/icon/phone/app/memo.png",
-        "img/misc/icon/phone/app/map.png",
-        "img/misc/icon/phone/app/DD.png",
-        "img/misc/icon/phone/app/newWest.png",
-        "img/misc/icon/phone/app/taobao.png",
-        "img/misc/icon/phone/app/appstore.png",
-
-        "img/photo/photonone.png",
-
-        "img/ui/phone/powerbank.png",
-
-        "img/misc/icon/phone/avatar/pc.png",
-        "img/misc/icon/phone/avatar/landry0.png",
-        "img/misc/icon/phone/avatar/A.png",
-
+        "img/guide/charge/1.png",
+        "img/guide/contacts/1.png",
+        "img/guide/contacts/2.png",
+        "img/guide/contacts/3.png",
+        "img/guide/contacts/4.png",
+        "img/guide/memo/1.png",
         "img/guide/photo/1.png",
         "img/guide/photo/2.png",
         "img/guide/photo/3.png",
         "img/guide/photo/4.png",
         "img/guide/photo/5.png",
         "img/guide/photo/6.png",
+        "img/guide/secondphoneshop/1.png",
         "img/guide/yenote/1.png",
         "img/guide/yenote/2.png",
         "img/guide/yenote/3.png",
         "img/guide/yenote/4.png",
-        "img/guide/memo/1.png",
-        "img/guide/contacts/1.png",
-        "img/guide/contacts/2.png",
-        "img/guide/contacts/3.png",
-        "img/guide/contacts/4.png",
-        "img/guide/secondphoneshop/1.png",
-        "img/guide/charge/1.png"
+        "img/misc/icon/phone/app/album.png",
+        "img/misc/icon/phone/app/appstore.png",
+        "img/misc/icon/phone/app/dd.png",
+        "img/misc/icon/phone/app/map.png",
+        "img/misc/icon/phone/app/memo.png",
+        "img/misc/icon/phone/app/new-west.png",
+        "img/misc/icon/phone/app/taobao.png",
+        "img/misc/icon/phone/app/yenote-text-full.png",
+        "img/misc/icon/phone/app/yenote-text.png",
+        "img/misc/icon/phone/app/yenote.png",
+        "img/misc/icon/phone/avatar/A.png",
+        "img/misc/icon/phone/avatar/landry0.png",
+        "img/misc/icon/phone/avatar/pc.png",
+        "img/misc/icon/phone/charge.png",
+        "img/misc/icon/phone/drawer.png",
+        "img/misc/icon/phone/live.png",
+        "img/misc/icon/phone/phone-crack.png",
+        "img/misc/icon/phone/phone-disabled.png",
+        "img/misc/icon/phone/phone-forbid.png",
+        "img/misc/icon/phone/phone.png",
+        "img/misc/icon/phone/phones.png",
+        "img/misc/icon/phone/power_bank.png",
+        "img/misc/icon/phone/second-phone-shop.png",
+        "img/misc/icon/phone/theft.png",
+        "img/misc/locations/phone/base.png",
+        "img/photo/photonone.png",
+        "img/ui/phone/app/add.png",
+        "img/ui/phone/app/correct.png",
+        "img/ui/phone/app/map/forest_map.png",
+        "img/ui/phone/app/photo.png",
+        "img/ui/phone/app/premium.png",
+        "img/ui/phone/battery.png",
+        "img/ui/phone/battery_bg.png",
+        "img/ui/phone/home.png",
+        "img/ui/phone/lock.png",
+        "img/ui/phone/powerbank.png",
+        "img/ui/phone/shutdown.png"
     ],
     "additionFile": [
         "README.md"
@@ -171,52 +170,6 @@
                     "findString": "$daily.motherWake is 1>>",
                     "replaceFile": "twee/game/sleepAlarm/sleepAlarmWake.twee",
                     "all": true
-                },
-                {
-                    "_comment1": "添加新NPC-老冯 参考模拟人生的代码",
-                    "passage": "npcNamed",
-                    "findString": "\t<<for _i to 0; _i lt $NPCName.length; _i++>>",
-                    "replaceFile": "twee/game/npc/Feng_0.twee"
-                },
-                {
-                    "passage": "npcNamed",
-                    "findString": "\t\t\t\"zephyr\": {nam : \"Zephyr\", title: \"captain\", insecurity: \"skill\", adult: 1}",
-                    "replaceFile": "twee/game/npc/Feng_1.twee"
-                },
-                {
-                    "passage": "npcNamed",
-                    "findString": "\t\t\t<<case \"Zephyr\">>",
-                    "replaceFile": "twee/game/npc/Feng_2.twee"
-                },
-                {
-                    "passage": "npcNamed",
-                    "findString": "\t<<switch $NPCNameList[_args[0]]>>",
-                    "replaceFile": "twee/game/npc/Feng_3.twee"
-                },
-                {
-                    "passage": "Widgets variablesStatic",
-                    "findString": "\t<<run initCNPC()>>",
-                    "replaceFile": "twee/game/npc/Feng_4.twee"
-                },
-                {
-                    "passage": "Widgets variablesVersionUpdate",
-                    "findString": "\t\t<<for _npc range [\"avery\", \"bailey\", \"charlie\", \"darryl\", \"doren\", \"eden\", \"gwylan\", \"harper\", \"jordan\", \"kylar\", \"landry\", \"leighton\", \"mason\", \"morgan\", \"river\", \"robin\", \"sam\", \"sirris\", \"whitney\", \"winter\", \"zephyr\"]>>",
-                    "replaceFile": "twee/game/npc/Feng_5.twee"
-                },
-                {
-                    "passage": "Social",
-                    "findString": "\t\t\t\t\t\"Zephyr\" : {",
-                    "replaceFile": "twee/game/npc/Feng_7.twee"
-                },
-                {
-                    "passage": "Widgets",
-                    "findString": "<<widget \"relationshipclamp\">>",
-                    "replaceFile": "twee/game/npc/Feng_8.twee"
-                },
-                {
-                    "passage": "Widgets Named Npcs",
-                    "findString": "\t\t<!-- Default cases -->",
-                    "replaceFile": "twee/game/npc/Feng_9.twee"
                 }
             ]
         }
