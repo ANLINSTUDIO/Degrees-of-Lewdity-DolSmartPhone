@@ -1,7 +1,7 @@
 AsAPI.log("SmartPhone", "正在加载：apps.js");
 
 // ==================== 闹钟实现 ====================
-PhoneMod.initAlarm = function() {
+smartphone.initAlarm = function() {
     const phone_alarm_time = document.getElementById('phone-alarm-time')
     if (!phone_alarm_time) return
 
@@ -21,16 +21,16 @@ PhoneMod.initAlarm = function() {
         phone_alarm_time.value = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m)
     }
 
-    PhoneMod.toggleAlarmType("today");
+    smartphone.toggleAlarmType("today");
 };
-PhoneMod.checkAlarms = function(offset=0) { // 闹钟检查
+smartphone.checkAlarms = function(offset=0) { // 闹钟检查
     // 如果闹钟正在触发、未被关闭而切换了Passage，则仍然需要响铃
     if (V.Phone.AlarmTriggered) {
-        setTimeout(() => PhoneMod.togglePhone(true), 10);
+        setTimeout(() => smartphone.togglePhone(true), 10);
     }
     
     if (!V.Phone.Alarms || V.Phone.Alarms.length === 0) return false;
-    let now = PhoneMod.getAbsTime();
+    let now = smartphone.getAbsTime();
     if (offset > 0) {
         let date = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
         // 加一小时
@@ -142,17 +142,17 @@ PhoneMod.checkAlarms = function(offset=0) { // 闹钟检查
         let alarm = V.Phone.AlarmsToTrigger.shift();
         V.Phone.AlarmCurrent = alarm;
         if (alarm.type === "once") alarm.active = false; // 一次性的关掉
-        setTimeout(() => PhoneMod.togglePhone(true), 10);
+        setTimeout(() => smartphone.togglePhone(true), 10);
     }
     
     return V.Phone.AlarmTriggered;
 };
-PhoneMod.checkAlarmsInSleep = function() {
+smartphone.checkAlarmsInSleep = function() {
     if (V.Phone.cancelAlarmInSleepOnce) return false;
-    if (!PhoneMod.getUsingPhone()) return false;
-    const shouldTrigger = PhoneMod.checkAlarms(60)
+    if (!smartphone.getUsingPhone()) return false;
+    const shouldTrigger = smartphone.checkAlarms(60)
     if (shouldTrigger) {
-        let now = PhoneMod.getAbsTime();
+        let now = smartphone.getAbsTime();
         let alarm = V.Phone.AlarmCurrent;
         
         let diffMinutes;
@@ -163,7 +163,7 @@ PhoneMod.checkAlarmsInSleep = function() {
             let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
             
             // 找到最近的下一个触发日期
-            let nextTriggerDate = PhoneMod.findNextWeeklyTrigger(alarm, nowDate);
+            let nextTriggerDate = smartphone.findNextWeeklyTrigger(alarm, nowDate);
             diffMinutes = Math.round((nextTriggerDate - nowDate) / (1000 * 60));
         } else {
             // 单次闹钟（once/date/today类型）
@@ -176,7 +176,7 @@ PhoneMod.checkAlarmsInSleep = function() {
     }
     return shouldTrigger
 };
-PhoneMod.findNextWeeklyTrigger = function(alarm, nowDate) {
+smartphone.findNextWeeklyTrigger = function(alarm, nowDate) {
     const alarmHour = alarm.hour;
     const alarmMinute = alarm.minute;
     const weekDays = alarm.weekDays; // 0-6 周日到周六
@@ -214,7 +214,7 @@ PhoneMod.findNextWeeklyTrigger = function(alarm, nowDate) {
     
     return triggerDate;
 };
-PhoneMod.checkAlarmsInSleepText = function() {
+smartphone.checkAlarmsInSleepText = function() {
     if (V.Phone.cancelAlarmInSleepOnce) {
         if (V.Phone.cancelAlarmInSleepOnce === 2) {
             delete V.Phone.cancelAlarmInSleepOnce
@@ -229,7 +229,7 @@ PhoneMod.checkAlarmsInSleepText = function() {
     }
     
     // 获取当前时间
-    let now = PhoneMod.getAbsTime();
+    let now = smartphone.getAbsTime();
     let nowDate = new Date(now.year, now.month - 1, now.day, now.hour, now.minute);
 
     // 初始化变量
@@ -288,41 +288,41 @@ PhoneMod.checkAlarmsInSleepText = function() {
     if (nearestAlarm) {
         let hoursDiff = minDiffMinutes / 60;
         if (hoursDiff <= 8) {
-            return `手机闹钟会在 <span class="def">${hoursDiff.toFixed(0)}小时</span> 后响起。<<link 关闭一次>><<run PhoneMod.cancelAlarmInSleep()>><</link>><br><br>`;
+            return `手机闹钟会在 <span class="def">${hoursDiff.toFixed(0)}小时</span> 后响起。<<link 关闭一次>><<run smartphone.cancelAlarmInSleep()>><</link>><br><br>`;
         }
     }
     return ""
 };
-PhoneMod.cancelAlarmInSleep = function() {
+smartphone.cancelAlarmInSleep = function() {
     V.Phone.cancelAlarmInSleepOnce = 1;
     AsAPI.reload();
 }
-PhoneMod.cancelAlarm = function() { // 关闭闹钟
+smartphone.cancelAlarm = function() { // 关闭闹钟
     V.Phone.AlarmTriggered = false;
     delete V.Phone.AlarmCurrent;
 
-    PhoneMod.togglePhone(false);
-    PhoneMod.PhoneUIInit();
+    smartphone.togglePhone(false);
+    smartphone.PhoneUIInit();
 };
-PhoneMod.deleteAlarm = function(index) { // 删除闹钟
-    PhoneMod.confirm('确定要删除这个闹钟吗？', '', () => {
+smartphone.deleteAlarm = function(index) { // 删除闹钟
+    smartphone.confirm('确定要删除这个闹钟吗？', '', () => {
         V.Phone.Alarms.splice(index, 1);
-        PhoneMod.PhoneUIInit(true, true);
+        smartphone.PhoneUIInit(true, true);
     })
 };
-PhoneMod.editAlarm = function(index) { // 编辑闹钟
-    PhoneMod.confirm('确定要编辑这个闹钟吗？', '编辑过程中如若退出APP，或者尝试编辑其他的闹钟，将会导致正在编辑的闹钟被删除。<br><span class="red">哪怕没有进行更改，也请按下"确认"进行保存。</span>', () => {
+smartphone.editAlarm = function(index) { // 编辑闹钟
+    smartphone.confirm('确定要编辑这个闹钟吗？', '编辑过程中如若退出APP，或者尝试编辑其他的闹钟，将会导致正在编辑的闹钟被删除。<br><span class="red">哪怕没有进行更改，也请按下"确认"进行保存。</span>', () => {
         const alarm = V.Phone.Alarms[index];
         V.Phone.Alarms.splice(index, 1);
-        PhoneMod.PhoneUIInit(true, true);
-        PhoneMod.populateAlarmForm(alarm)
+        smartphone.PhoneUIInit(true, true);
+        smartphone.populateAlarmForm(alarm)
     })
 };
-PhoneMod.toggleAlarmType = function(type) {
+smartphone.toggleAlarmType = function(type) {
     document.getElementById('weekly-input').style.display = 'none';
     document.getElementById('phone-alarm-date').style.display = 'none';
     if(type === 'date') {
-        document.getElementById('phone-alarm-date-input').value = PhoneMod.getDateString();
+        document.getElementById('phone-alarm-date-input').value = smartphone.getDateString();
         document.getElementById('phone-alarm-date').style.display = 'block';
     } else if(type === 'weekly') {
         document.querySelectorAll(`input[name="weekday"]`).forEach(checkbox => {
@@ -335,7 +335,7 @@ PhoneMod.toggleAlarmType = function(type) {
         document.getElementById('weekly-input').style.display = 'block';
     }
 }
-PhoneMod.submitAlarm = function() {
+smartphone.submitAlarm = function() {
     const t = document.getElementById('phone-alarm-time').value;
     const msg = document.getElementById('phone-alarm-msg').value;
     const alarmType = document.querySelector('input[name="alarm-type"]:checked').value;
@@ -347,7 +347,7 @@ PhoneMod.submitAlarm = function() {
         if(alarmType === 'date' | alarmType === 'today') {
             let d = "";
             if(alarmType === 'today') {
-                d = PhoneMod.getDateString();
+                d = smartphone.getDateString();
             } else {
                 d = document.getElementById('phone-alarm-date-input').value; // YYYY-MM-DD
             };
@@ -360,7 +360,7 @@ PhoneMod.submitAlarm = function() {
                 const hour = parseInt(timeParts[0]);
                 const minute = parseInt(timeParts[1]);
                 
-                const now = PhoneMod.getAbsTime();
+                const now = smartphone.getAbsTime();
                 let isExpired = false;
                 if (now) {
                     // 创建闹钟日期对象
@@ -384,11 +384,11 @@ PhoneMod.submitAlarm = function() {
                         msg: msg,
                         active: !isExpired
                     });
-                    PhoneMod.PhoneUIInit(true, true);
+                    smartphone.PhoneUIInit(true, true);
                 };
 
                 if (isExpired) {
-                    PhoneMod.confirm('选定的时间已过期', '是否仍然要设定这个闹钟？', addAlarm)
+                    smartphone.confirm('选定的时间已过期', '是否仍然要设定这个闹钟？', addAlarm)
                     return;
                 } else {
                     addAlarm();
@@ -409,11 +409,11 @@ PhoneMod.submitAlarm = function() {
                 msg: msg,
                 active: true
             });
-            PhoneMod.PhoneUIInit(true, true);
+            smartphone.PhoneUIInit(true, true);
         }
     };
 }
-PhoneMod.populateAlarmForm = function(alarm) {
+smartphone.populateAlarmForm = function(alarm) {
     if (!alarm) return;
     
     // 填充时间
@@ -433,7 +433,7 @@ PhoneMod.populateAlarmForm = function(alarm) {
     // 根据闹钟类型填充不同的表单
     if (alarm.type === 'once') {
         // 单次闹钟：判断是日期选择还是今天
-        const now = PhoneMod.getAbsTime ? PhoneMod.getAbsTime() : null;
+        const now = smartphone.getAbsTime ? smartphone.getAbsTime() : null;
         const isToday = now && alarm.year === now.year && alarm.month === now.month && alarm.day === now.day;
         
         if (isToday) {
@@ -442,7 +442,7 @@ PhoneMod.populateAlarmForm = function(alarm) {
             if (todayRadio) {
                 todayRadio.checked = true;
                 // 调用切换函数显示对应UI（但今天模式实际上不显示日期选择器）
-                PhoneMod.toggleAlarmType('today');
+                smartphone.toggleAlarmType('today');
             }
         } else {
             // 选择 "日期"
@@ -450,7 +450,7 @@ PhoneMod.populateAlarmForm = function(alarm) {
             if (dateRadio) {
                 dateRadio.checked = true;
                 // 调用切换函数显示日期选择器
-                PhoneMod.toggleAlarmType('date');
+                smartphone.toggleAlarmType('date');
             }
             
             // 填充日期输入框
@@ -469,7 +469,7 @@ PhoneMod.populateAlarmForm = function(alarm) {
         if (weeklyRadio) {
             weeklyRadio.checked = true;
             // 调用切换函数显示星期选择器
-            PhoneMod.toggleAlarmType('weekly');
+            smartphone.toggleAlarmType('weekly');
         }
         
         // 清空所有星期复选框（toggleAlarmType 中已经设置了部分选中，这里需要覆盖）
@@ -487,7 +487,7 @@ PhoneMod.populateAlarmForm = function(alarm) {
         }
     }
 };
-PhoneMod.getAlarmDesc = function(alarm) {
+smartphone.getAlarmDesc = function(alarm) {
     if (alarm.type === "once") {
         return `${alarm.year}-${alarm.month}-${alarm.day}`
     } else {
@@ -496,12 +496,12 @@ PhoneMod.getAlarmDesc = function(alarm) {
     }
 }
 // ================== 手机游戏实现 ==================
-PhoneMod.getGameQuestion = function(category) {
-    const pool = PhoneMod.PhoneGameQuestions[category];
+smartphone.getGameQuestion = function(category) {
+    const pool = smartphone.PhoneGameQuestions[category];
     const rawQ = pool[Math.floor(Math.random() * pool.length)];
     
     // 1. 从 10 个错误选项中随机抽 3 个
-    let selectedWrongs = PhoneMod.shuffle([...rawQ.w]).slice(0, 3);
+    let selectedWrongs = smartphone.shuffle([...rawQ.w]).slice(0, 3);
     
     // 2. 组合正确答案和抽出的错误答案
     let options = [
@@ -510,7 +510,7 @@ PhoneMod.getGameQuestion = function(category) {
     ];
     
     // 3. 再次打乱这 4 个选项的显示顺序
-    PhoneMod.shuffle(options);
+    smartphone.shuffle(options);
     
     return {
         title: rawQ.q,
@@ -518,7 +518,7 @@ PhoneMod.getGameQuestion = function(category) {
     };
 }
 // ==================== 设置实现 ====================
-PhoneMod.handleWallpaperUpload = function(input) {
+smartphone.handleWallpaperUpload = function(input) {
     if (!input.files || !input.files[0]) return;
     
     const file = input.files[0];
@@ -535,25 +535,25 @@ PhoneMod.handleWallpaperUpload = function(input) {
     reader.onload = function(e) {
         // 保存到SugarCube变量
         V.Phone.Settings.WallpaperPath = e.target.result;
-        PhoneMod.PhoneUIInit(true, true);
+        smartphone.PhoneUIInit(true, true);
     };
     reader.readAsDataURL(file);
 }
-PhoneMod.resetWallpaper = function() {
+smartphone.resetWallpaper = function() {
     delete V.Phone.Settings.WallpaperPath
-    PhoneMod.PhoneUIInit(true, true);
+    smartphone.PhoneUIInit(true, true);
 }
 // =================== 备忘录实现 ===================
-PhoneMod.initMemo = function() {
+smartphone.initMemo = function() {
     V.Phone.Memos = V.Phone.Memos || {};
     for (let taskId in V.Phone.Memos) {
         const memo = V.Phone.Memos[taskId]
-        PhoneMod.addMemoTask(taskId, memo.text, memo.isImportant, memo.isFinished)
+        smartphone.addMemoTask(taskId, memo.text, memo.isImportant, memo.isFinished)
     }
     if (V.Phone.MemoEnableSort) memo_enable_sort.classList.add("active");
-    PhoneMod.reorderTodoItems();
+    smartphone.reorderTodoItems();
 }
-PhoneMod.addNewMemoTask = function() {
+smartphone.addNewMemoTask = function() {
     V.Phone.Memos = V.Phone.Memos || {};
     const new_task_text = document.querySelector('#new_task_text');
     if (!new_task_text) return;
@@ -562,16 +562,16 @@ PhoneMod.addNewMemoTask = function() {
         if (new_task_text.value) {
             const taskId = 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             V.Phone.Memos[taskId] = {text: new_task_text.value, isImportant: false, isFinished: false}
-            PhoneMod.addMemoTask(taskId, new_task_text.value)
+            smartphone.addMemoTask(taskId, new_task_text.value)
             new_task_text.value = ""
         }
     } else {
         new_task_text.classList.add("active")
         new_task_text.focus()
     }
-    PhoneMod.reorderTodoItems();
+    smartphone.reorderTodoItems();
 }
-PhoneMod.addMemoTask = function(taskId, text = "新任务", isImportant = false, isFinished = false) {
+smartphone.addMemoTask = function(taskId, text = "新任务", isImportant = false, isFinished = false) {
     const todoList = document.querySelector('.todo-list');
     if (!todoList) return;
     
@@ -581,7 +581,7 @@ PhoneMod.addMemoTask = function(taskId, text = "新任务", isImportant = false,
     
     // 使用模板字符串构建HTML
     li.innerHTML = `
-        <input type="checkbox" id="${taskId}" onchange="PhoneMod.memoToggleFinished(event)" ${isFinished ? 'checked' : ''}>
+        <input type="checkbox" id="${taskId}" onchange="smartphone.memoToggleFinished(event)" ${isFinished ? 'checked' : ''}>
         <label for="${taskId}">
             <span class="custom-checkbox">
                 <svg class="checkmark-svg" viewBox="0 0 24 24">
@@ -589,7 +589,7 @@ PhoneMod.addMemoTask = function(taskId, text = "新任务", isImportant = false,
                 </svg>
             </span>
             <span class="todo-text">${text}</span>
-            <span class="priority-dot ${isImportant ? '' : 'disabled'}" onclick="PhoneMod.memoTogglePriority(event)"></span>
+            <span class="priority-dot ${isImportant ? '' : 'disabled'}" onclick="smartphone.memoTogglePriority(event)"></span>
         </label>
     `;
     
@@ -597,14 +597,14 @@ PhoneMod.addMemoTask = function(taskId, text = "新任务", isImportant = false,
     
     return li;
 };
-PhoneMod.memoToggleFinished = function(event) {
+smartphone.memoToggleFinished = function(event) {
     V.Phone.Memos = V.Phone.Memos || {};
     const checkbox = event.currentTarget;
     const taskId = checkbox.id;
     V.Phone.Memos[taskId].isFinished = checkbox.checked;
-    PhoneMod.reorderTodoItems();
+    smartphone.reorderTodoItems();
 }
-PhoneMod.memoTogglePriority = function(event) {
+smartphone.memoTogglePriority = function(event) {
     V.Phone.Memos = V.Phone.Memos || {};
     event.stopPropagation();
     event.preventDefault();
@@ -621,7 +621,7 @@ PhoneMod.memoTogglePriority = function(event) {
 
     // 如果 checkbox 已被勾选，执行删除
     if (checkbox && checkbox.checked) {
-        PhoneMod.confirm('确定要删除这个待办项吗？', '', () => {
+        smartphone.confirm('确定要删除这个待办项吗？', '', () => {
             delete V.Phone.Memos[taskId]
             todoItem.style.transition = 'all 0.3s ease';
             todoItem.style.opacity = '0';
@@ -635,9 +635,9 @@ PhoneMod.memoTogglePriority = function(event) {
         dot.classList.toggle('disabled');
         V.Phone.Memos[taskId].isImportant = !dot.classList.contains("disabled")
     };
-    PhoneMod.reorderTodoItems();
+    smartphone.reorderTodoItems();
 }
-PhoneMod.memoToggleEnableSort = function() {
+smartphone.memoToggleEnableSort = function() {
     const memo_enable_sort = document.getElementById('memo_enable_sort');
     if (!memo_enable_sort) return;
 
@@ -647,10 +647,10 @@ PhoneMod.memoToggleEnableSort = function() {
     } else {
         V.Phone.MemoEnableSort = true
         memo_enable_sort.classList.add("active")
-        PhoneMod.reorderTodoItems()
+        smartphone.reorderTodoItems()
     }
 }
-PhoneMod.reorderTodoItems = function() {
+smartphone.reorderTodoItems = function() {
     if (!V.Phone.MemoEnableSort) return;
     const todoList = document.querySelector('.todo-list');
     if (!todoList) return;
@@ -734,26 +734,26 @@ PhoneMod.reorderTodoItems = function() {
     });
 };
 // ==================== 电话实现 ====================
-PhoneMod.isContactKnown = function(name) {
+smartphone.isContactKnown = function(name) {
     return V.Phone.KnownContacts.includes(name);
 };
-PhoneMod.addContact = function(name) {
+smartphone.addContact = function(name) {
     if (!V.Phone.KnownContacts.includes(name)) {
         V.Phone.KnownContacts.push(name);
     }
 };
-PhoneMod.getContact = function(name) {
-    if (!PhoneMod.isContactKnown(name)) return null;
-    return PhoneMod.Contacts.find(c => c.name === name);
+smartphone.getContact = function(name) {
+    if (!smartphone.isContactKnown(name)) return null;
+    return smartphone.Contacts.find(c => c.name === name);
 };
 // ==================== 相机实现 ====================
-PhoneMod.photoCheck = function() {
-    if (PhoneMod.getUsingPhone()) {
+smartphone.photoCheck = function() {
+    if (smartphone.getUsingPhone()) {
         setTimeout(() => {
             delete V.Phone.TakingPhotoWill;
-            for (let photo_path in PhoneMod.PhonePhotos) {
+            for (let photo_path in smartphone.PhonePhotos) {
                 if (V.Phone.Album.hasOwnProperty(photo_path)) continue;
-                const photo = PhoneMod.PhonePhotos[photo_path];
+                const photo = smartphone.PhonePhotos[photo_path];
                 const result = Object.entries(photo.conditions).every(([key, expectedValue]) => {
                     if (key === "$") {
                         return typeof expectedValue === "function" ? expectedValue() : eval(expectedValue)();
@@ -783,34 +783,34 @@ PhoneMod.photoCheck = function() {
                 });
                 
                 if (Object.keys(photo.conditions).length > 0 && result) {
-                    PhoneMod.Guide.startTutorial("photo");
+                    smartphone.Guide.startTutorial("photo");
                     V.Phone.TakingPhotoWill = photo_path;
                     break
                 }
             }
 
-            PhoneMod.checkPhoneDisabled();
+            smartphone.checkPhoneDisabled();
         }, 200)
     }
 }
-PhoneMod.photoTakeDebug = function(id) {
+smartphone.photoTakeDebug = function(id) {
     let ids = []
     if (id) {
         ids.push(id)
     } else {
-        ids = Object.keys(PhoneMod.PhonePhotos)
+        ids = Object.keys(smartphone.PhonePhotos)
     }
     ids.forEach(id_ => {
         V.Phone.TakingPhotoWill = id_;
-        PhoneMod.photoDesc();
+        smartphone.photoDesc();
         V.Phone.PhotoCurrent.facevariant = V.facevariant;
         V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
     })
 }
-PhoneMod.photoTakeUncommon = function(id, allure, quality, text, havingOrgasm=false) {
-    // PhoneMod.photoTakeUncommon(id, allure100, quality100, text, havingOrgasm)
+smartphone.photoTakeUncommon = function(id, allure, quality, text, havingOrgasm=false) {
+    // smartphone.photoTakeUncommon(id, allure100, quality100, text, havingOrgasm)
     const photo_path = id
-    const photo_attr = PhoneMod.PhonePhotos[photo_path];
+    const photo_attr = smartphone.PhonePhotos[photo_path];
     let photo = {
         img: `img/photo/${photo_path}.png`,
         msg: photo_attr.msg,
@@ -825,18 +825,18 @@ PhoneMod.photoTakeUncommon = function(id, allure, quality, text, havingOrgasm=fa
     };
     V.Phone.Album[id] = photo;
 }
-PhoneMod.photoTake = function() {
+smartphone.photoTake = function() {
     if (!V.Phone.TakingPhotoWill) return;
     if (V.player.gender === "m") {
-        PhoneMod.msgSend("抱歉，目前还没有为男性主角设置额外的拍摄照片。")
+        smartphone.msgSend("抱歉，目前还没有为男性主角设置额外的拍摄照片。")
     }
-    PhoneMod.setPhoneBeating(false);
-    PhoneMod.photoDesc();
-    PhoneMod.toggleApp("photo");
+    smartphone.setPhoneBeating(false);
+    smartphone.photoDesc();
+    smartphone.toggleApp("photo");
 }
-PhoneMod.photoDesc = function() {
+smartphone.photoDesc = function() {
     const photo_path = V.Phone.TakingPhotoWill
-    const photo_attr = PhoneMod.PhonePhotos[photo_path];
+    const photo_attr = smartphone.PhonePhotos[photo_path];
     delete V.Phone.TakingPhotoWill;
 
     let allure = 0
@@ -848,7 +848,7 @@ PhoneMod.photoDesc = function() {
     let quality = 0
     const photography_k = V.Phone.photography / 1000
     quality = photography_k * 0.8 + Math.random() * 0.2
-    quality *= PhoneMod.getPhoneInfo().photography
+    quality *= smartphone.getPhoneInfo().photography
     quality  = Math.round(quality * 1000)
 
     let worn_text = ""
@@ -872,77 +872,77 @@ PhoneMod.photoDesc = function() {
     V.Phone.PhotoCurrentPath = photo_path;
     V.Phone.PhotoCurrent = photo;
 };
-PhoneMod.photoSubmit = function() {
+smartphone.photoSubmit = function() {
     V.Phone.PhotoCurrent.facevariant = V.facevariant;
     V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
-    PhoneMod.togglePhone();
+    smartphone.togglePhone();
     V.Phone.photography = Math.min(V.Phone.photography + 20, 1000);
-    PhoneMod.msgSend("你稍微掌握了一点摄影的技巧");
+    smartphone.msgSend("你稍微掌握了一点摄影的技巧");
 
     // 兼容极致动态
     if (window.Dynamicest) Dynamicest.onPassageRender(Dynamicest.ev);
 }
-PhoneMod.photoFinish = function() {
+smartphone.photoFinish = function() {
     delete V.Phone.PhotoCurrentPath;
     delete V.Phone.PhotoCurrent;
     delete V.Phone.TakingPhotoWill;
 }
 // =================== 相册实现 ====================
-PhoneMod.photoDelete = function(photo_id) {
-    PhoneMod.confirm('确定要删除这个照片吗', '你可以<span class="pink">让自己变得更加诱人</span>、<span class="green">拍照技术更好</span>或者<span class="blue">使用更好的摄像机</span>重新完成此任务以获得更好质量的照片', () => {
+smartphone.photoDelete = function(photo_id) {
+    smartphone.confirm('确定要删除这个照片吗', '你可以<span class="pink">让自己变得更加诱人</span>、<span class="green">拍照技术更好</span>或者<span class="blue">使用更好的摄像机</span>重新完成此任务以获得更好质量的照片', () => {
         delete V.Phone.Album[photo_id]
-        PhoneMod.PhoneUIInit(true, true);
+        smartphone.PhoneUIInit(true, true);
     })
 }
-PhoneMod.filterMode = {
+smartphone.filterMode = {
     "无": (taskId) => true,
     "已完成": (taskId) => taskId in V.Phone.Album,
     "未完成": (taskId) => !(taskId in V.Phone.Album),
     "未使用": (taskId) => (taskId in V.Phone.Album) && !V.Phone.Album[taskId].isUsed,
     "已使用": (taskId) => (taskId in V.Phone.Album) && V.Phone.Album[taskId].isUsed,
-    "人外": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("bestiality")),
-    "露出": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("exhibitionism")),
-    "授孕": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("impreg")),
-    "皮条客": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("pimp")),
-    "怀孕": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("pregnancy")),
-    "卖淫": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("prostitution")),
-    "强暴": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("rape")),
-    "淫乱": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("sex")),
-    "商业": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("business")),
-    "善良": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("good")),
-    "模特": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("model")),
-    "战斗": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("scrap")),
-    "社交": (taskId) => (PhoneMod.PhonePhotos[taskId].fames.includes("social")),
+    "人外": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("bestiality")),
+    "露出": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("exhibitionism")),
+    "授孕": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("impreg")),
+    "皮条客": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("pimp")),
+    "怀孕": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("pregnancy")),
+    "卖淫": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("prostitution")),
+    "强暴": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("rape")),
+    "淫乱": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("sex")),
+    "商业": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("business")),
+    "善良": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("good")),
+    "模特": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("model")),
+    "战斗": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("scrap")),
+    "社交": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("social")),
 }
-PhoneMod.initAlbum = function() {
-    if (!PhoneMod.photoLoaded) {
+smartphone.initAlbum = function() {
+    if (!smartphone.photoLoaded) {
         document.querySelector("#photononetip").style.display = ""
     }
-    const nonetext = Object.keys(PhoneMod.filterMode)[0];
+    const nonetext = Object.keys(smartphone.filterMode)[0];
     if(V.Phone.filterMode === undefined) {
         V.Phone.filterMode = nonetext
     }
-    for (let taskId in PhoneMod.PhonePhotos) {
+    for (let taskId in smartphone.PhonePhotos) {
         if (
-            (PhoneMod.filterMode[V.Phone.filterMode] === undefined || PhoneMod.filterMode[V.Phone.filterMode](taskId)) &&
-            (V.Phone.searchAlbumKeyword === undefined || (PhoneMod.PhonePhotos[taskId].msg.includes(V.Phone.searchAlbumKeyword) || PhoneMod.PhonePhotos[taskId].taskDesc.includes(V.Phone.searchAlbumKeyword)))
+            (smartphone.filterMode[V.Phone.filterMode] === undefined || smartphone.filterMode[V.Phone.filterMode](taskId)) &&
+            (V.Phone.searchAlbumKeyword === undefined || (smartphone.PhonePhotos[taskId].msg.includes(V.Phone.searchAlbumKeyword) || smartphone.PhonePhotos[taskId].taskDesc.includes(V.Phone.searchAlbumKeyword)))
         ) {
-            PhoneMod.addAlbumTask(taskId)
+            smartphone.addAlbumTask(taskId)
         }
     }
 
     const filterButton = document.getElementById('album_filter');
     if (!filterButton) return;
     filterButton.innerText = `筛选：${V.Phone.filterMode??nonetext}`;
-    if (V.Phone.filterMode === nonetext || PhoneMod.filterMode[V.Phone.filterMode] === undefined) {
+    if (V.Phone.filterMode === nonetext || smartphone.filterMode[V.Phone.filterMode] === undefined) {
         filterButton.classList.remove("active")
     } else {
         filterButton.classList.add("active")
     }
 
-    PhoneMod.reorderAlbumItems();
+    smartphone.reorderAlbumItems();
 };
-PhoneMod.reorderAlbumItems = function() {
+smartphone.reorderAlbumItems = function() {
     const todoList = document.querySelector('.todo-list');
     if (!todoList) return;
     
@@ -1024,7 +1024,7 @@ PhoneMod.reorderAlbumItems = function() {
         }
     });
 };
-PhoneMod.searchAlbum = function() {
+smartphone.searchAlbum = function() {
     const searchInput = document.getElementById('album_search');
     if (!searchInput) return;
     if (searchInput.classList.contains("active")) {
@@ -1035,15 +1035,15 @@ PhoneMod.searchAlbum = function() {
             delete V.Phone.searchAlbumKeyword;
         }
         searchInput.value = "";
-        PhoneMod.PhoneUIInit(true, true);
+        smartphone.PhoneUIInit(true, true);
     } else {
         searchInput.classList.add("active");
         searchInput.focus();
         delete V.Phone.filterMode;
     }
 };
-PhoneMod.filterAlbum = function() {
-    const modes = Object.keys(PhoneMod.filterMode);
+smartphone.filterAlbum = function() {
+    const modes = Object.keys(smartphone.filterMode);
     let currentIndex = modes.indexOf(V.Phone.filterMode);
     if (currentIndex === -1) {
         currentIndex = 0;
@@ -1051,23 +1051,23 @@ PhoneMod.filterAlbum = function() {
     const nextIndex = (currentIndex + 1) % modes.length;
     V.Phone.filterMode = modes[nextIndex];
 
-    PhoneMod.PhoneUIInit(true, true);
+    smartphone.PhoneUIInit(true, true);
 };
-PhoneMod.photoError = function(element) {
+smartphone.photoError = function(element) {
     element.remove();
     const photononetip = document.querySelector("#photononetip");
     photononetip.style.display = "";
-    if (PhoneMod.photoLoaded) {
+    if (smartphone.photoLoaded) {
         photononetip.innerHTML = "加载的图包模组可能<span class='gold'>未启用美化</span>或者装载的图包不是对应的版本；此种问题将导致某些甚至全部的摄像图像不可见。"
     } else {
         photononetip.innerHTML = "未装载摄像图包，将不会在游戏内显示任务具体照片。"
     };
 }
-PhoneMod.addAlbumTask = function(taskId) {
+smartphone.addAlbumTask = function(taskId) {
     const todoList = document.querySelector('.todo-list');
     if (!todoList) return;
 
-    const task = PhoneMod.PhonePhotos[taskId]
+    const task = smartphone.PhonePhotos[taskId]
     const photo = V.Phone.Album[taskId]
     const isFinished = taskId in V.Phone.Album
     if (!photo && task.hide) return
@@ -1081,7 +1081,7 @@ PhoneMod.addAlbumTask = function(taskId) {
         new Wikifier(li, `
             <input type="checkbox" id="${taskId}" ${isFinished ? 'checked' : ''} disabled>
             <label for="${taskId}">
-                <span class="album-photo-star">${PhoneMod.getStarRating(task.risk)}</span>
+                <span class="album-photo-star">${smartphone.getStarRating(task.risk)}</span>
                 <span class="custom-checkbox">
                     <svg class="checkmark-svg" viewBox="0 0 24 24">
                         <polyline points="5 12.5 10 17.5 19 6.5" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1152,7 +1152,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                         <div @class="_statColor" style="width:${Math.round(photo.quality / 10)}%"></div>
                     </div>
                 </div>
-                ${task.fames && task.fames.length > 0? `<div class="black">相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>`: ''}
+                ${task.fames && task.fames.length > 0? `<div class="black">相关名声：${smartphone.getFamesFriendlyNames(task.fames)}</div>`: ''}
             </div>
             <div class="album-photo-content">
                 <div class="album-photo-passage">
@@ -1161,7 +1161,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                     <p style="font-size:12px; color:#666;">
                         <<if ${photo.worn_text !== undefined}>>${photo.worn_text}<</if>>
                         <<if ${photo.facevariant !== false}>>
-                            你摆出${PhoneMod.getFaceVariant(photo.facevariant)}的表情
+                            你摆出${smartphone.getFaceVariant(photo.facevariant)}的表情
                             <<if ${photo.havingOrgasm}>>
                                 ，<span class="pink">正在高潮！</span>
                             <<else>>
@@ -1172,12 +1172,12 @@ PhoneMod.addAlbumTask = function(taskId) {
                     <<if ${photo.isUsed}>>
                         <p style="font-size:12px; color:#666;">已使用，请前往使用处删除</p>
                     <<else>>
-                        <<link 删除>><<run PhoneMod.photoDelete('${taskId}')>><</link>>
+                        <<link 删除>><<run smartphone.photoDelete('${taskId}')>><</link>>
                         <span style="margin-right: 30px"></span>
                         <<if ${photo.onceUsed}>>
-                            <<link 再次发布>><<run PhoneMod.yenotePost('${taskId}')>><</link>>
+                            <<link 再次发布>><<run smartphone.yenotePost('${taskId}')>><</link>>
                         <<else>>
-                            <<link 发布>><<run PhoneMod.yenotePost('${taskId}')>><</link>>
+                            <<link 发布>><<run smartphone.yenotePost('${taskId}')>><</link>>
                         <</if>>
                     <</if>>
                 </div>
@@ -1188,7 +1188,7 @@ PhoneMod.addAlbumTask = function(taskId) {
         new Wikifier(li, `
             <input type="checkbox" id="${taskId}" ${isFinished ? 'checked' : ''} disabled>
             <label for="${taskId}">
-                <span class="album-photo-star">${PhoneMod.getStarRating(task.risk)}</span>
+                <span class="album-photo-star">${smartphone.getStarRating(task.risk)}</span>
                 <span class="custom-checkbox">
                     <svg class="checkmark-svg" viewBox="0 0 24 24">
                         <polyline points="5 12.5 10 17.5 19 6.5" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1197,7 +1197,7 @@ PhoneMod.addAlbumTask = function(taskId) {
                 <span class="todo-text">${task.taskDesc}</span>
             </label>
             <div class="album-photo-title">
-                ${task.fames && task.fames.length > 0? `<div>相关名声：${PhoneMod.getFamesFriendlyNames(task.fames)}</div>`: ''}
+                ${task.fames && task.fames.length > 0? `<div>相关名声：${smartphone.getFamesFriendlyNames(task.fames)}</div>`: ''}
             </div>
             <div class="album-photo-content">
                 <div style="font-size:12px; color:#666; flex-grow: 1">完成任务后可以拍摄照片并发布</div>
@@ -1210,24 +1210,24 @@ PhoneMod.addAlbumTask = function(taskId) {
     
     return li;
 };
-PhoneMod.getFamesFriendlyNames = function(fames) {
+smartphone.getFamesFriendlyNames = function(fames) {
     let friendlyName = []
     fames.forEach(fame => {
-        friendlyName.push(PhoneMod.Fames[fame])
+        friendlyName.push(smartphone.Fames[fame])
     })
     return friendlyName.join("，")
 }
-PhoneMod.albumToggleFinished = function(event) {
+smartphone.albumToggleFinished = function(event) {
     const checkbox = event.currentTarget;
     const taskId = checkbox.id;
     V.Phone.Memos[taskId].isFinished = checkbox.checked;
-    PhoneMod.reorderTodoItems();
+    smartphone.reorderTodoItems();
 }
 // =================== 小黄书实现 ===================
-PhoneMod.YenoteLockedObserver = new IntersectionObserver((entries) => {PhoneMod.yenoteLockedObserver(entries)}, {
+smartphone.YenoteLockedObserver = new IntersectionObserver((entries) => {smartphone.yenoteLockedObserver(entries)}, {
     threshold: 0.5,
 });
-PhoneMod.yenoteLockedObserver = function(entries) {
+smartphone.yenoteLockedObserver = function(entries) {
     entries.forEach(entry => {
         const article = entry.target;
         if (entry.isIntersecting) {
@@ -1239,17 +1239,17 @@ PhoneMod.yenoteLockedObserver = function(entries) {
         }
     });
 }
-PhoneMod.initYenote = function() {
+smartphone.initYenote = function() {
     document.querySelectorAll('.note-image.locked').forEach(article => {
         const notes = V.Phone.Yenotes.filter(yenote => yenote.id === article.dataset.id)[0]
         if (notes.npc && notes.price > 0 && !notes.unlocked) {
             
         } else {
-            PhoneMod.YenoteLockedObserver.observe(article);
+            smartphone.YenoteLockedObserver.observe(article);
         }
     });
 }
-PhoneMod.toggleYenote = function(open) {
+smartphone.toggleYenote = function(open) {
     if (open) {
         V.Phone.Yenotes.forEach(yenote => {
             yenote.comments.forEach(comment => {
@@ -1261,17 +1261,17 @@ PhoneMod.toggleYenote = function(open) {
         })
     }
 }
-PhoneMod.yenotesCheck = function() {
+smartphone.yenotesCheck = function() {
     V.Phone.Yenotes.forEach(yenote => {
-        const heat = PhoneMod.yenoteGetHeat(yenote)
+        const heat = smartphone.yenoteGetHeat(yenote)
         const viewInc = Math.floor(heat * (5 + 10 * Math.random()));       // 5~15 * heat
         let likeInc = 0;
         let commentInc = 0;
         for (let index = 0; index < viewInc; index++) {
-            if (Math.random()*100 <= PhoneMod.点赞概率百分之) {
+            if (Math.random()*100 <= smartphone.点赞概率百分之) {
                 likeInc += 1
             }
-            if (Math.random()*100 <= PhoneMod.评论概率百分之) {
+            if (Math.random()*100 <= smartphone.评论概率百分之) {
                 commentInc += 1
             }
         }
@@ -1281,7 +1281,7 @@ PhoneMod.yenotesCheck = function() {
             yenote.like += likeInc;
             // if (commentInc > 0) {
             //     for (let i = 0; i < commentInc; i++) {
-            //         yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote));
+            //         yenote.comments.push(smartphone.yenoteGenerateRandomComment(yenote));
             //     }
             // }
         } else {
@@ -1297,9 +1297,9 @@ PhoneMod.yenotesCheck = function() {
             
             if (newHundredsview > oldHundredsview) {
                 setTimeout(() => {
-                    PhoneMod.msgSend(`你的文章达到了<span class="gold">${yenote.view}</span>阅读量`, "yenote", () => {
-                        if (PhoneMod.shouldUsePhone()){
-                            PhoneMod.toggleApp('yenote')
+                    smartphone.msgSend(`你的文章达到了<span class="gold">${yenote.view}</span>阅读量`, "yenote", () => {
+                        if (smartphone.shouldUsePhone()){
+                            smartphone.toggleApp('yenote')
                         }
                     })
                 })
@@ -1316,9 +1316,9 @@ PhoneMod.yenotesCheck = function() {
             const newHundredslike = Math.floor(yenote.like / 100);
             if (newHundredslike > oldHundredslike) {
                 setTimeout(() => {
-                    PhoneMod.msgSend(`你的文章达到了<span class="gold">${yenote.like}</span>点赞量`, "yenote", () => {
-                        if (PhoneMod.shouldUsePhone()){
-                            PhoneMod.toggleApp('yenote')
+                    smartphone.msgSend(`你的文章达到了<span class="gold">${yenote.like}</span>点赞量`, "yenote", () => {
+                        if (smartphone.shouldUsePhone()){
+                            smartphone.toggleApp('yenote')
                         }
                     })
                 })
@@ -1327,14 +1327,14 @@ PhoneMod.yenotesCheck = function() {
             if (yenote.img != null) {  // 自定义文章没有打赏和评论
                 if (!yenote.price) {  // 判定在每一位喜欢，百分之10的概率获得打赏
                     for (let index = 0; index < likeInc; index++) {
-                        if (Math.random()*100 <= PhoneMod.打赏概率百分之) {
+                        if (Math.random()*100 <= smartphone.打赏概率百分之) {
                             const earned = Math.max(Math.round((yenote.attract * 100) * Math.random()), 1)
                             yenote.earned += earned
                             new Wikifier(null, `<<money ${earned*100}>>`)
                             setTimeout(() => {
-                                PhoneMod.msgSend(`你的文章收到了一笔<span class="gold">£${earned}</span>的打赏`, "yenote", () => {
-                                    if (PhoneMod.shouldUsePhone()){
-                                        PhoneMod.toggleApp('yenote')
+                                smartphone.msgSend(`你的文章收到了一笔<span class="gold">£${earned}</span>的打赏`, "yenote", () => {
+                                    if (smartphone.shouldUsePhone()){
+                                        smartphone.toggleApp('yenote')
                                     }
                                 })
                             }, 10);
@@ -1344,26 +1344,26 @@ PhoneMod.yenotesCheck = function() {
 
                 if (commentInc > 0) {
                     setTimeout(() => {
-                        PhoneMod.msgSend(`你的文章收到了${commentInc}条新的评论`, "yenote", () => {
-                            if (PhoneMod.shouldUsePhone()){
-                                PhoneMod.toggleApp('yenote')
+                        smartphone.msgSend(`你的文章收到了${commentInc}条新的评论`, "yenote", () => {
+                            if (smartphone.shouldUsePhone()){
+                                smartphone.toggleApp('yenote')
                             }
                         })
                     }, 10);
                     for (let i = 0; i < commentInc; i++) {
-                        yenote.comments.push(PhoneMod.yenoteGenerateRandomComment(yenote));
+                        yenote.comments.push(smartphone.yenoteGenerateRandomComment(yenote));
                     }
                 }
             }
         }
     })
 }
-PhoneMod.yenoteGetHeat = function (yenote) {
+smartphone.yenoteGetHeat = function (yenote) {
     const ageHours = (Time.date.timeStamp - yenote.date.timeStamp) / 3600; // 小时差
     if (ageHours < 0) {
         return 0
     }
-    const decayFactor = Math.exp(-PhoneMod.热度衰减系数 * ageHours);        // 衰减系数可调
+    const decayFactor = Math.exp(-smartphone.热度衰减系数 * ageHours);        // 衰减系数可调
     const baseHeat = yenote.attract * decayFactor;
 
     let fame = 0
@@ -1386,16 +1386,16 @@ PhoneMod.yenoteGetHeat = function (yenote) {
 
     return heat
 }
-PhoneMod.yenoteResetAvatar = function() {
-    PhoneMod.confirm('确定要设置头像？', '', () => {
+smartphone.yenoteResetAvatar = function() {
+    smartphone.confirm('确定要设置头像？', '', () => {
         $('.file-upload').click();
     })
 }
-PhoneMod.handleYenoteAvatarUpload = function(input) {
+smartphone.handleYenoteAvatarUpload = function(input) {
     if (!input.files || !input.files[0]) {
-        PhoneMod.confirm('确定要重置为默认头像？', '', () => {
+        smartphone.confirm('确定要重置为默认头像？', '', () => {
             delete V.Phone.Settings.YenoteAvatar
-            PhoneMod.PhoneUIInit(true, true);
+            smartphone.PhoneUIInit(true, true);
         })
     } else {
         const file = input.files[0];
@@ -1412,19 +1412,19 @@ PhoneMod.handleYenoteAvatarUpload = function(input) {
         reader.onload = function(e) {
             // 保存到SugarCube变量
             V.Phone.Settings.YenoteAvatar = e.target.result;
-            PhoneMod.PhoneUIInit(true, true);
+            smartphone.PhoneUIInit(true, true);
         };
         reader.readAsDataURL(file);
     }
 }
-PhoneMod.yenoteRename = function() {
-    PhoneMod.confirm('确定要重命名', '', () => {
+smartphone.yenoteRename = function() {
+    smartphone.confirm('确定要重命名', '', () => {
         delete V.Phone.yenoteUsername
-        PhoneMod.PhoneUIInit(true, true);
+        smartphone.PhoneUIInit(true, true);
     })
 }
-PhoneMod.generateNickname = function(style = 'random') {
-    const generator = PhoneMod.NicknameGenerator;
+smartphone.generateNickname = function(style = 'random') {
+    const generator = smartphone.NicknameGenerator;
     const baseNames = V.NPC_names_m.concat(V.NPC_names_f)
     const randomName = baseNames[Math.floor(Math.random() * baseNames.length)];
     
@@ -1464,22 +1464,22 @@ PhoneMod.generateNickname = function(style = 'random') {
         default:            // 随机风格：随机选择以上任一风格
             const styles = ['simple', 'prefix', 'suffix', 'full', 'symbol', 'number', 'fancy'];
             const randomStyle = styles[Math.floor(Math.random() * styles.length)];
-            return PhoneMod.generateNickname(randomStyle);
+            return smartphone.generateNickname(randomStyle);
     }
 };
-PhoneMod.yenoteSetNewName = function() {
+smartphone.yenoteSetNewName = function() {
     const new_yenote_username = document.querySelector('#new_yenote_username');
     if (!new_yenote_username) return;
     if (new_yenote_username.value) {
         V.Phone.yenoteUsername = new_yenote_username.value
-        PhoneMod.PhoneUIInit(true, true);
+        smartphone.PhoneUIInit(true, true);
     } else {
-        PhoneMod.msgSend("<span class='red'>色即是空的道理我也懂，但是名字还是不能为空。</span>")
+        smartphone.msgSend("<span class='red'>色即是空的道理我也懂，但是名字还是不能为空。</span>")
     }
 }
-PhoneMod.yenotePost = function(photo_id) {
+smartphone.yenotePost = function(photo_id) {
     const photo = V.Phone.Album[photo_id]
-    const photo_base = PhoneMod.PhonePhotos[photo_id]
+    const photo_base = smartphone.PhonePhotos[photo_id]
     if (photo.isUsed) return
     const attract = (photo_base.risk / 100) * 0.2 + (photo.allure / 1000) * 0.5 + (photo.quality / 1000) * 0.3
     T.yenotePosting = {
@@ -1493,9 +1493,9 @@ PhoneMod.yenotePost = function(photo_id) {
         fames: photo_base.fames,
         date: Time.date
     }
-    PhoneMod.toggleApp("yenote")
+    smartphone.toggleApp("yenote")
 }
-PhoneMod.yenoteChangePrice = function() {
+smartphone.yenoteChangePrice = function() {
     const range = document.getElementById('price_input');
     const price_text = document.getElementById('price_text');
     const price = parseInt(range.value)
@@ -1505,7 +1505,7 @@ PhoneMod.yenoteChangePrice = function() {
     const yenote_heat = document.getElementById('yenote_heat');
     yenote_heat.innerHTML = ""
     new Wikifier(yenote_heat, `
-        <<set _percent to PhoneMod.yenoteGetHeat(_note) * 100>>
+        <<set _percent to smartphone.yenoteGetHeat(_note) * 100>>
         <div>
             预计顶峰流量：<<print Math.round(_percent)>>%
         </div>
@@ -1535,7 +1535,7 @@ PhoneMod.yenoteChangePrice = function() {
         <</if>>`
     )
 }
-PhoneMod.yenotePostSubmit = function() {
+smartphone.yenotePostSubmit = function() {
     if (T.yenotePosting === true) {
         const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
         V.Phone.Yenotes.unshift({
@@ -1568,51 +1568,51 @@ PhoneMod.yenotePostSubmit = function() {
         })
     }
     delete T.yenotePosting
-    PhoneMod.PhoneUIInit(true, true)
+    smartphone.PhoneUIInit(true, true)
 }
-PhoneMod.yenotePosting = function() {
+smartphone.yenotePosting = function() {
     T.yenotePosting = true;
-    PhoneMod.PhoneUIInit(true, true)
+    smartphone.PhoneUIInit(true, true)
 }
-PhoneMod.yenotePostCancel = function() {
+smartphone.yenotePostCancel = function() {
     delete T.yenotePosting
-    PhoneMod.PhoneUIInit(true, true)
+    smartphone.PhoneUIInit(true, true)
 }
-PhoneMod.yenoteDelete = function(photo_id) {
+smartphone.yenoteDelete = function(photo_id) {
     const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
     if (notes.length > 0) {
         const note = notes[0];
         if (note.img === null) {
-            PhoneMod.confirm('确定要删除这篇文章吗', '', () => {
+            smartphone.confirm('确定要删除这篇文章吗', '', () => {
                 V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
-                PhoneMod.PhoneUIInit(true, true)
+                smartphone.PhoneUIInit(true, true)
             })
         } else {
-            PhoneMod.confirm('确定要删除这篇文章吗', '你可以再次发布这张照片，但是热度会大幅减少；你也可以从相册删除这张照片，从而去拍摄质量更好的照片，且不会导致热度下降', () => {
+            smartphone.confirm('确定要删除这篇文章吗', '你可以再次发布这张照片，但是热度会大幅减少；你也可以从相册删除这张照片，从而去拍摄质量更好的照片，且不会导致热度下降', () => {
                 const photo = V.Phone.Album[photo_id]
                 photo.isUsed = false
                 photo.onceUsed = true
                 V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
-                PhoneMod.PhoneUIInit(true, true)
+                smartphone.PhoneUIInit(true, true)
             })
         }
     }
 }
-PhoneMod.yenoteDeleteComment = function(photo_id) {
+smartphone.yenoteDeleteComment = function(photo_id) {
     const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
     if (notes.length > 0) {
         const note = notes[0];
-        PhoneMod.confirm('确定要删除这篇文章的所有评论吗？', '这样做可以减少卡顿，不会造成副作用。', () => {
+        smartphone.confirm('确定要删除这篇文章的所有评论吗？', '这样做可以减少卡顿，不会造成副作用。', () => {
             note.comments = []
-            PhoneMod.PhoneUIInit(true, true)
+            smartphone.PhoneUIInit(true, true)
         })
     }
 }
-PhoneMod.yenoteGenerateRandomComment = function(photo) {
+smartphone.yenoteGenerateRandomComment = function(photo) {
     const photo_id = photo.id;
-    const photoData = PhoneMod.PhonePhotos[photo_id];
+    const photoData = smartphone.PhonePhotos[photo_id];
     const photoThis = {...photo, ...V.Phone.Album[photo_id]};
-    const commentPool = Object.assign({}, photoData.uncommon ? {} : PhoneMod.Comments);
+    const commentPool = Object.assign({}, photoData.uncommon ? {} : smartphone.Comments);
 
     // 检测评论链
     const putChain = function(comment, value, commentPool_) {
@@ -1637,14 +1637,14 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
                 putChain(comment, value, commentChain);
             }
             if (commentChain.length > 0) {
-                if (PhoneMod.debug) AsAPI.log("SmartPhone", "跟评链" + commentChain);
+                if (smartphone.debug) AsAPI.log("SmartPhone", "跟评链" + commentChain);
                 if (last_comment) {
                     for (let index = 0; index < commentChain.length; index++) {
                         const commentR = commentChain[index];
                         if (last_comment.text === commentR[0] && index < commentChain.length - 1) {
                             const comment = commentChain[index + 1];
                             return {
-                                name: PhoneMod.generateNickname(),
+                                name: smartphone.generateNickname(),
                                 text: comment[0],
                                 effect: comment[1],
                                 already_read: false,
@@ -1676,23 +1676,23 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
         putComments(comment, photoData.comments[comment], commentPool)
     }
     
-    if (PhoneMod.debug) AsAPI.log("SmartPhone", "评论池" + commentPool);
+    if (smartphone.debug) AsAPI.log("SmartPhone", "评论池" + commentPool);
     const randomKey = Object.keys(commentPool)[Math.floor(Math.random() * Object.keys(commentPool).length)];
     return {
-        name: PhoneMod.generateNickname(),
+        name: smartphone.generateNickname(),
         text: randomKey,
         effect: commentPool[randomKey],
         already_read: false
     };
 };
-PhoneMod.yenoteDebugComment = function(index) {
-    PhoneMod.debug = 1;
+smartphone.yenoteDebugComment = function(index) {
+    smartphone.debug = 1;
     const yenote = V.Phone.Yenotes[index];
-    const comment = PhoneMod.yenoteGenerateRandomComment(yenote);
+    const comment = smartphone.yenoteGenerateRandomComment(yenote);
     yenote.comments.push(comment)
     return comment
 };
-PhoneMod.getUser = function(id) {
+smartphone.getUser = function(id) {
     if (id === "{PC}") {
         return {name: V.Phone.yenoteUsername, avatar: V.Phone.Settings.YenoteAvatar??"img/misc/icon/phone/avatar/pc.png"}
     } else if (Object.keys(V.Phone.YenoteUsers).includes(id)) {
@@ -1703,9 +1703,9 @@ PhoneMod.getUser = function(id) {
         return {name: V.Phone.yenoteUsername, avatar: V.Phone.Settings.YenoteAvatar??"img/misc/icon/phone/avatar/pc.png"}
     }
 }
-PhoneMod.yenoteNPCPost = function(note) {
+smartphone.yenoteNPCPost = function(note) {
     // name, msg, id=null, repost=false, img=null, price=null
-    // PhoneMod.yenoteNPCPost({
+    // smartphone.yenoteNPCPost({
     //     id: "LandryAD0",
     //     name: "Landry",
     //     msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
@@ -1740,24 +1740,24 @@ PhoneMod.yenoteNPCPost = function(note) {
         fames: [],
     })
 }
-PhoneMod.yenoteUnlock = function(photo_id) {
+smartphone.yenoteUnlock = function(photo_id) {
     const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
     if (notes.length > 0) {
         const note = notes[0];
         if (V.money < note.price * 100) {
-            PhoneMod.confirm(`你的账户中没有足够的<span class="gold">£${note.price}</span>以购买这篇文章`, '', () => {})
+            smartphone.confirm(`你的账户中没有足够的<span class="gold">£${note.price}</span>以购买这篇文章`, '', () => {})
         } else {
-            PhoneMod.confirm(`确定要花费<span class="gold">£${note.price}</span>购买这篇文章吗？`, '注意，这将延迟付款。支付通知我们会稍后发送给您。', () => {
+            smartphone.confirm(`确定要花费<span class="gold">£${note.price}</span>购买这篇文章吗？`, '注意，这将延迟付款。支付通知我们会稍后发送给您。', () => {
                 new Wikifier(null, `<<money -${note.price * 100}>>`)
                 note.unlocked = true;
-                PhoneMod.PhoneUIInit(true, true)
+                smartphone.PhoneUIInit(true, true)
             })
         }
     }
 }
 
 // =================== 地图实现 ===================
-PhoneMod.initMap = function() {
+smartphone.initMap = function() {
     (function() {
         const locations = [
             { name: "森林商店" },
@@ -1970,7 +1970,7 @@ PhoneMod.initMap = function() {
     })();
 }
 // =================== DD实现 ===================
-PhoneMod.ddBoardingPoints = {
+smartphone.ddBoardingPoints = {
     // 住宅区
     domus: { passage: 'Domus Street', name: '宅邸街 (家)', icon: 'domusicon', region: 'R' },
     barb: { passage: 'Barb Street', name: '倒钩街 (工作室)', icon: 'barbicon', region: 'R' },
@@ -1997,19 +1997,19 @@ PhoneMod.ddBoardingPoints = {
     // 森林
     lakebus: { passage: 'Lake Bus', name: '湖边', icon: 'lakeicon', region: 'F' }
 };
-PhoneMod.ddRegionNames = {
+smartphone.ddRegionNames = {
     R: '住宅区',
     C: '商业区',
     I: '工业区',
     O: '镇外',
     F: '森林'
 };
-PhoneMod.getAllBoardingPoints = function() {
+smartphone.getAllBoardingPoints = function() {
     const result = {};
-    const current = PhoneMod.ddGetTheNearestBoardingPoint().name
+    const current = smartphone.ddGetTheNearestBoardingPoint().name
     
-    Object.entries(PhoneMod.ddBoardingPoints).forEach(([key, data]) => {
-        const regionName = PhoneMod.ddRegionNames[data.region];
+    Object.entries(smartphone.ddBoardingPoints).forEach(([key, data]) => {
+        const regionName = smartphone.ddRegionNames[data.region];
         if (!result[regionName]) {
             result[regionName] = [];
         }
@@ -2018,24 +2018,24 @@ PhoneMod.getAllBoardingPoints = function() {
 
     return result;
 }
-PhoneMod.ddSetDestination = function(destination) {
+smartphone.ddSetDestination = function(destination) {
     if (destination) {
-        if (PhoneMod.ddBoardingPoints[destination]?.name !== PhoneMod.ddGetTheNearestBoardingPoint().name) {
+        if (smartphone.ddBoardingPoints[destination]?.name !== smartphone.ddGetTheNearestBoardingPoint().name) {
             V.Phone.dd = destination
         } else {
-            PhoneMod.ddCancel("起终点相距很近，建议步行前往")
+            smartphone.ddCancel("起终点相距很近，建议步行前往")
         }
     } else {
         delete V.Phone.dd
     }
-    PhoneMod.PhoneUIInit(true, true)
+    smartphone.PhoneUIInit(true, true)
 }
-PhoneMod.ddGetDestinationName = function() {
-    return PhoneMod.ddBoardingPoints[V.Phone.dd]?.name
+smartphone.ddGetDestinationName = function() {
+    return smartphone.ddBoardingPoints[V.Phone.dd]?.name
 }
-PhoneMod.ddCalculateDistance = function() {
-    const region1 = PhoneMod.ddGetTheNearestBoardingPoint()?.region;
-    const region2 = PhoneMod.ddBoardingPoints[V.Phone.dd]?.region;
+smartphone.ddCalculateDistance = function() {
+    const region1 = smartphone.ddGetTheNearestBoardingPoint()?.region;
+    const region2 = smartphone.ddBoardingPoints[V.Phone.dd]?.region;
     
     if (!region1 || !region2) return 0;
 
@@ -2051,59 +2051,59 @@ PhoneMod.ddCalculateDistance = function() {
     const distance = dist[region1][region2];
     return distance;
 }
-PhoneMod.ddCalculateFare = function() {
-    return PhoneMod.ddCalculateDistance() * PhoneMod.DD每距离费用;
+smartphone.ddCalculateFare = function() {
+    return smartphone.ddCalculateDistance() * smartphone.DD每距离费用;
 }
-PhoneMod.ddGetTheNearestBoardingPoint = function() {
+smartphone.ddGetTheNearestBoardingPoint = function() {
     return V.Phone.ddLastBoardingPoint
 }
-PhoneMod.ddSubmit = function() {
-    V.Phone.ddstart = {passage: PhoneMod.ddGetTheNearestBoardingPoint()?.passage, time: Time.date}
-    PhoneMod.reload()
+smartphone.ddSubmit = function() {
+    V.Phone.ddstart = {passage: smartphone.ddGetTheNearestBoardingPoint()?.passage, time: Time.date}
+    smartphone.reload()
 }
-PhoneMod.ddCancel = function(text="订单已取消") {
+smartphone.ddCancel = function(text="订单已取消") {
     if (V.Phone.ddstart) {
-        const cost = Math.min(Math.max(Math.floor((PhoneMod.ddGetWaitTime() - PhoneMod.DD免费等待时间) / (PhoneMod.DD最大等待时间 - PhoneMod.DD免费等待时间 ) * PhoneMod.DD等待全额费用), 0), PhoneMod.DD等待全额费用)
+        const cost = Math.min(Math.max(Math.floor((smartphone.ddGetWaitTime() - smartphone.DD免费等待时间) / (smartphone.DD最大等待时间 - smartphone.DD免费等待时间 ) * smartphone.DD等待全额费用), 0), smartphone.DD等待全额费用)
         V.Phone.ddcost = cost
     }
     delete V.Phone.dd
     delete V.Phone.ddstart
     V.Phone.ddcanceled = text
-    PhoneMod.reload(true)
+    smartphone.reload(true)
 }
-PhoneMod.ddCancelChecked = function() {
+smartphone.ddCancelChecked = function() {
     if (V.Phone.ddcost) new Wikifier(null, `<<money -${V.Phone.ddcost*100}>>`);
     delete V.Phone.ddcanceled;
     delete V.Phone.ddcost;
-    PhoneMod.reload(true);
+    smartphone.reload(true);
 }
-PhoneMod.ddFinish = function() {
-    const pass = PhoneMod.ddCalculateDistance();
+smartphone.ddFinish = function() {
+    const pass = smartphone.ddCalculateDistance();
     const pass_text = AsAPI.getFriendlyTimeText(pass / 60, false);
-    const cost = pass * PhoneMod.DD每距离费用;
-    const destination =  PhoneMod.ddBoardingPoints[V.Phone.dd];
+    const cost = pass * smartphone.DD每距离费用;
+    const destination =  smartphone.ddBoardingPoints[V.Phone.dd];
     delete V.Phone.dd;
     delete V.Phone.ddstart;
     return {pass: pass, pass_text: pass_text, cost: cost, name: destination?.name, passage: destination?.passage, icon: destination?.icon}
 }
-PhoneMod.ddIsSubmited = function() {
+smartphone.ddIsSubmited = function() {
     return V.Phone.ddstart
 }
-PhoneMod.ddGetWaitTime = function() {
+smartphone.ddGetWaitTime = function() {
     const ageMin = (Time.date.timeStamp - V.Phone.ddstart.time.timeStamp) / 3600 * 60; // 小时差
     return ageMin
 }
-PhoneMod.ddCheck = function() {
+smartphone.ddCheck = function() {
     // 记录最后可停车地点
-    const key = Object.keys(PhoneMod.ddBoardingPoints).find(key => PhoneMod.ddBoardingPoints[key].passage === V.safePassage)
+    const key = Object.keys(smartphone.ddBoardingPoints).find(key => smartphone.ddBoardingPoints[key].passage === V.safePassage)
     if (key) {
-        V.Phone.ddLastBoardingPoint = PhoneMod.ddBoardingPoints[key]
+        V.Phone.ddLastBoardingPoint = smartphone.ddBoardingPoints[key]
     }
 
     setTimeout(() => {
-        if (PhoneMod.ddIsSubmited()) {
-            if (PhoneMod.ddGetWaitTime() > PhoneMod.DD最大等待时间) {
-                PhoneMod.ddCancel("等待时间过长，司机已取消您的订单。")
+        if (smartphone.ddIsSubmited()) {
+            if (smartphone.ddGetWaitTime() > smartphone.DD最大等待时间) {
+                smartphone.ddCancel("等待时间过长，司机已取消您的订单。")
             } else if (V.passage === V.Phone.ddstart.passage) {
                 const Div = document.createElement("div");
                 Div.style.display = "inline";
@@ -2116,13 +2116,13 @@ PhoneMod.ddCheck = function() {
                 }
                 text += ' | 你预定的DD司机正在这里等你。<br><br>'
                 new Wikifier(Div, text);
-                $(PhoneMod.ev.content).first().before(Div)
+                $(smartphone.ev.content).first().before(Div)
             }
         }
     }, 100)
 }
 // =================== 美食屋实现 ===================
-PhoneMod.getRecipes = function() {
+smartphone.getRecipes = function() {
     const detailedSkillGrades = [
         { requiredValue: 0,		level: "None",	color: 'red'},
         { requiredValue: 1,		level: "F",		color: 'pink'},
@@ -2182,7 +2182,7 @@ PhoneMod.getRecipes = function() {
     })
     return [lst_learning, lst_unlearning, lst_cantlearning]
 }
-PhoneMod.learnRecipes = function(key) {
+smartphone.learnRecipes = function(key) {
     const food = setup.foodstuff[key]
     if (V.Phone.RecipesLearning.hasOwnProperty(key)) {
         V.Phone.RecipesLearning[key] += 1
@@ -2195,10 +2195,10 @@ PhoneMod.learnRecipes = function(key) {
     return false
 }
 // ==================== 应用商店实现 ====================
-PhoneMod.initAppstore = function() {
+smartphone.initAppstore = function() {
     document.getElementById("tablinksdefault")?.click();
 }
-PhoneMod.openCity = function(evt, cityName) {
+smartphone.openCity = function(evt, cityName) {
     const container = document.getElementById("appstoretabcontentcontainer");
     
     // 声明所有变量
@@ -2221,7 +2221,7 @@ PhoneMod.openCity = function(evt, cityName) {
     evt.currentTarget.className += " tab-selected";
 
     const appstorcardcontainer = container.querySelector(`#${cityName}`).querySelector(".appstorcardcontainer");
-    PhoneMod.exts[cityName].forEach(ext => {
+    smartphone.exts[cityName].forEach(ext => {
         const c = ext.c;
         T.title = c.title ?? c.msg ?? "未知脚本";
         T.content = c.content ?? c.taskDesc ?? "无描述";

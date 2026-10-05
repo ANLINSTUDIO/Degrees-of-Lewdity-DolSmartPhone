@@ -1,1 +1,1 @@
-PhoneMod.photoLoaded = true;
+smartphone.photoLoaded = true;

@@ -55,7 +55,7 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set _GameQuestion to window.PhoneMod.getGameQuestion("Science")>>
+            <<set _GameQuestion to window.smartphone.getGameQuestion("Science")>>
             <<print _GameQuestion.title>>
             <br>
             <<for _i, _question range _GameQuestion.options>>
@@ -90,7 +90,7 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set _GameQuestion to window.PhoneMod.getGameQuestion("Maths")>>
+            <<set _GameQuestion to window.smartphone.getGameQuestion("Maths")>>
             <<print _GameQuestion.title>>
             <br>
             <<for _i, _question range _GameQuestion.options>>
@@ -125,7 +125,7 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set _GameQuestion to window.PhoneMod.getGameQuestion("English")>>
+            <<set _GameQuestion to window.smartphone.getGameQuestion("English")>>
             <<print _GameQuestion.title>>
             <br>
             <<for _i, _question range _GameQuestion.options>>
@@ -160,7 +160,7 @@
         <<case 2>>
             <<tiredness 6>><<gtiredness>>
             <br><br>
-            <<set _GameQuestion to window.PhoneMod.getGameQuestion("History")>>
+            <<set _GameQuestion to window.smartphone.getGameQuestion("History")>>
             <<print _GameQuestion.title>>
             <br>
             <<for _i, _question range _GameQuestion.options>>

@@ -105,7 +105,7 @@ window.validArray = function(dict) {
 }
 
 // ==================== 这是提供给其他模块调用的API，工具函数 ====================
-PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefault=false) {  // 遭遇战选项增加API
+smartphone.actionsAdd = function(actionslot, actionName, actionColor, actionDefault=false) {  // 遭遇战选项增加API
   setTimeout(() => {
     const actions = document.querySelector(`#${actionslot}.radioControl`)
     if (actions) {
@@ -137,11 +137,11 @@ PhoneMod.actionsAdd = function(actionslot, actionName, actionColor, actionDefaul
     }
   }, 10);
 };
-PhoneMod.reload = function(open=false) {
+smartphone.reload = function(open=false) {
     if (AsAPI.reload()) {
         if (open) {
             setTimeout(() => {
-                if (PhoneMod.shouldUsePhone()) PhoneMod.togglePhone(true);
+                if (smartphone.shouldUsePhone()) smartphone.togglePhone(true);
             }, 400);
         }
         return true;
@@ -149,12 +149,12 @@ PhoneMod.reload = function(open=false) {
 }
 
 // ==================== 下面是关于手机使用的工具函数 ====================
-PhoneMod.getIsLatestVersion = function() {
-    AsAPI.log("SmartPhone", `最新版本 ${PhoneMod.latestVersion}`);
-    const isLatestVersion = PhoneMod.currentVersion === PhoneMod.latestVersion;
-    return PhoneMod.latestVersion === null || isLatestVersion
+smartphone.getIsLatestVersion = function() {
+    AsAPI.log("SmartPhone", `最新版本 ${smartphone.latestVersion}`);
+    const isLatestVersion = smartphone.currentVersion === smartphone.latestVersion;
+    return smartphone.latestVersion === null || isLatestVersion
 };
-PhoneMod.getAbsTime = function() {  // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
+smartphone.getAbsTime = function() {  // 获取当前时间的总分钟数（包括日期换算，用于精准闹钟对比）
     return {
         year: Time.date.year,
         day: Time.date.day,
@@ -164,27 +164,27 @@ PhoneMod.getAbsTime = function() {  // 获取当前时间的总分钟数（包�
         minute: Time.date.minute
     };
 };
-PhoneMod.getTimeString = function() {
+smartphone.getTimeString = function() {
     if (typeof Time === 'undefined' || !Time.date) return "--:--";
     let h = Time.date.hour;
     let m = Time.date.minute;
     return h + ":" + (m < 10 ? "0" + m : m);
 };
-PhoneMod.getDateString = function() {
+smartphone.getDateString = function() {
     if (typeof Time === 'undefined' || !Time.date) return "--------------";
     let m = Time.date.month;
     let d = Time.date.day;
     return Time.date.year + "-" + (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d);
 };
-PhoneMod.shouldShowPhone = function() {  // 在某些页面不应当可以显示手机
+smartphone.shouldShowPhone = function() {  // 在某些页面不应当可以显示手机
     if (typeof V === 'undefined') return false;  // V是SugarCube的全局变量，包含了当前游戏状态的各种信息，如果没有定义，说明可能不在游戏环境中，不显示手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
 
     // 检查是否有可用的手机
-    return PhoneMod.isCarryingUsablePhone()
+    return smartphone.isCarryingUsablePhone()
 };
-PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
+smartphone.shouldUsePhone = function() { // 在某些页面不应当可以操控手机
     if (!V.passage) return false;  // 没有当前页面信息，不显示手机
     if (V.passage === "Start") return true;  // 在这些特定页面显示手机，如主菜单
     if (V.Phone.TakingPhotoWill) return true;  // 
@@ -197,16 +197,16 @@ PhoneMod.shouldUsePhone = function() { // 在某些页面不应当可以操控�
             return false;  // 如果正在从手机界面操作进入APP，不应当可以操控手机，避免重复打开手机界面
         } else {
             if (V.Phone.ReturnPassage !== V.passage) {  // 如果正在从手机界面操作进入APP，自动Back回去，避免重复打开手机界面（经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back）
-                PhoneMod.PhoneBack();   // 经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back
+                smartphone.PhoneBack();   // 经反馈，多人出现没有成功PhoneBack的问题，这里通过检测段落名是否以Phone开头，自动Back
             }
         }
     }
     if (V.Phone.Using === "null") return false;  // 关机
-    const phone = PhoneMod.getPhone(V.Phone.Using)
+    const phone = smartphone.getPhone(V.Phone.Using)
     if (phone && phone.newness > 0) return true;  // 检查是否有可用的手机
     return false;
 };
-PhoneMod.PhoneTo = function() {
+smartphone.PhoneTo = function() {
     if (!V.Phone.ReturnPassage) {
         V.Phone.ReturnPassage = V.passage;
         V.Phone.ReturnOutside = V.outside;
@@ -214,7 +214,7 @@ PhoneMod.PhoneTo = function() {
     }
     V.location = "phone";
 }
-PhoneMod.PhoneBack = function() {
+smartphone.PhoneBack = function() {
     if (V.Phone.ReturnLocation) {
         const passage = V.Phone.ReturnPassage
         V.outside = V.Phone.ReturnOutside;
@@ -226,7 +226,7 @@ PhoneMod.PhoneBack = function() {
     } 
     return V.safePassage  // 没有passage保存
 }
-PhoneMod.setPhoneBeating = function(shouldBeat) {
+smartphone.setPhoneBeating = function(shouldBeat) {
     const phoneContainer = document.getElementById('smart-phone-container');
     
     if (shouldBeat) {
@@ -235,11 +235,11 @@ PhoneMod.setPhoneBeating = function(shouldBeat) {
         phoneContainer.classList.remove('beating');
     }
 }
-PhoneMod.getPhone = function(id) {
+smartphone.getPhone = function(id) {
     if (!V.Phone.Owned) return null;
     return V.Phone.Owned.find(p => p.id === id) || null;
 }
-PhoneMod.generatePassward = function() {
+smartphone.generatePassward = function() {
     const chars = '0123456789';
     let password = '';
     for (let i = 0; i < 6; i++) {
@@ -247,28 +247,28 @@ PhoneMod.generatePassward = function() {
     }
     return password;
 }
-PhoneMod.getPhoneInfo = function(id_or_model = null) {
+smartphone.getPhoneInfo = function(id_or_model = null) {
     if (id_or_model === null) {
-        id_or_model = PhoneMod.getUsingPhone().model
+        id_or_model = smartphone.getUsingPhone().model
     }
-    if (PhoneMod.PhoneModels.hasOwnProperty(id_or_model)) {
-        return PhoneMod.PhoneModels[id_or_model]
+    if (smartphone.PhoneModels.hasOwnProperty(id_or_model)) {
+        return smartphone.PhoneModels[id_or_model]
     }
     const index = V.Phone.Owned.findIndex(p => p.id === id_or_model);
     if (index >= 0) {
-        return PhoneMod.PhoneModels[V.Phone.Owned[index].model]
+        return smartphone.PhoneModels[V.Phone.Owned[index].model]
     }
     return null
 }
-PhoneMod.getPhoneConditionInfo = function(phone_or_condition) {
+smartphone.getPhoneConditionInfo = function(phone_or_condition) {
     let condition = -1
     if (typeof phone_or_condition === "number") {
         condition = phone_or_condition
     } else {
         if (phone_or_condition === undefined) {
-            phone_or_condition = PhoneMod.getUsingPhone()
+            phone_or_condition = smartphone.getUsingPhone()
         }
-        condition = Math.max(0, Math.min(1, phone_or_condition.newnessmax / PhoneMod.getPhoneInfo(phone_or_condition.model).newnessfactory)); // 限制在0-1范围内
+        condition = Math.max(0, Math.min(1, phone_or_condition.newnessmax / smartphone.getPhoneInfo(phone_or_condition.model).newnessfactory)); // 限制在0-1范围内
     }
 
     let info = {
@@ -286,7 +286,7 @@ PhoneMod.getPhoneConditionInfo = function(phone_or_condition) {
     else {percent_text = percent+'成新'}
     info["percent_text"] = percent_text
     
-    for (let level of PhoneMod.phoneConditionLevels) {
+    for (let level of smartphone.phoneConditionLevels) {
         if (condition >= level.threshold) {
             info["text"] = level.text
             info["color"] = level.color
@@ -298,94 +298,94 @@ PhoneMod.getPhoneConditionInfo = function(phone_or_condition) {
     
     return info;
 }
-PhoneMod.getPhoneBattery = function(phone) {
-    phone = phone ?? PhoneMod.getUsingPhone()
+smartphone.getPhoneBattery = function(phone) {
+    phone = phone ?? smartphone.getUsingPhone()
     if (phone && phone.newnessmax > 0 && phone.newness >= 0) {
         return Math.round((phone.newness / phone.newnessmax) * 100)
     } else {
         return null
     }
 }
-PhoneMod.getSellPhonePrice = function(id, feng=false) { // 出售手机
+smartphone.getSellPhonePrice = function(id, feng=false) { // 出售手机
     if (!V.Phone.Owned) return;
     const index = V.Phone.Owned.findIndex(p => p.id === id);
     if (index !== -1) {
         const phone = V.Phone.Owned[index];
-        let price = PhoneMod.getPhoneInfo(phone.model).price;
+        let price = smartphone.getPhoneInfo(phone.model).price;
         if (feng) {
             price *= 0.8
         };
-        if (phone.newnessmax != PhoneMod.getPhoneInfo(id).newnessfactory) {
-            price *= phone.newnessmax / PhoneMod.getPhoneInfo(id).newnessfactory * 0.5; // 根据新旧程度调整价格
+        if (phone.newnessmax != smartphone.getPhoneInfo(id).newnessfactory) {
+            price *= phone.newnessmax / smartphone.getPhoneInfo(id).newnessfactory * 0.5; // 根据新旧程度调整价格
         };
         return Math.floor(Math.max(price, 1)); // 最低售价为1
     }
 }
-PhoneMod.getRepairPhonePrice = function(id) { // 出售手机
+smartphone.getRepairPhonePrice = function(id) { // 出售手机
     if (!V.Phone.Owned) return;
     const index = V.Phone.Owned.findIndex(p => p.id === id);
     if (index !== -1) {
         const phone = V.Phone.Owned[index];
-        const wear = PhoneMod.getPhoneInfo(id).newnessfactory - phone.newnessmax
+        const wear = smartphone.getPhoneInfo(id).newnessfactory - phone.newnessmax
 
-        let price = PhoneMod.getPhoneInfo(phone.model).price;
-        price *= wear / PhoneMod.getPhoneInfo(id).newnessfactory; // 根据新旧程度调整价格
+        let price = smartphone.getPhoneInfo(phone.model).price;
+        price *= wear / smartphone.getPhoneInfo(id).newnessfactory; // 根据新旧程度调整价格
         price = Math.floor(price)
         return Math.floor(Math.max(price, 5)); // 最低修复价为5
     }
 }
-PhoneMod.getUsingPhone = function() {  // 获取正在使用的手机
+smartphone.getUsingPhone = function() {  // 获取正在使用的手机
     if (!V.Phone.Using || V.Phone.Using === "null") return null;
-    return PhoneMod.getPhone(V.Phone.Using);
+    return smartphone.getPhone(V.Phone.Using);
 }
-PhoneMod.isCarryingUsablePhone = function() { // 检查是否携带可用的（包括没电关机的）手机
+smartphone.isCarryingUsablePhone = function() { // 检查是否携带可用的（包括没电关机的）手机
     if (V.Phone && V.Phone.Owned && Array.isArray(V.Phone.Owned)) {
         return V.Phone.Owned.some(phone => phone.usable && phone.newnessmax > 0);
     }
     return false;
 }
-PhoneMod.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
+smartphone.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
   if (!V.Phone.Owned) return false;
   for (let i = 0; i < V.Phone.Owned.length; i++) {
-    if (V.Phone.Owned[i].stolen && (!useableFilter || !PhoneMod.isUsable(V.Phone.Owned[i], true))) return true;
+    if (V.Phone.Owned[i].stolen && (!useableFilter || !smartphone.isUsable(V.Phone.Owned[i], true))) return true;
   }
   return false;
 }
-PhoneMod.isUsable = function(phone, allow_shutdown=false) { // 检查是否有可用的手机
+smartphone.isUsable = function(phone, allow_shutdown=false) { // 检查是否有可用的手机
     if (allow_shutdown) {
         return phone && phone.usable && phone.newnessmax > 0;
     }
     return phone && phone.usable && phone.newness > 0 && phone.newnessmax > 0;
 }
-PhoneMod.installApp = function(appid) {
+smartphone.installApp = function(appid) {
     V.Phone.LockedApps.push(appid)
-    return PhoneMod.Apps[appid];
+    return smartphone.Apps[appid];
 }
-PhoneMod.uninstallApp = function(appid) {
-    if (PhoneMod.appIsInstalled(appid)) {
+smartphone.uninstallApp = function(appid) {
+    if (smartphone.appIsInstalled(appid)) {
         V.Phone.LockedApps.filter(i => i != appid);
         return true
     } else {
         return false
     }
 }
-PhoneMod.appIsInstalled = function(appid) {
+smartphone.appIsInstalled = function(appid) {
     if (V.Phone.LockedApps.includes(appid)) {
         return true
     } else {
         return false
     }
 }
-PhoneMod.confirm = function(title, msg, func) {
+smartphone.confirm = function(title, msg, func) {
     T.dialog_func = func
     new Wikifier(document.querySelector("#smart-phone-container"), `<<phone_dialog ${JSON.stringify(title)} ${JSON.stringify(msg)}>>`)
 }
-PhoneMod.repairPhone = function(phone) {
-    phone.newnessmax = PhoneMod.getPhoneInfo(phone.model).newnessfactory * 0.9
+smartphone.repairPhone = function(phone) {
+    phone.newnessmax = smartphone.getPhoneInfo(phone.model).newnessfactory * 0.9
 }
 
 // ==================== 下面是关于玩家的工具函数 ====================
-PhoneMod.AddClothToPlayer = function(cloth, color="black", type="face") {
+smartphone.AddClothToPlayer = function(cloth, color="black", type="face") {
     const item = setup.clothes[type].find(item => item.name === cloth);
     if (item) {
         const newItem = structuredClone(item);
@@ -400,17 +400,17 @@ PhoneMod.AddClothToPlayer = function(cloth, color="black", type="face") {
         }
     }
 }
-PhoneMod.getFaceVariant = function(value) {
+smartphone.getFaceVariant = function(value) {
     return Object.keys(setup.faceVariantOptions.default).find(key => setup.faceVariantOptions.default[key] === value);
 }
-PhoneMod.shuffle = function(array) {
+smartphone.shuffle = function(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
 }
-PhoneMod.getStarRating = function(value) {
+smartphone.getStarRating = function(value) {
     const fullStars = Math.floor(value / 20);
     const emptyStars = value % 20 > 0 ? 1 : 0;
     let stars = '★'.repeat(fullStars);
@@ -419,9 +419,9 @@ PhoneMod.getStarRating = function(value) {
     }
     return stars;
 }
-PhoneMod.haveSexPhotoInPhone = function() {
+smartphone.haveSexPhotoInPhone = function() {
     for (let photo in V.Phone.Album) {
-        const task = PhoneMod.PhonePhotos[photo]
+        const task = smartphone.PhonePhotos[photo]
         for (let index = 0; index < task.fames.length; index++) {
             if (["bestiality", "exhibitionism", "impreg", "pimp", "pregnancy", "prostitution", "rape", "sex"].contains(task.fames[index])) {
                 return true
@@ -433,9 +433,9 @@ PhoneMod.haveSexPhotoInPhone = function() {
 
 
 // ==================== 下面是任务钩子 ====================
-PhoneMod.orgasm = function() {
+smartphone.orgasm = function() {
     T.havingOrgasm = true;
 }
-PhoneMod.make_recipe = function() {
+smartphone.make_recipe = function() {
     T.makingRecipe = true;
 }

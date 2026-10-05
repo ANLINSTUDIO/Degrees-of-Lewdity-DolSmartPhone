@@ -7,8 +7,8 @@
 			<<set _PhoneScale to $Phone.Settings.Scale ?? 1.0>>
 			<<numberslider "_PhoneScale" _PhoneScale 0.3 2.00 0.01>>
 			<br>
-			<input type="button" value="设置" onclick='PhoneMod.PhoneScaleSettings()'/>
-			<input type="button" value="重设" onclick='PhoneMod.PhoneScaleSettingsReset()'/>
+			<input type="button" value="设置" onclick='smartphone.PhoneScaleSettings()'/>
+			<input type="button" value="重设" onclick='smartphone.PhoneScaleSettingsReset()'/>
 		</div>
 		<div class="settingsToggleItemWide">
 			手机边距
@@ -16,8 +16,8 @@
 			<<set _PhoneMargin to $Phone.Settings.Margin ?? 20>>
 			<<numberslider "_PhoneMargin" _PhoneMargin 0 500 5>>
 			<br>
-			<input type="button" value="设置" onclick='PhoneMod.PhoneMarginSettings()'/>
-			<input type="button" value="重设" onclick='PhoneMod.PhoneMarginSettingsReset()'/>
+			<input type="button" value="设置" onclick='smartphone.PhoneMarginSettings()'/>
+			<input type="button" value="重设" onclick='smartphone.PhoneMarginSettingsReset()'/>
 		</div>
 	</div>
 

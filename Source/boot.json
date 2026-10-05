@@ -138,27 +138,27 @@
                 {
                     "passage": "School Lockers Sneak",
                     "findString": "<<addinlineevent \"KylarLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"KylarLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Kylar\")>>"
+                    "replace": "<<addinlineevent \"KylarLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Kylar\")>>"
                 },
                 {
                     "passage": "School Lockers Sneak",
                     "findString": "<<addinlineevent \"WhitneyLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"WhitneyLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Whitney\")>>"
+                    "replace": "<<addinlineevent \"WhitneyLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Whitney\")>>"
                 },
                 {
                     "passage": "School Lockers Sneak",
                     "findString": "<<addinlineevent \"RobinLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"RobinLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Robin\")>>"
+                    "replace": "<<addinlineevent \"RobinLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Robin\")>>"
                 },
                 {
                     "passage": "School Lockers Sneak",
                     "findString": "<<addinlineevent \"SydneyLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"SydneyLocker\" 0.015>><<run PhoneMod.SchoolLockersSneakOnNPC(\"Sydney\")>>"
+                    "replace": "<<addinlineevent \"SydneyLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Sydney\")>>"
                 },
                 {
                     "passage": "Widgets Home",
                     "findString": "<<widget \"generateSleepLinks\">>",
-                    "replace": "<<widget \"generateSleepLinks\">><<print PhoneMod.checkAlarmsInSleepText()>>"
+                    "replace": "<<widget \"generateSleepLinks\">><<print smartphone.checkAlarmsInSleepText()>>"
                 },
                 {
                     "passage": "Widgets Sleep",

@@ -1,6 +1,6 @@
 :: ==== Widget ====[widget]
 <<widget "takephoto">>
-    <<run PhoneMod.photoTakeUncommon(_args[0], _args[1], _args[2], _args[3])>>
+    <<run smartphone.photoTakeUncommon(_args[0], _args[1], _args[2], _args[3])>>
     <<if _args.length gt 4>>
         <<note _args[4] "lblue">>
     <<else>>
@@ -11,7 +11,7 @@
     <<if _args.length > 1>>
         <<set _Phone to _args[0]>>
     <</if>>
-    <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_Phone)>>
+    <<set _phone_condition to smartphone.getPhoneConditionInfo(_Phone)>>
     <<if $Phone.Using and _Phone.id eq $Phone.Using>>
         <<icon "phone/phone.png">> [正在使用]
     <<elseif _Phone.stolen and _Phone.usable>>
@@ -26,11 +26,11 @@
             <span class="green">但你已经破解了密码，</span>
         <</if>>
     <</if>>
-    官网售价为<<print '<span class="red">£'+PhoneMod.getPhoneInfo(_Phone.model).price+'</span>'>>，
+    官网售价为<<print '<span class="red">£'+smartphone.getPhoneInfo(_Phone.model).price+'</span>'>>，
 <</widget>>
 <<widget "phoneat">>
     <<phonetext>>
-    <<set _money to PhoneMod.getSellPhonePrice(_Phone.id, _args[0] ?? false)>>
+    <<set _money to smartphone.getSellPhonePrice(_Phone.id, _args[0] ?? false)>>
     <<run console.log(_args)>>
     <<if _args[1]>>
         <<set _money to _money*_args[1]>>
@@ -93,9 +93,13 @@
         <span class="red">与你擦肩而过</span>。
     <</if>>
 <</widget>>
-:: ==== SC Phone Shop ====
-:: Shopping Centre Phone Shop Link
-<br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop]]>><<pass 1>><</link>>
+:: ==== SC Phone Shop ====[widget]
+<<widget "ShoppingCentrePhoneShopLink">>
+    <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop]]>><<pass 1>><</link>>
+<</widget>>
+<<widget "ShoppingCentrePhoneShopLinkLock">>
+    <br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop Lock]]>><<pass 1>><</link>>
+<</widget>>
 
 :: Shopping Centre Phone Shop
 你在手机店里。五颜六色，各种款式的手机陈列在柜台。
@@ -136,15 +140,15 @@
 :: Shopping Centre Phone Buy
 <!-- “这款新上市的 Neme 12 pro max 手机，原价<span class="red"><del>£6999</del></span>，现在活动期间只要<span class="gold">£4399</span>！”<br><br> -->
 “您看看需要哪款手机呢？这些都是我们新上市的呢，” 店员微笑着对你说到。<br><br>
-<<for _phone_model range PhoneMod.PhoneModelsMain>>
-    <<set _phone_info to PhoneMod.getPhoneInfo(_phone_model)>>
+<<for _phone_model range smartphone.PhoneModelsMain>>
+    <<set _phone_info to smartphone.getPhoneInfo(_phone_model)>>
     <<icon "phone/phone.png">>
     <<if $money gte (_phone_info.price * 100)>>
         <<capture _phone_info _phone_model>>
             <<link [[_phone_model (£_phone_info.price)|Shopping Centre Phone Shop]]>>
                 <<set $daily.PhoneShopState to 2>>
                 <<print '<<money -'+_phone_info.price*100+'>>'>>
-                <<run PhoneMod.BuyPhone(_phone_model)>>
+                <<run smartphone.BuyPhone(_phone_model)>>
             <</link>><br>
         <</capture>>
     <<else>>
@@ -156,7 +160,7 @@
 <<if !$Phone.PowerBank>>
     <<icon "phone/power-bank.png">>
     <<if $money gte 799>>
-        <<link [[购买充电宝 (£7.99)|Shopping Centre Phone Shop]]>><<set $daily.PhoneShopState to 2>><<money -799>><<run PhoneMod.GetPowerBank()>><</link>>
+        <<link [[购买充电宝 (£7.99)|Shopping Centre Phone Shop]]>><<set $daily.PhoneShopState to 2>><<money -799>><<run smartphone.GetPowerBank()>><</link>>
     <<else>>
         <span class="red">购买充电宝 (£100)</span>
     <</if>><br>
@@ -175,7 +179,7 @@
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Sell Finish
-<<set _Phone to PhoneMod.getPhone($PhoneToSell)>>
+<<set _Phone to smartphone.getPhone($PhoneToSell)>>
 <<generate1>><<person1>>
 <<if _Phone.stolen>>
     店员拿起手机，走到柜台后面，用你看不懂的仪器检查着手机。<br>
@@ -183,7 +187,7 @@
         <<case 1>>
             “手机的密码是？”<br>
             <<if _Phone.usable>>
-                “<<print PhoneMod.Phone.generatePassward()>>。”你在老冯那里破解了手机的密码，因此你对答如流，并且对此早有准备。
+                “<<print smartphone.Phone.generatePassward()>>。”你在老冯那里破解了手机的密码，因此你对答如流，并且对此早有准备。
                 <<set _sold to 1>>
             <<else>>
                 “啊？密……密码？” 你一时语塞，完全没有想到店员会问这个问题。<br>
@@ -209,7 +213,7 @@
 <</if>>
 <<if _sold>>
     <<endevent>>
-    <<set $Phone.SellMoney to PhoneMod.SellPhone($PhoneToSell)>>
+    <<set $Phone.SellMoney to smartphone.SellPhone($PhoneToSell)>>
     <<money $Phone.SellMoney>>
     你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
     <<if validArray($Phone.Owned)>>
@@ -223,9 +227,9 @@
             “你以为你能骗过我吗？这部手机是被盗的，我现在就要报警！” 店员一边说着，一边拿起电话准备报警。<br><br>
             <<rng>>
             <<if $rng gte 50>>
-                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($PhoneToSell)>><</link>>
+                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run smartphone.SellPhone($PhoneToSell)>><</link>>
             <<else>>
-                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($PhoneToSell)>><<endevent>><</link>>
+                <<link [[逃跑|Shopping Centre]]>><<run smartphone.SellPhone($PhoneToSell)>><<endevent>><</link>>
             <</if>>
         <<case 2>>
             <<set $daily.PhoneShopState to 4>>
@@ -242,9 +246,9 @@
             <</if>>
             <<rng>>
             <<if $rng gte 50>>
-                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run PhoneMod.SellPhone($PhoneToSell)>><</link>>
+                <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><<run smartphone.SellPhone($PhoneToSell)>><</link>>
             <<else>>
-                <<link [[逃跑|Shopping Centre]]>><<run PhoneMod.SellPhone($PhoneToSell)>><<endevent>><</link>>
+                <<link [[逃跑|Shopping Centre]]>><<run smartphone.SellPhone($PhoneToSell)>><<endevent>><</link>>
             <</if>>
     <</switch>>
 <</if>>
@@ -314,11 +318,11 @@
 <<set _PhoneToRepair to null>>
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<set _condition to PhoneMod.getPhoneConditionInfo(_Phone).value>>
+        <<set _condition to smartphone.getPhoneConditionInfo(_Phone).value>>
         <<if _condition < 0.9>>
             <<set _PhoneToRepair to _Phone.id>>
             <<phonetext>>
-            <<set _money to PhoneMod.getRepairPhonePrice(_Phone.id)>>
+            <<set _money to smartphone.getRepairPhonePrice(_Phone.id)>>
             现在可以以<span class="gold">£_money</span>的价格在
             官方手机店
             <<link [[修复|Shopping Centre Phone Rrepair Finish]]>> <<set $PhoneToRepair to _Phone.id>> <</link>>
@@ -334,11 +338,11 @@
 <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
 
 :: Shopping Centre Phone Rrepair Finish
-<<set _Phone to PhoneMod.getPhone($PhoneToRepair)>>
+<<set _Phone to smartphone.getPhone($PhoneToRepair)>>
 <<generate1>><<person1>>
 店员带你来到柜台前，让你拿出手机，你没有防备的把你的手机递给<<he>>。<br><br>
 随后<<he>>用你看不懂的仪器检查着手机。<br><br>
-<<set _condition to PhoneMod.getPhoneConditionInfo(_Phone).value>>
+<<set _condition to smartphone.getPhoneConditionInfo(_Phone).value>>
 <<if _condition < 0.5>>
     检查之后，<<he>>拿出起子拆卸了手机的背板
 <</if>>
@@ -352,11 +356,8 @@
 <br><br>
 你的目光始终没有移开<<he>>，既是感到好奇，又不太相信这些公司狗的人品。<br><br>
 过了一会，店员拿起手机抬起头对你说："好了，现在它没有什么问题了。之后使用的时候记得不要过度充电，同时避免磨损。"<br><br>
-<<run PhoneMod.repairPhone(_Phone)>>
+<<run smartphone.repairPhone(_Phone)>>
 <<getouticon>> <<link [[继续|Shopping Centre Phone Shop]]>> <<endevent>> <</link>>
-
-:: Shopping Centre Phone Shop Link Lock
-<br><<icon "phone/phone.png">><<link [[手机店 (0:01)|Shopping Centre Phone Shop Lock]]>><<pass 1>><</link>>
 
 :: Shopping Centre Phone Shop Lock
 保护手机店窗户的铁窗是你完全无法突破的，你只能望着手机店里陈列的手机发呆。<br><br>
@@ -364,23 +365,24 @@
 
 
 
-:: === Second Phone Shop ===
-:: Second Phone Shop Link
-<<if C.npc.Feng.init is 0 and validArray($Phone.Owned)>>
-    <<set C.npc.Feng.init to 1>>
-    <<goto "Second Phone Shop Meet Feng First">>
-<<else>>
-    <<if $Phone.SecondShopKnown>>
-        <br><<icon "phone/second-phone-shop.png">>
-        <<if $exposed gt 0>>
-            <<link [[地下手机店 (0:01)|Second Phone Shop Exposed]]>><<pass 1>><</link>>
-        <<else>>
-            <<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
-        <</if>>
+:: === Second Phone Shop ===[widget]
+<<widget "SecondPhoneShopLink">>
+    <<if C.npc.Feng.init is 0 and validArray($Phone.Owned)>>
+        <<set C.npc.Feng.init to 1>>
+        <<goto "Second Phone Shop Meet Feng First">>
     <<else>>
-        <br><<icon "phone/second-phone-shop.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
+        <<if $Phone.SecondShopKnown>>
+            <br><<icon "phone/second-phone-shop.png">>
+            <<if $exposed gt 0>>
+                <<link [[地下手机店 (0:01)|Second Phone Shop Exposed]]>><<pass 1>><</link>>
+            <<else>>
+                <<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+            <</if>>
+        <<else>>
+            <br><<icon "phone/second-phone-shop.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
+        <</if>>
     <</if>>
-<</if>>
+<</widget>>
 
 :: Second Phone Shop Unknown
 <<if C.npc.Feng.init is 1>>
@@ -392,9 +394,9 @@
 
 :: Second Phone Shop Meet Feng First
 <<if validArray($Phone.Owned)>>
-    <<set $Phone.FengStole to PhoneMod.DeletePhone(V.Phone.Owned[0].id)>>
+    <<set $Phone.FengStole to smartphone.DeletePhone(V.Phone.Owned[0].id)>>
 <<else>>
-    <<set $Phone.FengStole to PhoneMod.BuySecondPhone("特斯特2 测试型", 0.01)>>
+    <<set $Phone.FengStole to smartphone.BuySecondPhone("特斯特2 测试型", 0.01)>>
 <</if>>
 
 <<npc Feng>>
@@ -546,8 +548,8 @@
 <<stress 2>>
 
 <<actionsman>>
-<<run PhoneMod.actionsAdd("leftaction", "握紧手机", "gold", true)>>
-<<run PhoneMod.actionsAdd("rightaction", "握紧手机", "gold", true)>>
+<<run smartphone.actionsAdd("leftaction", "握紧手机", "gold", true)>>
+<<run smartphone.actionsAdd("rightaction", "握紧手机", "gold", true)>>
 
 <span id="next"><<link [[继续|Feng Contend]]>><</link>></span><<nexttext>>
 
@@ -559,11 +561,11 @@
 <<endcombat>>
 <<npc Feng>>
 <<if $enemyhealth lte 0>>
-    <<run PhoneMod.AppendPhone($Phone.FengStole)>>
+    <<run smartphone.AppendPhone($Phone.FengStole)>>
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
-    <<if PhoneMod.isCarryingStolenPhone()>>
+    <<if smartphone.isCarryingStolenPhone()>>
         “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了<<he>>一番，说明了这部手机的来历后就准备离开。
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>>
@@ -575,7 +577,7 @@
 <<elseif $Phone.Stolen is 1>>
     <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
     “敢抢我的手机？” 那人放下狠话。<br>
-    <<if PhoneMod.isCarryingStolenPhone()>>
+    <<if smartphone.isCarryingStolenPhone()>>
         “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>><br>
@@ -601,7 +603,7 @@
     “哎哎哎，你看看你，你又意气用事，”老冯伸出手挽留，“哎，我真的没什么好给你的，<<girl>>。如果你愿意帮我的忙……你不嫌弃的话，这个你就拿着吧”<br><br>
     这是<<he>>的<<icon "clothes/skulduggery_mask.png">><span class="teal">盗贼面具</span>，它专为那些图谋不轨的人而打造。<br><br>
     “这个面具可以隐藏你的身份，但是骗不到警察或认识你的人，也可以让你的犯罪行为更难被追踪，我希望它能够跟着你……过得更好。”<br>
-    <<if PhoneMod.AddClothToPlayer("skulduggery mask")>>
+    <<if smartphone.AddClothToPlayer("skulduggery mask")>>
         你虽然很不情愿，但是还是将它缓缓戴上：“这……那我就戴上试试看吧。”
     <<else>>
         你虽然很不情愿，但是还是随手揣进了口袋，“好吧好吧。”
@@ -627,7 +629,7 @@
     一个黑衣人靠在右边的玻璃柜台上，手里正拿着起子，埋着头正在捣鼓着什么。 <span class="red"><<he>>看起来有点熟悉。</span><br><br>
     <<link [[质问黑衣人|Second Phone Shop Meet Feng First 3]]>><</link>><br>
 <<else>>
-    <<run PhoneMod.Guide.startTutorial(PhoneMod.Guide.secondphoneshop)>>
+    <<run smartphone.Guide.startTutorial(smartphone.Guide.secondphoneshop)>>
     你在地下手机店里，看出来这里不太适合人类居住，甚至就单纯是待着。这里到处散发着工业汽油的味道，你感觉有些刺鼻。<<gstress>><<stress 2>><br>
     狭窄的墙壁上挂满了五颜六色、各种型号的手机，看起来并不破破烂烂，反而好像很崭新。<br><br>
     <<if $exposed gt 0>>
@@ -639,16 +641,16 @@
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
     <<if validArray($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
-        <<if PhoneMod.isCarryingStolenPhone(true)>>
+        <<if smartphone.isCarryingStolenPhone(true)>>
             <<icon "phone/phone-crack.png">><<link [["刷机 | 破解盗窃而来的手机"|Second Phone Crack]]>><</link>><br>
         <</if>>
     <</if>>
-    <<if PhoneMod.isPhoneChargeUnguardedIn("SecondPhoneShop")>>
+    <<if smartphone.isPhoneChargeUnguardedIn("SecondPhoneShop")>>
         <br><span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在老冯这里充电。</span><br>
         <<icon "phone/charge.png">>
         <<link [[返回充电的地方|Second Phone Shop Charge]]>><</link>><br><br>
-    <<elseif PhoneMod.getUsingPhone()>>
-        <br><<run PhoneMod.Guide.startTutorial("charge")>>
+    <<elseif smartphone.getUsingPhone()>>
+        <br><<run smartphone.Guide.startTutorial("charge")>>
         <span class="teal">经过老冯的同意，你可以把手机放在这里充电。</span><br>
         <<icon "phone/charge.png">>
         <<link [[为手机充电|Second Phone Shop Charge]]>><</link>><br><br>
@@ -756,8 +758,8 @@
 <</switch>><br><br>
 <<for _secondPhoneShopGood range $Phone.SecondPhoneShopGoods>>
     <<set _phone_model to _secondPhoneShopGood.model>>
-    <<set _phone_info to PhoneMod.getPhoneInfo(_phone_model)>>
-    <<set _phone_condition to PhoneMod.getPhoneConditionInfo(_secondPhoneShopGood.newnessK)>>
+    <<set _phone_info to smartphone.getPhoneInfo(_phone_model)>>
+    <<set _phone_condition to smartphone.getPhoneConditionInfo(_secondPhoneShopGood.newnessK)>>
     <<icon "phone/phone.png">>
     <<if $money gte (_secondPhoneShopGood.price * 100)>>
         <<capture _phone_model _secondPhoneShopGood>>
@@ -768,7 +770,7 @@
                     <<set $Phone.SecondPhoneShopGoodsBought += 1>>
                 <</if>>
                 <<print '<<money -'+_secondPhoneShopGood.price*100+'>>'>>
-                <<run PhoneMod.BuySecondPhone(_phone_model, _secondPhoneShopGood.newnessK)>>
+                <<run smartphone.BuySecondPhone(_phone_model, _secondPhoneShopGood.newnessK)>>
             <</link>>
         <</capture>>
     <<else>>
@@ -792,7 +794,7 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Sell Finish
-<<set _Phone to PhoneMod.getPhone($PhoneToSell)>>
+<<set _Phone to smartphone.getPhone($PhoneToSell)>>
 
 <<set _special to 0>>
 <<switch $Phone.FengLine>>
@@ -849,7 +851,7 @@
         <!-- 74是 有点信任你 之前的值，即到这个时候必须通过完成任务才能加信任了 -->
     <</if>>
 <</if>><br><br>
-<<set $Phone.SellMoney to PhoneMod.SellPhone($PhoneToSell, true)>>
+<<set $Phone.SellMoney to smartphone.SellPhone($PhoneToSell, true)>>
 <<money $Phone.SellMoney>>
 你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br><br>
 <<if validArray($Phone.Owned)>>
@@ -862,7 +864,7 @@
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
         <<if _Phone.stolen and !_Phone.usable>>
-            <<set _pjfybl to PhoneMod.破解费用比例>>
+            <<set _pjfybl to smartphone.破解费用比例>>
             <<phoneat false _pjfybl>>老冯这里
             <<link [[破解密码|Second Phone Crack Finish]]>> <<set $PhoneToSell to _Phone.id>> <</link>>
             <br>
@@ -872,9 +874,9 @@
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
 :: Second Phone Crack Finish
-<<set _money to Math.round(PhoneMod.getSellPhonePrice($PhoneToSell) * PhoneMod.破解费用比例)>>
+<<set _money to Math.round(smartphone.getSellPhonePrice($PhoneToSell) * smartphone.破解费用比例)>>
 <<if $money gte _money*100>>
-    <<set PhoneMod.getPhone($PhoneToSell).usable to true>>
+    <<set smartphone.getPhone($PhoneToSell).usable to true>>
     <<print '<<money -'+_money*100+'>>'>>
     “好了，这部手机已经被我破解了。不过我警告你，<<girl>>，它随时有可能被条子的网络给标记，这我不负责。” 老冯说完之后就把手机还给了你。<br><br>
 <<else>>
@@ -943,30 +945,31 @@
 
 
 
-:: ========AtPlace========
-:: Bedroom Corner
-<br><br>
-一个看起来还算干净的角落，从这里正好可以看到你的床。<br>
-<<if PhoneMod.isPhoneStoreIn("Bedroom") or PhoneMod.isCarryingUsablePhone()>>
-    <<icon "phone/drawer.png">><<link [[储存手机|Bedroom Store Phone]]>><</link>>
-<<else>>
-    <<icon "phone/drawer.png">><span class="teal">这里有一个床头柜，你也许可以把一些贵重的东西放在这里。</span>
-<</if>><br>
-<<if PhoneMod.isPhoneChargeUnguardedIn("Bedroom")>>
-    <<icon "phone/charge.png">>
-    <<link [[返回充电的地方|Bedroom Charge]]>><</link>>
-<<elseif PhoneMod.isCarryingUsablePhone()>>
-    <<run PhoneMod.Guide.startTutorial("charge")>>
-    <<icon "phone/charge.png">>
-    <<link [[为手机充电|Bedroom Charge]]>><</link>>
-<<else>>
-    <span class="teal">你注意到这个角落里有一个插座，不知道贝利有没有给它通电。</span>
-<</if>><br>
-<<if PhoneMod.getUsingPhone()>>
-    <<icon "phone/live.png">><<link [[直播|Live Bedroom]]>><</link>>
-<<else>>
-    <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
-<</if>>
+:: ========AtPlace========[widget]
+<<widget "BedroomCorner">>
+    <br><br>
+    一个看起来还算干净的角落，从这里正好可以看到你的床。<br>
+    <<if smartphone.isPhoneStoreIn("Bedroom") or smartphone.isCarryingUsablePhone()>>
+        <<icon "phone/drawer.png">><<link [[储存手机|Bedroom Store Phone]]>><</link>>
+    <<else>>
+        <<icon "phone/drawer.png">><span class="teal">这里有一个床头柜，你也许可以把一些贵重的东西放在这里。</span>
+    <</if>><br>
+    <<if smartphone.isPhoneChargeUnguardedIn("Bedroom")>>
+        <<icon "phone/charge.png">>
+        <<link [[返回充电的地方|Bedroom Charge]]>><</link>>
+    <<elseif smartphone.isCarryingUsablePhone()>>
+        <<run smartphone.Guide.startTutorial("charge")>>
+        <<icon "phone/charge.png">>
+        <<link [[为手机充电|Bedroom Charge]]>><</link>>
+    <<else>>
+        <span class="teal">你注意到这个角落里有一个插座，不知道贝利有没有给它通电。</span>
+    <</if>><br>
+    <<if smartphone.getUsingPhone()>>
+        <<icon "phone/live.png">><<link [[直播|Live Bedroom]]>><</link>>
+    <<else>>
+        <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
+    <</if>>
+<</widget>>
 
 
 
@@ -1043,7 +1046,7 @@
 
 </div>
 :: Phone NewWest
-<<if PhoneMod.learnRecipes($food_to_learn)>>
+<<if smartphone.learnRecipes($food_to_learn)>>
     经过你努力的跟随视频教程学习，<<learn_recipe $food_to_learn>>
 <<else>>
     你努力的跟随视频教程学习，但是感觉掌握得还不是很熟练。<br><br>
@@ -1056,30 +1059,34 @@
 
 :: ========GetApp========[widget]
 <<widget "appinstall">>
-    <<set _app to PhoneMod.installApp(_args[0])>>
+    <<set _app to smartphone.installApp(_args[0])>>
     <<note "手机上安装了新的APP <img @src=_app.icon>_app.display_name" "lblue">>
 <</widget>>
-:: Chef Help Get NewWest 1
-<<if !PhoneMod.appIsInstalled("newWest")>>
-    你看着着急的萨姆，低下头回答道："可……可是，我不是很会做厨师的这些事……我是说，我们学校的家务课交不了我太多东西……"<br><br>
-    <<he>>皱起眉头仔细想了一下，拿出<<his>>的手机对你说，“我们内部群有这样一个提供学习食谱的APP，你可以照着学习一下好不好，我实在是遇到了一点麻烦。只是制作小面包对吧，不会很麻烦的，对吗？”
-    <<if PhoneMod.getUsingPhone()>>
-        <<appinstall newWest>>
-    <<else>>
-        <br><br>你耸了耸肩，对<<he>>说<span class="red">你没有手机，无法安装这个APP</span>。<br>
-        但是萨姆还是很期待地看着你，说：“没关系，<span class="teal">我下次还会还有机会你再帮忙的</span>，你什么时候有手机了我再给你就行。只是制作小面包对吧，不会很麻烦的，对吗？”
+
+<<widget "ChefHelpGetNewWest1">>
+    <<if !smartphone.appIsInstalled("newWest")>>
+        你看着着急的萨姆，低下头回答道："可……可是，我不是很会做厨师的这些事……我是说，我们学校的家务课交不了我太多东西……"<br><br>
+        <<he>>皱起眉头仔细想了一下，拿出<<his>>的手机对你说，“我们内部群有这样一个提供学习食谱的APP，你可以照着学习一下好不好，我实在是遇到了一点麻烦。只是制作小面包对吧，不会很麻烦的，对吗？”
+        <<if smartphone.getUsingPhone()>>
+            <<appinstall newWest>>
+        <<else>>
+            <br><br>你耸了耸肩，对<<he>>说<span class="red">你没有手机，无法安装这个APP</span>。<br>
+            但是萨姆还是很期待地看着你，说：“没关系，<span class="teal">我下次还会还有机会你再帮忙的</span>，你什么时候有手机了我再给你就行。只是制作小面包对吧，不会很麻烦的，对吗？”
+        <</if>>
+        <br><br>
     <</if>>
-    <br><br>
-<</if>>
-:: Chef Help Get NewWest 2
-<<if !PhoneMod.appIsInstalled("newWest")>>
-    <<link [[向萨姆询问提供学习食谱的APP|Chef Help Get NewWest 3]]>><</link>><br>
-<</if>>
+<</widget>>
+<<widget "ChefHelpGetNewWest2">>
+    <<if !smartphone.appIsInstalled("newWest")>>
+        <<link [[向萨姆询问提供学习食谱的APP|Chef Help Get NewWest 3]]>><</link>><br>
+    <</if>>
+<</widget>>
+
 :: Chef Help Get NewWest 3
 <<npc Sam>>
 你叫来萨姆，低下头说道："可……可是，我不是很会做厨师的这些事……我是说，我们学校的家务课交不了我太多东西……"<br><br>
 <<he>>皱起眉头仔细想了一下，拿出<<his>>的手机对你说，“我们内部群有这样一个提供学习食谱的APP，你可以照着学习一下好不好，我实在是遇到了一点麻烦。只是制作小面包对吧，不会很麻烦的，对吗？”
-<<if PhoneMod.getUsingPhone()>>
+<<if smartphone.getUsingPhone()>>
     <<appinstall newWest>>
 <<else>>
     <br><br>你耸了耸肩，对<<he>>说你没有手机，无法安装这个APP。<br>
@@ -1091,16 +1098,59 @@
 
 
 
-:: ========StealPhone========
-:: Spa Tired Steal Phone Text
-<br>正当你在考虑是否动手时，你突然眼睛一亮！因为你看到了他的身下有闪闪发光的东西！<br>
-<span class="teal">是一部手机！</span><<icon "phone/phone.png">>
-<br>如果你要拿走它，那么你就要将顾客翻身，这真的会弄醒<<him>>！<br><br>
+:: ========StealPhone========[widget]
+<<widget "SchoolLockersStealPhone">>
+    <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
+    <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
+    <br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
+    <<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run smartphone.StolePhone()>><</link>><<crime "thievery">><br>
+<</widget>>
+<<widget "SchoolLockersSneakKylar">>
+    <!-- <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
+    <span class="teal">是凯拉尔的手机！</span><<icon "phone/phone.png">> -->
+<</widget>>
+<<widget "SchoolLockersSneakWhitney">>
+    <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
+    <span class="teal">是惠特尼的手机！</span><<icon "phone/phone.png">><br>
+    你没有动<<nnpc_he "Whitney">>的手机。
+<</widget>>
+<<widget "SchoolLockersSneakRobin">>
+    <!-- <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
+    <span class="teal">是罗宾的手机！</span><<icon "phone/phone.png">> -->
+<</widget>>
+<<widget "SchoolLockersSneakSydney">>
+    <!-- <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
+    <span class="teal">是悉尼的手机！</span><<icon "phone/phone.png">> -->
+<</widget>>
 
-:: Spa Tired Steal Phone Link
-<<set $skulduggerydifficulty to 700>><br>
-<<link [[趁顾客翻身拿走手机|Spa Tired Steal Phone]]>><<set $skulduggerydifficulty to 700>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
-<<link [[拿走赃物|Spa Tired Steal]]>><<set $skulduggerydifficulty to 500>><</link>>
+<<widget "SpaTiredStealPhoneText">>
+    <br>正当你在考虑是否动手时，你突然眼睛一亮！因为你看到了他的身下有闪闪发光的东西！<br>
+    <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
+    <br>如果你要拿走它，那么你就要将顾客翻身，这真的会弄醒<<him>>！<br><br>
+<</widget>>
+<<widget "SpaTiredStealPhoneLink">>
+    <<set $skulduggerydifficulty to 700>><br>
+    <<link [[趁顾客翻身拿走手机|Spa Tired Steal Phone]]>><<set $skulduggerydifficulty to 700>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
+    <<link [[拿走赃物|Spa Tired Steal]]>><<set $skulduggerydifficulty to 500>><</link>>
+<</widget>>
+
+<<widget "PubDrinkStealPhoneLink">>
+    眼前的<<person>>看起来已经醉了，<<he>>的目光几乎全部放在了手上的酒杯上。你注意到<<he>>的手边<span class="teal">有一台发着光的手机</span><<icon "phone/phone.png">>，就在靠向你的这边！<br>
+    你四周看了看，酒保也没有看向你这边，没有人注意到你！如果处理得当，这台手机就不再属于<<he>>。
+    <br><br>
+    <<set $skulduggerydifficulty to 500 + random(0, 700)>>
+    <<link [[偷走<<he>>的的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
+<</widget>>
+
+<<widget "OceanBreezeStealPhoneLink">>
+    <<if $Phone.StealPhoneAlertOceanBreeze gte 5>>
+        你看到了咖啡馆的招牌旁边有一个告示，上面写着： <span class="red">近期本店频繁失窃贵重物品，请保护好您的私人财物</span><br>
+    <</if>>
+    <<if Time.dayState is "day" or Time.dayState is "dusk">>
+        <<icon "phone/theft.png">>
+        <<link [[寻找目标偷窃手机 (0:10)|Ocean Breeze Steal Phone]]>><</link>><br><br>
+    <</if>>
+<</widget>>
 
 :: Spa Tired Steal Phone
 <<skulduggerycheck>>
@@ -1109,7 +1159,7 @@
     你轻轻地将<<persons>>翻过身来，仿佛这就是项目的一部分。<br>
     <span class="green">随后你泰然自若地迅速抽出了手机</span> 并且将它藏了起来。
 	<<crimeUp 200 "thievery">>
-    <<run PhoneMod.StolePhone()>>
+    <<run smartphone.StolePhone()>>
 <<else>>
     你尝试将<<persons>>翻过身来，仿佛这就是项目的一部分。随后你假装泰然自若地迅速抽出了手机，<span class="red">但是<<Him>>突然睁开眼睛警惕地看着你。</span><br>
     <<if $spa.behaviour is "sophisticated">>
@@ -1136,40 +1186,13 @@
 <br><br>
 <<spa_end>>
 
-
-:: School Lockers Steal Phone
-<br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
-<span class="teal">是一部手机！</span><<icon "phone/phone.png">>
-<br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
-<<link [[拿走手机|School Lockers]]>><<handheldon>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
-:: School Lockers Sneak Kylar
-<!-- <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
-<span class="teal">是凯拉尔的手机！</span><<icon "phone/phone.png">> -->
-:: School Lockers Sneak Whitney
-<br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
-<span class="teal">是惠特尼的手机！</span><<icon "phone/phone.png">><br>
-你没有动<<nnpc_he "Whitney">>的手机。
-:: School Lockers Sneak Robin
-<!-- <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
-<span class="teal">是罗宾的手机！</span><<icon "phone/phone.png">> -->
-:: School Lockers Sneak Sydney
-<!-- <br>正当你准备离开时，你突然眼睛一亮！因为你看到了柜子里面有闪闪发光的东西！<br>
-<span class="teal">是悉尼的手机！</span><<icon "phone/phone.png">> -->
-
-:: Pub Drink Steal Phone Link
-眼前的<<person>>看起来已经醉了，<<he>>的目光几乎全部放在了手上的酒杯上。你注意到<<he>>的手边<span class="teal">有一台发着光的手机</span><<icon "phone/phone.png">>，就在靠向你的这边！<br>
-你四周看了看，酒保也没有看向你这边，没有人注意到你！如果处理得当，这台手机就不再属于<<he>>。
-<br><br>
-<<set $skulduggerydifficulty to 500 + random(0, 700)>>
-<<link [[偷走<<he>>的的手机 (0:05)|Pub Drink Steal Phone]]>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
-
 :: Pub Drink Steal Phone
 <<skulduggerycheck>>
 <<pass 5>>
 <<if $skulduggerysuccess is 1>>
     <span class="green">随后你泰然自若地趁<<he>>不注意，迅速抽出了手机</span> 并且将它塞进你的口袋。
 	<<crimeUp 200 "thievery">>
-    <<run PhoneMod.StolePhone()>><br><br>
+    <<run smartphone.StolePhone()>><br><br>
     <<skulduggeryuse>>
     <<link [[若无其事地离开|Pub]]>><<endevent>><</link>>
 <<else>>
@@ -1180,14 +1203,6 @@
     <<link [[离开|Pub]]>><<endevent>><</link>>
 <</if>>
 
-:: Ocean Breeze Steal Phone Link
-<<if $Phone.StealPhoneAlertOceanBreeze gte 5>>
-    你看到了咖啡馆的招牌旁边有一个告示，上面写着： <span class="red">近期本店频繁失窃贵重物品，请保护好您的私人财物</span><br>
-<</if>>
-<<if Time.dayState is "day" or Time.dayState is "dusk">>
-    <<icon "phone/theft.png">>
-    <<link [[寻找目标偷窃手机 (0:10)|Ocean Breeze Steal Phone]]>><</link>><br><br>
-<</if>>
 :: Ocean Breeze Steal Phone
 <<pass 10>>
 <<set $lock to 200>>
@@ -1346,7 +1361,7 @@
 <</switch>><br><br>
 <span class="teal">你看着那部手机</span><<icon "phone/phone.png">>
 <br>如果你要拿走它，那么你就要做好被抓的心理准备。<br><br>
-<<icon "phone/theft.png">><<link [[拿走手机|Ocean Breeze Steal Phone Finish]]>><<set $StealPhoneSucceed to 1>><<crimeUp 200 "thievery">><<run PhoneMod.StolePhone()>><</link>><<crime "thievery">><br>
+<<icon "phone/theft.png">><<link [[拿走手机|Ocean Breeze Steal Phone Finish]]>><<set $StealPhoneSucceed to 1>><<crimeUp 200 "thievery">><<run smartphone.StolePhone()>><</link>><<crime "thievery">><br>
 <<cafeicon>><<link [[算了|Ocean Breeze Steal Phone Finish]]>><<set $StealPhoneSucceed to 2>><</link>><br>
 :: Ocean Breeze Steal Phone Finish
 <<person1>>
@@ -1403,7 +1418,7 @@
 
 :: ==========Charge========== [widget]
 <<widget "charge">>
-    <<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn(_args[0], true)>>
+    <<set _UnguardedCharge to smartphone.isPhoneChargeUnguardedIn(_args[0], true)>>
     <<if _UnguardedCharge>>
         <<set _UnguardedChargePhone to _UnguardedCharge.phone>>
         <<set _UnguardedChargeHours to _UnguardedCharge.fromStarted>>
@@ -1413,52 +1428,52 @@
                 你的充电宝被盗，而且你还找不到是谁偷的。<br><br>
             <<else>>
                 你把你的充电宝放在这里充电。
-                当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
+                当前的电量是<<print smartphone.getPhoneBattery(_UnguardedChargePhone)>>%。
                 <<if _UnguardedChargeHours>>
                     <br><br>
                     你的充电宝已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
-                    <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
+                    <<print '<<phonecharge _UnguardedChargePhone '+smartphone.充电速度每小时*_UnguardedChargeHours+'>>'>>
                 <</if>><br><br>
-                <<link [[把放在这里充电的充电宝拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+                <<link [[把放在这里充电的充电宝拿走|_args[1]]]>><<run smartphone.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
             <</if>>
         <<else>>
             <<if _UnguardedCharge.beenStolen>>
-                你记得你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电来着， <span class="red">但是你找不到它了</span> ！<br><br>
+                你记得你把你<<print smartphone.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电来着， <span class="red">但是你找不到它了</span> ！<br><br>
                 你的手机被盗，而且你还找不到是谁偷的。<br><br>
             <<else>>
-                你把你<<print PhoneMod.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
-                <<if PhoneMod.getPhoneBattery(_UnguardedChargePhone) is null>>
+                你把你<<print smartphone.getPhoneConditionInfo(_UnguardedChargePhone).html>>的 <<print _UnguardedChargePhone.model>> 放在这里充电。
+                <<if smartphone.getPhoneBattery(_UnguardedChargePhone) is null>>
                     <span class="red">但是好像看样子它的状态不太好</span>，明明是充电，但是已经开不了机了。你怀疑是不是充的太久了，它没有爆炸就算好的了。
                     <<if _UnguardedChargeHours>>
                         <br><br>
                         你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。<<phonewear _UnguardedCharge.wear>>
                     <</if>>
                 <<else>>
-                    当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。
+                    当前的电量是<<print smartphone.getPhoneBattery(_UnguardedChargePhone)>>%。
                     <<if _UnguardedChargeHours>>
                         <br><br>
                         你的手机已经充了 <<print _UnguardedCharge.fromStartedText>> 的电。
-                        <<print '<<phonecharge _UnguardedChargePhone '+PhoneMod.充电速度每小时*_UnguardedChargeHours+'>>'>>
+                        <<print '<<phonecharge _UnguardedChargePhone '+smartphone.充电速度每小时*_UnguardedChargeHours+'>>'>>
                         <<phonewear _UnguardedCharge.wear>>
                     <</if>>
                 <</if>><br><br>
-                <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run PhoneMod.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
+                <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run smartphone.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
             <</if>>
         <</if>>
         
     <<else>>
-        <<set _phone to PhoneMod.getUsingPhone()>>
+        <<set _phone to smartphone.getUsingPhone()>>
         <<if _phone>>
-            你<<print PhoneMod.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print PhoneMod.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
-            <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run PhoneMod.PhoneChargeUnguarded(_args[0])>><</link>>
+            你<<print smartphone.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print smartphone.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
+            <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run smartphone.PhoneChargeUnguarded(_args[0])>><</link>>
             <<if $Phone.PowerBank>>
-                <br><<icon "phone/power-bank.png">> <<link [[把充电宝放在这里充电|_args[1]]]>><<run PhoneMod.PowerBankChargeIn(_args[0])>><</link>>
+                <br><<icon "phone/power-bank.png">> <<link [[把充电宝放在这里充电|_args[1]]]>><<run smartphone.PowerBankChargeIn(_args[0])>><</link>>
             <</if>>
             <br><br>
-            <<link [[守着充电5分钟 (0:05)|_args[1]]]>><<pass 5>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/12)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/12>><br>
-            <<link [[守着充电10分钟 (0:10)|_args[1]]]>><<pass 10>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/6)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/6>><br>
-            <<link [[守着充电30分钟 (0:30)|_args[1]]]>><<pass 30>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时/2)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时/2>><br>
-            <<link [[守着充电1小时 (1:00)|_args[1]]]>><<pass 60>><<run PhoneMod.PhoneCharge(PhoneMod.充电速度每小时)>><</link>> <<phonecharge _phone PhoneMod.充电速度每小时>><br>
+            <<link [[守着充电5分钟 (0:05)|_args[1]]]>><<pass 5>><<run smartphone.PhoneCharge(smartphone.充电速度每小时/12)>><</link>> <<phonecharge _phone smartphone.充电速度每小时/12>><br>
+            <<link [[守着充电10分钟 (0:10)|_args[1]]]>><<pass 10>><<run smartphone.PhoneCharge(smartphone.充电速度每小时/6)>><</link>> <<phonecharge _phone smartphone.充电速度每小时/6>><br>
+            <<link [[守着充电30分钟 (0:30)|_args[1]]]>><<pass 30>><<run smartphone.PhoneCharge(smartphone.充电速度每小时/2)>><</link>> <<phonecharge _phone smartphone.充电速度每小时/2>><br>
+            <<link [[守着充电1小时 (1:00)|_args[1]]]>><<pass 60>><<run smartphone.PhoneCharge(smartphone.充电速度每小时)>><</link>> <<phonecharge _phone smartphone.充电速度每小时>><br>
         <<else>>
             这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
         <</if>>
@@ -1476,19 +1491,58 @@
         <<note "+_wear手机损耗" "red">>
     <</if>>
 <</widget>>
-:: Ocean Breeze Charge Link
-<<if PhoneMod.isPhoneChargeUnguardedIn("OceanBreeze")>>
-    <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在咖啡馆的这个角落充电。</span><br>
-    <<icon "phone/charge.png">>
-    <<link [[返回充电的地方|Ocean Breeze Charge]]>><</link>>
-<<elseif PhoneMod.getUsingPhone()>>
-    <<run PhoneMod.Guide.startTutorial("charge")>>
-    <span class="teal">你注意到咖啡馆的角落有一个插座，也许可以把手机放在这里充电。</span><br>
-    <<icon "phone/charge.png">>
-    <<link [[为手机充电|Ocean Breeze Charge]]>><</link>>
-<<else>>
-    <span class="teal">你注意到咖啡馆的角落有一个插座，也许真的有人会把手机放在这里充电。</span>
-<</if>><br><br>
+
+<<widget "OceanBreezeChargeLink">>
+    <<if smartphone.isPhoneChargeUnguardedIn("OceanBreeze")>>
+        <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在咖啡馆的这个角落充电。</span><br>
+        <<icon "phone/charge.png">>
+        <<link [[返回充电的地方|Ocean Breeze Charge]]>><</link>>
+    <<elseif smartphone.getUsingPhone()>>
+        <<run smartphone.Guide.startTutorial("charge")>>
+        <span class="teal">你注意到咖啡馆的角落有一个插座，也许可以把手机放在这里充电。</span><br>
+        <<icon "phone/charge.png">>
+        <<link [[为手机充电|Ocean Breeze Charge]]>><</link>>
+    <<else>>
+        <span class="teal">你注意到咖啡馆的角落有一个插座，也许真的有人会把手机放在这里充电。</span>
+    <</if>><br><br>
+<</widget>>
+<<widget "LibraryChargeLink">>
+    <<if smartphone.isPhoneChargeUnguardedIn("Library")>>
+        <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在柜台的后面充电。</span><br>
+        <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
+            <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
+        <<else>>
+            <<if _sydney_location is "library">>
+                <<rng 10>>
+                <<if smartphone.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion is 0>>
+                    你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
+                    <<link [[悄悄看看悉尼在干什么|Library Charge SexPhoto Sydney]]>><</link>>
+                <<elseif C.npc.Sydney.love gte 20 and $rng gt 8 and $Phone.SydneySexLiveCompanion is 1>>
+                    悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
+                    <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
+                <<else>>
+                    悉尼正看着你的手机发呆。<br>
+                    <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+                <</if>>
+            <<else>>
+                <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
+            <</if>>
+        <</if>>
+    <<elseif smartphone.getUsingPhone()>>
+        <<run smartphone.Guide.startTutorial("charge")>>
+        <span class="teal">你注意到柜台后面有一个插座，也许可以把手机放在这里充电。</span><br>
+        <<icon "phone/charge.png">>
+        <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
+            <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>>
+        <<else>>
+            <<link [[为手机充电|Library Charge]]>><</link>>
+        <</if>>
+    <<else>>
+        <span class="teal">你注意到柜台后面有一个插座，不知道对悉尼来说有没有用。</span>
+    <</if>>
+    <br><br>
+<</widget>>
+
 :: Ocean Breeze Charge
 <<charge "OceanBreeze" "Ocean Breeze Charge">>
 <br><br>
@@ -1504,45 +1558,9 @@
 <<charge "SecondPhoneShop" "Second Phone Shop Charge">>
 <br><br>
 <<icon "storage-unit.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
-
-:: Library Charge Link
-<<if PhoneMod.isPhoneChargeUnguardedIn("Library")>>
-    <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在柜台的后面充电。</span><br>
-    <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
-        <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
-    <<else>>
-        <<if _sydney_location is "library">>
-            <<rng 10>>
-            <<if PhoneMod.haveSexPhotoInPhone() and $Phone.SydneySexLiveCompanion is 0>>
-                你看到悉尼正低着头看着什么东西，手指呆呆地在戳着什么，被柜台挡住了。<br>
-                <<link [[悄悄看看悉尼在干什么|Library Charge SexPhoto Sydney]]>><</link>>
-            <<elseif C.npc.Sydney.love gte 20 and $rng gt 8 and $Phone.SydneySexLiveCompanion is 1>>
-                悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
-                <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
-            <<else>>
-                悉尼正看着你的手机发呆。<br>
-                <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-            <</if>>
-        <<else>>
-            <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-        <</if>>
-    <</if>>
-<<elseif PhoneMod.getUsingPhone()>>
-    <<run PhoneMod.Guide.startTutorial("charge")>>
-    <span class="teal">你注意到柜台后面有一个插座，也许可以把手机放在这里充电。</span><br>
-    <<icon "phone/charge.png">>
-    <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
-        <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>>
-    <<else>>
-        <<link [[为手机充电|Library Charge]]>><</link>>
-    <</if>>
-<<else>>
-    <span class="teal">你注意到柜台后面有一个插座，不知道对悉尼来说有没有用。</span>
-<</if>>
-<br><br>
 :: Library Charge
 <<sydneySchedule>>
-<<set _UnguardedCharge to PhoneMod.isPhoneChargeUnguardedIn("Library")>>
+<<set _UnguardedCharge to smartphone.isPhoneChargeUnguardedIn("Library")>>
 <<if _UnguardedCharge>>
     <<if _sydney_location is "library">>
         <<if _UnguardedChargeHours gt 0>>
@@ -1586,22 +1604,22 @@
 :: =======StoringPhone========
 :: Bedroom Store Phone
 将手机安全的保存起来，减少身上的空间占用。存放的手机不会消耗电量。<br><br>
-<<set _store to PhoneMod.getPhonesStoreIn("Bedroom")>>
+<<set _store to smartphone.getPhonesStoreIn("Bedroom")>>
 <<for _Phone range _store>>
     <<capture _Phone>>
-        <<set _info to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<set _info to smartphone.getPhoneConditionInfo(_Phone)>>
         <<if _Phone.stolen and !_Phone.usable>>
             <<icon "phone/phone-forbid.png">>
         <<else>>
             <<icon "phone/phone-disabled.png">> 
         <</if>>
-        <<link [[取出|Bedroom Store Phone]]>> <<run PhoneMod.PhoneStoreFinish("Bedroom", _Phone.id)>> <</link>>
+        <<link [[取出|Bedroom Store Phone]]>> <<run smartphone.PhoneStoreFinish("Bedroom", _Phone.id)>> <</link>>
         <<if _Phone.newnessmax gt 0>>
-            <<print '[ '+PhoneMod.getPhoneBattery(_Phone)+'% ] '>>
+            <<print '[ '+smartphone.getPhoneBattery(_Phone)+'% ] '>>
         <<else>>
             [ --- ] 
         <</if>>
-        <<print '一部'+_info.html+'的 '+_Phone.model+' ，官网售价为<span class="gold">£'+Math.round(PhoneMod.getPhoneInfo(_Phone.model).price)+'</span>。'>>
+        <<print '一部'+_info.html+'的 '+_Phone.model+' ，官网售价为<span class="gold">£'+Math.round(smartphone.getPhoneInfo(_Phone.model).price)+'</span>。'>>
         <<if _Phone.stolen>>
             <span class='red'>盗窃得来</span>
             <<if _Phone.usable>>
@@ -1620,7 +1638,7 @@
 <</for>><br>
 <<for _Phone range $Phone.Owned>>
     <<capture _Phone>>
-        <<set _info to PhoneMod.getPhoneConditionInfo(_Phone)>>
+        <<set _info to smartphone.getPhoneConditionInfo(_Phone)>>
         <<if $Phone.Using and _Phone.id eq $Phone.Using>>
             <<icon "phone/phone.png">>
         <<elseif _Phone.stolen and !_Phone.usable>>
@@ -1628,13 +1646,13 @@
         <<else>>
             <<icon "phone/phone-disabled.png">> 
         <</if>>
-        <<link [[存放|Bedroom Store Phone]]>> <<run PhoneMod.PhoneStore("Bedroom", _Phone.id)>> <</link>>
+        <<link [[存放|Bedroom Store Phone]]>> <<run smartphone.PhoneStore("Bedroom", _Phone.id)>> <</link>>
         <<if _Phone.newnessmax gt 0>>
-            <<print '[ '+PhoneMod.getPhoneBattery(_Phone)+'% ] '>>
+            <<print '[ '+smartphone.getPhoneBattery(_Phone)+'% ] '>>
         <<else>>
             [ --- ] 
         <</if>>
-        <<print '一部'+_info.html+'的 '+_Phone.model+' ，官网售价为<span class="gold">£'+Math.round(PhoneMod.getPhoneInfo(_Phone.model).price)+'</span>。'>>
+        <<print '一部'+_info.html+'的 '+_Phone.model+' ，官网售价为<span class="gold">£'+Math.round(smartphone.getPhoneInfo(_Phone.model).price)+'</span>。'>>
         <<if _Phone.stolen>>
             <span class='red'>盗窃得来</span>
             <<if _Phone.usable>>
@@ -1657,33 +1675,32 @@
 
 
 
-:: ==========AskTel==========
-:: Landry AskTel Link
-<<if !PhoneMod.isContactKnown("兰德里")>>
-    <<run PhoneMod.Guide.startTutorial(PhoneMod.Guide.contacts)>>
-    <<icon "socialise_question.png">> <<link [[询问对方电话号码|Landry AskTel]]>><</link>><br><br>
-<</if>>
+:: ==========AskTel==========[widget]
+<<widget "LandryAskTelLink">>
+    <<if !smartphone.isContactKnown("兰德里")>>
+        <<run smartphone.Guide.startTutorial(smartphone.Guide.contacts)>>
+        <<icon "socialise_question.png">> <<link [[询问对方电话号码|Landry AskTel]]>><</link>><br><br>
+    <</if>>
+<</widget>>
+<<widget "TailorAskTelLink">>
+    <<if !smartphone.isContactKnown("裁缝")>>
+        <<run smartphone.Guide.startTutorial(smartphone.Guide.contacts)>>
+        <br><br><<icon "socialise_question.png">> <<link [[询问对方电话号码|Tailor AskTel]]>><</link>>
+    <</if>>
+<</widget>>
 
 :: Landry AskTel
 “你能告诉我你的电话号码吗？” 你问兰德里。<br>
 兰德里看了你一眼，沉默了几秒钟，似乎在考虑是否要告诉你。<br><br>
 “我相信你是个好<<girl>>， 我可以告诉你我的电话号码。” 兰德里说。<br>
-<<run PhoneMod.addContact("兰德里")>><br><br>
+<<run smartphone.addContact("兰德里")>><br><br>
 <span class="teal">你现在可以在  手机 | 联系人  找到「兰德里」</span><br><br>
 <<link [[继续|Pub Landry]]>><</link>>
-
-
-:: Tailor AskTel Link
-<<if !PhoneMod.isContactKnown("裁缝")>>
-    <<run PhoneMod.Guide.startTutorial(PhoneMod.Guide.contacts)>>
-    <br><br><<icon "socialise_question.png">> <<link [[询问对方电话号码|Tailor AskTel]]>><</link>>
-<</if>>
-
 :: Tailor AskTel
 “你能告诉我你的电话号码吗？” 你问裁缝。<br>
 裁缝看了你一眼，沉默了几秒钟，似乎在考虑是否要告诉你。<br><br>
 “我相信你是个好<<girl>>， 我可以告诉你我的电话号码。” 裁缝说。<br>
-<<run PhoneMod.addContact("裁缝")>><br><br>
+<<run smartphone.addContact("裁缝")>><br><br>
 <span class="teal">你现在可以在  手机 | 联系人  找到「裁缝」</span><br><br>
 <<link [[继续|Tailor Shop]]>><</link>>
 
@@ -1726,55 +1743,55 @@
 <<widget "ddinfo">>
     您需要亲自前往最近的可停车地点，您的专属司机会在那里等着您，
     <<ddwaittimeinfo>>
-    否则全额支付等待费<span class="gold">£<<print PhoneMod.DD等待全额费用>></span>。<br>
+    否则全额支付等待费<span class="gold">£<<print smartphone.DD等待全额费用>></span>。<br>
 <</widget>>
 <<widget "ddwaittimeinfo">>
-    等待时间 <span class="green">前<<print PhoneMod.DD免费等待时间>>分钟免费</span>，<span class="red">不超过<<print PhoneMod.DD最大等待时间>>分钟</span>，
+    等待时间 <span class="green">前<<print smartphone.DD免费等待时间>>分钟免费</span>，<span class="red">不超过<<print smartphone.DD最大等待时间>>分钟</span>，
 <</widget>>
 <<widget "ddlocationinfo">>
-    <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+PhoneMod.ddGetTheNearestBoardingPoint().name+'</span> 。'>><br>
+    <<print '您在 <span class="green">'+$location+'</span>，最近的可停车地点为：<span class="red">'+smartphone.ddGetTheNearestBoardingPoint().name+'</span> 。'>><br>
 <</widget>>
 <<widget "ddlocationinfodestination">>
-    <<print '您在 <span class="green">'+$location+'</span>，请立刻前往最近的可停车地点：<span class="red">'+PhoneMod.ddGetTheNearestBoardingPoint().name+'</span> ，本次出行的目的地是 <span class="teal">'+PhoneMod.ddGetDestinationName()+'</span> 。'>><br>
+    <<print '您在 <span class="green">'+$location+'</span>，请立刻前往最近的可停车地点：<span class="red">'+smartphone.ddGetTheNearestBoardingPoint().name+'</span> ，本次出行的目的地是 <span class="teal">'+smartphone.ddGetDestinationName()+'</span> 。'>><br>
 <</widget>>
 <<widget "ddcostinfo">>
-    您预计支付：<<print '<span class="gold">£'+PhoneMod.ddCalculateFare()+'</span>'>>。<br>
+    您预计支付：<<print '<span class="gold">£'+smartphone.ddCalculateFare()+'</span>'>>。<br>
 <</widget>>
 <<widget "phone_app_DD">>
     <h2>DD打车</h2>
-    <<set _theNearestBoardingPoint to PhoneMod.ddGetTheNearestBoardingPoint()>>
+    <<set _theNearestBoardingPoint to smartphone.ddGetTheNearestBoardingPoint()>>
     <<if $Phone.ddcanceled>>
         <span class="red">订单已取消</span> <br>
         <<print $Phone.ddcanceled>><br>
         <<if $Phone.ddcost>>
             你需要为司机的等待支付 <span class="gold">£<<print $Phone.ddcost>></span>。
         <</if>>
-        <br><br><<link "确认">><<run PhoneMod.ddCancelChecked()>><</link>><br>
-    <<elseif PhoneMod.ddIsSubmited()>>
+        <br><br><<link "确认">><<run smartphone.ddCancelChecked()>><</link>><br>
+    <<elseif smartphone.ddIsSubmited()>>
         请前往您的上车点。<br>
         <<ddlocationinfodestination>>
         <<ddcostinfo>>
-        现在已经等待了<span class="yellow"><<print PhoneMod.ddGetWaitTime()>>分钟</span>。<br>
+        现在已经等待了<span class="yellow"><<print smartphone.ddGetWaitTime()>>分钟</span>。<br>
         <<ddinfo>><br>
-        <<icon "phone/app/dd.png">><<link "取消叫车">><<run PhoneMod.ddCancel('用户取消了订单')>><</link>><br>
+        <<icon "phone/app/dd.png">><<link "取消叫车">><<run smartphone.ddCancel('用户取消了订单')>><</link>><br>
     <<elseif $Phone.dd>>
         <<ddlocationinfodestination>>
         <<ddcostinfo>>
         <<ddinfo>><br>
-        <<if $money lt PhoneMod.ddCalculateFare()*100>>
+        <<if $money lt smartphone.ddCalculateFare()*100>>
             <span class="red">你支付不起这个金额。</span>
-        <<elseif $money lt PhoneMod.DD等待全额费用*100>>
+        <<elseif $money lt smartphone.DD等待全额费用*100>>
             <span class="red">你支付不起最大等待费定价。</span>
         <<else>>
-            <<icon "phone/app/dd.png">><<link "确定叫车">><<run PhoneMod.ddSubmit()>><</link>>
+            <<icon "phone/app/dd.png">><<link "确定叫车">><<run smartphone.ddSubmit()>><</link>>
         <</if>><br>
-        <<getouticon>><<link 取消>><<run PhoneMod.ddSetDestination()>><</link>><br>
+        <<getouticon>><<link 取消>><<run smartphone.ddSetDestination()>><</link>><br>
     <<elseif _theNearestBoardingPoint>>
         请确认您的目的地。<br>
         <<ddlocationinfo>>
         <<ddinfo>>
 
-        <<for _region, _destinations range PhoneMod.getAllBoardingPoints()>>
+        <<for _region, _destinations range smartphone.getAllBoardingPoints()>>
             <<set _pass to 1>>
             <<if _region is "森林" and !($town_projects.road gte 4)>>
                 <<set _pass to 0>>
@@ -1785,7 +1802,7 @@
                     <<if _destination.current>>
                         <<print '<<'+_destination.icon+'>>'+_destination.name+' | <span class="green">当前最近的可停车地点</span><br>'>>
                     <<else>>
-                        <<print '<<'+_destination.icon+'>><<link "'+_destination.name+'">><<run PhoneMod.ddSetDestination("'+_destination.key+'")>><</link>><br>'>>
+                        <<print '<<'+_destination.icon+'>><<link "'+_destination.name+'">><<run smartphone.ddSetDestination("'+_destination.key+'")>><</link>><br>'>>
                     <</if>>
                 <</for>>
             <</if>>
@@ -1811,7 +1828,7 @@
         <<passoutdd>>
     <</if>> -->
     你的车到达了目的地。<br>
-    <<set _finish to PhoneMod.ddFinish()>>
+    <<set _finish to smartphone.ddFinish()>>
 
     <<print '<<money '+-_finish.cost*100+'>>'>>
     <<print '你支付了<span class="gold">£'+_finish.cost+'</span>。'>><br><br>

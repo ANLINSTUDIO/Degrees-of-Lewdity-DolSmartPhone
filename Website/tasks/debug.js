@@ -1,5 +1,5 @@
-window.PhoneMod = {};
-PhoneMod.PhonePhotos = {};
+window.smartphone = {};
+smartphone.PhonePhotos = {};
 window.V = {};
 V.Phone = {};
 V.Phone.Album = {};
@@ -14,11 +14,11 @@ const player = {
 
 
 
-PhoneMod.yenoteGenerateRandomComment = function(photo) {
+smartphone.yenoteGenerateRandomComment = function(photo) {
     const photo_id = photo.id;
-    const photoData = PhoneMod.PhonePhotos[photo_id];
+    const photoData = smartphone.PhonePhotos[photo_id];
     const photoThis = {...photo, ...V.Phone.Album[photo_id]};
-    const commentPool = Object.assign({}, photoData.uncommon ? {} : PhoneMod.Comments);
+    const commentPool = Object.assign({}, photoData.uncommon ? {} : smartphone.Comments);
 
     // 工具函数：判断节点是否为条件节点
     function isConditionNode(node) {
@@ -118,7 +118,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
                 // 随机选择一个子节点作为跟评
                 const chosen = validChildren[Math.floor(Math.random() * validChildren.length)];
                 return {
-                    name: PhoneMod.generateNickname(),
+                    name: smartphone.generateNickname(),
                     text: chosen[0],
                     effect: chosen[1] || '',
                     already_read: false,
@@ -133,7 +133,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
     if (keys.length === 0) return null;
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
     return {
-        name: PhoneMod.generateNickname(),
+        name: smartphone.generateNickname(),
         text: randomKey,
         effect: topLevelEntries.get(randomKey),
         already_read: false
@@ -142,7 +142,7 @@ PhoneMod.yenoteGenerateRandomComment = function(photo) {
 
 
 
-PhoneMod.generateNickname = () => "用户" + Math.floor(Math.random() * 1000);
+smartphone.generateNickname = () => "用户" + Math.floor(Math.random() * 1000);
 debugYenoteComment = function() {
     const testData = JSON.parse(outputPreview.textContent);
     const times = 20;
@@ -155,8 +155,8 @@ debugYenoteComment = function() {
         comments: []   // 假设照片下还没有任何已发布评论
     };
 
-    // 将测试数据写入 PhoneMod.PhonePhotos
-    PhoneMod.PhonePhotos[photo_id] = testData;
+    // 将测试数据写入 smartphone.PhonePhotos
+    smartphone.PhonePhotos[photo_id] = testData;
     V.Phone.Album[photo_id] = {};
 
     // 模拟 photoThis（photo 合并 V.Phone.Album[photo_id]）
@@ -173,7 +173,7 @@ debugYenoteComment = function() {
 
     for (let i = 0; i < times; i++) {
         try {
-            const comment = PhoneMod.yenoteGenerateRandomComment(photo);
+            const comment = smartphone.yenoteGenerateRandomComment(photo);
             if (comment) {
                 const key = comment.text;
                 results.add(key);
@@ -192,6 +192,6 @@ debugYenoteComment = function() {
     console.log("可能出现的评论文本集合:", Array.from(results));
 
     // 清理测试数据
-    delete PhoneMod.PhonePhotos[photo_id];
+    delete smartphone.PhonePhotos[photo_id];
     console.log(photo);
 };

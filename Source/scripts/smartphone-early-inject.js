@@ -1,5 +1,5 @@
 (() => {
-    window.PhoneMod = {};
+    window.smartphone = {};
 
     // 创建等待用户响应的函数
     async function waitForUserResponse(alertConfig) {
@@ -17,7 +17,7 @@
         'SmartphoneModalert',
         {
             async afterInjectEarlyLoad() {
-                if (!window.modUtils.getMod('maplebirch')) {
+                if (!window.modSC2DataManager.getModLoader().getModZip("maplebirch")) {
                     await waitForUserResponse({
                         title: '需求秋枫白桦框架',
                         html: `
@@ -32,7 +32,7 @@
                         confirmButtonText: '了解',
                     });
                 }
-                if (!!window.modUtils.getMod('SmartPhone Omega')) {
+                if (!!window.modSC2DataManager.getModLoader().getModZip('SmartPhone Omega')) {
                     await waitForUserResponse({
                         title: '与 <span class="green">万能的智能手机 简化版</span> 不兼容',
                         html: `

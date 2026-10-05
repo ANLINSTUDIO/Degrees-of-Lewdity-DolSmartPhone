@@ -1,7 +1,7 @@
-PhoneMod.Guide = {}
+smartphone.Guide = {}
 
 
-PhoneMod.Guide.photo = [
+smartphone.Guide.photo = [
     {
         image: "img/guide/photo/1.png",
         text: "摄像APP只在特殊的时刻有用。平时打开时，它不会显示任何东西。",
@@ -39,7 +39,7 @@ PhoneMod.Guide.photo = [
     }
 ];
 
-PhoneMod.Guide.yenote = [
+smartphone.Guide.yenote = [
     {
         image: "img/guide/yenote/1.png",
         text: "欢迎来到小黄书。小黄书是一个社交平台，人们可以在这里发送各种文章和照片，拓宽自己的社交。小黄书支持发送付费内容，致力为独立媒体工作者提高一个表现自己的平台。",
@@ -65,7 +65,7 @@ PhoneMod.Guide.yenote = [
     }
 ];
 
-PhoneMod.Guide.memo = [
+smartphone.Guide.memo = [
     {
         image: "img/guide/memo/1.png",
         text: `这里是备忘录，在这你可以设定自己单个的待办事项。<br>
@@ -76,7 +76,7 @@ PhoneMod.Guide.memo = [
     }
 ];
 
-PhoneMod.Guide.contacts = [
+smartphone.Guide.contacts = [
     {
         image: "img/guide/contacts/1.png",
         text: `这里是通讯录。玩家可以在非活动期间拨打NPC的电话，与他们实现和面对面交流同样效果的聊天，甚至可以触发特殊角色的特殊对话（例如为玩家添加了找兰德里使用钱消除犯罪记录的玩选项）。`,
@@ -99,7 +99,7 @@ PhoneMod.Guide.contacts = [
     }, 
 ];
 
-PhoneMod.Guide.secondphoneshop = [
+smartphone.Guide.secondphoneshop = [
     {
         image: "img/guide/secondphoneshop/1.png",
         text: `这里是地下手机店。<br>
@@ -110,7 +110,7 @@ PhoneMod.Guide.secondphoneshop = [
     }, 
 ]
 
-PhoneMod.Guide.charge = [
+smartphone.Guide.charge = [
     {
         image: "img/guide/charge/1.png",
         text: `手机分为多种型号，其质量不一，目前主要体现在电池最大电量，<span class="red">使用不当（如过度充电和没电强制关机）</span>会造成电池磨损，减少最大电量。<br>
@@ -120,7 +120,7 @@ PhoneMod.Guide.charge = [
     }, 
 ]
 
-PhoneMod.Guide.stealphone = [
+smartphone.Guide.stealphone = [
     {
         image: "img/guide/stealphone/1.png",
         text: ``,
@@ -130,22 +130,22 @@ PhoneMod.Guide.stealphone = [
 
 
 // 启动教程
-PhoneMod.Guide.startTutorial = function(key) {
+smartphone.Guide.startTutorial = function(key) {
     V.Phone.Guide = V.Phone.Guide || [];
     if (V.Phone.Guide.includes(key)) {
         return;
     }
-    data = PhoneMod.Guide[key];
+    data = smartphone.Guide[key];
     if (!data) {
         return;
     }
 
-    PhoneMod.Guide.currentDataKey = key;
-    PhoneMod.Guide.currentStep = 1;
-    PhoneMod.Guide.currentData = data;
-    PhoneMod.Guide.totalSteps = data.length;
-    PhoneMod.Guide.touchStartX = 0;
-    PhoneMod.Guide.touchEndX = 0;
+    smartphone.Guide.currentDataKey = key;
+    smartphone.Guide.currentStep = 1;
+    smartphone.Guide.currentData = data;
+    smartphone.Guide.totalSteps = data.length;
+    smartphone.Guide.touchStartX = 0;
+    smartphone.Guide.touchEndX = 0;
 
     const smartphone_guide = document.getElementById("smartphone_guide")
     if (smartphone_guide) {
@@ -165,37 +165,37 @@ PhoneMod.Guide.startTutorial = function(key) {
         
         // 添加点击事件
         indicator.addEventListener('click', () => {
-            PhoneMod.Guide.goToStep(stepNumber);
+            smartphone.Guide.goToStep(stepNumber);
         });
         
         stepsContainer.appendChild(indicator);
     });
-    document.getElementById('totalSteps').textContent = PhoneMod.Guide.totalSteps;
+    document.getElementById('totalSteps').textContent = smartphone.Guide.totalSteps;
 
     const overlay = document.getElementById('tutorial-overlay');
     overlay.classList.remove('hidden');
-    PhoneMod.Guide.updateTutorialStep(PhoneMod.Guide.currentStep);
+    smartphone.Guide.updateTutorialStep(smartphone.Guide.currentStep);
     
     // 添加触摸事件监听
     const content = document.querySelector('.tutorial-content');
-    content.addEventListener('touchstart', PhoneMod.Guide.handleTouchStart, false);
-    content.addEventListener('touchend', PhoneMod.Guide.handleTouchEnd, false);
+    content.addEventListener('touchstart', smartphone.Guide.handleTouchStart, false);
+    content.addEventListener('touchend', smartphone.Guide.handleTouchEnd, false);
 }
 
-PhoneMod.Guide.resetGuide = function() {
+smartphone.Guide.resetGuide = function() {
     V.Phone.Guide = []
-    PhoneMod.msgSend("教程进度已经清空，现在你将可以重新再次阅读所有的教程。")
+    smartphone.msgSend("教程进度已经清空，现在你将可以重新再次阅读所有的教程。")
 }
 
 // 关闭教程
-PhoneMod.Guide.closeTutorial = function() {
+smartphone.Guide.closeTutorial = function() {
     const overlay = document.getElementById('tutorial-overlay');
     overlay.classList.add('hidden');
     
     // 移除触摸事件监听
     const content = document.querySelector('.tutorial-content');
-    content.removeEventListener('touchstart', PhoneMod.Guide.handleTouchStart);
-    content.removeEventListener('touchend', PhoneMod.Guide.handleTouchEnd);
+    content.removeEventListener('touchstart', smartphone.Guide.handleTouchStart);
+    content.removeEventListener('touchend', smartphone.Guide.handleTouchEnd);
 
     const smartphone_guide = document.getElementById("smartphone_guide")
     if (smartphone_guide) {
@@ -204,8 +204,8 @@ PhoneMod.Guide.closeTutorial = function() {
 }
 
 // 更新教程步骤
-PhoneMod.Guide.updateTutorialStep = function(step) {
-    const data = PhoneMod.Guide.currentData[step - 1];
+smartphone.Guide.updateTutorialStep = function(step) {
+    const data = smartphone.Guide.currentData[step - 1];
     if (!data) return;
     
     // 更新图片
@@ -244,7 +244,7 @@ PhoneMod.Guide.updateTutorialStep = function(step) {
     
     prevBtn.disabled = step === 1;
     
-    if (step === PhoneMod.Guide.totalSteps) {
+    if (step === smartphone.Guide.totalSteps) {
         nextBtn.innerText = "明白了"
     } else {
         nextBtn.innerText = "下一步"
@@ -252,61 +252,61 @@ PhoneMod.Guide.updateTutorialStep = function(step) {
 }
 
 // 下一步
-PhoneMod.Guide.nextStep = function() {
-    if (PhoneMod.Guide.currentStep < PhoneMod.Guide.totalSteps) {
-        PhoneMod.Guide.currentStep++;
-        PhoneMod.Guide.updateTutorialStep(PhoneMod.Guide.currentStep);
+smartphone.Guide.nextStep = function() {
+    if (smartphone.Guide.currentStep < smartphone.Guide.totalSteps) {
+        smartphone.Guide.currentStep++;
+        smartphone.Guide.updateTutorialStep(smartphone.Guide.currentStep);
     } else {
-        PhoneMod.Guide.completeTutorial();
+        smartphone.Guide.completeTutorial();
     }
 }
 
 // 上一步
-PhoneMod.Guide.prevStep = function() {
-    if (PhoneMod.Guide.currentStep > 1) {
-        PhoneMod.Guide.currentStep--;
-        PhoneMod.Guide.updateTutorialStep(PhoneMod.Guide.currentStep);
+smartphone.Guide.prevStep = function() {
+    if (smartphone.Guide.currentStep > 1) {
+        smartphone.Guide.currentStep--;
+        smartphone.Guide.updateTutorialStep(smartphone.Guide.currentStep);
     }
 }
 
 // 跳转到指定步骤（通过点击步骤指示器）
-PhoneMod.Guide.goToStep = function(step) {
-    if (step >= 1 && step <= PhoneMod.Guide.totalSteps) {
-        PhoneMod.Guide.currentStep = step;
-        PhoneMod.Guide.updateTutorialStep(PhoneMod.Guide.currentStep);
+smartphone.Guide.goToStep = function(step) {
+    if (step >= 1 && step <= smartphone.Guide.totalSteps) {
+        smartphone.Guide.currentStep = step;
+        smartphone.Guide.updateTutorialStep(smartphone.Guide.currentStep);
     }
 }
 
 // 完成教程
-PhoneMod.Guide.completeTutorial = function() {
-    PhoneMod.Guide.closeTutorial();
+smartphone.Guide.completeTutorial = function() {
+    smartphone.Guide.closeTutorial();
     V.Phone.Guide = V.Phone.Guide || [];
-    V.Phone.Guide.push(PhoneMod.Guide.currentDataKey)
-    delete PhoneMod.Guide.currentDataKey
+    V.Phone.Guide.push(smartphone.Guide.currentDataKey)
+    delete smartphone.Guide.currentDataKey
 }
 
 // 触摸事件处理
-PhoneMod.Guide.handleTouchStart = function(event) {
-    PhoneMod.Guide.touchStartX = event.touches[0].clientX;
+smartphone.Guide.handleTouchStart = function(event) {
+    smartphone.Guide.touchStartX = event.touches[0].clientX;
 }
 
-PhoneMod.Guide.handleTouchEnd = function(event) {
-    PhoneMod.Guide.touchEndX = event.changedTouches[0].clientX;
-    PhoneMod.Guide.handleSwipe();
+smartphone.Guide.handleTouchEnd = function(event) {
+    smartphone.Guide.touchEndX = event.changedTouches[0].clientX;
+    smartphone.Guide.handleSwipe();
 }
 
 // 处理滑动
-PhoneMod.Guide.handleSwipe = function() {
+smartphone.Guide.handleSwipe = function() {
     const swipeThreshold = 50; // 滑动阈值
-    const diff = PhoneMod.Guide.touchStartX - PhoneMod.Guide.touchEndX;
+    const diff = smartphone.Guide.touchStartX - smartphone.Guide.touchEndX;
     
     if (Math.abs(diff) > swipeThreshold) {
         if (diff > 0) {
             // 向左滑动，下一步
-            PhoneMod.Guide.nextStep();
+            smartphone.Guide.nextStep();
         } else {
             // 向右滑动，上一步
-            PhoneMod.Guide.prevStep();
+            smartphone.Guide.prevStep();
         }
     }
 }

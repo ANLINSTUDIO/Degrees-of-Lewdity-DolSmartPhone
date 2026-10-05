@@ -1,4 +1,4 @@
-	<<elseif PhoneMod.isCarryingStolenPhone()>>
+	<<elseif smartphone.isCarryingStolenPhone()>>
 		"天哪！",
 		<!-- <br>
 		"记录，发现嫌疑人的胯部周围全是一种带有强烈精液气味的可疑白色液态物质，\"<<person2>><<person>>陈述道：\"可能是卖淫的证据。\"

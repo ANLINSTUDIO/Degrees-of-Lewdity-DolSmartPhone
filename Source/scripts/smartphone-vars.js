@@ -2,14 +2,14 @@ AsAPI.log("SmartPhone", "正在加载：vars.js");
 
 
 // === 版本 =======================================================
-PhoneMod.currentVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.version
-PhoneMod.latestVersion = null
-PhoneMod.betaVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.bootJson.betaVersion
-PhoneMod.notice = ""
-PhoneMod.debug = 0
+smartphone.currentVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.version
+smartphone.latestVersion = null
+smartphone.betaVersion = window.modSC2DataManager.getModLoader().getModZip("SmartPhone Alpha").modInfo.bootJson.betaVersion
+smartphone.notice = ""
+smartphone.debug = 0
 
 async function getLastedVersion() {
-  if (PhoneMod.betaVersion) return;  // 测试版本不获取最新版本信息
+  if (smartphone.betaVersion) return;  // 测试版本不获取最新版本信息
   AsAPI.log("SmartPhone", `正在取求最新版本号`)
   try {
     const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion`, {
@@ -23,9 +23,9 @@ async function getLastedVersion() {
     if (data.error) {
       AsAPI.error("SmartPhone", '获取最新版本失败:'+data.error);
     } else {
-      PhoneMod.latestVersion = data.value;
+      smartphone.latestVersion = data.value;
       if (V.passage === "Start") {
-        PhoneMod.PhoneUIInit()
+        smartphone.PhoneUIInit()
       }
     }
   } catch (error) {
@@ -36,7 +36,7 @@ getLastedVersion()
 
 
 // === 注入 =======================================================
-PhoneMod.events = [
+smartphone.events = [
     // {
     //   passage: "注入段落", 
     //   target: "定位锚点目标", 
@@ -51,43 +51,43 @@ PhoneMod.events = [
     //   goto: "直接替换当前段落",
     // }
     // 地点
-    {passage: "Shopping Centre", target: "Supermarket", event: "Shopping Centre Phone Shop Link"},
-    {passage: "Shopping Centre", target: "Supermarket Lock", event: "Shopping Centre Phone Shop Link Lock"},
-    {passage: "Elk Street", target: "Trash", event: "Second Phone Shop Link"},
-    {passage: "Elk Street", target: "Trash Gate Enter", event: "Second Phone Shop Link"},
+    {passage: "Shopping Centre", target: "Supermarket", event: "ShoppingCentrePhoneShopLink"},
+    {passage: "Shopping Centre", target: "Supermarket Lock", event: "ShoppingCentrePhoneShopLinkLock"},
+    {passage: "Elk Street", target: "Trash", event: "SecondPhoneShopLink"},
+    {passage: "Elk Street", target: "Trash Gate Enter", event: "SecondPhoneShopLink"},
     // 地点组
-    {passage: "Bedroom", target: "Mirror", event: "Bedroom Corner"},
+    {passage: "Bedroom", target: "Mirror", event: "BedroomCorner"},
     // 直播
     // {passage: "Bedroom", target: "Mirror", event: "Live Bedroom Link"},  // 集成在Bedroom Corner中
     // 盗窃手机
-    {passage: "School Lockers Sneak", target: "School Lockers", event: "School Lockers Steal Phone", chance: 0.1, condition: "SchoolLockersSneakCondition", position: "before"},
-    {eventid: "School Lockers Sneak Kylar", target: "School Lockers", event: "School Lockers Sneak Kylar", position: "before", offset: 3},
-    {eventid: "School Lockers Sneak Whitney", target: "School Lockers", event: "School Lockers Sneak Whitney", position: "before", offset: 3},
-    {eventid: "School Lockers Sneak Robin", target: "School Lockers", event: "School Lockers Sneak Robin", position: "before", offset: 3},
-    {eventid: "School Lockers Sneak Sydney", target: "School Lockers", event: "School Lockers Sneak Sydney", position: "before", offset: 3},
-    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "Spa Tired Steal Phone Text", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {eventid: "Spa Tired Steal REPLACE", target: "Spa Tired Steal", event: "Spa Tired Steal Phone Link"},
-    {passage: "Pub Drink", target: "Pub Seduce", event: "Pub Drink Steal Phone Link", chance: 0.3, position: "before"},
-    {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Steal Phone Link", position: "before", offset: 1},
+    {passage: "School Lockers Sneak", target: "School Lockers", event: "SchoolLockersStealPhone", chance: 0.1, condition: "SchoolLockersSneakCondition", position: "before"},
+    {eventid: "School Lockers Sneak Kylar", target: "School Lockers", event: "SchoolLockersSneakKylar", position: "before", offset: 3},
+    {eventid: "School Lockers Sneak Whitney", target: "School Lockers", event: "SchoolLockersSneakWhitney", position: "before", offset: 3},
+    {eventid: "School Lockers Sneak Robin", target: "School Lockers", event: "SchoolLockersSneakRobin", position: "before", offset: 3},
+    {eventid: "School Lockers Sneak Sydney", target: "School Lockers", event: "SchoolLockersSneakSydney", position: "before", offset: 3},
+    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
+    {eventid: "Spa Tired Steal REPLACE", target: "Spa Tired Steal", event: "SpaTiredStealPhoneLink"},
+    {passage: "Pub Drink", target: "Pub Seduce", event: "PubDrinkStealPhoneLink", chance: 0.3, position: "before"},
+    {passage: "Ocean Breeze", target: "Cliff Street", event: "OceanBreezeStealPhoneLink", position: "before", offset: 1},
     // 询问电话
-    {passage: "Pub Landry", target: "Pub", event: "Landry AskTel Link", position: "before", offset: 1},
-    {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "Tailor AskTel Link"},
+    {passage: "Pub Landry", target: "Pub", event: "LandryAskTelLink", position: "before", offset: 1},
+    {passage: "Tailor Shop", target: "Tailor Monthly Repair", event: "TailorAskTelLink"},
     // 充电
-    {passage: "Ocean Breeze", target: "Cliff Street", event: "Ocean Breeze Charge Link", position: "before", offset: 1},
+    {passage: "Ocean Breeze", target: "Cliff Street", event: "OceanBreezeChargeLink", position: "before", offset: 1},
     // {passage: "Bedroom", target: "Live Bedroom", event: "Bedroom Charge Link", f:"Bedroom Charge NOLIVE"},  // 集成在Bedroom Corner中
     // {eventid: "Bedroom Charge NOLIVE", target: "Mirror", event: "Bedroom Charge Link", offset: 1},  // 集成在Bedroom Corner中
-    {passage: "Library Rental Counter", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
-    {passage: "Sydney Leighton Spank 4", target: "School Library", event: "Library Charge Link", position: "before", offset: 1},
+    {passage: "Library Rental Counter", target: "School Library", event: "LibraryChargeLink", position: "before", offset: 1},
+    {passage: "Sydney Leighton Spank 4", target: "School Library", event: "LibraryChargeLink", position: "before", offset: 1},
     // 储存手机
     // {passage: "Bedroom", target: "Bed", event: "Bedroom Store Phone Link", position: "before", offset: 3},  // 集成在Bedroom Corner中
     // 获取APP
-    {passage: "Ocean Breeze Work", target: "Chef Help", event: "Chef Help Get NewWest 1", position: "before"},
-    {passage: "Chef Work", target: "Chef Work 2", event: "Chef Help Get NewWest 2", position: "before"},
+    {passage: "Ocean Breeze Work", target: "Chef Help", event: "ChefHelpGetNewWest1", position: "before"},
+    {passage: "Chef Work", target: "Chef Work 2", event: "ChefHelpGetNewWest2", position: "before"},
 ];
-PhoneMod.events_on_macro = [
+smartphone.events_on_macro = [
     {macro: "journal", func: "showPhoneJournal"},
     {macro: "effectssteal", func: "effectsstealPhone"},
 
@@ -98,7 +98,7 @@ PhoneMod.events_on_macro = [
 
 
 // === 内容 =======================================================
-PhoneMod.PhonePhotos = {  // 摄像任务 
+smartphone.PhonePhotos = {  // 摄像任务 
     // "任务ID 也是图片路径键": {
     //     msg: "发布时的文案",
     //     taskDesc: "对任务的简述",
@@ -937,7 +937,7 @@ PhoneMod.PhonePhotos = {  // 摄像任务
         }
     },
 };
-PhoneMod.Apps = {  // APP
+smartphone.Apps = {  // APP
     alarm: {display_name: "闹钟", icon: "img/misc/icon/bird-tower/watch.png", app_widget: "phone_app_alarm", init: "initAlarm"},
     memo: {display_name: "备忘录", icon: "img/misc/icon/phone/app/memo.png", app_widget: "phone_app_memo", init: "initMemo", guide: "memo"},
     shop: {display_name: "淘桃网购", icon: "img/misc/icon/phone/app/taobao.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
@@ -955,7 +955,7 @@ PhoneMod.Apps = {  // APP
     DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD", disableinevent: true},
     newWest: {display_name: "美食屋", icon: "img/misc/icon/phone/app/newWest.png", app_widget: "phone_app_newWest", disableinevent: true, dlock: true},
 };
-PhoneMod.Contacts = [  // 联系人P
+smartphone.Contacts = [  // 联系人P
     {name: "兰德里", call: "Phone Call Landry"},
     {name: "惠特尼", call: "Phone Call Whitney"},
     {name: "艾利克斯", call: "Phone Call Alex"},
@@ -963,7 +963,7 @@ PhoneMod.Contacts = [  // 联系人P
     {name: "贝利", call: "Phone Call Bailey"},
     {name: "裁缝", call: "Phone Call Tailor"},
 ];
-PhoneMod.PhoneModels = {  // 手机品牌
+smartphone.PhoneModels = {  // 手机品牌
     "斯达特3 限量型": {
         price: 699,
         newnessfactory: 1000,
@@ -1007,33 +1007,33 @@ PhoneMod.PhoneModels = {  // 手机品牌
         desc: "专业摄像手机，捕捉每一刻艺术的瞬间"
     }
 };
-PhoneMod.PhoneModelsMain = [
+smartphone.PhoneModelsMain = [
   "Neme 12", "Neme 12 Pro", "Neme 12 Pro Max", "Mimi 17", "Photographer 3"
 ];
 
 
 // === 常量 =======================================================
-PhoneMod.热度衰减系数 = 0.1;  // 衰减系数 0.1 控制热度下降速度（可根据需求调整，如每天衰减一半则系数约为 0.03）。
-PhoneMod.点赞概率百分之 = 50;
-PhoneMod.评论概率百分之 = 5;
-PhoneMod.打赏概率百分之 = 10;
-PhoneMod.充电速度每小时 = 500;
-PhoneMod.充电损害每度电比 = 0.01;
-PhoneMod.DD免费等待时间 = 10;
-PhoneMod.DD最大等待时间 = 30;
-PhoneMod.DD等待全额费用 = 5;
-PhoneMod.DD每距离费用 = 2;
-PhoneMod.手机充电中被盗概率 = 0.2;
-PhoneMod.手机充电中安全地点 = ["Bedroom", "SecondPhoneShop"];
-PhoneMod.自然电量损失每分钟 = 0.3;
-PhoneMod.充电宝充电每分钟 = 5;
-PhoneMod.充电宝充入倍数 = 5;
-PhoneMod.破解费用比例 = 0.5;
-PhoneMod.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
+smartphone.热度衰减系数 = 0.1;  // 衰减系数 0.1 控制热度下降速度（可根据需求调整，如每天衰减一半则系数约为 0.03）。
+smartphone.点赞概率百分之 = 50;
+smartphone.评论概率百分之 = 5;
+smartphone.打赏概率百分之 = 10;
+smartphone.充电速度每小时 = 500;
+smartphone.充电损害每度电比 = 0.01;
+smartphone.DD免费等待时间 = 10;
+smartphone.DD最大等待时间 = 30;
+smartphone.DD等待全额费用 = 5;
+smartphone.DD每距离费用 = 2;
+smartphone.手机充电中被盗概率 = 0.2;
+smartphone.手机充电中安全地点 = ["Bedroom", "SecondPhoneShop"];
+smartphone.自然电量损失每分钟 = 0.3;
+smartphone.充电宝充电每分钟 = 5;
+smartphone.充电宝充入倍数 = 5;
+smartphone.破解费用比例 = 0.5;
+smartphone.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",
   "Yenotes" // 必须禁用，否则内部的effect会重新作用
 ]
-PhoneMod.extraUsePhoneAreas = [  // 能够允许使用手机的额外区域
+smartphone.extraUsePhoneAreas = [  // 能够允许使用手机的额外区域
   "Shopping Centre", "Shopping Centre Top", "Commercial rooftops", "Shopping Centre Phone Shop",  // 购物商场：玩家可能刚买完手机
   "Second Phone Shop",  // 二手手机店：玩家可能刚买完手机
   "Ocean Breeze Charge", "Bedroom Charge",   // 充电区域
@@ -1041,7 +1041,7 @@ PhoneMod.extraUsePhoneAreas = [  // 能够允许使用手机的额外区域
   "Bathroom",  // 刚拍完照要看看
   "Bed", "Sleep",  // 允许在床上关闭闹钟
 ];
-PhoneMod.Comments = {  // 通用评论
+smartphone.Comments = {  // 通用评论
     "你真美~": "<<lstress>><<stress -1>>",
     "每次看到好看的人都觉得和你有点神似，我想这世间但凡称得上美的人，都得有几分像你，不过她们又都只能像你，因为你的可爱她们学也学不来！": "<<llstress>><<stress -3>>",
     "你是与众不同的可爱，表里如一的可爱": "<<lstress>><<stress -1>>",
@@ -1067,7 +1067,7 @@ PhoneMod.Comments = {  // 通用评论
     "牛逼": "<<garousal>><<arousal 30>>",
     "6": "<<garousal>><<arousal 30>>",
 }
-PhoneMod.NicknameGenerator = {  // 网名库
+smartphone.NicknameGenerator = {  // 网名库
     // 前缀库
     prefixes: [
         '可爱的', '帅气的', '迷人的', '疯狂的', '安静的', '暴躁的',
@@ -1088,7 +1088,7 @@ PhoneMod.NicknameGenerator = {  // 网名库
     numbers: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
               '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']
 };
-PhoneMod.PhoneGameQuestions = {  // 小游戏题库
+smartphone.PhoneGameQuestions = {  // 小游戏题库
   "Maths": [
     {
       "q": "若一个等差数列的首项为3，公差为4，则第10项是多少？",
@@ -1318,14 +1318,14 @@ setup.LocationImages.phone = {  // 使用手机时的背景图
 			},
 		},
 }
-PhoneMod.phoneConditionLevels = [  // 手机磨损度
+smartphone.phoneConditionLevels = [  // 手机磨损度
     { threshold: 0.8, text: "崭新出厂", color: "green" },
     { threshold: 0.6, text: "略有磨损", color: "teal" },
     { threshold: 0.4, text: "明显划痕", color: "blue" },
     { threshold: 0.2, text: "严重磨损", color: "purple" },
     { threshold: 0, text: "残破不堪", color: "red" }
 ];
-PhoneMod.Fames = {  // 原版名声对应表
+smartphone.Fames = {  // 原版名声对应表
   bestiality:"人外" ,
   business:"商业" ,
   exhibitionism:"露出" ,

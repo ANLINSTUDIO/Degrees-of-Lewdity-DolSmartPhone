@@ -1,5 +1,5 @@
-PhoneMod.STORAGE_KEY = 'phoneext';
-PhoneMod.exts = {
+smartphone.STORAGE_KEY = 'phoneext';
+smartphone.exts = {
     app: [],
     task: [],
     extension: []
@@ -7,10 +7,10 @@ PhoneMod.exts = {
 
 
 // localstorage
-PhoneMod.loadSettings = function() {
+smartphone.loadSettings = function() {
     try {
-        const saved = localStorage.getItem(PhoneMod.STORAGE_KEY);
-        PhoneMod.exts = saved ? JSON.parse(saved) : 
+        const saved = localStorage.getItem(smartphone.STORAGE_KEY);
+        smartphone.exts = saved ? JSON.parse(saved) : 
         {
             app: [],
             task: [],
@@ -20,10 +20,10 @@ PhoneMod.loadSettings = function() {
         console.warn('[SmartPhoneExt] 读取 localstorage 失败', e);
     }
 }
-PhoneMod.saveSettings = function() {
+smartphone.saveSettings = function() {
     try {
-        const data = JSON.stringify(PhoneMod.exts);
-        localStorage.setItem(PhoneMod.STORAGE_KEY, data);
+        const data = JSON.stringify(smartphone.exts);
+        localStorage.setItem(smartphone.STORAGE_KEY, data);
     } catch (e) {
         console.warn('[SmartPhoneExt] 保存 localstorage 失败', e);
     }
@@ -31,27 +31,27 @@ PhoneMod.saveSettings = function() {
 
 
 // 主要函数
-PhoneMod.reloadexts = function() {
-    const _app = PhoneMod.exts.app;
-    const _task = PhoneMod.exts.task;
-    const _extension = PhoneMod.exts.extension;
+smartphone.reloadexts = function() {
+    const _app = smartphone.exts.app;
+    const _task = smartphone.exts.task;
+    const _extension = smartphone.exts.extension;
 
     _app?.forEach(app => {
     });
 
     _task?.forEach(task => {
-        PhoneMod.extAddTask(task.fn, task.c);
+        smartphone.extAddTask(task.fn, task.c);
     });
 
     _extension?.forEach(extension => {
     });
 }
 
-PhoneMod.doloadlocalexts = function() {
+smartphone.doloadlocalexts = function() {
     document.getElementById("phone-ext-upload")?.click();
 }
 
-PhoneMod.loadlocalexts = async function(element) {
+smartphone.loadlocalexts = async function(element) {
     const file = element.files[0];
     if (!file) return;
     element.value = '';
@@ -95,19 +95,19 @@ PhoneMod.loadlocalexts = async function(element) {
         structs.forEach(struct => {
             switch (struct.c.type) {
                 case 'app':
-                    PhoneMod.exts.app.push(struct);
+                    smartphone.exts.app.push(struct);
                     break;
                 case 'task':
-                    PhoneMod.exts.task.push(struct);
+                    smartphone.exts.task.push(struct);
                     break;
                 case 'extension':
-                    PhoneMod.exts.extension.push(struct);
+                    smartphone.exts.extension.push(struct);
                     break;
             }
         });
 
-        PhoneMod.saveSettings();
-        PhoneMod.reloadexts();
+        smartphone.saveSettings();
+        smartphone.reloadexts();
         document.querySelector('.tab-selected')?.click();
     } else {
         // 单文件 JSON（原逻辑不变）
@@ -119,39 +119,39 @@ PhoneMod.loadlocalexts = async function(element) {
 
             switch (data.type) {
                 case 'app':
-                    PhoneMod.exts.app.push(struct);
+                    smartphone.exts.app.push(struct);
                     break;
                 case 'task':
-                    PhoneMod.exts.task.push(struct);
+                    smartphone.exts.task.push(struct);
                     break;
                 case 'extension':
-                    PhoneMod.exts.extension.push(struct);
+                    smartphone.exts.extension.push(struct);
                     break;
             }
-            PhoneMod.saveSettings();
-            PhoneMod.reloadexts();
+            smartphone.saveSettings();
+            smartphone.reloadexts();
             document.querySelector('.tab-selected')?.click();
         };
         reader.readAsText(file);
     }
 };
 
-PhoneMod.removeext = function(element) {
+smartphone.removeext = function(element) {
     const removeitem = element.dataset.id;
     const [cityName, id] = removeitem.split(",");
-    PhoneMod.exts[cityName].forEach(ext => {
+    smartphone.exts[cityName].forEach(ext => {
         const c = ext.c;
         T.title = c.title ?? c.msg ?? "未知脚本";
         T.content = c.content ?? c.taskDesc ?? "无描述";
         T.remove = md5(ext.fn + T.title + T.content);
         if (id === T.remove) {
-            PhoneMod.exts[cityName].splice(PhoneMod.exts[cityName].indexOf(ext), 1);
-            PhoneMod.saveSettings();
+            smartphone.exts[cityName].splice(smartphone.exts[cityName].indexOf(ext), 1);
+            smartphone.saveSettings();
             switch (cityName) {
                 case 'app':
                     break;
                 case 'task':
-                    PhoneMod.extRemoveTask(ext.fn, ext.c);
+                    smartphone.extRemoveTask(ext.fn, ext.c);
                     break;
                 case 'extension':
                     break;
@@ -161,28 +161,28 @@ PhoneMod.removeext = function(element) {
     })
 }
 
-PhoneMod.cleanexts = function() {
+smartphone.cleanexts = function() {
     if (!confirm("确定要清除所有扩展吗？此操作不可逆！")) return;
-    PhoneMod.exts = {
+    smartphone.exts = {
         app: [],
         task: [],
         extension: []
     }
-    PhoneMod.saveSettings();
+    smartphone.saveSettings();
 }
 
 
 // 主要功能
-PhoneMod.extAddTask = function(filename, filecontent) {
+smartphone.extAddTask = function(filename, filecontent) {
     const name = "ext-"+md5(filename+filecontent.msg)
-    PhoneMod.PhonePhotos[name] = filecontent;
+    smartphone.PhonePhotos[name] = filecontent;
 }
-PhoneMod.extRemoveTask = function(filename, filecontent) {
+smartphone.extRemoveTask = function(filename, filecontent) {
     const name = "ext-"+md5(filename+filecontent.msg)
-    delete PhoneMod.PhonePhotos[name];
+    delete smartphone.PhonePhotos[name];
 }
 
 
 // 初始
-PhoneMod.loadSettings();
-PhoneMod.reloadexts();
+smartphone.loadSettings();
+smartphone.reloadexts();

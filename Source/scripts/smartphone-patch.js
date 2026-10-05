@@ -1,5 +1,5 @@
-$(document).on(":passagerender", function (ev) {PhoneMod.patchOnPassageRender(ev)});
-PhoneMod.patchOnPassageRender = function (ev) {
+$(document).on(":passagerender", function (ev) {smartphone.patchOnPassageRender(ev)});
+smartphone.patchOnPassageRender = function (ev) {
     V.Phone = V.Phone || {};
     V.Phone.Owned = V.Phone.Owned || [];
     V.Phone.Album = V.Phone.Album || {};
@@ -12,7 +12,7 @@ PhoneMod.patchOnPassageRender = function (ev) {
 
     // 3.3 | 悉尼色播伴侣
     V.Phone.SydneySexLiveCompanion = V.Phone.SydneySexLiveCompanion ?? 0;
-    PhoneMod.patchTV("Phone.SydneySexPhoto", "Phone.SydneySexLiveCompanion");
+    smartphone.patchTV("Phone.SydneySexPhoto", "Phone.SydneySexLiveCompanion");
 
     // 3.7 | 关闭通知
     V.Phone.Settings.NotificationClose = V.Phone.Settings.NotificationClose || false;
@@ -36,13 +36,13 @@ PhoneMod.patchOnPassageRender = function (ev) {
         "Landry": ["BLACK MARKETEER", "img/misc/icon/phone/avatar/landry0.png"],
     }
     // 3.82 | Landry发文
-    PhoneMod.yenoteNPCPost({
+    smartphone.yenoteNPCPost({
         id: "Landry-AD0",
         name: "Landry",
         msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
         attract: 2.0,
     })
-    PhoneMod.yenoteNPCPost({
+    smartphone.yenoteNPCPost({
         id: "A-Update382",
         name: "A",
         msg: "哈喽哈喽，感谢各位的支持呀！<br>给大家放一张之前没有用到的摄像图片当做福利啦！<br>如果你看不到的话，那就是没有使用最新的图包哦！",
@@ -97,18 +97,18 @@ PhoneMod.patchOnPassageRender = function (ev) {
         }
     };
     if (V.Phone.价格调整理赔 === undefined) {
-        PhoneMod.RefreshSecondPhone();  // 刷新二手市场以更新价格
+        smartphone.RefreshSecondPhone();  // 刷新二手市场以更新价格
     }
     V.Phone.价格调整理赔 = V.Phone.价格调整理赔 ?? [];
     V.Phone.Owned.forEach(phone => {
         if (V.Phone.价格调整理赔.includes(phone.id)) return;  // 已经理赔过的手机不再理赔
         if (phone.usable) {// 不可用的手机不理赔（包括未解锁的盗窃手机）
             const oldPrice = PhoneModelsOri[phone.model]?.price ?? 0;
-            const newPrice = PhoneMod.getPhoneInfo(phone.model)?.price ?? 0;
+            const newPrice = smartphone.getPhoneInfo(phone.model)?.price ?? 0;
             const relPrice = oldPrice - newPrice;
             if (relPrice) {
                 setTimeout(() => {
-                    PhoneMod.msgSend(`尊敬的客户您好：您的手机<span class="teal">(${phone.id})</span>的市场价已经降价，<span class="purple">遇欲NDMT保险公司</span>依据规定对其进行合法理赔，预计<span class="gold">£${relPrice}</span>将会稍后汇款到您的账户。`);
+                    smartphone.msgSend(`尊敬的客户您好：您的手机<span class="teal">(${phone.id})</span>的市场价已经降价，<span class="purple">遇欲NDMT保险公司</span>依据规定对其进行合法理赔，预计<span class="gold">£${relPrice}</span>将会稍后汇款到您的账户。`);
                 }, 10);
                 Wikifier.wikifyEval(`<<money ${relPrice * 100}>>`);
 
@@ -133,7 +133,7 @@ PhoneMod.patchOnPassageRender = function (ev) {
     }
 }
 
-PhoneMod.patchTV = PhoneMod.patchTransferVariables = function(oldPath, newPath) {
+smartphone.patchTV = smartphone.patchTransferVariables = function(oldPath, newPath) {
     const getNestedValue = (obj, path) => {
         return path.split('.').reduce((current, key) => current?.[key], obj);
     };
