@@ -36,7 +36,7 @@
                         data-replace="true">正在获取公告</div>
                     </div>
                 <</if>>
-                <<run AsAPI.loadRemote()>>
+                <<run as.loadRemote()>>
                 <hr>
                 <h1>万能的智能手机 <span class="teal">尝鲜版</span></h1>
                 <h3>你好丫~ 感谢<b style="color: pink;">聪明可爱又大方</b>的你的支持哦</h3>
@@ -252,7 +252,7 @@
 <<widget "phone_app_contacts">>
     <h3>通讯录</h3>
     <div class="app-content">
-        <<if validArray($Phone.KnownContacts)>>
+        <<if as.isvalid($Phone.KnownContacts)>>
             <div class="phone-contact-list">
                 <<for _i range $Phone.KnownContacts>>
                     <div class="phone-contact-item">
@@ -557,7 +557,7 @@
         </div>
     <<else>>
         <div class="note-content-container">
-            <<if validArray($Phone.Yenotes)>>
+            <<if as.isvalid($Phone.Yenotes)>>
                 <<for _note range $Phone.Yenotes>>
                     <<capture _note>>
                         <div class="yenote-content">
@@ -600,7 +600,7 @@
                                         <<link "删除所有评论">><<run smartphone.yenoteDeleteComment(_note.id)>><</link>>
                                     <</if>>
                                 </div>
-                                <<if validArray(_note.comments)>>
+                                <<if as.isvalid(_note.comments)>>
                                     <div class="note-commends">
                                         <details class="note-comment-foldable" open>
                                             <summary><<print _note.comments.length+"条评论">></summary>

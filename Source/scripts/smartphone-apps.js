@@ -1,4 +1,4 @@
-AsAPI.log("SmartPhone", "正在加载：apps.js");
+as.log("SmartPhone", "正在加载：apps.js");
 
 // ==================== 闹钟实现 ====================
 smartphone.initAlarm = function() {
@@ -295,7 +295,7 @@ smartphone.checkAlarmsInSleepText = function() {
 };
 smartphone.cancelAlarmInSleep = function() {
     V.Phone.cancelAlarmInSleepOnce = 1;
-    AsAPI.reload();
+    as.reload();
 }
 smartphone.cancelAlarm = function() { // 关闭闹钟
     V.Phone.AlarmTriggered = false;
@@ -1637,7 +1637,7 @@ smartphone.yenoteGenerateRandomComment = function(photo) {
                 putChain(comment, value, commentChain);
             }
             if (commentChain.length > 0) {
-                if (smartphone.debug) AsAPI.log("SmartPhone", "跟评链" + commentChain);
+                if (smartphone.debug) as.log("SmartPhone", "跟评链" + commentChain);
                 if (last_comment) {
                     for (let index = 0; index < commentChain.length; index++) {
                         const commentR = commentChain[index];
@@ -1676,7 +1676,7 @@ smartphone.yenoteGenerateRandomComment = function(photo) {
         putComments(comment, photoData.comments[comment], commentPool)
     }
     
-    if (smartphone.debug) AsAPI.log("SmartPhone", "评论池" + commentPool);
+    if (smartphone.debug) as.log("SmartPhone", "评论池" + commentPool);
     const randomKey = Object.keys(commentPool)[Math.floor(Math.random() * Object.keys(commentPool).length)];
     return {
         name: smartphone.generateNickname(),
@@ -2079,7 +2079,7 @@ smartphone.ddCancelChecked = function() {
 }
 smartphone.ddFinish = function() {
     const pass = smartphone.ddCalculateDistance();
-    const pass_text = AsAPI.getFriendlyTimeText(pass / 60, false);
+    const pass_text = as.getFriendlyTimeText(pass / 60, false);
     const cost = pass * smartphone.DD每距离费用;
     const destination =  smartphone.ddBoardingPoints[V.Phone.dd];
     delete V.Phone.dd;
@@ -2150,7 +2150,7 @@ smartphone.getRecipes = function() {
             icon: food.icon,
             difficulty: food_difficulty,
             t: food.recipe.cook_minutes,
-            tt: AsAPI.getFriendlyTimeText(food.recipe.cook_minutes/60, false),
+            tt: as.getFriendlyTimeText(food.recipe.cook_minutes/60, false),
             ingredients: food.recipe.ingredients
         }
         let grade = detailedSkillGrades[0];
