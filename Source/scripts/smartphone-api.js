@@ -258,7 +258,7 @@ smartphone.getPhoneBattery = function(phone) {
     if (phone && phone.newnessmax > 0 && phone.newness >= 0) {
         return Math.max(Math.round((phone.newness / phone.newnessmax) * 100), 1)
     } else {
-        return null
+        return 0
     }
 }
 smartphone.getSellPhonePrice = function(id, feng=false) { // 出售手机
