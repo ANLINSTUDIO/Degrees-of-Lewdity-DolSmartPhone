@@ -86,6 +86,14 @@
         // Debug
         debug: function(title, content, title_color = 'yellow') { if (AsAPI.debugon) this.log(title, content, title_color, 'gray', "warn") },
         debugon: false,
+        // 当没有 event 时重新加载当前 passage
+        reload: function() {
+            if (!V.event) {
+                SugarCube.Engine.play(V.passage);
+                return true;
+            }
+            return false;
+        },
     }
     Object.defineProperty(window, 'asi', { get() { return window.AsAPI; }, configurable: true });
     /* AsAPI: End @early inject */

@@ -55,14 +55,6 @@ window.AsAPI = { ...window.AsAPI,  // inject
             asi.log(modname, `已自动完成所有函数和宏注入`, modcolor, "green");
         });
     },
-    // 当没有 event 时重新加载当前 passage
-    reload: function() {
-        if (!V.event) {
-            Engine.play(passage());
-            return true;
-        }
-        return false;
-    },
 }
 /* AsAPI: End @inject */
 
