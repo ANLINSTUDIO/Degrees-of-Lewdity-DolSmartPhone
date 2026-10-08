@@ -669,7 +669,7 @@
 }
 
 .newwestcard:has(.c0) {
-    background: linear-gradient(135deg, #ff0000 20px, #ff000088 0);
+    background: linear-gradient(135deg, #ff0000 20px, #ff88885c 0);
 }
 .newwestcard:has(.c0)>button {
     background-color: #00000050;
