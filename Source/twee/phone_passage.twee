@@ -124,7 +124,7 @@
     <<if $rng gte 50>>
         <<link [[逃跑|Shopping Centre Phone Sell Arrest]]>><</link>>
     <<else>>
-        <<link [[逃跑|Shopping Centre]]><</link>>
+        <<link [[逃跑|Shopping Centre]]>><</link>>
     <</if>>
 <<else>>
     <<icon "phone/phone.png">><<link [[购买手机或充电宝|Shopping Centre Phone Buy]]>><</link>><br>
@@ -729,25 +729,25 @@
 <<else>>
     “你这样和我有什么关系？” 老冯又低下了头，不再说话。<br><br>
     <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
-    <<link [[离开|Elk Street]]><</link>>
+    <<link [[离开|Elk Street]]>><</link>>
 <</if>>
 :: Second Phone Shop Exposed 2
 "不介意不介意，只要能够穿就行，谢谢你。"<<ggfenglove>><<ggfenglust>><br><br>
 <<fengclothes>>
 <<endevent>>
 <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
-<<link [[离开|Elk Street]]><</link>>
+<<link [[离开|Elk Street]]>><</link>>
 :: Second Phone Shop Exposed 3
 "算了吧算了吧"<<lfenglove>><br><br>
 <<endevent>>
 <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
-<<link [[离开|Elk Street]]><</link>>
+<<link [[离开|Elk Street]]>><</link>>
 :: Second Phone Shop Exposed 4
 "还是给我一件衣服穿吧，谢谢你。"<br>
 老冯叹了口气：“还是那句话哈，我这只有自己穿的破一点的背心和短裤啥的，你要应急就别介意。”<<gfenglove>><<gfenglust>><br><br>
 <<fengclothes>>
 <<link [[呆在店里|Second Phone Shop]]>><</link>><br>
-<<link [[离开|Elk Street]]><</link>>
+<<link [[离开|Elk Street]]>><</link>>
 
 :: Second Phone Buy
 <<switch $Phone.SecondPhoneShopGoodsBought>>
@@ -1197,7 +1197,7 @@
     <<link [[若无其事地离开|Pub]]>><<endevent>><</link>>
 <<else>>
     正当你准备趁<<he>>不注意抽出手机时，
-    <span class="red"><<Him>>突然看向你</span>，你只能假装抬手点一杯酒。| <span class="gold">-£5</span><<money -500 "pub">><<ggalcohol>><<alcohol 200>><br>
+    <span class="red"><<Him>>突然看向你</span>，你只能假装抬手点一杯酒。| <span class="gold">-£5</span><<money -500 "pub">><<ggdrunk>><<drunk 200>><br>
     并且继续和他有一句没一句地聊天。 <<pass 20>><br><br>
     <<skulduggeryuse>>
     <<link [[离开|Pub]]>><<endevent>><</link>>
@@ -1869,7 +1869,7 @@
 <<link [[调戏地回答|Library Charge SexPhoto Sydney Flirt]]>><<npcincr Sydney purity -5>><<stress -2>><<handheldon 1>><</link>><<promiscuous1>><<lstress>><<llspurity>><br>
 <<link [[认真地回答|Library Charge SexPhoto Sydney Seriously]]>><<stress 12>><<npcincr Sydney lust -5>><<npcincr Sydney love 5>><</link>><<ggstress>><<llslust>><<glove>><br>
 <<link [[随意地回答|Library Charge SexPhoto Sydney Casually]]>><<npcincr Sydney lust 3>><<npcincr Sydney purity -5>><</link>><<ggslust>><<llspurity>><br>
-<<link [[责怪悉尼私自动你的手机|Library Charge SexPhoto Sydney Blaming]]>><<stress 12>><<npcincr Sydney love -5>><<npcincr Sydney lust -5><</link>><<ggstress>><<lllove>><<llslust>>
+<<link [[责怪悉尼私自动你的手机|Library Charge SexPhoto Sydney Blaming]]>><<stress 12>><<npcincr Sydney love -5>><<npcincr Sydney lust -5>><</link>><<ggstress>><<lllove>><<llslust>>
 :: Library Charge SexPhoto Sydney Flirt
 “小坏蛋，你怎么偷偷看我的手机呀？” 你嘟起嘴吧，装作责怪地说，“哎呀，那我这些自拍的那些色色的照片……不都被你看到了呀！”<br>
 “我……我…………我不是故意的，你……你走的时候没锁手机，我就……我就……” 悉尼的脸都要埋到地下去了。<br>

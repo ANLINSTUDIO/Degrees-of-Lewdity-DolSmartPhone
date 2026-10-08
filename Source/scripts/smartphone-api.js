@@ -1,20 +1,59 @@
 as.log("SmartPhone", "正在加载：api.js");
 
-// AsAPI
-window.as = window.AsAPI = { ...window.AsAPI,  // inject
-    // 用于在宏被调用后执行额外的函数
-    onMacro: function(name, func) {
-        let originalMacro = Macro.get(name);
+/* AsAPI: Start @inject */
+window.AsAPI = { ...window.AsAPI,  // inject
+    // 【工具】注入游戏函数，在调用原函数后再执行指定的功能。
+    onFunction: function(originalFn, afterFn) {
+        return new Proxy(originalFn, {
+            apply: function(target, thisArg, argumentsList) {
+                // const result = target.apply(thisArg, argumentsList);
+                afterFn(...argumentsList);
+                return target.apply(thisArg, argumentsList);
+            }
+        });
+    },
+    // 【工具】注入游戏宏，在调用原宏后再执行指定的功能。
+    onMacro: function(macroName, afterFn) {
+        let originalMacro = Macro.get(macroName);
         if (originalMacro) {
             let oldHandler = originalMacro.handler;
-            Macro.delete(name);
-            Macro.add(name, {
+            Macro.delete(macroName);
+            Macro.add(macroName, {
                 handler: function () {
                     oldHandler.apply(this, arguments);
-                    setTimeout(func, 10);
+                    afterFn.apply(this, arguments);
                 }
             });
         }
+    },
+    // 【工具】自动处理函数和宏的注入，请使用of$和om$来进行使用，请确保与原函数或宏重名。
+    autoinject(modnamespace, modname, modcolor = "green") {
+        $(document).one(":passageinit", function () {
+            asi.debug(modname, "开始自动注入函数和宏")
+            const ns = window[modnamespace];
+            if (!ns || typeof ns !== 'object') {
+                asi.error(modname, `命名空间 ${modnamespace} 不存在，跳过注入`, modcolor);
+                return;
+            }
+            asi.debug(modname, `命名空间 ${modnamespace} 检查通过，开始注入函数和宏` + ns);
+            const keys = Object.keys(ns);
+            keys.forEach(key => {
+                asi.debug(modname, `检查 ${key} 是否需要注入`)
+                // 自动处理 of$ 前缀：绑定到全局同名函数
+                if (key.startsWith('of$')) {
+                    const funcName = key.slice(3);
+                    eval(`${funcName} = asi.onFunction(${funcName}, ${modnamespace}['of$${funcName}'])`);
+                    asi.log(modname, `已注入 onFunction: ${funcName}`, modcolor);
+                }
+                // 自动处理 om$ 前缀：使用 onMacro 注入宏
+                else if (key.startsWith('om$')) {
+                    const macroName = key.slice(3);
+                    asi.onMacro(macroName, ns[key]);
+                    asi.log(modname, `已注入 onMacro: ${macroName}`, modcolor);
+                }
+            });
+            asi.log(modname, `已自动完成所有函数和宏注入`, modcolor, "green");
+        });
     },
     // 当没有 event 时重新加载当前 passage
     reload: function() {
@@ -25,6 +64,8 @@ window.as = window.AsAPI = { ...window.AsAPI,  // inject
         return false;
     },
 }
+/* AsAPI: End @inject */
+
 
 // ==================== 这是提供给其他模块调用的API，工具函数 ====================
 smartphone.actionsAdd = function(actionslot, actionName, actionColor, actionDefault=false) {  // 遭遇战选项增加API

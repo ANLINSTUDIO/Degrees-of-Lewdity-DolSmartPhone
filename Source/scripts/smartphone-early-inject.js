@@ -1,7 +1,8 @@
 (() => {
     window.smartphone = {};
 
-    window.as = window.AsAPI = { ...window.AsAPI,  // early inject
+    /* AsAPI: Start @early inject */
+    window.AsAPI = { ...window.AsAPI,  // early inject
         // 用于检查对象或数组是否有效
         isvalid: function(dict) {
             if (dict instanceof Object) {
@@ -82,8 +83,14 @@
         warn: function(title, content, title_color = 'green') { this.log(title, content, title_color, 'yellow', "warn") },
         // 错误
         error: function(title, content, title_color = 'green') { this.log(title, content, title_color, 'red', "error") },
+        // Debug
+        debug: function(title, content, title_color = 'yellow') { if (AsAPI.debugon) this.log(title, content, title_color, 'gray', "warn") },
+        debugon: false,
     }
+    Object.defineProperty(window, 'asi', { get() { return window.AsAPI; }, configurable: true });
+    /* AsAPI: End @early inject */
 
+    
     // 创建等待用户响应的函数
     async function waitForUserResponse(alertConfig) {
         return new Promise((resolve) => {
