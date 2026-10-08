@@ -1,8 +1,8 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.86",
-    "betaVersion": true,
+    "version": "Alpha.3.87",
+    "betaVersion": false,
     "minify": true,
     "styleFileList": [
         "styles/main.css",
@@ -172,6 +172,15 @@
                     "all": true
                 }
             ]
+        },
+        {
+            "modName": "ReplacePatcher",
+            "addonName": "ReplacePatcherAddon",
+            "modVersion": "^1.0.0",
+            "params": {
+                "js": [],
+                "twee": []
+            }
         }
     ],
     "dependenceInfo": [
