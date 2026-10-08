@@ -48,16 +48,16 @@ smartphone.of$dayPassed = function() {
 
     smartphone.RefreshSecondPhone()  // 老冯二手店刷新货
 }
-smartphone.om$journal  = function() {
+smartphone.om$journal = function() {
     smartphone.showPhoneJournal()
 }
-smartphone.om$effectssteal  = function() {
+smartphone.om$effectssteal = function() {
     smartphone.effectsstealPhone()
 }
-smartphone.om$orgasm  = function() {
+smartphone.om$orgasm = function() {
     T.havingOrgasm = true;
 }
-smartphone.om$make_recipe  = function() {
+smartphone.om$make_recipe = function() {
     T.makingRecipe = true;
 }
 
