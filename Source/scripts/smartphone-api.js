@@ -256,7 +256,7 @@ smartphone.getPhoneConditionInfo = function(phone_or_condition) {
 smartphone.getPhoneBattery = function(phone) {
     phone = phone ?? smartphone.getUsingPhone()
     if (phone && phone.newnessmax > 0 && phone.newness >= 0) {
-        return Math.round((phone.newness / phone.newnessmax) * 100)
+        return Math.max(Math.round((phone.newness / phone.newnessmax) * 100), 1)
     } else {
         return null
     }
@@ -289,8 +289,13 @@ smartphone.getRepairPhonePrice = function(id) { // 出售手机
         return Math.floor(Math.max(price, 5)); // 最低修复价为5
     }
 }
-smartphone.getUsingPhone = function() {  // 获取正在使用的手机
-    if (!V.Phone.Using || V.Phone.Using === "null") return null;
+smartphone.getUsingPhone = function(allow_shutdown=false) {  // 获取正在使用的手机
+    if (!V.Phone.Using || V.Phone.Using === "null") {
+        if (allow_shutdown) {
+            return V.Phone.Owned.find(p => p.usable) || null;
+        }
+        return null;
+    }
     return smartphone.getPhone(V.Phone.Using);
 }
 smartphone.isCarryingUsablePhone = function() { // 检查是否携带可用的（包括没电关机的）手机

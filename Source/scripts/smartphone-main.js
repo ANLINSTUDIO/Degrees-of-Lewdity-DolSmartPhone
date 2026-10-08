@@ -869,20 +869,20 @@ smartphone.PhoneConsumption = function(value) {
     const phone = smartphone.getUsingPhone()
     if (phone && phone.newness > 0) {
         asi.log("SmartPhone", `电量损耗: ${value}`);
-        phone.newness = Math.round(phone.newness - value);
-        if (phone.newness === 0) {
-            phone.newness = -1
-        }
+        phone.newness = phone.newness - value;
         return smartphone.PhoneCheckNewness()
     }
     return false
 }
 smartphone.PhoneCharge = function(value, phone = null) {
-    if (!phone) {phone = smartphone.getUsingPhone()}
-    const newness = Math.round(phone.newness + value)
-    const wear = Math.round(Math.max(newness - phone.newnessmax, 0) * smartphone.充电损害每度电比)
+    if (!phone) {phone = smartphone.getUsingPhone(true)}
+    const newness = phone.newness + value
+    const wear = Math.max(newness - phone.newnessmax, 0) * smartphone.充电损害每度电比
     smartphone.PhoneWaer(wear, phone)  // 损耗手机：过度充电
     phone.newness = Math.min(newness, phone.newnessmax);
+    if (V.Phone.Using === 'null') {
+        V.Phone.Using = smartphone.getUsingPhone(true).id
+    }
     return wear
 }
 smartphone.PhoneWaer = function(value, phone = null, check = true) {
@@ -914,12 +914,12 @@ smartphone.PhoneCheckNewness = function () {
             return true;
         }
     }
-    if (phone.newness < 0) {
+    if (phone.newness <= 0) {
         phone.newness = 0;
         smartphone.PhoneWaer(50, null, false)  // 损耗手机：强制关机
         smartphone.changeUsingPhone()
         smartphone.PhoneUIInit()
-        if (smartphone.getUsingPhone().newness === 0) {
+        if (smartphone.getUsingPhone() === null) {
             asi.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return false;
         } else {
