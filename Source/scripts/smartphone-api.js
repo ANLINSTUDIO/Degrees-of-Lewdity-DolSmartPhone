@@ -393,12 +393,3 @@ smartphone.haveSexPhotoInPhone = function() {
     }
     return false
 }
-
-
-// ==================== 下面是任务钩子 ====================
-smartphone.orgasm = function() {
-    T.havingOrgasm = true;
-}
-smartphone.make_recipe = function() {
-    T.makingRecipe = true;
-}
