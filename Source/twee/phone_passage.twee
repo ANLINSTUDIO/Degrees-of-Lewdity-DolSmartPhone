@@ -1462,7 +1462,7 @@
         <</if>>
         
     <<else>>
-        <<set _phone to smartphone.getUsingPhone()>>
+        <<set _phone to smartphone.getUsingPhone(true)>>
         <<if _phone>>
             你<<print smartphone.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print smartphone.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
             <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run smartphone.PhoneChargeUnguarded(_args[0])>><</link>>
