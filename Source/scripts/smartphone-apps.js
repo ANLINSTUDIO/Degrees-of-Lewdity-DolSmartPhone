@@ -2150,8 +2150,8 @@ smartphone.getRecipes = function() {
             icon: food.icon,
             difficulty: food_difficulty,
             t: food.recipe.cook_minutes,
-            tt: as.getFriendlyTimeText(food.recipe.cook_minutes/60, false),
-            ingredients: food.recipe.ingredients
+            tt: asi.getFriendlyTimeText(food.recipe.cook_minutes/60, false),
+            ingredients: food.recipe.ingredients_cn ?? food.recipe.ingredients
         }
         let grade = detailedSkillGrades[0];
         for (let i = 0; i < detailedSkillGrades.length; i++) {
@@ -2163,7 +2163,9 @@ smartphone.getRecipes = function() {
         }
         if (V.Phone.RecipesLearning.hasOwnProperty(food_key)) {
             item.hasLearned = V.Phone.RecipesLearning[food_key]
+            if (item.hasLearned < item.difficulty) {
             lst_learning.push(item)
+            }
         } else if (V.housekeeping >= grade.requiredValue) {
             lst_unlearning.push(item)
         } else {
