@@ -163,7 +163,7 @@ smartphone.patchTV = smartphone.patchTransferVariables = function(oldPath, newPa
     if (oldValue !== undefined) {
         setNestedValue(V, newPath, oldValue);
         deleteNested(V, oldPath);
-        as.log("SmartPhone", `Patch：变量转移成功: ${oldPath} -> ${newPath}`);
+        asi.log("SmartPhone", `Patch：变量转移成功: ${oldPath} -> ${newPath}`);
         return true;
     }
     

@@ -1,4 +1,4 @@
-as.log("SmartPhone", "正在加载：main.js");
+asi.log("SmartPhone", "正在加载：main.js");
 
 
 // NPC注入
@@ -102,7 +102,7 @@ smartphone.eventsLoad_ = function(event_or_id) {  // 可以提供event或者even
     if (typeof(event_or_id) === "string") {
         event = smartphone.events.find(event_ => event_.eventid === event)
         if (!event) {
-            as.error("SmartPhone", `没有找到次事件 ${event_or_id}，注入失败`);
+            asi.error("SmartPhone", `没有找到次事件 ${event_or_id}，注入失败`);
         }
     }
     if (!event) return
@@ -135,10 +135,10 @@ smartphone.eventsLoad_ = function(event_or_id) {  // 可以提供event或者even
                 }
             } else {
                 if (event.f) {
-                    as.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`);
+                    asi.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`);
                     smartphone.eventsLoad_(event.f)
                 } else {
-                    as.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`);
+                    asi.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`);
                 }
             }
         }
@@ -422,12 +422,12 @@ smartphone.PhoneSafeCloseFinish = function () {
     if (phoneContainerOld) {
         phoneContainerOld.remove()
     } else {
-        as.error("SmartPhone", "SafeCloseFinishError");
+        asi.error("SmartPhone", "SafeCloseFinishError");
     }
 };
 smartphone.PhoneScaleSettings = function() {
     const PhoneScale = T.PhoneScale
-    as.reload();
+    asi.reload();
     V.Phone.Settings.Scale = PhoneScale;
     document.documentElement.style.setProperty('--phone-scale', `${V.Phone.Settings.Scale}`);
 };
@@ -439,7 +439,7 @@ smartphone.PhoneScaleSettingsReset = function() {
 };
 smartphone.PhoneMarginSettings = function() {
     const PhoneMargin = T.PhoneMargin
-    as.reload();
+    asi.reload();
     V.Phone.Settings.Margin = PhoneMargin;
     document.documentElement.style.setProperty('--phone-margin', `${V.Phone.Settings.Margin}px`);
 };
@@ -579,7 +579,7 @@ smartphone.DebugExcuteJs = function() {
                 try {
                     smartphone.DebugShowMsg(eval(command), "JS")
                 } catch (err) {
-                    as.error("SmartPhone", err);
+                    asi.error("SmartPhone", err);
                     const msg = document.createElement("span")
                     msg.className = 'red';
                     const match = err.message.match(/^[\d.]+\s*出错\s*\(::\s*[^)]+\):\s*(.+?)Export$/);
@@ -689,7 +689,6 @@ smartphone.DebugDrag = function() {
         elmnt.style.bottom = Math.round(newBottom) + 'px';
         elmnt.style.top = '';
         elmnt.style.left = '';
-        console.log(Math.sqrt(dx*dx + dy*dy));
     }
 
     function closePointerDrag(e) {
@@ -801,7 +800,7 @@ smartphone.effectsstealPhone = function () {
     }
 }
 smartphone.StolePhoneOnCombat = function () {
-    as.log("SmartPhone", "StolePhoneOnCombat");
+    asi.log("SmartPhone", "StolePhoneOnCombat");
 }
 smartphone.SellPhone = function(id, feng=false) { // 出售手机
     if (!V.Phone.Owned) return;
@@ -869,7 +868,7 @@ smartphone.changeUsingPhone = function(phone=undefined) { // 切换正在使用�
 smartphone.PhoneConsumption = function(value) {
     const phone = smartphone.getUsingPhone()
     if (phone && phone.newness > 0) {
-        as.log("SmartPhone", `电量损耗: ${value}`);
+        asi.log("SmartPhone", `电量损耗: ${value}`);
         phone.newness = Math.round(phone.newness - value);
         if (phone.newness === 0) {
             phone.newness = -1
@@ -891,7 +890,7 @@ smartphone.PhoneWaer = function(value, phone = null, check = true) {
     if (value <= 0) return;
     phone.newnessmax = Math.max(Math.round(phone.newnessmax - value), 0);
     if (phone === smartphone.getUsingPhone()) {
-        as.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
+        asi.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
         if (check) {
             return smartphone.PhoneCheckNewness()
         } else {
@@ -907,11 +906,11 @@ smartphone.PhoneCheckNewness = function () {
         phone.newnessmax = 0;
         if (!smartphone.changeUsingPhone()) {
             smartphone.PhoneSafeClose()
-            as.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            asi.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return false;
         } else {
             smartphone.PhoneUIInit()
-            as.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            asi.addStoryCaptionContent("<span class='red'>你当前使用的手机已经损坏，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
             return true;
         }
     }
@@ -921,10 +920,10 @@ smartphone.PhoneCheckNewness = function () {
         smartphone.changeUsingPhone()
         smartphone.PhoneUIInit()
         if (smartphone.getUsingPhone().newness === 0) {
-            as.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
+            asi.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你的口袋里没有另外一部能够使用的手机了。</span>"); 
             return false;
         } else {
-            as.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
+            asi.addStoryCaptionContent("<span class='red'>你当前使用的手机已经没电导致关机，无法继续使用了。<br>你从口袋里找到了另外一部能够使用的手机作为替换。</span>"); 
             return true;
         }
     } else if (phone.newness / phone.newnessmax < 0.2) {
@@ -984,7 +983,7 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
             V.Phone.Charger[position].date = Time.date
             
             const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
-            const fromStartedText = as.getFriendlyTimeText(ageHoursFromStarted)
+            const fromStartedText = asi.getFriendlyTimeText(ageHoursFromStarted)
 
             var beenStolen = false;
             if (!smartphone.手机充电中安全地点.includes(position)) {
@@ -1006,7 +1005,7 @@ smartphone.PhonePowerPass = function() {
     if (smartphone.getUsingPhone()) {
         if (V.Phone.PowerPassLast) {
             const minutesPassed = (Time.date.timeStamp - V.Phone.PowerPassLast.timeStamp) / 60; // 分钟差
-            as.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * smartphone.自然电量损失每分钟}`);
+            asi.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * smartphone.自然电量损失每分钟}`);
             if (minutesPassed > 0) {
                 smartphone.PhoneConsumption(minutesPassed * smartphone.自然电量损失每分钟);
             } else {
@@ -1021,7 +1020,7 @@ smartphone.PhonePowerPass = function() {
                     chargingValue = Math.min(chargingValue, phone.newnessmax - phone.newness, V.Phone.PowerBank.newness);
                     smartphone.PhoneCharge(chargingValue, phone);
                     V.Phone.PowerBank.newness -= chargingValue;
-                    as.log("SmartPhone", `充电宝充电: ${chargingValue}`);
+                    asi.log("SmartPhone", `充电宝充电: ${chargingValue}`);
                     if (V.Phone.PowerBank.newness <= 0) {
                         smartphone.PhoneCharging(false, true);
                     }

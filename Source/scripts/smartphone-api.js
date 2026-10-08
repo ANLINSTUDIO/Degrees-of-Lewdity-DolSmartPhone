@@ -1,4 +1,4 @@
-as.log("SmartPhone", "正在加载：api.js");
+asi.log("SmartPhone", "正在加载：api.js");
 
 /* AsAPI: Start @inject */
 window.AsAPI = { ...window.AsAPI,  // inject
@@ -101,7 +101,7 @@ smartphone.actionsAdd = function(actionslot, actionName, actionColor, actionDefa
   }, 10);
 };
 smartphone.reload = function(open=false) {
-    if (as.reload()) {
+    if (asi.reload()) {
         if (open) {
             setTimeout(() => {
                 if (smartphone.shouldUsePhone()) smartphone.togglePhone(true);
@@ -113,7 +113,7 @@ smartphone.reload = function(open=false) {
 
 // ==================== 下面是关于手机使用的工具函数 ====================
 smartphone.getIsLatestVersion = function() {
-    as.log("SmartPhone", `最新版本 ${smartphone.latestVersion}`);
+    asi.log("SmartPhone", `最新版本 ${smartphone.latestVersion}`);
     const isLatestVersion = smartphone.currentVersion === smartphone.latestVersion;
     return smartphone.latestVersion === null || isLatestVersion
 };

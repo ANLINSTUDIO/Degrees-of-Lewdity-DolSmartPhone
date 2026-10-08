@@ -128,10 +128,10 @@
     <</if>>
 <<else>>
     <<icon "phone/phone.png">><<link [[购买手机或充电宝|Shopping Centre Phone Buy]]>><</link>><br>
-    <<if as.isvalid($Phone.Owned)>>
+    <<if asi.isvalid($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Shopping Centre Phone Sell]]>><</link>><br>
     <</if>>
-    <<if as.isvalid($Phone.Owned)>>
+    <<if asi.isvalid($Phone.Owned)>>
         <<icon "hammer_nails.png">><<link [[修复手机|Shopping Centre Phone Rrepair]]>><</link>><br>
     <</if>>
     <<getouticon>><<link [[离开|Shopping Centre]]>><</link>>
@@ -216,7 +216,7 @@
     <<set $Phone.SellMoney to smartphone.SellPhone($PhoneToSell)>>
     <<money $Phone.SellMoney>>
     你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br>
-    <<if as.isvalid($Phone.Owned)>>
+    <<if asi.isvalid($Phone.Owned)>>
         <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
     <</if>>
     <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
@@ -235,7 +235,7 @@
             <<set $daily.PhoneShopState to 4>>
             “对不起，我们不能收购盗窃的手机。” 店员说完之后就把手机还给了你。<br><br>
             <<endevent>>
-            <<if as.isvalid($Phone.Owned)>>
+            <<if asi.isvalid($Phone.Owned)>>
                 <<highicon>><<link [[继续|Shopping Centre Phone Sell]]>><</link>><br>
             <</if>>
             <<getouticon>><<link [[离开|Shopping Centre Phone Shop]]>><</link>>
@@ -367,7 +367,7 @@
 
 :: === Second Phone Shop ===[widget]
 <<widget "SecondPhoneShopLink">>
-    <<if C.npc.Feng.init is 0 and as.isvalid($Phone.Owned)>>
+    <<if C.npc.Feng.init is 0 and asi.isvalid($Phone.Owned)>>
         <<set C.npc.Feng.init to 1>>
         <<goto "Second Phone Shop Meet Feng First">>
     <<else>>
@@ -393,7 +393,7 @@
 <</if>>
 
 :: Second Phone Shop Meet Feng First
-<<if as.isvalid($Phone.Owned)>>
+<<if asi.isvalid($Phone.Owned)>>
     <<set $Phone.FengStole to smartphone.DeletePhone(V.Phone.Owned[0].id)>>
 <<else>>
     <<set $Phone.FengStole to smartphone.BuySecondPhone("特斯特2 测试型", 0.01)>>
@@ -639,7 +639,7 @@
         <</if>><br>
     <</if>>
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
-    <<if as.isvalid($Phone.Owned)>>
+    <<if asi.isvalid($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
         <<if smartphone.isCarryingStolenPhone(true)>>
             <<icon "phone/phone-crack.png">><<link [["刷机 | 破解盗窃而来的手机"|Second Phone Crack]]>><</link>><br>
@@ -854,7 +854,7 @@
 <<set $Phone.SellMoney to smartphone.SellPhone($PhoneToSell, true)>>
 <<money $Phone.SellMoney>>
 你获得了<span class="gold">£<<print $Phone.SellMoney/100>></span>。<br><br><br>
-<<if as.isvalid($Phone.Owned)>>
+<<if asi.isvalid($Phone.Owned)>>
     <<include "Second Phone Sell">>
 <<else>>
     <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>

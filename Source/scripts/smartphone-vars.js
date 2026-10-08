@@ -1,4 +1,4 @@
-as.log("SmartPhone", "正在加载：vars.js");
+asi.log("SmartPhone", "正在加载：vars.js");
 
 
 // === 版本 =======================================================
@@ -10,7 +10,7 @@ smartphone.debug = 0
 
 async function getLastedVersion() {
   if (smartphone.betaVersion) return;  // 测试版本不获取最新版本信息
-  as.log("SmartPhone", `正在取求最新版本号`)
+  asi.log("SmartPhone", `正在取求最新版本号`)
   try {
     const response = await fetch(`https://sb.alseece.top/2/value.php?key=DoL-SmartPhone-LastestVersion`, {
       mode: 'cors',  // 明确指定 cors 模式
@@ -21,7 +21,7 @@ async function getLastedVersion() {
     }
     const data = await response.json();
     if (data.error) {
-      as.error("SmartPhone", '获取最新版本失败:'+data.error);
+      asi.error("SmartPhone", '获取最新版本失败:'+data.error);
     } else {
       smartphone.latestVersion = data.value;
       if (V.passage === "Start") {
@@ -29,7 +29,7 @@ async function getLastedVersion() {
       }
     }
   } catch (error) {
-    as.error("SmartPhone", '请求最新版本出错:'+error);
+    asi.error("SmartPhone", '请求最新版本出错:'+error);
   }
 }
 getLastedVersion()
