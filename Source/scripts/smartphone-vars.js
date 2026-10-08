@@ -952,8 +952,8 @@ smartphone.Apps = {  // APP
     settings: {display_name: "设置", icon: "img/misc/icon/furniture/wallpaper-cow-girls.png", app_widget: "phone_app_settings"},
 
     // map: {display_name: "地图", icon: "img/misc/icon/phone/app/map.png", app_widget: "phone_app_map", init: "initMap"},
-    DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/DD.png", app_widget: "phone_app_DD", disableinevent: true},
-    newWest: {display_name: "美食屋", icon: "img/misc/icon/phone/app/newWest.png", app_widget: "phone_app_newWest", disableinevent: true, dlock: true},
+    DD: {display_name: "DD打车", icon: "img/misc/icon/phone/app/dd.png", app_widget: "phone_app_DD", disableinevent: true},
+    newWest: {display_name: "美食屋", icon: "img/misc/icon/phone/app/new-west.png", app_widget: "phone_app_newWest", disableinevent: true, dlock: true},
 };
 smartphone.Contacts = [  // 联系人P
     {name: "兰德里", call: "Phone Call Landry"},
