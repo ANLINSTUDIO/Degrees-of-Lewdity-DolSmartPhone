@@ -87,14 +87,6 @@ smartphone.events = [
     {passage: "Ocean Breeze Work", target: "Chef Help", event: "ChefHelpGetNewWest1", position: "before"},
     {passage: "Chef Work", target: "Chef Work 2", event: "ChefHelpGetNewWest2", position: "before"},
 ];
-smartphone.events_on_macro = [
-    {macro: "journal", func: "showPhoneJournal"},
-    {macro: "effectssteal", func: "effectsstealPhone"},
-
-    // 任务钩子
-    {macro: "orgasm", func: "orgasm"},
-    {macro: "make_recipe", func: "make_recipe"},
-]
 
 
 // === 内容 =======================================================

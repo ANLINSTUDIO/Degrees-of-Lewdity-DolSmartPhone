@@ -36,12 +36,34 @@ if (window.maplebirch) {
 }
 
 
+// ================== 原版函数注入 ==================
+smartphone.of$dayPassed = function() {
+    // 咖啡馆每天下降警戒
+    if (V.Phone.StealPhoneAlertOceanBreeze) {
+        V.Phone.StealPhoneAlertOceanBreeze -= 3
+        if (V.Phone.StealPhoneAlertOceanBreeze <= 0) {
+            delete V.Phone.StealPhoneAlertOceanBreeze
+        }
+    }
+
+    smartphone.RefreshSecondPhone()  // 老冯二手店刷新货
+}
+smartphone.om$journal  = function() {
+    smartphone.showPhoneJournal()
+}
+smartphone.om$effectssteal  = function() {
+    smartphone.effectsstealPhone()
+}
+smartphone.om$orgasm  = function() {
+    T.havingOrgasm = true;
+}
+smartphone.om$make_recipe  = function() {
+    T.makingRecipe = true;
+}
+
 // ================== passage 注入 ==================
-$(document).one(":passageinit", function () {
-    smartphone.events_on_macro.forEach(function(event) {
-        as.onMacro(event.macro, smartphone[event.func])
-    })
-});
+asi.autoinject("smartphone", "SmartPhone");
+
 $(document).on(":passagerender", function (ev) {smartphone.onPassageRender(ev)});
 smartphone.onPassageRender = function (ev) {
     smartphone.ev = ev;
@@ -71,6 +93,7 @@ smartphone.onPassageRender = function (ev) {
 
     smartphone.PhonePowerPass();
 }
+// 【注入函数】事件软注入
 smartphone.eventsLoad = function() {
     smartphone.events.forEach(smartphone.eventsLoad_)
 }
@@ -160,24 +183,6 @@ smartphone.eventsLoadInsert_ = function(target, insert_target, position="after",
     }
 }
 
-// ================== 原版函数注入 ==================
-dayPassed = new Proxy(dayPassed, {
-    apply: function(target, thisArg, argumentsList) {
-        smartphone.dayPassed()
-        return target.apply(thisArg, argumentsList);
-    }
-});
-smartphone.dayPassed = function() {
-    // 咖啡馆每天下降警戒
-    if (V.Phone.StealPhoneAlertOceanBreeze) {
-        V.Phone.StealPhoneAlertOceanBreeze -= 3
-        if (V.Phone.StealPhoneAlertOceanBreeze <= 0) {
-            delete V.Phone.StealPhoneAlertOceanBreeze
-        }
-    }
-
-    smartphone.RefreshSecondPhone()  // 老冯二手店刷新货
-}
 
 
 // =================== 操控手机 =====================
