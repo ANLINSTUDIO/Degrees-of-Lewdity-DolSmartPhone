@@ -304,6 +304,14 @@ smartphone.isCarryingUsablePhone = function() { // 检查是否携带可用的�
     }
     return false;
 }
+smartphone.getCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
+  if (!V.Phone.Owned) return false;
+  let count = 0;
+  for (let i = 0; i < V.Phone.Owned.length; i++) {
+    if (V.Phone.Owned[i].stolen && (!useableFilter || !smartphone.isUsable(V.Phone.Owned[i], true))) count++;
+  }
+  return count;
+}
 smartphone.isCarryingStolenPhone = function(useableFilter=false) { // 检查是否携带盗窃来的手机
   if (!V.Phone.Owned) return false;
   for (let i = 0; i < V.Phone.Owned.length; i++) {
