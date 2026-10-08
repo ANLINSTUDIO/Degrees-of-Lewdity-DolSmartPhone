@@ -1810,7 +1810,7 @@
         <</for>>
     <<else>>
         <div style="width: 100%;height: 80%;text-align: center;display: flex;flex-direction: column;align-items: center;justify-content: center;">
-            <img src="img\misc\icon\prison_run.png">
+            <img src="img\misc\icon\prison-run.png">
             当前所在的位置暂不支持DD打车服务。<br>
             <span class="black">当前位置信号差，请移步空旷地带再重新试试呢……</span>
         </div>
