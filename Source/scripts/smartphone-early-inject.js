@@ -1,5 +1,6 @@
 (() => {
     window.smartphone = {};
+    Object.defineProperty(window, 'PhoneMod', { get() { return window.smartphone; }, configurable: true });
 
     /* AsAPI: Start @early inject */
     window.AsAPI = { ...window.AsAPI,  // early inject
