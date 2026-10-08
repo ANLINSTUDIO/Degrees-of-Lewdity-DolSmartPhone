@@ -1,1 +1,2 @@
-smartphone.photoLoaded = true;
+window.smartphone ??= {};
+window.smartphone.photoLoaded = true;

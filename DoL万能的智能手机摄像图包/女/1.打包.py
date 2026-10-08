@@ -93,7 +93,7 @@ def main():
     
     # 3. 获取版本号用于 ZIP 文件名
     version = config.get('version', 'unknown')
-    zip_name = f"DoL-SmartPhone-PhotoPack-{version}.zip"
+    zip_name = f"SmartPhone-PhotoPack-v{version}.mod.zip"
     
     # 4. 打包文件
     files_to_pack = [boot_json_path, js_file_path, img_dir]
