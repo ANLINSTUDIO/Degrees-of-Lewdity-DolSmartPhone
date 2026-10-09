@@ -36,7 +36,10 @@
                     });
                     const data = await response.json();
                     if (!data.error) {
-                        let content = data.value;
+                        const escapeHtml = str => String(str).replace(/[&<>"']/g, c => ({
+                            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                        }[c]));
+                        let content = escapeHtml(data.value);
                         if (element.dataset.replace === 'true') {
                         content = content.replaceAll('\n', '<br>');
                         }
