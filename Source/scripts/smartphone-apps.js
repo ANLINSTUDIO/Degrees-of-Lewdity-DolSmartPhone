@@ -915,9 +915,7 @@ smartphone.filterMode = {
     "社交": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("social")),
 }
 smartphone.initAlbum = function() {
-    if (!smartphone.photoLoaded) {
-        document.querySelector("#photononetip").style.display = ""
-    }
+    smartphone.photoLoadCheck();
     const nonetext = Object.keys(smartphone.filterMode)[0];
     if(V.Phone.filterMode === undefined) {
         V.Phone.filterMode = nonetext
@@ -1055,12 +1053,15 @@ smartphone.filterAlbum = function() {
 };
 smartphone.photoError = function(element) {
     element.remove();
+    smartphone.photoLoadCheck();
+}
+smartphone.photoLoadCheck = function() {
     const photononetip = document.querySelector("#photononetip");
     photononetip.style.display = "";
     if (smartphone.photoLoaded) {
-        photononetip.innerHTML = "加载的图包模组可能<span class='gold'>未启用美化</span>或者装载的图包不是对应的版本；此种问题将导致某些甚至全部的摄像图像不可见。"
+        photononetip.innerHTML = "加载的图包模组可能<span class='gold'>未启用美化</span>或者装载的图包不是对应的版本；此种问题将导致某些甚至全部的摄像图像不可见。";
     } else {
-        photononetip.innerHTML = "未装载摄像图包，将不会在游戏内显示任务具体照片。"
+        photononetip.innerHTML = "未装载摄像图包，将不会在游戏内显示任务具体照片。";
     };
 }
 smartphone.addAlbumTask = function(taskId) {
@@ -1181,7 +1182,7 @@ smartphone.addAlbumTask = function(taskId) {
                         <</if>>
                     <</if>>
                 </div>
-                <img class="album-photo-image" src='${(isFinished)? (photo.img ? photo.img : `img/photo/${taskId}.png`): "img/ui/phone/app/photo.png"}'>
+                <img class="album-photo-image" src='${(isFinished)? (photo.img ? photo.img : `img/photo/${taskId}.png`): "img/ui/phone/app/photo.png"}' onerror="javascript:smartphone.photoError(this)">
             </div>
         `);
     } else {
@@ -1201,7 +1202,7 @@ smartphone.addAlbumTask = function(taskId) {
             </div>
             <div class="album-photo-content">
                 <div style="font-size:12px; color:#666; flex-grow: 1">完成任务后可以拍摄照片并发布</div>
-                <img class="album-photo-image" src="img/ui/phone/app/photo.png">
+                <img class="album-photo-image" src="img/ui/phone/app/photo.png" onerror="javascript:smartphone.photoError(this)">
             </div>
         `);
     }
