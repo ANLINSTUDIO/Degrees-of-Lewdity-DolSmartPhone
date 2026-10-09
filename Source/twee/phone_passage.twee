@@ -1460,7 +1460,6 @@
                 <<link [[把放在这里充电的手机拿走|_args[1]]]>><<run smartphone.PhoneChargeUnguardedFinish(_args[0])>><</link>><br>
             <</if>>
         <</if>>
-        
     <<else>>
         <<set _phone to smartphone.getUsingPhone(true)>>
         <<if _phone>>
