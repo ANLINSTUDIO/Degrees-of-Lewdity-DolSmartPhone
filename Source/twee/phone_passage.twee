@@ -1815,44 +1815,189 @@
         </div>
     <</if>>
 <</widget>>
+<<widget "passoutdd">>
+
+<</widget>>
 
 :: DD seat
 <<if $Phone.dd>>
-    <<set $outside to 0>><<effects>>
+    <<set $outside to 0>>
     <<set $foresthunt to 0>>
+    <<effects>>
     <<if Weather.precipitation is "rain">>
         车窗正经受着雨水的冲刷，那噼啪作响的声音便是它们的杰作。<br>
     <</if>>
     你在车的后座坐下，就那样出神地望着窗外。<br><br>
-    <!-- <<if $stress gte $stressmax>>
-        <<passoutdd>>
-    <</if>> -->
-    你的车到达了目的地。<br>
-    <<set _finish to smartphone.ddFinish()>>
+    <<if $stress gte $stressmax>>
+        颠簸中，你感觉心脏一阵剧痛，你把自己逼得太紧了。<br><br>
+        <<set $Phone.DDPassoutTemp to smartphone.ddFinish()>>
+        <<link [[你眼前一黑……|DD Passout]]>><</link>>
+    <<else>>
+        你的车到达了目的地。<br>
+        <<set _finish to smartphone.ddFinish()>>
 
-    <<print '<<money '+-_finish.cost*100+'>>'>>
-    <<print '你支付了<span class="gold">£'+_finish.cost+'</span>。'>><br><br>
+        <<print '<<money '+-_finish.cost*100+'>>'>>
+        <<print '你支付了<span class="gold">£'+_finish.cost+'</span>。'>><br><br>
 
-    <<print "<<"+_finish.icon+">><<link [["+_finish.name+" ("+_finish.pass_text+")|"+_finish.passage+"]]>><<pass "+_finish.pass+">><</link>><br>">>
-
-
-    <!-- <<case "industrial">><<industrial>>
-    <<case "residential">><<residential>>
-    <<case "commercial">><<commercial>>
-
-    <<case "industrialdrain">><<industrialdrain>>
-    <<case "residentialdrain">><<residentialdrain>>
-    <<case "commercialdrain">><<commercialdrain>>
-    <<case "seabeach">><<seabeach>>
-    <<case "searocks">><<searocks>>
-    <<case "seadocks">><<seadocks>>
-    <<case "seacliffs">><<seacliffs>>
-    <<case "drainexit">><<drainexit>>
-    
-    <<case "sea">><<seamove>> -->
-<<else>>
+        <<print "<<"+_finish.icon+">><<link [["+_finish.name+" ("+_finish.pass_text+")|"+_finish.passage+"]]>><<pass "+_finish.pass+">><</link>><br>">>
+    <</if>>
 <</if>>
 
+:: DD Passout
+"<<lady>>？……<<lady>>？卧槽，怎么碰上这么个事……"你模模糊糊地听见车内的司机在喊你，但是你已经没有意识应答了。<br><br>
+<<passout>>
+
+<<if dangerEvent()>>
+    <<pass 1 hour>>
+
+    <<location "moor">><<effects>>
+
+    <<set $leftarm to "bound">><<set $rightarm to "bound">>
+    <<strip>>
+
+    恍惚中，你只觉得汽车的轰鸣慢慢消失了，一睁眼一闭眼，你被抬起又放下，取而代之的是全身的酸痛与下半身不断传来的快感。<br><br>
+    <<link [[醒来|DD Molestation]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+    <<pass 30>>
+	<<ambulance>>
+<</if>>
+
+<<trauma 6>><<set $stress -= 2000>>
+
+:: DD Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<person1>>
+	<<maninit>>
+	你醒来时发现自己全身赤裸地被绑在汽车打开的后备箱中。你的手腕被一根细绳绑在一起，双腿呈M字张开，私处就这么暴露在空气中。<<person>>把你带到了荒郊野外，对你实施着侵犯。<<controlloss>>
+	<<set $phase to 1>>
+<</if>>
+<<if $phase is 1>>
+    <br><br>
+	"别动好吗，小<<girl>>。"<<person1>><<He>>把麻绳在你的躯干上，一直缠到腋窝下，"前几天用来绑行李的，相信你应该会喜欢吧，小行李？"
+	<<set $phase to 2>>
+<</if>>
+
+<<set $position to "missionary">>
+<<effects>>
+<<effectsman>>
+<<alarmstate "<span class='red'>附近是城市外的郊区，根本不会有人来救你。</span>">>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|DD Molestation Ejaculation]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|DD Molestation Escape]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|DD Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: DD Molestation Ejaculation
+<<effects>>
+<<person1>><<He>>已然高潮，身体不停颤抖着，不一会儿就恢复了，满足地看着你。<br><br>
+<<set $stress -= 1000>>
+<<if $enemyanger gte ($enemyangermax / 5) * 3>>
+    <<He>>看了看附近荒凉的乡村，随后用嘲讽的语气说着。"你就是个<<bitch>>，我不明白我为什么要载你。" 就这样，<<he>>把你从后备箱里提出来，将你解绑，拿回自己的麻绳，把你的衣服丢给你，开着车扬长而去。
+    <br><br>
+    <<unbind>>
+    <<clotheson>>
+    <<endcombat>>
+    <<link [[继续|Farm Road 3]]>><</link>>
+<<else>>
+    <<He>>看着你笑了，随后抬起手，按在后备箱机盖上，对你说：“你，还去目的地吗，<<lady>>？不过想去的话你总得留下一些什么吧。”
+    <br><br>
+    <<link [[给钱|DD Molestation Finish]]>><<set $phase to 1>><</link>><br>
+    <<link [[留下你的内衣|DD Molestation Finish]]>><<set $phase to 2>><</link>><br>
+    <<link [[不去了|DD Molestation Finish]]>><<set $phase to 3>><</link>><br>
+<</if>>
+
+:: DD Molestation Escape
+<<effects>>
+<<person1>>你凭借蛮力将<<He>>踢倒在地。<<tearful>>你随后挣脱束缚，拿起你的衣服，向远处跑去。<br><br>
+<<unbind>>
+<<clotheson>>
+<<endcombat>>
+<<set $stress -= 1000>>
+<<link [[逃离|Farm Road 3]]>><</link>>
+
+:: DD Molestation Finish
+<<person1>>
+<<if $phase is 3>>
+    <<He>>看了看附近荒凉的乡村，随后用嘲讽的语气说着："那好吧，祝你好运。"就这样，<<he>>把你从后备箱里提出来，将你解绑，拿回自己的麻绳，把你的衣服丢给你，开着车扬长而去。
+    <br><br>
+    <<unbind>>
+    <<clotheson>>
+    <<endcombat>>
+    <<link [[继续|Farm Road 3]]>><</link>>
+<<else>>
+    <<location "town">>
+    "那好吧，"<<person>>笑着看了你一眼，"但是这趟，你得给我好好待在后备箱，你最好不要乱动啊，小妖精。"
+    <br><br><br>
+    后备箱被<<he>>一下关上，你的世界再也没有了光亮。你不仅被束缚着，而且还没有穿任何能够遮挡你<<genitals>>的衣服。<<garousal>><<arousal 30>><br><br>
+    <<switch $phase>>
+        <<case 1>>
+            <<set _cost to $Phone.DDPassoutTemp.cost*100>>
+            你感觉经历了漫长的旅途，随后车子停稳下来，咔哒一声后备箱被打开，刺眼的阳光传来。<br><br>
+            "到了，"<<person>>对你说，"一共<span class="gold">£_cost</span>。"<br><br>
+            "什么！？账单上可不是这么写的！"你皱着眉头，被绑住的手臂拼命的想要挣脱。但是能挣脱的话你早就不会被绑住了。<br><br>
+            "DD平台上写多少，和我想收你多少，有什么关联吗？"<<person>>又把手指插入你的<<pussy>>慢慢搅动，你无法反抗, "你最好想清楚再回答，现在可不是城外了，到处都有人。"<<ggarousal>><<arousal 100>>
+            <br><br>
+            <<if $money gte _cost*100>>
+                <<link [[付钱|DD Molestation Finish 2]]>><</link>>
+            <<else>>
+                <span class="red">你付不起这个价格！</span>
+            <</if>><br>
+            <<link [[改说留下你的内衣|DD Molestation Finish 2]]>><<set $phase to 3>><</link>>
+        <<case 2>>
+            半路上，汽车因为等红灯停下来了，你突然听见那<<person>>回过头来对你说，"嘿，我改主意了……"<br><br>
+            "什么！？我们明明说好了的！我把内衣留给你，你就放我走，不是吗？”你皱着眉头，被绑住的手臂拼命的想要挣脱。但是能挣脱的话你早就不会被绑住了。<br><br>
+            "我当时怎么说，和我现在想怎么做，有什么关联吗？"<<person>>笑了笑, "小<<girl>>，我们在大马路上了，现在到处都有人。"<br><br>
+            你有一种不好的预感。突然间，你听到咔哒一声，脑子一嗡。明亮的阳光，从一条缝钻入进来。缓缓打开的后备箱让你来不及思考，蜷起身子尽量地躲着，怒骂道："你有病吧！后面有车啊！"<br><br>
+            你透过后车的挡风玻璃看到那个司机正在拿出手机拍你，你竟然一时觉得有点性奋。<<gggarousal>><<arousal 300>><<fameexhibitionism 3>><br><br>
+            <<exhibitionism4>><br>
+            好在时间不长，<<person>>控制后备箱自动关上了，你虽然口中一直在咒骂<<person>>，<<he>>却也不生气，你心中还别有一番滋味。
+            <br><br>
+            <<link [[继续|DD Molestation Finish 2]]>><</link>>
+    <</switch>>
+<</if>>
+
+:: DD Molestation Finish 2
+<<set _finish to $Phone.DDPassoutTemp>>
+<<person1>>
+<<unbind>>
+<<switch $phase>>
+    <<case 1>>
+        <<set _cost to _finish.cost*100>>
+        <<print '<<money -'+_cost*100+'>>'>>
+        <<print '你支付了<span class="gold">£'+_cost+'</span>。'>>
+        <br><br>
+        你真的给了<<he>>这么多钱。<br><br>
+        "好吧，放过你了，你走吧。"就这样，<<he>>把你从后备箱里提出来，将你解绑，拿回自己的麻绳，把你的衣服丢给你，开着车扬长而去。<br><br>
+    <<case 2>>
+        你感觉经历了漫长的旅途，随后车子停稳下来，咔哒一声后备箱被打开，刺眼的阳光传来。<br><br>
+        <<if $worn.under_upper.set is $worn.under_lower.set>>
+            <<he>>从后座拿走你的<<print $worn.under_upper.cn_name_cap??$worn.under_upper.name>>和<<print $worn.under_lower.cn_name_cap??$worn.under_lower.name>>，
+        <<else>>
+            <<he>>从后座拿走你的<<print $worn.under_upper.cn_name_cap??$worn.under_upper.name>>，
+        <</if>>
+        <<underupperruined>><<underlowerruined>>
+        随后对你说："好吧，放过你了，你走吧。"就这样，<<he>>把你从后备箱里提出来，将你解绑，拿回自己的麻绳，把你剩余的衣服丢给你，开着车扬长而去。<br><br>
+    <<case 3>>
+        <<he>>笑了笑，随后把你从后备箱里提出来，将你解绑，拿回自己的麻绳，一边却说："也行，既然你也改主意，那我认为我也还有一次机会，要不，你就这样吧！"<br><br>
+        你有一种不好的预感。随后怒问到："你什么意思？什么叫就这样吧！？"<br><br>
+        "意思就是……"<<he>>没有把话说完，却直接上了车，你的衣服全部放在后座，<<he>>却开着车扬长而去。
+        <<ruined>>
+        <br><br>
+<</switch>>
+<<endcombat>>
+<<clotheson>>
+<<print "<<"+_finish.icon+">><<link [["+_finish.name+"|"+_finish.passage+"]]>><</link>>">>
 
 
 :: ==========Sydney==========
