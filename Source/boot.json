@@ -1,204 +1,204 @@
 {
-    "name": "SmartPhone Alpha",
-    "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "Alpha.3.87",
-    "betaVersion": false,
-    "minify": true,
-    "styleFileList": [
-        "styles/main.css",
-        "styles/guide.css",
-        "styles/apps/yenote.css",
-        "styles/apps/memo.css",
-        "styles/apps/map.css"
-    ],
-    "scriptFileList": [
-        "scripts/smartphone-patch.js",
-        "scripts/smartphone-guide.js",
-        "scripts/smartphone-vars.js",
-        "scripts/smartphone-api.js",
-        "scripts/smartphone-apps.js",
-        "scripts/smartphone-main.js",
-        "scripts/smartphone-extension.js"
-    ],
-    "scriptFileList_inject_early": [
-        "scripts/smartphone-early-inject.js"
-    ],
-    "tweeFileList": [
-        "twee/phone.twee",
-        "twee/phone_call.twee",
-        "twee/phone_game.twee",
-        "twee/phone_passage.twee"
-    ],
-    "imgFileList": [
-        "img/guide/charge/1.png",
-        "img/guide/contacts/1.png",
-        "img/guide/contacts/2.png",
-        "img/guide/contacts/3.png",
-        "img/guide/contacts/4.png",
-        "img/guide/memo/1.png",
-        "img/guide/photo/1.png",
-        "img/guide/photo/2.png",
-        "img/guide/photo/3.png",
-        "img/guide/photo/4.png",
-        "img/guide/photo/5.png",
-        "img/guide/photo/6.png",
-        "img/guide/secondphoneshop/1.png",
-        "img/guide/yenote/1.png",
-        "img/guide/yenote/2.png",
-        "img/guide/yenote/3.png",
-        "img/guide/yenote/4.png",
-        "img/misc/icon/phone/app/album.png",
-        "img/misc/icon/phone/app/appstore.png",
-        "img/misc/icon/phone/app/dd.png",
-        "img/misc/icon/phone/app/map.png",
-        "img/misc/icon/phone/app/memo.png",
-        "img/misc/icon/phone/app/new-west.png",
-        "img/misc/icon/phone/app/taobao.png",
-        "img/misc/icon/phone/app/yenote-text-full.png",
-        "img/misc/icon/phone/app/yenote-text.png",
-        "img/misc/icon/phone/app/yenote.png",
-        "img/misc/icon/phone/avatar/A.png",
-        "img/misc/icon/phone/avatar/landry0.png",
-        "img/misc/icon/phone/avatar/pc.png",
-        "img/misc/icon/phone/charge.png",
-        "img/misc/icon/phone/drawer.png",
-        "img/misc/icon/phone/live.png",
-        "img/misc/icon/phone/phone-crack.png",
-        "img/misc/icon/phone/phone-disabled.png",
-        "img/misc/icon/phone/phone-forbid.png",
-        "img/misc/icon/phone/phone.png",
-        "img/misc/icon/phone/phones.png",
-        "img/misc/icon/phone/power_bank.png",
-        "img/misc/icon/phone/second-phone-shop.png",
-        "img/misc/icon/phone/theft.png",
-        "img/misc/locations/phone/base.png",
-        "img/photo/photonone.png",
-        "img/ui/phone/app/add.png",
-        "img/ui/phone/app/correct.png",
-        "img/ui/phone/app/map/forest_map.png",
-        "img/ui/phone/app/photo.png",
-        "img/ui/phone/app/premium.png",
-        "img/ui/phone/battery.png",
-        "img/ui/phone/battery_bg.png",
-        "img/ui/phone/home.png",
-        "img/ui/phone/lock.png",
-        "img/ui/phone/powerbank.png",
-        "img/ui/phone/shutdown.png"
-    ],
-    "additionFile": [
-        "README.md"
-    ],
-    "addonPlugin": [
+  "name": "SmartPhone Alpha",
+  "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
+  "version": "Alpha.3.88",
+  "betaVersion": false,
+  "minify": false,
+  "styleFileList": [
+    "styles/main.css",
+    "styles/guide.css",
+    "styles/apps/yenote.css",
+    "styles/apps/memo.css",
+    "styles/apps/map.css"
+  ],
+  "scriptFileList": [
+    "scripts/smartphone-patch.js",
+    "scripts/smartphone-guide.js",
+    "scripts/smartphone-vars.js",
+    "scripts/smartphone-api.js",
+    "scripts/smartphone-apps.js",
+    "scripts/smartphone-main.js",
+    "scripts/smartphone-extension.js"
+  ],
+  "scriptFileList_inject_early": [
+    "scripts/smartphone-early-inject.js"
+  ],
+  "tweeFileList": [
+    "twee/phone.twee",
+    "twee/phone_call.twee",
+    "twee/phone_game.twee",
+    "twee/phone_passage.twee"
+  ],
+  "imgFileList": [
+    "img/guide/charge/1.png",
+    "img/guide/contacts/1.png",
+    "img/guide/contacts/2.png",
+    "img/guide/contacts/3.png",
+    "img/guide/contacts/4.png",
+    "img/guide/memo/1.png",
+    "img/guide/photo/1.png",
+    "img/guide/photo/2.png",
+    "img/guide/photo/3.png",
+    "img/guide/photo/4.png",
+    "img/guide/photo/5.png",
+    "img/guide/photo/6.png",
+    "img/guide/secondphoneshop/1.png",
+    "img/guide/yenote/1.png",
+    "img/guide/yenote/2.png",
+    "img/guide/yenote/3.png",
+    "img/guide/yenote/4.png",
+    "img/misc/icon/phone/app/album.png",
+    "img/misc/icon/phone/app/appstore.png",
+    "img/misc/icon/phone/app/dd.png",
+    "img/misc/icon/phone/app/map.png",
+    "img/misc/icon/phone/app/memo.png",
+    "img/misc/icon/phone/app/new-west.png",
+    "img/misc/icon/phone/app/taobao.png",
+    "img/misc/icon/phone/app/yenote-text-full.png",
+    "img/misc/icon/phone/app/yenote-text.png",
+    "img/misc/icon/phone/app/yenote.png",
+    "img/misc/icon/phone/avatar/A.png",
+    "img/misc/icon/phone/avatar/landry0.png",
+    "img/misc/icon/phone/avatar/pc.png",
+    "img/misc/icon/phone/charge.png",
+    "img/misc/icon/phone/drawer.png",
+    "img/misc/icon/phone/live.png",
+    "img/misc/icon/phone/phone-crack.png",
+    "img/misc/icon/phone/phone-disabled.png",
+    "img/misc/icon/phone/phone-forbid.png",
+    "img/misc/icon/phone/phone.png",
+    "img/misc/icon/phone/phones.png",
+    "img/misc/icon/phone/power_bank.png",
+    "img/misc/icon/phone/second-phone-shop.png",
+    "img/misc/icon/phone/theft.png",
+    "img/misc/locations/phone/base.png",
+    "img/photo/photonone.png",
+    "img/ui/phone/app/add.png",
+    "img/ui/phone/app/correct.png",
+    "img/ui/phone/app/map/forest_map.png",
+    "img/ui/phone/app/photo.png",
+    "img/ui/phone/app/premium.png",
+    "img/ui/phone/battery.png",
+    "img/ui/phone/battery_bg.png",
+    "img/ui/phone/home.png",
+    "img/ui/phone/lock.png",
+    "img/ui/phone/powerbank.png",
+    "img/ui/phone/shutdown.png"
+  ],
+  "additionFile": [
+    "README.md"
+  ],
+  "addonPlugin": [
+    {
+      "modName": "BeautySelectorAddon",
+      "addonName": "BeautySelectorAddon",
+      "modVersion": "^2.0.0",
+      "params": {
+        "type": "万能的智能手机 SmartPhone"
+      }
+    },
+    {
+      "modName": "TweeReplacer",
+      "addonName": "TweeReplacerAddon",
+      "modVersion": "1.0.0",
+      "params": [
         {
-            "modName": "BeautySelectorAddon",
-            "addonName": "BeautySelectorAddon",
-            "modVersion": "^2.0.0",
-            "params": {
-                "type": "万能的智能手机 SmartPhone"
-            }
+          "passage": "Options Overlay",
+          "findString": "<<if $passage isnot \"Start\">>",
+          "replaceFile": "twee/game/overlays/Settings.twee"
         },
         {
-            "modName": "TweeReplacer",
-            "addonName": "TweeReplacerAddon",
-            "modVersion": "1.0.0",
-            "params": [
-                {
-                    "passage": "Options Overlay",
-                    "findString": "<<if $passage isnot \"Start\">>",
-                    "replaceFile": "twee/game/overlays/Settings.twee"
-                },
-                {
-                    "passage": "Characteristics",
-                    "findString": "<<set _skulduggeryConfig =",
-                    "replace": "<<set _photographyConfig =\t{ name : \"Photography\", cn_name:\"摄影\", displayType : \"grade\",\tcurrentValue : $Phone.photography,\t\tmodifier: 100, modTypes: { good: [], bad: [] },\t\tstates : _detailedSkillGrades}>>\n<<set _skulduggeryConfig ="
-                },
-                {
-                    "passage": "Characteristics",
-                    "findString": "_housekeepingConfig>>",
-                    "replace": "_housekeepingConfig>>\n<<characteristic-box _photographyConfig>>"
-                },
-                {
-                    "passage": "Widgets Journal",
-                    "findString": "<<if _carrying or _hasProduce>>",
-                    "replace": "<<if _carrying or _hasProduce or ($Phone.Owned and $Phone.Owned.length gt 0)>>",
-                    "all": true
-                },
-                {
-                    "Tip": "网购衣服 避免盗取出现",
-                    "passage": "Clothing Shop v2 Widgets",
-                    "findString": "<<elseif (Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride>>",
-                    "replace": "<<elseif $location isnot \"phone\" and ((Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride)>>"
-                },
-                {
-                    "Tip": "网购超市 避免盗取出现",
-                    "passage": "Widgets Shop",
-                    "findString": "\t\t<<if Time.dayState is \"night\" and Time.hour isnot 21>>",
-                    "replace": "\t\t<<if $location isnot \"phone\" and Time.dayState is \"night\" and Time.hour isnot 21>>"
-                },
-                {
-                    "passage": "School Lockers Sneak",
-                    "findString": "<<addinlineevent \"KylarLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"KylarLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Kylar\")>>"
-                },
-                {
-                    "passage": "School Lockers Sneak",
-                    "findString": "<<addinlineevent \"WhitneyLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"WhitneyLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Whitney\")>>"
-                },
-                {
-                    "passage": "School Lockers Sneak",
-                    "findString": "<<addinlineevent \"RobinLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"RobinLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Robin\")>>"
-                },
-                {
-                    "passage": "School Lockers Sneak",
-                    "findString": "<<addinlineevent \"SydneyLocker\" 0.015>>",
-                    "replace": "<<addinlineevent \"SydneyLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Sydney\")>>"
-                },
-                {
-                    "passage": "Widgets Home",
-                    "findString": "<<widget \"generateSleepLinks\">>",
-                    "replace": "<<widget \"generateSleepLinks\">><<print smartphone.checkAlarmsInSleepText()>>"
-                },
-                {
-                    "passage": "Widgets Sleep",
-                    "findString": "<<set $sleephour -= 1>>",
-                    "replaceFile": "twee/game/sleepAlarm/sleepAlarmTest.twee"
-                },
-                {
-                    "passage": "Sleep",
-                    "findString": "$daily.motherWake is 1>>",
-                    "replaceFile": "twee/game/sleepAlarm/sleepAlarmWake.twee",
-                    "all": true
-                }
-            ]
+          "passage": "Characteristics",
+          "findString": "<<set _skulduggeryConfig =",
+          "replace": "<<set _photographyConfig =\t{ name : \"Photography\", cn_name:\"摄影\", displayType : \"grade\",\tcurrentValue : $Phone.photography,\t\tmodifier: 100, modTypes: { good: [], bad: [] },\t\tstates : _detailedSkillGrades}>>\n<<set _skulduggeryConfig ="
         },
         {
-            "modName": "ReplacePatcher",
-            "addonName": "ReplacePatcherAddon",
-            "modVersion": "^1.0.0",
-            "params": {
-                "js": [],
-                "twee": []
-            }
+          "passage": "Characteristics",
+          "findString": "_housekeepingConfig>>",
+          "replace": "_housekeepingConfig>>\n<<characteristic-box _photographyConfig>>"
+        },
+        {
+          "passage": "Widgets Journal",
+          "findString": "<<if _carrying or _hasProduce>>",
+          "replace": "<<if _carrying or _hasProduce or ($Phone.Owned and $Phone.Owned.length gt 0)>>",
+          "all": true
+        },
+        {
+          "Tip": "网购衣服 避免盗取出现",
+          "passage": "Clothing Shop v2 Widgets",
+          "findString": "<<elseif (Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride>>",
+          "replace": "<<elseif $location isnot \"phone\" and ((Time.dayState is \"night\" and $shopName isnot \"forest\") or _shopCloseOverride)>>"
+        },
+        {
+          "Tip": "网购超市 避免盗取出现",
+          "passage": "Widgets Shop",
+          "findString": "\t\t<<if Time.dayState is \"night\" and Time.hour isnot 21>>",
+          "replace": "\t\t<<if $location isnot \"phone\" and Time.dayState is \"night\" and Time.hour isnot 21>>"
+        },
+        {
+          "passage": "School Lockers Sneak",
+          "findString": "<<addinlineevent \"KylarLocker\" 0.015>>",
+          "replace": "<<addinlineevent \"KylarLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Kylar\")>>"
+        },
+        {
+          "passage": "School Lockers Sneak",
+          "findString": "<<addinlineevent \"WhitneyLocker\" 0.015>>",
+          "replace": "<<addinlineevent \"WhitneyLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Whitney\")>>"
+        },
+        {
+          "passage": "School Lockers Sneak",
+          "findString": "<<addinlineevent \"RobinLocker\" 0.015>>",
+          "replace": "<<addinlineevent \"RobinLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Robin\")>>"
+        },
+        {
+          "passage": "School Lockers Sneak",
+          "findString": "<<addinlineevent \"SydneyLocker\" 0.015>>",
+          "replace": "<<addinlineevent \"SydneyLocker\" 0.015>><<run smartphone.SchoolLockersSneakOnNPC(\"Sydney\")>>"
+        },
+        {
+          "passage": "Widgets Home",
+          "findString": "<<widget \"generateSleepLinks\">>",
+          "replace": "<<widget \"generateSleepLinks\">><<print smartphone.checkAlarmsInSleepText()>>"
+        },
+        {
+          "passage": "Widgets Sleep",
+          "findString": "<<set $sleephour -= 1>>",
+          "replaceFile": "twee/game/sleepAlarm/sleepAlarmTest.twee"
+        },
+        {
+          "passage": "Sleep",
+          "findString": "$daily.motherWake is 1>>",
+          "replaceFile": "twee/game/sleepAlarm/sleepAlarmWake.twee",
+          "all": true
         }
-    ],
-    "dependenceInfo": [
-        {
-            "modName": "ModLoader",
-            "version": "^2.31.2"
-        },
-        {
-            "modName": "GameVersion",
-            "version": "^0.5.10.12"
-        },
-        {
-            "modName": "BeautySelectorAddon",
-            "version": "^2.0.0"
-        },
-        {
-            "modName": "TweeReplacer",
-            "version": "^1.0.0"
-        }
-    ]
+      ]
+    },
+    {
+      "modName": "ReplacePatcher",
+      "addonName": "ReplacePatcherAddon",
+      "modVersion": "^1.0.0",
+      "params": {
+        "js": [],
+        "twee": []
+      }
+    }
+  ],
+  "dependenceInfo": [
+    {
+      "modName": "ModLoader",
+      "version": "^2.31.2"
+    },
+    {
+      "modName": "GameVersion",
+      "version": "^0.5.10.12"
+    },
+    {
+      "modName": "BeautySelectorAddon",
+      "version": "^2.0.0"
+    },
+    {
+      "modName": "TweeReplacer",
+      "version": "^1.0.0"
+    }
+  ]
 }
