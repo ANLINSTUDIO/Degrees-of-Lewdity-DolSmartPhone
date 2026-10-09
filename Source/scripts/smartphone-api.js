@@ -255,7 +255,7 @@ smartphone.getPhoneConditionInfo = function(phone_or_condition) {
 }
 smartphone.getPhoneBattery = function(phone) {
     phone = phone ?? smartphone.getUsingPhone()
-    if (phone && phone.newnessmax > 0 && phone.newness >= 0) {
+    if (phone && phone.newnessmax > 0 && phone.newness > 0) {
         return Math.max(Math.round((phone.newness / phone.newnessmax) * 100), 1)
     } else {
         return 0

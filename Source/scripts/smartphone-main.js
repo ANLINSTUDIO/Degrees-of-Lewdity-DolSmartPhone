@@ -49,7 +49,7 @@ smartphone.of$dayPassed = function() {
     smartphone.RefreshSecondPhone()  // 老冯二手店刷新货
 }
 smartphone.om$journal = function() {
-    smartphone.showPhoneJournal()
+    setTimeout(smartphone.showPhoneJournal)
 }
 smartphone.om$effectssteal = function() {
     smartphone.effectsstealPhone()
@@ -1304,20 +1304,18 @@ smartphone.showPhoneJournal = function() {  // 日志中显示手机信息
                     <span style="margin-right: 20px"></span>
                     <<if $Phone.Using and "${phone.id}" eq $Phone.Using>>
                         <<icon "phone/phone.png">>
-                        <<if ${phone.newness > 0}>>
-                            <span class='teal'>正在使用</span> | 
-                        <<else>>
-                            <span class='red'>已经关机</span> |
-                        <</if>>
+                        <span class='teal'>正在使用</span> | 
                     <<elseif ${phone.stolen && !phone.usable}>>
                         <<icon "phone/phone-forbid.png">>
-                        <span class='red'>无法使用</span> | 
+                        <span class='red'>无法使用</span> |
                     <<else>>
-                        <<icon "phone/phone-disabled.png">> 
-                        <<if ${phone.newnessmax > 0}>>
-                            <<link "切换到">> <<run smartphone.phoneJournalChange("${phone.id}")>> <</link>> | 
-                        <<elseif ${phone.newnessmax === 0}>>
+                        <<icon "phone/phone-disabled.png">>
+                        <<if ${phone.newnessmax <= 0}>>
                             <span class='red'>已损坏</span> |
+                        <<elseif ${phone.newness <= 0}>>
+                            <span class='red'>已经关机</span> |
+                        <<else>>
+                            <<link "切换到">> <<run smartphone.phoneJournalChange("${phone.id}")>> <</link>> | 
                         <</if>>
                     <</if>>
                     <<if ${phone.newnessmax > 0}>>
