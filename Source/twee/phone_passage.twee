@@ -508,7 +508,6 @@
 
 :: Feng Contend
 <<if $molestationstart is 1>>
-    <<set $molestationstart to 0>>
     <<controlloss>><br>
     <<set $enemytype to "man">>
     <<set $enemyno to 1>>
@@ -522,15 +521,6 @@
 
     <<set $leftaction to "hold">>
     <<set $rightaction to "hold">>
-<<else>>
-    <<if $leftaction isnot "握紧手机" and $rightaction isnot "握紧手机">>
-        <<set $Phone.Stolen to 1>>
-        <<goto "Feng Contend Finish">>
-    <</if>>
-    <<if $pain gte 100 or $stress gte $stressmax or $control lte 0 or $trauma gte $traumamax>>
-        <<set $Phone.Stolen to 1>>
-        <<goto "Feng Contend Finish">>
-    <</if>>
 <</if>>
 <span class="gold">你必须要至少有一只手握住手机！！！否则它就会被抢走！</span><br><br>
 <<effects>>
@@ -548,20 +538,30 @@
 <<pain 2>>
 <<stress 2>>
 
-<<actionsman>>
-<<run smartphone.actionsAdd("leftaction", "握紧手机", "gold", true)>>
-<<run smartphone.actionsAdd("rightaction", "握紧手机", "gold", true)>>
 
-<span id="next"><<link [[继续|Feng Contend]]>><</link>></span><<nexttext>>
-
-<<if $enemyhealth lte 0 or $enemyarousal gte $enemyarousalmax>>
-    <<goto "Feng Contend Finish">>
+<<if ($molestationstart is 0) and (
+        ($leftaction isnot "握紧手机" and $rightaction isnot "握紧手机") or 
+        ($pain gte 100 or $stress gte $stressmax or $control lte 0 or $trauma gte $traumamax)
+    )>>
+    <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
+    <<set $Phone.Stolen to 1>>
+    <span id="next"><<link [[继续|Feng Contend Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0 or $enemyarousal gte $enemyarousalmax>>
+    <span class="green">你趁黑衣人不注意，夺回了你的手机。</span><br>
+    <<set $Phone.Stolen to 0>>
+    <span id="next"><<link [[继续|Feng Contend Finish]]>><</link>></span><<nexttext>>
+<<else>>
+    <<actionsman>>
+    <<run smartphone.actionsAdd("leftaction", "握紧手机", "gold", true)>>
+    <<run smartphone.actionsAdd("rightaction", "握紧手机", "gold", true)>>
+    <span id="next"><<link [[继续|Feng Contend]]>><</link>></span><<nexttext>>
 <</if>>
+<<set $molestationstart to 0>>
 
 :: Feng Contend Finish
 <<endcombat>>
 <<npc Feng>>
-<<if $enemyhealth lte 0>>
+<<if $Phone.Stolen is 0>>
     <<run smartphone.AppendPhone($Phone.FengStole)>>
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
@@ -575,7 +575,7 @@
         <<set C.npc.Feng.lust to 1>><<note "--- 老冯的欣赏" "red">>   <!-- 认为你不适合偷手机这行 -->
     <</if>><br>
     “等一下！” 那人叫住了你，“我叫老冯，你下次还有手机就卖到我这吧。”<br>
-<<elseif $Phone.Stolen is 1>>
+<<else>>
     <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
     “敢抢我的手机？” 那人放下狠话。<br>
     <<if smartphone.isCarryingStolenPhone()>>
