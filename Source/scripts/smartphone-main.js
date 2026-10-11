@@ -125,7 +125,7 @@ smartphone.eventsLoad_ = function(event_or_id) {  // 可以提供event或者even
         if (pass) {
             let succeed = true
             if (event.goto === true) {
-                new Wikifier(null, `<<goto "${event.event}">>`);
+                window.SugarCube?.Engine.play(event.event, { history: 'replace' });
             } else {
                 succeed = smartphone.eventsLoadInclude_(event.target, event.event, event.position, event.offset)
             }
