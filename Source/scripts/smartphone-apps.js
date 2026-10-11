@@ -1053,14 +1053,17 @@ smartphone.filterAlbum = function() {
 };
 smartphone.photoError = function(element) {
     element.remove();
-    smartphone.photoLoadCheck();
+    smartphone.photoLoadCheck(true);
 }
-smartphone.photoLoadCheck = function() {
+smartphone.photoLoadCheck = function(error=false) {
     const photononetip = document.querySelector("#photononetip");
-    photononetip.style.display = "";
     if (smartphone.photoLoaded) {
-        photononetip.innerHTML = "加载的图包模组可能<span class='gold'>未启用美化</span>或者装载的图包不是对应的版本；此种问题将导致某些甚至全部的摄像图像不可见。";
+        if (error) {
+            photononetip.style.display = "";
+            photononetip.innerHTML = "加载的图包模组可能<span class='gold'>未启用美化</span>或者装载的图包不是对应的版本；此种问题将导致某些甚至全部的摄像图像不可见。";
+        }
     } else {
+        photononetip.style.display = "";
         photononetip.innerHTML = "未装载摄像图包，将不会在游戏内显示任务具体照片。";
     };
 }
