@@ -367,9 +367,8 @@
 
 :: === Second Phone Shop ===[widget]
 <<widget "SecondPhoneShopLink">>
-    <<if C.npc.Feng.init is 0 and asi.isvalid($Phone.Owned)>>
-        <<set C.npc.Feng.init to 1>>
-        <<goto "Second Phone Shop Meet Feng First">>
+    <<if $Phone.FengMeeet isnot 1 and asi.isvalid($Phone.Owned)>>
+        <br><<mysteryicon>><<link [[地上好像有什么东西在发光|Second Phone Shop Meet Feng First]]>><</link>>
     <<else>>
         <<if $Phone.SecondShopKnown>>
             <br><<icon "phone/second-phone-shop.png">>
@@ -400,8 +399,10 @@
 <</if>>
 
 <<npc Feng>>
+<<set $Phone.FengMeeet to 1>>
+<<set C.npc.Feng.init to 1>>
 <<set C.npc.Feng.name_known to 0>>
-你前脚刚踏入麋鹿街的地区，后脚就发现一个可疑的黑衣人从你身边几乎贴着你经过。<span class="red"><<he>>很可疑！</span><br>
+你低头看向地面上发光的物体，突然发现一个可疑的黑衣人从你身边几乎贴着你经过。<span class="red"><<he>>很可疑！</span><br>
 “喂！”你朝<<he>>大声呼喊，“你干了什么！”<br>
 黑衣人眼看着顿了一下，随即停下了脚步。<br>
 你决定上前查看，但你没走过几步，<<he>>便开始加速向麋鹿街的尽头那间<span class="teal">神秘的房子</span>走去。<br>
@@ -411,7 +412,7 @@
 
 :: Second Phone Shop Meet Feng First Finish
 <<set $Phone.MetFengGiveup to 1>>
-你拍了拍口袋，决定算了。心想也许是你自己太敏感了。<br>
+你拍了拍口袋，决定算了。心想也许是你自己太敏感了。你看上地上的发光物体：是一块小玻璃，没什么稀奇的。<br>
 拍……拍了拍口袋？口袋？？？<br><br>
 <span style="font-size: xxx-large">我的手机呢！！！</span><br><br>
 <<print '<span class="red">你的 '+$Phone.FengStole.model+' 不见了！</span>'>><br><br>
