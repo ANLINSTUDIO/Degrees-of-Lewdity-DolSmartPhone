@@ -97,22 +97,30 @@ smartphone.onPassageRender = function (ev) {
 smartphone.eventsLoad = function() {
     smartphone.events.forEach(smartphone.eventsLoad_)
 }
-smartphone.eventsLoad_ = function(event_or_id) {  // 可以提供event或者eventid
-    let event = event_or_id
+/** 事件软注入，可以提供event对象或者eventid
+ * @param {SmartphoneEvent|string} event_or_id
+ */
+smartphone.eventsLoad_ = function(event_or_id) {
+    /** @type {SmartphoneEvent} */
+    let event
+    let byID = false
     if (typeof(event_or_id) === "string") {
-        event = smartphone.events.find(event_ => event_.eventid === event)
+        byID = true
+        event = smartphone.events.find(event_ => event_.eventid === event_or_id)
         if (!event) {
-            asi.error("SmartPhone", `没有找到次事件 ${event_or_id}，注入失败`);
+            asi.error("SmartPhone", `没有找到次事件 ${event_or_id}，注入失败`)
         }
+    } else {
+        event = event_or_id
     }
-    if (!event) return
-    if (V.passage === event.passage || typeof(event_or_id) === "string") {
+    if (!event || !event.event) return  // 跳过模板或缺失event字段的条目
+    if (byID || V.passage === event.passage) {  // 通过 eventid 调用时，忽略 passage 匹配
         let pass = null
         if (event.condition) {
             pass = smartphone[event.condition]()
         }
         if (pass === null) {
-            if (event.chance) {
+            if (typeof event.chance === "number") {
                 if (Math.random() < event.chance) {
                     pass = true
                 } else {
@@ -124,7 +132,7 @@ smartphone.eventsLoad_ = function(event_or_id) {  // 可以提供event或者even
         }
         if (pass) {
             let succeed = true
-            if (event.goto === true) {
+            if (event.goto) {
                 window.SugarCube?.Engine.play(event.event, { history: 'replace' });
             } else {
                 succeed = smartphone.eventsLoadInclude_(event.target, event.event, event.position, event.offset)
@@ -135,10 +143,10 @@ smartphone.eventsLoad_ = function(event_or_id) {  // 可以提供event或者even
                 }
             } else {
                 if (event.f) {
-                    asi.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`);
+                    asi.warn("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，尝试使用次事件 ${event.f}`)
                     smartphone.eventsLoad_(event.f)
                 } else {
-                    asi.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`);
+                    asi.error("SmartPhone", `注入 ${event.event} 时没有找到目标 ${event.target}，注入失败`)
                 }
             }
         }
@@ -1402,16 +1410,16 @@ smartphone.SchoolLockersSneakOnNPC = function(npc) {
 smartphone.SchoolLockersSneakCondition = function() {
     switch (V.Phone.SchoolLockersSneakOnNPC) {
         case "Kylar":
-            smartphone.eventsLoad_("SchoolLockersSneakKylar")
+            smartphone.eventsLoad_("School Lockers Sneak Kylar")
             break;
         case "Whitney":
-            smartphone.eventsLoad_("SchoolLockersSneakWhitney")
+            smartphone.eventsLoad_("School Lockers Sneak Whitney")
             break;
         case "Robin":
-            smartphone.eventsLoad_("SchoolLockersSneakRobin")
+            smartphone.eventsLoad_("School Lockers Sneak Robin")
             break;
         case "Sydney":
-            smartphone.eventsLoad_("SchoolLockersSneakSydney")
+            smartphone.eventsLoad_("School Lockers Sneak Sydney")
             break;
         default:
             return null;

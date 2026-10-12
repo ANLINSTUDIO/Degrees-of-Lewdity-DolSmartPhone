@@ -36,20 +36,27 @@ getLastedVersion()
 
 
 // === 注入 =======================================================
+/** 注入事件对象，新增事件时复制模板对象并按需填写字段
+ * @typedef {object} SmartphoneEvent
+ * @property {string|null} event 注入事件
+ * 
+ * @property {string|null} [passage] 注入段落
+ * @property {string|null} [eventid] 通过定义eventid，可以在成功、失败或特定时继续注入事件
+ * 
+ * @property {string|null} [target] 定位锚点目标
+ * @property {"after"|"before"|"replace"} [position] 方向，默认 "after"
+ * @property {number} [offset] 偏移，默认 0
+ * @property {boolean} [goto] 布尔，成功时直接使用注入事件替换当前段落
+ * 
+ * @property {number|null} [chance] 出现概率
+ * @property {string|null} [condition] 使用smartphone空间的函数名，(额外条件) => true:一定触发、无视概率 | false:不触发、无视概率 | null:继承概率
+ * 
+ * @property {string|null} [s] 成功时注入的次事件eventid
+ * @property {string|null} [f] 失败时注入的次事件eventid
+ * 
+ */
+/** @type {SmartphoneEvent[]} */
 smartphone.events = [
-    // {
-    //   passage: "注入段落", 
-    //   target: "定位锚点目标", 
-    //   event: "注入事件", 
-    //   position: "方向" => ["after"], "before", "replace",
-    //   offset: "偏移",
-    //   chance: "出现概率",
-    //   condition: (额外条件) => true:一定触发、无视概率 | false:不触发、无视概率 | null:继承概率
-    //   eventid: "通过定义eventid，可以在成功或失败时继续注入事件"
-    //   s: "成功时注入的event"
-    //   f: "失败时注入的event",
-    //   goto: "直接替换当前段落",
-    // }
     // 地点
     {passage: "Shopping Centre", target: "Supermarket", event: "ShoppingCentrePhoneShopLink"},
     {passage: "Shopping Centre", target: "Supermarket Lock", event: "ShoppingCentrePhoneShopLinkLock"},
@@ -65,11 +72,11 @@ smartphone.events = [
     {eventid: "School Lockers Sneak Whitney", target: "School Lockers", event: "SchoolLockersSneakWhitney", position: "before", offset: 3},
     {eventid: "School Lockers Sneak Robin", target: "School Lockers", event: "SchoolLockersSneakRobin", position: "before", offset: 3},
     {eventid: "School Lockers Sneak Sydney", target: "School Lockers", event: "SchoolLockersSneakSydney", position: "before", offset: 3},
-    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal REPLACE"},
-    {eventid: "Spa Tired Steal REPLACE", target: "Spa Tired Steal", event: "SpaTiredStealPhoneLink"},
+    {passage: "Spa Work Cute", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal Link"},
+    {passage: "Spa Work Sophisticated", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal Link"},
+    {passage: "Spa Tired Work", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal Link"},
+    {passage: "Spa Tired Grope", target: "Spa Tired Keep", event: "SpaTiredStealPhoneText", chance: 0.5, position: "before", s: "Spa Tired Steal Link"},
+    {eventid: "Spa Tired Steal Link", target: "Spa Tired Steal", event: "SpaTiredStealPhoneLink", position: "replace"},
     {passage: "Pub Drink", target: "Pub Seduce", event: "PubDrinkStealPhoneLink", chance: 0.3, position: "before"},
     {passage: "Ocean Breeze", target: "Cliff Street", event: "OceanBreezeStealPhoneLink", position: "before", offset: 1},
     // 询问电话

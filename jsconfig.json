@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "checkJs": false
+  },
+  "include": [
+    "Source/scripts/**/*.js"
+  ],
+  "exclude": [
+    "Release",
+    "Website",
+    "phototasks",
+    "Todo",
+    "参考"
+  ]
+}
