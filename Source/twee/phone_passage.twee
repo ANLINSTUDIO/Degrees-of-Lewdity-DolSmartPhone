@@ -965,11 +965,11 @@
     <<else>>
         <span class="teal">你注意到这个角落里有一个插座，不知道贝利有没有给它通电。</span>
     <</if>><br>
-    <<if smartphone.getUsingPhone()>>
+    <!-- <<if smartphone.getUsingPhone()>>
         <<icon "phone/live.png">><<link [[直播|Live Bedroom]]>><</link>>
     <<else>>
         <span class="teal">如果你想直播从而获得名气，那么你可能需要一台像样的手机。</span>
-    <</if>>
+    <</if>> -->
 <</widget>>
 
 
