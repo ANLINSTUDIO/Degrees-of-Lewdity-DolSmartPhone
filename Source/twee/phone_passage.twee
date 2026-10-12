@@ -1125,14 +1125,17 @@
 <</widget>>
 
 <<widget "SpaTiredStealPhoneText">>
-    <br>正当你在考虑是否动手时，你突然眼睛一亮！因为你看到了他的身下有闪闪发光的东西！<br>
-    <span class="teal">是一部手机！</span><<icon "phone/phone.png">>
-    <br>如果你要拿走它，那么你就要将顾客翻身，这真的会弄醒<<him>>！<br><br>
+    <br>正当你在考虑是否动手时，你突然眼睛一亮！因为你看到了他的身下还有更加闪闪发光的东西！<br>
+    <span class="teal">是一部手机！</span><<icon "phone/phone.png">><br>
+    <<if currentSkillValue('skulduggery') gte 100>>
+        如果你要拿走它，那么你就要将顾客翻身，这真的会弄醒<<him>>！<br><br>
+    <<else>>
+        <span class="red">如果你要拿走它，那么你就要将顾客翻身，你才没有这种可以悄无声息偷到手机的诡术能力！</span><br><br>
+    <</if>>
 <</widget>>
 <<widget "SpaTiredStealPhoneLink">>
-    <<set $skulduggerydifficulty to 700>><br>
     <<link [[趁顾客翻身拿走手机|Spa Tired Steal Phone]]>><<set $skulduggerydifficulty to 700>><</link>><<skulduggerydifficulty>><<crime "thievery">><br>
-    <<link [[拿走赃物|Spa Tired Steal]]>><<set $skulduggerydifficulty to 500>><</link>>
+    <<link [[只拿走值钱的饰品|Spa Tired Steal]]>><<set $skulduggerydifficulty to 500>><</link>>
 <</widget>>
 
 <<widget "PubDrinkStealPhoneLink">>
