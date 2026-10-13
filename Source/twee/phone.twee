@@ -712,17 +712,19 @@
 
 :: Smartphone Debug [widget]
 <<widget "smartphone_debug_switch">>
-    <div id="smart-phone-debug-switch" onclick="smartphone.toggleDebug()">
-        <<icon "phone/phone.png">>
-        <span id="smart-phone-debug-switch-version"><<if smartphone.betaVersion>><div class="betaVersion"/><</if>><<print smartphone.currentVersion.replace("Alpha", "A");>></span>
-    </div>
-    <<run setTimeout(smartphone.DebugDrag, 1)>>
+    <<if $Phone.debugMod isnot 0>>
+        <div id="smart-phone-debug-switch" onclick="smartphone.toggleDebug()">
+            <<icon "phone/phone.png">>
+            <span id="smart-phone-debug-switch-version"><<if smartphone.betaVersion>><div class="betaVersion"/><</if>><<print smartphone.currentVersion.replace("Alpha", "A");>></span>
+        </div>
+        <<run setTimeout(smartphone.DebugDrag, 1)>>
+    <</if>>
 <</widget>>
 
 <<widget "smartphone_debug">> <div id="smart-phone-debug-container">
     <div id="smartphone_debug_msg"></div>
     <br><br><br>
-    <<link "刷新">><<run smartphone.toggleDebug(true)>><</link>> | <<link "刷新段落">><<run Engine.play(passage())>><</link>><br>
+    <<link "刷新">><<run smartphone.toggleDebug(true)>><</link>> | <<link [["刷新段落"|$passage]]>><</link>>| <<link "关闭Debugger">><<set $Phone.debugMod to 0>><<run $("#smartphone_debug").remove()>><<run $("#smart-phone-debug-switch").remove()>><</link>><br><br>
     <input type="text" id="excute-js" placeholder="执行js命令"><<link "执行">><<run smartphone.DebugExcuteJs()>><</link>>
     <hr>
     <input type="text" id="excute-sugarcube-path" placeholder="执行位置 ?? #smartphone_debug_msg">

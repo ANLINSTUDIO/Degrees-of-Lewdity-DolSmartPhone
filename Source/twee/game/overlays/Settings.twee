@@ -19,6 +19,18 @@
 			<input type="button" value="设置" onclick='smartphone.PhoneMarginSettings()'/>
 			<input type="button" value="重设" onclick='smartphone.PhoneMarginSettingsReset()'/>
 		</div>
+		<<if $Phone.debugMod is 0>>
+			<div id="smartphone_debug_enable_settings" class="settingsToggleItemWide">
+				Debugger <<button 开启>><<set $Phone.debugMod to 1>>
+				<<run
+				    const phoneDebugSwitchUI = document.createElement('div');
+					new Wikifier(phoneDebugSwitchUI, "<<smartphone_debug_switch>>");
+					$(smartphone.ev.content).append(phoneDebugSwitchUI);
+					$("#smartphone_debug_enable_settings").remove()
+				>>
+				<</button>>
+			</div>
+		<</if>>
 	</div>
 
 	<<if $passage isnot "Start">>
