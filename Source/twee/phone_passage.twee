@@ -1468,7 +1468,7 @@
     <<else>>
         <<set _phone to smartphone.getUsingPhone(true)>>
         <<if _phone>>
-            你<<print smartphone.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print smartphone.getPhoneBattery(_UnguardedChargePhone)>>%。<br><br>
+            你<<print smartphone.getPhoneConditionInfo(_phone).html>>的 <<print _phone.model>> 可以在这里充电。当前的电量是<<print smartphone.getPhoneBattery()>>%。<br><br>
             <<icon "phone/phone.png">><<link [[把手机放在这里充电|_args[1]]]>><<run smartphone.PhoneChargeUnguarded(_args[0])>><</link>>
             <<if $Phone.PowerBank>>
                 <br><<icon "phone/power-bank.png">> <<link [[把充电宝放在这里充电|_args[1]]]>><<run smartphone.PowerBankChargeIn(_args[0])>><</link>>
@@ -1511,10 +1511,13 @@
     <</if>><br><br>
 <</widget>>
 <<widget "LibraryChargeLink">>
+    <<sydneySchedule>>
     <<if smartphone.isPhoneChargeUnguardedIn("Library")>>
         <span class="teal">你的<<if _PowerBankCharging>>充电宝<<else>>手机<</if>>正放在柜台的后面充电。</span><br>
-        <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
-            <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney 2]]>><</link>>
+        <<if _sydney_location is "library" and (
+            ($Phone.SydneyLibraryChargeAsked is undefined) or 
+            (Object.values(V.loveInterest).contains("Sydney") and $Phone.SydneyLibraryChargeLove is undefined and _sydneyStatus.includes("pure")))>>
+            <<icon "phone/charge.png">><<link [[询问悉尼返回充电的地方|Library Charge Ask Sydney]]>><</link>>
         <<else>>
             <<if _sydney_location is "library">>
                 <<rng 10>>
@@ -1524,6 +1527,13 @@
                 <<elseif C.npc.Sydney.love gte 20 and $rng gt 8 and $Phone.SydneySexLiveCompanion is 1>>
                     悉尼看到你来了，立马把目光从你的手机上移开了，随后装作一副不在意的样子，嘟着嘴低头忙着自己的事情。<br>
                     <<link [[询问悉尼对自己的手机干了什么|Library Charge TookPhoto Sydney]]>><</link>>
+                <<elseif $Phone.sydneyChargeLowBattery isnot "finished" and C.npc.Sydney.love gte 10 and $rng gt 8 and $Phone.sydneyChargeLowBattery gte 3>>
+                    <<set $Phone.sydneyChargeLowBattery to "finished">>
+                    你来到柜台准备拿手机，却远远的看见了好笑的一幕。<br><br>
+                    悉尼把你的手机翻了个面，在背面的手机壳上贴了个小十字架贴纸，“愿它能保佑你。你的主人是一个冒失鬼，老是让你这样子过来，唉。”<br><br>
+                    “悉尼<<if C.npc.Sydney.gender is "m">>修士<<else>>修女<</if>>？你在给我的手机开光吗？”半带调侃的，你靠在柜台上笑谈。<br><br>
+                    “嗯嗯…？！你来了，咳咳。”带着一种被发现什么的窘迫，悉尼清了清嗓子，“没有，当然没有！这是你的手机……完好无损！”<<he>>背过身子去处理文件，显然不想继续贴纸的话题。<br><br>
+                    <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
                 <<else>>
                     悉尼正看着你的手机发呆。<br>
                     <<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
@@ -1536,8 +1546,10 @@
         <<run smartphone.Guide.startTutorial("charge")>>
         <span class="teal">你注意到柜台后面有一个插座，也许可以把手机放在这里充电。</span><br>
         <<icon "phone/charge.png">>
-        <<if _sydney_location is "library" and $Phone.SydneyLibraryChargeAsked is undefined>>
-            <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>>
+        <<if _sydney_location is "library" and (
+            ($Phone.SydneyLibraryChargeAsked is undefined) or 
+            (Object.values(V.loveInterest).contains("Sydney") and $Phone.SydneyLibraryChargeLove is undefined and _sydneyStatus.includes("pure")))>>
+            <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>><<iconUi "love-interest.png">>
         <<else>>
             <<link [[为手机充电|Library Charge]]>><</link>>
         <</if>>
@@ -1564,46 +1576,124 @@
 <<icon "storage-unit.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
 :: Library Charge
 <<sydneySchedule>>
+<<if $Phone.sydneyChargeLowBattery isnot "finished" and $Phone.sydneyChargeLowBattery lt 3 and smartphone.getPhoneBattery() lte 5 and $daily.sydneyChargeLowBattery isnot 1>>
+    <<set $Phone.sydneyChargeLowBattery ??= 0>>
+    <<set $Phone.sydneyChargeLowBattery ++>>
+    <<set $daily.sydneyChargeLowBattery to 1>>
+<</if>>
 <<set _UnguardedCharge to smartphone.isPhoneChargeUnguardedIn("Library")>>
 <<if _UnguardedCharge>>
     <<if _sydney_location is "library">>
-        <<if _UnguardedChargeHours gt 0>>
-            “看吧！还好好的呢！”悉尼骄傲地看着你，“我一直看着呢！”<br><br>
+        <<if C.npc.Sydney.love lt 10>>
+            “最好记得拿，放在这充电我不能保证会发生什么，”悉尼语气十分平淡。<br><br>
         <<else>>
-            “你放心吧，”悉尼眼神坚定地看着你，“我一定给你看好了！”<br><br>
+            <<if _UnguardedChargeHours gt 0>>
+                “看吧！还好好的呢！”悉尼骄傲地看着你，“我一直看着呢！”<br><br>
+            <<else>>
+                “你放心吧，”悉尼眼神坚定地看着你，“我一定给你看好了！”<br><br>
+            <</if>>
         <</if>>
     <</if>>
 <<else>>
-    <<if _sydney_location is "library">>
-        “是不是很贵重啊？”悉尼嘟起嘴看着你把充电头插进插座，“我……可以帮你看着的…………如果我在这里的话”<br><br>
+    <<if C.npc.Sydney.love lt 10>>
+    <<else>>
+        <<if _sydney_location is "library">>
+            “是不是很贵重啊？”悉尼嘟起嘴看着你把充电头插进插座，“我……可以帮你看着的…………如果我在这里的话”<br><br>
+        <</if>>
     <</if>>
 <</if>>
 <<charge "Library" "Library Charge">>
 <br><br>
-<<schoolicon "library desk">><<link [[待在柜台|Library Rental Counter]]>><</link>><br>
-<<getouticon>><<link [[离开柜台|School Library]]>><</link>>
+<<if $Phone.SydneyLibraryChargeLove is 1>>
+    <<getouticon>><<link [[继续|Library Charge Ask Sydney Love]]>><</link>>
+<<else>>
+    <<schoolicon "library desk">><<link [[待在柜台|Library Rental Counter]]>><</link>><br>
+    <<getouticon>><<link [[离开柜台|School Library]]>><</link>>
+<</if>>
 :: Library Charge Ask Sydney
 <<npc Sydney>>
-“嗨，悉尼，”你向<<he>>打了个招呼，“你身后那个插座，有用吗？”<br><br>
-“嗯？”悉尼回头看了看你指向的地方，突然大惊，“啊！原来这里有一个插座！我前几天找不到地方给我的台灯充电，听说咖啡馆有充电桩，专门去了一趟，”记起了不好的回忆，悉尼叹了口气，“结果店员说我没点东西，不要占座，好尴尬......”<br><br>
-你轻轻拍了拍悉尼的肩膀以示安慰，同时拿出自己的手机，“没关系，以后都可以在图书馆充电了。对了，我可以把我的手机放在这里充电吗？”<br><br>
-悉尼目瞪口呆地看着你手上小巧的长方体，惊讶道:“这....这不是惠....惠特尼手上的那种发光盒子吗!好像叫...手机？”<br><br>
-“是哦。它可以用来拍照，打电话联系别人，还可以线上购物...不过需要定时充电才能一直用，所以...”你眨了眨眼，期待地看着<<he>>。<br><br>
-“听上去好厉害...啊，”悉尼的脸颊在你的注视下变得通红，“当然没问题，不过它很贵重吧？我在图书馆的时候会帮你看着它的。”<<glove>><<npcincr Sydney love 1>><br><br>
-<<set $Phone.SydneyLibraryChargeAsked to 1>>
-<span class="gold">悉尼似乎也很要一个手机。或许有一天你可以为<<he>>买一个？</span><br><br>
-<<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
-:: Library Charge Ask Sydney 2
-“嗨，悉尼，”你向<<he>>打了个招呼，“你身后那个插座，有用吗？”<br>
-“嗯？”悉尼回头看了看你指向的地方，突然大惊，“啊！原来这里有一个插座！哎呀哎呀，我前几天还在找地方给我的台灯充电！我都专门跑到咖啡馆去了~呀呀呀呀呀”<br>
-悉尼看起来非常恼火，狂抓自己的头发，对你说：“你知道吗，那个店员，他，他居然还说我没点东西，不肯我坐在那里看书！哼！”<br><br>
-你看着有点可爱的悉尼，指了指自己的手机：“我在给这个小宝贝充个电！”<br>
-悉尼目瞪口呆地看着那个小巧的盒子状物体，惊讶地道：“这……这不是惠……惠特尼手上的那种发光盒子吗！你怎么也有？”<br>
-“哎呀，可爱的小笨蛋，这是手机呀，它要充电了，不然会没电的。”<<glove>><<npcincr Sydney love 1>><br>
-悉尼的脸颊变得通红。“好吧好吧，反正我的台灯已经充好电了，你用就是了。”<br><br>
-<<set $Phone.SydneyLibraryChargeAsked to 1>>
-<<icon "phone/charge.png">><<link [[返回充电的地方|Library Charge]]>><</link>>
-
+<<set _initiate to $sydneySeen.includes("initiate") and $temple_rank is "initiate">>
+<<if smartphone.isPhoneChargeUnguardedIn("Library")>>
+    <<if Object.values(V.loveInterest).contains("Sydney") and _sydneyStatus.includes("pure")>>
+        “嗨，悉尼～”你向坐在租借柜台的<<he>>打了一个招呼，“我是来拿回我的手机的。”<br><br>
+        “嗯……？”<<he>>趴在桌子上，看上去有点气馁，但很快振作起来，撑起身体回头看向身后，“这是你的手机？那你拿吧，亲爱的。还有什么事吗？”<br><br>
+        <<if $submissive gt 850>>
+            “我想我的事不那么急。”你伸出手，帮<<he>>揉了揉肩膀，在他耳边低语。“怎么了，今天过得不好吗？<br><br>
+        <<else>>
+            “咋低了个脸的，有人欺负你了？”你显得有点急躁，“和我说说看？我会让他们——”<br><br>
+        <</if>>
+        “没有啦，只是我想，你今天居然不是过来看我的……”<<he>>的脸红扑扑的，低下头，视死如归地盯着桌面。<br><br>
+        “嗯……？抱歉，我错了，亲爱的。”你诚恳的扶起<<he>>，在<<he>>耳边轻轻咬了一下。“这是补偿～”<br><br>
+        悉尼的眼睛猛然睁大，<<he>>转过头，用手捂住了自己绯红的脸颊，“咿啊啊啊，你…不管什么事你都可以去做，呜，先别管我了！”<br><br>
+        <<he>>躲到一边，把插座让给了你。<br><br>
+        <<set $Phone.SydneyLibraryChargeLove to 1>>
+        <<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
+    <<elseif C.npc.Sydney.love lt 10>>
+        “悉尼？我是来拿回我的手机的”你来到悉尼附近对<<he>>说。<br><br>
+        悉尼正在处理文件，<<he>>向你点了点头，给你让出了身，没有说什么。<br><br>
+        <span class="purple">如果你和悉尼的关系更好一点，悉尼才会真的让你在这里充电。这次只是破例。</span><br><br>
+        <<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
+    <<else>>
+        “嗨，悉尼，”你向坐在租借柜台的<<he>>打了个招呼，“我是来拿回我的手机的。”<br><br>
+        “嗯？什么……”悉尼回头看了看你指向的地方，突然大惊，“啊！原来这里有一个插座！我前几天找不到地方给我的手机充电，听说咖啡馆有充电桩，专门跑到咖啡馆去了……”<br><br>
+        悉尼显得有些懊恼，手指局促地交叉，叹了口气：“要是早点知道就好了，那样子我还能节省更多时间去神殿帮忙……”<br><br>
+        你轻轻拍了拍悉尼的肩膀以示安慰，同时拿出自己的智能手机，“没关系，以后都可以在图书馆充电了。对了，我以后可以把我的手机放在这里充电吗？”<br><br>
+        悉尼略显惊讶地看着你正在充电的手机，“你居然有这个？我想…嗯，一般来说，你们应该不会有这个吧？”<br><br>
+        “哎呀…这不重要，总而言之，我就是有～而且，它需要充电了，不然会用不了。”<br><br>
+        “这应该很贵重吧？”悉尼看着你把充电头插进插座，“我想我可以帮你看着，如果我在这里的话。”<<glove>><<npcincr Sydney love 1>><br><br>
+        <<set $Phone.SydneyLibraryChargeAsked to 1>>
+        <span class="gold">悉尼似乎也很要一个手机。或许有一天你可以为<<he>>买一个？</span><br><br>
+        <<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
+    <</if>>
+<<else>>
+    <<if Object.values(V.loveInterest).contains("Sydney") and _sydneyStatus.includes("pure")>>
+        “嗨，悉尼～”你向坐在租借柜台的<<he>>打了一个招呼，“你身后的那个插座，有用么？”<br><br>
+        “嗯……？”<<he>>趴在桌子上，看上去有点气馁，但很快振作起来，撑起身体回头看向身后，“看上去是有用的。亲爱的，有什么事吗？”<br><br>
+        <<if $submissive gt 850>>
+            “我想我的事不那么急。”你伸出手，帮<<he>>揉了揉肩膀，在他耳边低语。“怎么了，今天过得不好吗？<br><br>
+        <<else>>
+            “咋低了个脸的，有人欺负你了？”你显得有点急躁，“和我说说看？我会让他们——”<br><br>
+        <</if>>
+        “没有啦，只是我想，你今天居然不是过来看我的……”<<he>>的脸红扑扑的，低下头，视死如归地盯着桌面。<br><br>
+        “嗯……？抱歉，我错了，亲爱的。”你诚恳的扶起<<he>>，在<<he>>耳边轻轻咬了一下。“这是补偿～”<br><br>
+        悉尼的眼睛猛然睁大，<<he>>转过头，用手捂住了自己绯红的脸颊，“咿啊啊啊，你…不管什么事你都可以去做，呜，先别管我了！”<br><br>
+        <<he>>躲到一边，把插座让给了你。<br><br>
+        <<set $Phone.SydneyLibraryChargeLove to 1>>
+        <<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
+    <<elseif C.npc.Sydney.love lt 10>>
+        <<if smartphone.getPhoneBattery() lte 5>>
+            “悉尼？！那个插座能借用一下吗？拜托了！”你显得十分急躁，把几乎没电的手机拿了出来。<br><br>
+            悉尼正在处理文件，<<he>>皱着眉抬头，发现你的手机电量确实少的不能再少了，勉强接过，为你的手机插上充电器，“最好记得拿，放在这充电我不能保证会发生什么。”<br><br>
+            <span class="purple">如果你和悉尼的关系更好一点，悉尼才会真的让你在这里充电。这次只是破例。</span><br><br>
+            <<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
+        <<else>>
+            “嗨，悉尼，”你向<<he>>打了个招呼，“你身后那个插座，有用吗？”<br><br>
+            “嗯？”悉尼回头看了看你指向的地方，“<<if _initiate>>同修<<else>>同学<</if>>？很急用吗？”<br><br>
+            <<He>>看了看你的手机电量——还算健康，没到非充不可的地步。<br><br>
+            悉尼皱起眉头，“我想你可以拿回自己家里充电，只是少玩一会的事。”<<He>>很直白的拒绝了你。<br><br>
+            <span class="purple">如果你和悉尼的关系更好一点，或者手机的电量实在告急，悉尼才会让你在这里充电。（直到好感度突破10%或手机电量低于5%前，你无法在图书馆处使用插座充电）</span><br><br>
+            <<getouticon>><<link [[离开|School Library]]>><</link>>
+        <</if>>
+    <<else>>
+        “嗨，悉尼，”你向坐在租借柜台的<<he>>打了个招呼，“你身后那个插座，有用吗？”<br><br>
+        “嗯？什么……”悉尼回头看了看你指向的地方，突然大惊，“啊！原来这里有一个插座！我前几天找不到地方给我的手机充电，听说咖啡馆有充电桩，专门跑到咖啡馆去了……”<br><br>
+        悉尼显得有些懊恼，手指局促地交叉，叹了口气：“要是早点知道就好了，那样子我还能节省更多时间去神殿帮忙……”<br><br>
+        你轻轻拍了拍悉尼的肩膀以示安慰，同时拿出自己的智能手机，“没关系，以后都可以在图书馆充电了。对了，我可以把我的手机放在这里充电吗？”<br><br>
+        悉尼略显惊讶地看着你手上的手机，“你居然有这个？我想…嗯，一般来说，你们应该不会有这个吧？”<br><br>
+        “哎呀…这不重要，总而言之，我就是有～而且，它需要充电了，不然会用不了。”<br><br>
+        “这应该很贵重吧？”悉尼看着你把充电头插进插座，“我想我可以帮你看着，如果我在这里的话。”<<glove>><<npcincr Sydney love 1>><br><br>
+        <<set $Phone.SydneyLibraryChargeAsked to 1>>
+        <span class="gold">悉尼似乎也很要一个手机。或许有一天你可以为<<he>>买一个？</span><br><br>
+        <<icon "phone/charge.png">><<link [[为手机充电|Library Charge]]>><</link>>
+    <</if>>
+<</if>>
+:: Library Charge Ask Sydney Love
+悉尼站在你的身后，不知道是什么时候回来的。<<he>>注视着你的手机。“这很贵吧？”<br><br>
+你把玩了一下手机，转在手上“和它带来的便利比起来，不值一提，亲爱的。”<br><br>
+悉尼低着头，<<npcHairColour "Sydney">>的刘海低垂，让你看不清<<he>>的眼神。“这样啊，我会帮你看好它的！”<<he>>的语气很坚定。<br><br>
+<<set $Phone.SydneyLibraryChargeLove to "finished">>
+<<schoolicon "library desk">><<link [[待在柜台|Library Rental Counter]]>><</link>><br>
+<<getouticon>><<link [[离开柜台|School Library]]>><</link>>
 
 
 :: =======StoringPhone========
