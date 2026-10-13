@@ -1265,17 +1265,17 @@ smartphone.toggleYenote = function(open) {
         })
     }
 }
-smartphone.yenotesCheck = function() {
+smartphone.yenotesCheck = function(minutesPassed) {
     V.Phone.Yenotes.forEach(yenote => {
-        const heat = smartphone.yenoteGetHeat(yenote)
-        const viewInc = Math.floor(heat * (5 + 10 * Math.random()));       // 5~15 * heat
+        const heat = smartphone.yenoteGetHeat(yenote) * minutesPassed;
+        const viewInc = Math.floor(heat * (5 + 10 * random(100)/100));       // 5~15 * heat
         let likeInc = 0;
         let commentInc = 0;
         for (let index = 0; index < viewInc; index++) {
-            if (Math.random()*100 <= smartphone.点赞概率百分之) {
+            if (random(100) <= smartphone.点赞概率百分之) {
                 likeInc += 1
             }
-            if (Math.random()*100 <= smartphone.评论概率百分之) {
+            if (random(100) <= smartphone.评论概率百分之) {
                 commentInc += 1
             }
         }
@@ -1311,7 +1311,7 @@ smartphone.yenotesCheck = function() {
 
             if (yenote.price) {
                 const earned = yenote.price * viewInc
-                yenote.earned += earned
+                yenote.earned = Math.round( (yenote.earned + earned) *100)/100
                 new Wikifier(null, `<<money ${earned*100}>>`)
             }
 
@@ -1331,9 +1331,9 @@ smartphone.yenotesCheck = function() {
             if (yenote.img != null) {  // 自定义文章没有打赏和评论
                 if (!yenote.price) {  // 判定在每一位喜欢，百分之10的概率获得打赏
                     for (let index = 0; index < likeInc; index++) {
-                        if (Math.random()*100 <= smartphone.打赏概率百分之) {
-                            const earned = Math.max(Math.round((yenote.attract * 100) * Math.random()), 1)
-                            yenote.earned += earned
+                        if (random(100) <= smartphone.打赏概率百分之) {
+                            const earned = Math.round( Math.max((yenote.attract * 100) * 0.5 * random(100), 1) )/100
+                            yenote.earned = Math.round( (yenote.earned + earned) *100)/100
                             new Wikifier(null, `<<money ${earned*100}>>`)
                             setTimeout(() => {
                                 smartphone.msgSend(`你的文章收到了一笔<span class="gold">£${earned}</span>的打赏`, "yenote", () => {

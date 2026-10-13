@@ -37,6 +37,13 @@ if (window.maplebirch) {
 
 
 // ================== 原版函数注入 ==================
+smartphone.of$minutePassed = function(minutesPassed) {
+    // 刷新手机耗电
+    smartphone.PhonePowerPass(minutesPassed);
+
+    // 刷新小黄书评论
+    smartphone.yenotesCheck(minutesPassed);
+}
 smartphone.of$dayPassed = function() {
     // 咖啡馆每天下降警戒
     if (V.Phone.StealPhoneAlertOceanBreeze) {
@@ -72,8 +79,6 @@ smartphone.onPassageRender = function (ev) {
     new Wikifier(phoneDebugSwitchUI, "<<smartphone_debug_switch>>");
     $(smartphone.ev.content).append(phoneDebugSwitchUI);
 
-    smartphone.yenotesCheck();
-
     const phoneUI = document.createElement('div');
     phoneUI.id = "phone-wrapper";
     $(smartphone.ev.content).append(phoneUI);
@@ -90,8 +95,6 @@ smartphone.onPassageRender = function (ev) {
     smartphone.photoFinish();
     smartphone.photoCheck();  // 检测完成任务并执行拍照
     smartphone.ddCheck();
-
-    smartphone.PhonePowerPass();
 }
 // 【注入函数】事件软注入
 smartphone.eventsLoad = function() {
@@ -1009,36 +1012,32 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
     }
     return false
 }
-smartphone.PhonePowerPass = function() {
+smartphone.PhonePowerPass = function(minutesPassed) {
     if (smartphone.getUsingPhone()) {
-        if (V.Phone.PowerPassLast) {
-            const minutesPassed = (Time.date.timeStamp - V.Phone.PowerPassLast.timeStamp) / 60; // 分钟差
-            asi.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * smartphone.自然电量损失每分钟}`);
-            if (minutesPassed > 0) {
-                smartphone.PhoneConsumption(minutesPassed * smartphone.自然电量损失每分钟);
-            } else {
-                return;
-            }
-            
-            if (V.Phone.Charging && V.Phone.PowerBank && V.Phone.PowerBank.newness > 0) {
-                const phone = smartphone.getUsingPhone();
-                if (phone) {
-                    let chargingValue = minutesPassed * smartphone.充电宝充电每分钟;
-                    // 计算最低充电量（预计充电，手机剩余充电空间，充电宝剩余电量）
-                    chargingValue = Math.min(chargingValue, phone.newnessmax - phone.newness, V.Phone.PowerBank.newness);
-                    smartphone.PhoneCharge(chargingValue, phone);
-                    V.Phone.PowerBank.newness -= chargingValue;
-                    asi.log("SmartPhone", `充电宝充电: ${chargingValue}`);
-                    if (V.Phone.PowerBank.newness <= 0) {
-                        smartphone.PhoneCharging(false, true);
-                    }
+        asi.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * smartphone.自然电量损失每分钟}`);
+        if (minutesPassed > 0) {
+            smartphone.PhoneConsumption(minutesPassed * smartphone.自然电量损失每分钟);
+        } else {
+            return;
+        }
+        
+        if (V.Phone.Charging && V.Phone.PowerBank && V.Phone.PowerBank.newness > 0) {
+            const phone = smartphone.getUsingPhone();
+            if (phone) {
+                let chargingValue = minutesPassed * smartphone.充电宝充电每分钟;
+                // 计算最低充电量（预计充电，手机剩余充电空间，充电宝剩余电量）
+                chargingValue = Math.min(chargingValue, phone.newnessmax - phone.newness, V.Phone.PowerBank.newness);
+                smartphone.PhoneCharge(chargingValue, phone);
+                V.Phone.PowerBank.newness -= chargingValue;
+                asi.log("SmartPhone", `充电宝充电: ${chargingValue}`);
+                if (V.Phone.PowerBank.newness <= 0) {
+                    smartphone.PhoneCharging(false, true);
                 }
             }
         }
     } else {
         V.Phone.Charging = false
     }
-    V.Phone.PowerPassLast = Time.date;
 }
 // === 手机存放 ====================================
 smartphone.PhoneStore = function(position, id) {
