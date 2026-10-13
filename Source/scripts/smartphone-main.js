@@ -902,7 +902,8 @@ smartphone.PhoneCharge = function(value, phone = null) {
 smartphone.PhoneWaer = function(value, phone = null, check = true) {
     if (!phone) {phone = smartphone.getUsingPhone()}
     if (value <= 0) return;
-    phone.newnessmax = Math.max(Math.round(phone.newnessmax - value), 0);
+    value = Math.round(value*100)/100;
+    phone.newnessmax = Math.max(Math.round((phone.newnessmax - value)*100)/100, 0);
     if (phone === smartphone.getUsingPhone()) {
         asi.addStoryCaptionContent(`<span class="red">+${value}手机损耗</span>`); 
         if (check) {
