@@ -892,7 +892,10 @@ smartphone.PhoneCharge = function(value, phone = null) {
     smartphone.PhoneWaer(wear, phone)  // 损耗手机：过度充电
     phone.newness = Math.min(newness, phone.newnessmax);
     if (V.Phone.Using === 'null') {
-        V.Phone.Using = smartphone.getUsingPhone(true).id
+        let newPhone = smartphone.getUsingPhone(true);
+        if (newPhone) {
+            V.Phone.Using = newPhone.id
+        }
     }
     return wear
 }
@@ -950,14 +953,16 @@ smartphone.PhoneCheckNewness = function () {
     return true;
 }
 smartphone.PhoneChargeUnguarded = function(position) {
-    const phone = smartphone.getUsingPhone()
-    V.Phone.Charger[position] = {
-        phone: phone,
-        date: Time.date,
-        started: Time.date
+    const phone = smartphone.getUsingPhone(true)
+    if (phone) {
+        V.Phone.Charger[position] = {
+            phone: phone,
+            date: Time.date,
+            started: Time.date
+        }
+        V.Phone.Owned = V.Phone.Owned.filter(_phone => _phone !== phone)
+        smartphone.changeUsingPhone()
     }
-    V.Phone.Owned = V.Phone.Owned.filter(_phone => _phone !== phone)
-    smartphone.changeUsingPhone()
 }
 smartphone.PhoneChargeUnguardedFinish = function(position) {
     const phone = V.Phone.Charger[position].phone
@@ -977,8 +982,12 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
     if (Time === undefined) return;
     V.Phone.Charger = V.Phone.Charger || {};
     if (V.Phone.Charger.hasOwnProperty(position)) {
+        const phone = V.Phone.Charger[position].phone;
+        if (!phone) {
+            delete V.Phone.Charger[position]
+            return false
+        }
         if (apply) {
-            const phone = V.Phone.Charger[position].phone;
             const ageHours = (Time.date.timeStamp - V.Phone.Charger[position].date.timeStamp) / 3600; // 小时差
             const charge_value = ageHours * smartphone.充电速度每小时;
             let wear = 0;
