@@ -121,7 +121,7 @@ smartphone.eventsLoad_ = function(event_or_id) {
         }
         if (pass === null) {
             if (typeof event.chance === "number") {
-                if (Math.random() < event.chance) {
+                if (random(100) < event.chance * 100) {
                     pass = true
                 } else {
                     pass = false
