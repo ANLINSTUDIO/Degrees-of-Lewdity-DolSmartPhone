@@ -1000,7 +1000,7 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
             return false
         }
         if (apply) {
-            const ageHours = (Time.date.timeStamp - V.Phone.Charger[position].date.timeStamp) / 3600; // 小时差
+            const ageHours = (Time.date.timeStamp - (V.Phone.Charger[position].date?.timeStamp ?? Time.date.timeStamp)) / 3600; // 小时差（旧存档充电记录可能缺date字段，视为刚放入）
             const charge_value = ageHours * smartphone.充电速度每小时;
             let wear = 0;
 
@@ -1014,7 +1014,7 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
             
             V.Phone.Charger[position].date = new DateTime(Time.date)
             
-            const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
+            const ageHoursFromStarted = (Time.date.timeStamp - (V.Phone.Charger[position].started?.timeStamp ?? Time.date.timeStamp)) / 3600; // 小时差（旧存档充电记录可能缺started字段，视为刚放入）
             const fromStartedText = asi.getFriendlyTimeText(ageHoursFromStarted)
 
             var beenStolen = false;

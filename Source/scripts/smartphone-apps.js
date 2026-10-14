@@ -1561,7 +1561,7 @@ smartphone.yenoteFlushPending = function() {  // 打开手机时一次性结算�
     smartphone.msgSend(`小黄书：${parts.join('，')}`)
 }
 smartphone.yenoteGetHeat = function (yenote) {
-    const ageHours = (Time.date.timeStamp - yenote.date.timeStamp) / 3600; // 小时差
+    const ageHours = (Time.date.timeStamp - (yenote.date?.timeStamp ?? Time.date.timeStamp)) / 3600; // 小时差（旧存档文章可能无date字段，视为刚发布）
     if (ageHours < 0) {
         return 0
     }
@@ -2342,7 +2342,7 @@ smartphone.ddIsSubmited = function() {
     return V.Phone.ddstart
 }
 smartphone.ddGetWaitTime = function() {
-    const ageMin = (Time.date.timeStamp - V.Phone.ddstart.time.timeStamp) / 3600 * 60; // 小时差
+    const ageMin = (Time.date.timeStamp - (V.Phone.ddstart?.time?.timeStamp ?? Time.date.timeStamp)) / 3600 * 60; // 小时差（旧存档可能无time字段，视为刚叫车）
     return ageMin
 }
 smartphone.ddCheck = function() {
