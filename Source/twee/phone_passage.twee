@@ -521,6 +521,7 @@
 
     <<set $leftaction to "hold">>
     <<set $rightaction to "hold">>
+    <<maninit>>
 <</if>>
 <span class="gold">你必须要至少有一只手握住手机！！！否则它就会被抢走！</span><br><br>
 <<effects>>
