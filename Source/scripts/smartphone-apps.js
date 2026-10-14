@@ -858,7 +858,7 @@ smartphone.photoDesc = function() {
     let worn_text = ""
     const sidebar_look_description = document.getElementById("sidebar-look-description")
     if (sidebar_look_description) {
-        worn_text = sidebar_look_description.innerHTML
+        worn_text = smartphone.sanitizeWornText(sidebar_look_description.innerHTML)
     }
 
     let photo = {
@@ -890,6 +890,24 @@ smartphone.photoFinish = function() {
     delete V.Phone.PhotoCurrentPath;
     delete V.Phone.PhotoCurrent;
     delete V.Phone.TakingPhotoWill;
+}
+smartphone.sanitizeWornText = function(html) {  // 白名单过滤衣物描述：原版仅由文本与span/br等行内标签构成，其他模组注入的元素（衣物按钮等）一律剔除
+    const container = document.createElement("div")
+    container.innerHTML = html
+    const extract = (node, out) => {
+        node.childNodes.forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) {
+                out.appendChild(document.createTextNode(child.textContent))
+            } else if (child.nodeType === Node.ELEMENT_NODE && ["SPAN", "BR", "B", "I", "EM", "STRONG"].includes(child.tagName)) {
+                const copy = child.cloneNode(false)
+                extract(child, copy)
+                out.appendChild(copy)
+            }
+        })
+    }
+    const clean = document.createElement("div")
+    extract(container, clean)
+    return clean.innerHTML
 }
 // =================== 相册实现 ====================
 smartphone.photoDelete = function(photo_id) {
@@ -1665,6 +1683,7 @@ smartphone.yenotePost = function(photo_id) {
     const photo = V.Phone.Album[photo_id]
     const photo_base = smartphone.PhonePhotos[photo_id]
     if (photo.isUsed) return
+    if (photo.worn_text) photo.worn_text = smartphone.sanitizeWornText(photo.worn_text)  // 发布时再过滤一次：修复旧存档中已被其他模组污染的描述
     const attract = (photo_base.risk / 100) * 0.2 + (photo.allure / 1000) * 0.5 + (photo.quality / 1000) * 0.3
     T.yenotePosting = {
         id: photo_id,
