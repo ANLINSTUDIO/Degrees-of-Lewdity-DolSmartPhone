@@ -427,6 +427,13 @@ smartphone.PhoneSafeClose = function (anim=true) {
             setTimeout(() => {
                 phoneContainerOld.remove()
             }, 400)
+        } else if (smartphone._keepOldContainer) {  // 小黄书视图切换：旧视图保留至新视图滑入动画结束，避免出现空档
+            smartphone._keepOldContainer = false
+            phoneContentOld.id = "phone-content-old"
+            phoneContainerOld.id = "smart-phone-container-old-desktop"
+            setTimeout(() => {
+                phoneContainerOld.remove()
+            }, 400)
         } else {
             phoneContainerOld.remove()
         }

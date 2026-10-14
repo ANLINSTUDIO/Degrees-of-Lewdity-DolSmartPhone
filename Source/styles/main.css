@@ -185,6 +185,9 @@
     scale: 0;
     transform: translateY(200px);
 }
+.phone-screen-unlocked {
+    overflow-x: hidden;  /* 全APP禁止水平滚动条 */
+}
 .phone-content.phone-content-open {
     opacity: 1;
     scale: initial;

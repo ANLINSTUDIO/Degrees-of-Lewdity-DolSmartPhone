@@ -2,9 +2,57 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 
     border-bottom: solid 2px #ff0;
     padding-bottom: 6px;
+}
+.yenote-app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.yenote-list {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;  /* 全APP禁止水平滚动条 */
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    display: flex;
+    flex-direction: column;
+}
+.yenote-list::-webkit-scrollbar {
+    width: 6px;
+}
+.yenote-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.yenote-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+.yenote-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+@keyframes yenote-slide-right {  /* 进入详情：右拉滑入 */
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+@keyframes yenote-slide-left {  /* 返回主页：左拉滑入 */
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+.yenote-list.yenote-anim-forward {
+    animation: yenote-slide-right 0.3s ease-out;
+}
+.yenote-list.yenote-anim-back {
+    animation: yenote-slide-left 0.3s ease-out;
+}
+.phone-content.yenote-transitioning {  /* 过渡期新内容背景透明，露出下方保留的旧视图 */
+    background-color: transparent;
+    transition: none;
 }
 
 .yenote-avatar {
@@ -46,19 +94,144 @@
 #price_input {
     width: 90%;
 }
-.note-comment-foldable[open] summary::before {
-    content: "▼ 折叠";
-    margin-right: 5px;
-  }
-
-.note-comment-foldable:not([open]) summary::before {
-    content: "▶ 展开";
-    margin-right: 5px;
-  }
-.note-comments-name{
+.yenote-note-card {
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 4px;
+    margin-left: -4px;
+    transition: background-color 0.2s;
+}
+.yenote-note-card:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+.yenote-detail-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 6px 0;
+}
+.yenote-back {
+    background: transparent;
+    border: 1.5px solid white;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.yenote-back:hover {
+    background: white;
+    color: #1a1a1a;
+}
+.yenote-note-delete {
+    background: transparent;
+    border: 1.5px solid #e65050;
+    color: #e65050;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.yenote-note-delete:hover {
+    background: #e65050;
+    color: white;
+}
+.yenote-detail-actions a.link-internal {
+    background: transparent;
+    border: 1.5px solid #ffd700;
+    color: #ffd700;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+}
+.yenote-detail-actions a.link-internal:hover {
+    background: #ffd700;
+    color: #1a1a1a;
+}
+.note-avatar {
+    position: relative;
+}
+.note-unread-dot {
+    position: absolute;
+    right: 3px;
+    top: 25px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    background-color: red;
+    border-radius: 7px;
+    color: white;
+    font-size: 10px;
+    line-height: 14px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 0 4px red;
+    z-index: 1;
+}
+.note-commends-title {
+    color: #888;
+    margin-bottom: 5px;
+}
+.note-comment-item {
+    border-radius: 6px;
+    transition: filter 0.35s ease, opacity 0.35s ease, height 0.35s ease;
+}
+.note-comment-item.comment-deleting {
+    filter: blur(6px);
+    opacity: 0;
+    overflow: hidden;
+}
+.note-comments-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     line-height: normal;
     color: #888;
     margin-top: 5px;
+}
+.note-comment-delete {
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 2px 4px;
+}
+.note-comment-delete:hover {
+    color: #e65050;
+}
+.note-comment {
+    line-height: normal;
+    border-radius: 6px;
+    padding: 2px 6px;
+    margin-bottom: 3px;
+    transition: filter 0.5s ease, color 0.5s ease;
+}
+.note-comment.comment-unread {
+    color: #888;
+    filter: blur(4px);
+    user-select: none;
+}
+@keyframes comment-flash-good {
+    0% { background-color: rgba(80, 200, 120, 0.55); }
+    100% { background-color: transparent; }
+}
+@keyframes comment-flash-bad {
+    0% { background-color: rgba(230, 80, 80, 0.55); }
+    100% { background-color: transparent; }
+}
+.note-comment.comment-flash-good {
+    animation: comment-flash-good 1s ease-out 1;
+}
+.note-comment.comment-flash-bad {
+    animation: comment-flash-bad 1s ease-out 1;
 }
 .note-title, .note-passage {
     line-height: normal;
@@ -112,7 +285,88 @@
     opacity: 1;
 }
 .note-info {
-    color: #9c9c9c
+    color: #9c9c9c;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px 12px;
+}
+.note-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.note-stat.likeable {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.note-stat.likeable:hover {
+    color: white;
+}
+.note-stat.likeable.liked {
+    color: #ff6b9d;
+}
+.note-stat.likeable.liked .note-stat-icon {
+    filter: drop-shadow(0 0 3px #ff6b9d);
+}
+.note-comment-input {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+.note-comment-input input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+.note-comment-input input::placeholder {
+    color: #888;
+}
+.note-comment-input button {
+    background: transparent;
+    border: 1.5px solid white;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.note-comment-input button:hover {
+    background: white;
+    color: #1a1a1a;
+}
+.note-reply-options {
+    margin-top: 8px;
+}
+.note-reply-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.note-reply-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.note-reply-option.replied {
+    opacity: 0.4;
+    cursor: default;
+}
+.note-stat-icon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    opacity: 0.85;
 }
 
 

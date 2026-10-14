@@ -1256,22 +1256,213 @@ smartphone.initYenote = function() {
     document.querySelectorAll('.note-image.locked').forEach(article => {
         const notes = V.Phone.Yenotes.filter(yenote => yenote.id === article.dataset.id)[0]
         if (notes.npc && notes.price > 0 && !notes.unlocked) {
-            
+
         } else {
             smartphone.YenoteLockedObserver.observe(article);
         }
     });
+    smartphone.yenoteSetupComments()
+    smartphone.yenoteRestoreScroll()
+    if (smartphone._yenoteAnim) {  // 视图切换滑入动画：进入详情右拉，返回主页左拉（操作行与列表一起滑动）
+        const list = document.querySelector("#smart-phone-container .yenote-list")
+        const actions = document.querySelector("#smart-phone-container .yenote-detail-actions")
+        const phoneContent = document.getElementById("phone-content")
+        const animClass = smartphone._yenoteAnim === "forward" ? "yenote-anim-forward" : "yenote-anim-back"
+        if (list) list.classList.add(animClass)
+        if (actions) actions.classList.add(animClass)
+        if (list && phoneContent) {  // 过渡期新内容背景透明，露出下方的旧视图；动画结束与新视图不透明同时发生
+            phoneContent.classList.add("yenote-transitioning")
+            setTimeout(() => {
+                list.classList.remove("yenote-anim-forward", "yenote-anim-back")
+                actions?.classList.remove("yenote-anim-forward", "yenote-anim-back")
+                phoneContent.classList.remove("yenote-transitioning")
+            }, 400)
+        }
+        delete smartphone._yenoteAnim
+    }
 }
-smartphone.toggleYenote = function(open) {
-    if (open) {
-        V.Phone.Yenotes.forEach(yenote => {
-            yenote.comments.forEach(comment => {
-                if (!comment.already_read) {
-                    comment.already_read = true
-                    new Wikifier(document.getElementById(yenote.id+"*"+yenote.comments.indexOf(comment)), `<<print \`${comment.effect}\`>>`)
-                }
-            })
-        })
+smartphone.yenoteUnreadCount = function(note) {  // 主页红点：玩家文章未读评论数量
+    if (note.npc || !asi.isvalid(note.comments)) return 0
+    return note.comments.filter(comment => !comment.already_read).length
+}
+smartphone.yenoteGetNote = function(id) {
+    return V.Phone.Yenotes.find(yenote => yenote.id === id)
+}
+smartphone._yenoteScrolls = {}  // 小黄书各视图滚动位置记忆
+smartphone.yenoteSaveScroll = function() {  // 保存当前视图的滚动位置，重渲染后由yenoteRestoreScroll恢复
+    const list = document.querySelector("#smart-phone-container .yenote-list")  // 限定活动容器：重渲染后旧容器(.yenote-list)仍存在400ms
+    if (list) smartphone._yenoteScrolls[T.yenoteViewId ?? "home"] = list.scrollTop
+}
+smartphone.yenoteRestoreScroll = function() {  // 恢复当前视图的滚动位置：渲染同步阶段立即生效；图片加载改变内容高度期间逐帧保持，用户主动滚动立即让位
+    const list = document.querySelector("#smart-phone-container .yenote-list")  // 必须限定活动容器，否则会设到待删除的旧容器上
+    if (!list) return
+    const saved = smartphone._yenoteScrolls?.[T.yenoteViewId ?? "home"] ?? 0
+    if (!saved) return
+    list.scrollTop = saved  // 绘制前立即生效
+    if (!list.querySelector("img")) return  // 无图片则内容高度稳定，一次恢复即可
+    let frames = 0
+    const stop = () => { frames = Infinity }
+    list.addEventListener("wheel", stop, {passive: true})
+    list.addEventListener("touchstart", stop, {passive: true})
+    const tick = () => {
+        if (frames++ > 600 || !list.isConnected) {  // 约10秒上限，防死循环
+            list.removeEventListener("wheel", stop)
+            list.removeEventListener("touchstart", stop)
+            return
+        }
+        if (list.scrollTop !== saved) list.scrollTop = saved
+        requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+}
+smartphone.yenoteOpenNote = function(id) {  // 进入帖子详情页
+    smartphone.yenoteSaveScroll()  // 以当前（旧）视图为键保存
+    smartphone._yenoteAnim = "forward"  // 右拉进入动画
+    smartphone._keepOldContainer = true  // 旧视图保留至滑入动画结束
+    T.yenoteViewId = id
+    smartphone.PhoneUIInit(true, true)
+}
+smartphone.yenoteBackToList = function() {  // 返回主页
+    smartphone.yenoteSaveScroll()
+    smartphone._yenoteAnim = "back"  // 左拉返回动画
+    smartphone._keepOldContainer = true
+    delete T.yenoteViewId
+    smartphone.PhoneUIInit(true, true)
+}
+smartphone.yenoteEffectPolarity = function(effect) {  // 评论影响极性：1正面(绿闪) -1负面(红闪) 0无影响
+    if (!effect) return 0
+    let bad = false, good = false
+    const re = /(stress|trauma|control|arousal)\s+([+-]?\d+)/g
+    let m
+    while ((m = re.exec(effect)) !== null) {
+        const val = parseInt(m[2])
+        if (m[1] === "stress" || m[1] === "trauma") {  // 压力/创伤增加为负面，减少为正面
+            if (val > 0) bad = true; else if (val < 0) good = true
+        } else {  // 控制/性奋增加为正面，减少为负面
+            if (val > 0) good = true; else if (val < 0) bad = true
+        }
+    }
+    if (/insecurity/.test(effect)) bad = true  // 自卑印记一律为负面
+    return bad ? -1 : (good ? 1 : 0)
+}
+smartphone.yenoteCommentObserver = new IntersectionObserver(entries => {  // 视口判断玩家是否看到了评论
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            smartphone.yenoteCommentObserver.unobserve(entry.target)
+            smartphone.yenoteSeeComment(entry.target)
+        }
+    })
+}, {threshold: 0.5})
+smartphone.yenoteSetupComments = function() {  // 每次小黄书界面渲染后调用：主页卡片绑定点击 & 详情页评论视口观察与删除按钮
+    smartphone.yenoteCommentObserver.disconnect()
+    document.querySelectorAll(".yenote-note-card[data-id]").forEach(card => {
+        card.onclick = () => smartphone.yenoteOpenNote(card.dataset.id)
+    })
+    document.querySelectorAll(".yenote-note-delete[data-id]").forEach(btn => {
+        btn.onclick = () => smartphone.yenoteDelete(btn.dataset.id)
+    })
+    document.querySelectorAll(".note-reply-option[data-note]").forEach(btn => {
+        btn.onclick = () => smartphone.yenoteReplySelect(btn.dataset.note, btn.dataset.text)
+    })
+    document.querySelectorAll(".note-stat.likeable[data-id]").forEach(el => {
+        el.onclick = (e) => {
+            e.stopPropagation()  // 主页卡片点击进详情，点赞不跳转
+            smartphone.yenoteLike(el.dataset.id)
+        }
+    })
+    document.querySelectorAll(".note-comment-item[data-note]").forEach(item => {
+        const note = smartphone.yenoteGetNote(item.dataset.note)
+        item._comment = note?.comments[+item.dataset.index]  // 元素直接持有评论对象，显示顺序反转后删除不再依赖索引
+    })
+    document.querySelectorAll(".note-comment-delete").forEach(btn => {
+        btn.onclick = () => {
+            const item = btn.closest(".note-comment-item")
+            smartphone.yenoteDeleteComment(item.dataset.note, item)
+        }
+    })
+    document.querySelectorAll(".note-comment.comment-unread").forEach(el => {
+        smartphone.yenoteCommentObserver.observe(el)
+    })
+}
+smartphone.yenoteSeeComment = function(el) {  // 玩家看到评论：立即去模糊并标记已读，有影响的进入闪光队列
+    const item = el.closest(".note-comment-item")
+    const comment = item?._comment
+    if (!comment || comment.already_read) return
+    comment.already_read = true
+    el.classList.remove("comment-unread")
+    if (comment.effect) {
+        smartphone.yenoteFlashQueue.push({comment: comment, el: el})
+        smartphone.yenoteProcessFlashQueue()
+    }
+}
+smartphone.yenoteFlashQueue = []
+smartphone.yenoteFlashing = false
+smartphone.yenoteProcessFlashQueue = function() {  // 多条评论同时生效时，闪光按间隔批量延时
+    if (smartphone.yenoteFlashing) return
+    smartphone.yenoteFlashing = true
+    const next = () => {
+        const item = smartphone.yenoteFlashQueue.shift()
+        if (!item) {
+            smartphone.yenoteFlashing = false
+            return
+        }
+        smartphone.yenoteFlashComment(item)
+        setTimeout(next, smartphone.评论闪光间隔)
+    }
+    next()
+}
+smartphone.yenoteFlashComment = function(item) {  // 闪光一次并执行评论的影响代码
+    const comment = item.comment
+    if (!comment) return
+    const el = item.el?.isConnected ? item.el : null
+    const polarity = smartphone.yenoteEffectPolarity(comment.effect)
+    if (el && polarity !== 0) {
+        el.classList.add(polarity > 0 ? "comment-flash-good" : "comment-flash-bad")
+        setTimeout(() => el.classList.remove("comment-flash-good", "comment-flash-bad"), 1000)
+    }
+    if (comment.effect) {
+        new Wikifier(el, `<<print \`${comment.effect}\`>>`)
+        smartphone.yenotesStatApply()
+    }
+}
+smartphone.yenoteDeleteComment = function(id, item) {  // 直接删除单条评论：负面评论减压+绿闪后模糊消失，普通评论直接模糊消失
+    const note = smartphone.yenoteGetNote(id)
+    const comment = item?._comment
+    if (!note || !comment) return
+    const index = note.comments.indexOf(comment)
+    if (index === -1) return
+    const el = item.querySelector(".note-comment")
+    const negative = smartphone.yenoteEffectPolarity(comment.effect) < 0
+    note.comments.splice(index, 1)  // 立即从存档删除，保证连续删除不出错
+    const startRemoving = () => {
+        if (!item?.isConnected) return
+        item.classList.add("comment-deleting")
+        item.style.height = item.offsetHeight + "px"
+        void item.offsetHeight
+        item.style.height = "0"
+        setTimeout(() => item.remove(), 400)
+    }
+    if (negative) {
+        if (el) {
+            el.classList.remove("comment-unread")
+            el.classList.add("comment-flash-good")
+        }
+        new Wikifier(null, "<<stress -1>>")  // 删除负面评论少量减压
+        setTimeout(startRemoving, 600)
+        smartphone.yenotesStatApply(true)
+    } else {
+        startRemoving()
+    }
+}
+smartphone.yenotesStatApply = function(stressonly=false) {
+    if (!stressonly) {
+        $('#allurecaption').replaceWith(new Wikifier(null, '<<allurecaption>>').output)
+        $('#traumacaption').replaceWith(new Wikifier(null, '<<traumacaption>>').output)
+        $('#controlcaption').replaceWith(new Wikifier(null, '<<controlcaption>>').output)
+    }
+    $('#stresscaption').replaceWith(new Wikifier(null, '<<stresscaption>>').output)
+    if (window.Dynamicest) {
+        Dynamicest.LoadStats()
     }
 }
 smartphone.yenotesCheck = function(minutesPassed) {
@@ -1346,6 +1537,7 @@ smartphone.yenoteFlushPending = function() {  // 打开手机时一次性结算�
     if (parts.length === 0) return
     if (money > 0) {
         new Wikifier(null, `<<money ${money}>>`)
+        if (window.Dynamicest) Dynamicest.LoadMoney();
         parts.push(`共入账<span class="gold">£${(money / 100).toFixed(2)}</span>`)
     }
     smartphone.msgSend(`小黄书：${parts.join('，')}`)
@@ -1577,6 +1769,7 @@ smartphone.yenoteDelete = function(photo_id) {
         if (note.img === null) {
             smartphone.confirm('确定要删除这篇文章吗', '', () => {
                 V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
+                delete T.yenoteViewId  // 从详情页删除后返回主页
                 smartphone.PhoneUIInit(true, true)
             })
         } else {
@@ -1585,19 +1778,10 @@ smartphone.yenoteDelete = function(photo_id) {
                 photo.isUsed = false
                 photo.onceUsed = true
                 V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
+                delete T.yenoteViewId  // 从详情页删除后返回主页
                 smartphone.PhoneUIInit(true, true)
             })
         }
-    }
-}
-smartphone.yenoteDeleteComment = function(photo_id) {
-    const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
-    if (notes.length > 0) {
-        const note = notes[0];
-        smartphone.confirm('确定要删除这篇文章的所有评论吗？', '这样做可以减少卡顿，不会造成副作用。', () => {
-            note.comments = []
-            smartphone.PhoneUIInit(true, true)
-        })
     }
 }
 smartphone.yenoteGenerateRandomComment = function(photo) {
@@ -1697,11 +1881,15 @@ smartphone.getUser = function(id) {
 }
 smartphone.yenoteNPCPost = function(note) {
     // name, msg, id=null, repost=false, img=null, price=null
+    // replies: 玩家评论选项 [{回复内容: NPC回复时执行的twee}, ...]，玩家点选后发表该评论，有几率执行twee触发剧情或NPC回复
     // smartphone.yenoteNPCPost({
     //     id: "LandryAD0",
     //     name: "Landry",
     //     msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
     //     repost: true,
+    //     replies: [
+    //         {"我想卖掉我的旧手机": "<<run smartphone.yenoteNPCReply('LandryAD0', '好啊，带到麋鹿街来，我给你个好价钱！')>>"},
+    //     ],
     // })
     const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
     if (note.id) {
@@ -1726,11 +1914,63 @@ smartphone.yenoteNPCPost = function(note) {
 
         name: note.name,
         npc: true,
+        replies: note.replies ?? null,  // 玩家评论选项 [{回复内容: 执行twee}, ...]
         view: 0,
         like: 0,
         comments: [],
         fames: [],
     })
+}
+smartphone.yenoteReplied = function(note, text) {  // 玩家是否已用该选项评论过
+    return note.comments.some(c => c.text === text)
+}
+smartphone.yenotePCComment = function(id, text) {  // 玩家发表评论（自由输入或选项）
+    const note = smartphone.yenoteGetNote(id)
+    if (!note) return
+    note.comments.push({
+        name: V.Phone.yenoteUsername ?? "我",
+        text: String(text).replace(/</g, "&lt;").replace(/>/g, "&gt;"),  // 玩家输入按纯文本转义
+        effect: "",
+        already_read: true,
+    })
+}
+smartphone.yenotePCCommentFromInput = function() {  // 详情页输入框发送评论（自己的帖子）
+    const input = document.getElementById("note_comment_input")
+    const text = input?.value.trim()
+    if (!text) return
+    smartphone.yenoteSaveScroll()
+    smartphone.yenotePCComment(T.yenoteViewId, text)
+    smartphone.PhoneUIInit(true, true)
+}
+smartphone.yenoteReplySelect = function(id, text) {  // NPC帖选项评论：发表后NPC有几率回复互动
+    const note = smartphone.yenoteGetNote(id)
+    if (!note || smartphone.yenoteReplied(note, text)) return
+    const reply = (note.replies ?? []).find(r => Object.keys(r)[0] === text)
+    smartphone.yenoteSaveScroll()
+    smartphone.yenotePCComment(id, text)
+    if (reply && random(100) < smartphone.小黄书NPC回复几率百分之) {
+        new Wikifier(null, Object.values(reply)[0])
+    }
+    smartphone.PhoneUIInit(true, true)
+}
+smartphone.yenoteNPCReply = function(id, text) {  // NPC以自己的身份回复玩家评论（供replies的twee调用，注意不会主动刷新界面）
+    const note = smartphone.yenoteGetNote(id)
+    if (!note) return
+    note.comments.push({
+        name: note.name,
+        text: text,
+        effect: "",
+        already_read: true,
+        last_name: V.Phone.yenoteUsername,  // 回复玩家
+    })
+}
+smartphone.yenoteLike = function(id) {  // 点赞帖子（一次性）
+    const note = smartphone.yenoteGetNote(id)
+    if (!note || note.liked) return
+    smartphone.yenoteSaveScroll()
+    note.liked = true
+    note.like += 1
+    smartphone.PhoneUIInit(true, true)
 }
 smartphone.yenoteUnlock = function(photo_id) {
     const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
@@ -1740,6 +1980,7 @@ smartphone.yenoteUnlock = function(photo_id) {
             smartphone.confirm(`你的账户中没有足够的<span class="gold">${note.price}便士</span>以购买这篇文章`, '', () => {})
         } else {
             smartphone.confirm(`确定要花费<span class="gold">${note.price}便士</span>购买这篇文章吗？`, '注意，这将延迟付款。支付通知我们会稍后发送给您。', () => {
+                smartphone.yenoteSaveScroll()
                 new Wikifier(null, `<<money -${note.price}>>`)
                 note.unlocked = true;
                 smartphone.PhoneUIInit(true, true)

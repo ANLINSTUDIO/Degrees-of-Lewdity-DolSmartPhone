@@ -944,7 +944,7 @@ smartphone.Apps = {  // APP
 
     photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: "photo"},
     album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: "photo"},
-    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", toggle: "toggleYenote", guide: "yenote"},
+    yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", guide: "yenote"},
 
     contacts: {display_name: "通讯录", icon: "img/misc/icon/assignment.png", app_widget: "phone_app_contacts", guide: "contacts", disableinevent: true},
     game: {display_name: "游戏", icon: "img/misc/icon/robin-controller.png", app_widget: "phone_app_game", disableinevent: true},
@@ -1015,6 +1015,7 @@ smartphone.PhoneModelsMain = [
 smartphone.热度衰减系数 = 0.1;  // 衰减系数 0.1 控制热度下降速度（可根据需求调整，如每天衰减一半则系数约为 0.03）。
 smartphone.点赞概率百分之 = 50;
 smartphone.评论概率百分之 = 5;
+smartphone.评论闪光间隔 = 300;  // 多条评论同时生效时，闪光提示的批量延时间隔(ms)
 smartphone.打赏概率百分之 = 10;
 smartphone.充电速度每小时 = 500;
 smartphone.充电损害每度电比 = 0.01;

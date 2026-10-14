@@ -476,6 +476,7 @@
 <</widget>>
 
 <<widget "phone_app_yenote">>
+    <div class="yenote-app">
     <div class="yenote-status-bar">
         <div style="width: 100%; display: flex; align-items: center;">
             <<set _user to smartphone.getUser("{PC}")>>
@@ -488,6 +489,7 @@
         <img class="yenote-title" src="img/misc/icon/phone/app/yenote-text-full.png">
         <img class="yenote-add pointer" src="img/ui/phone/app/add.png" onclick="smartphone.yenotePosting()">
     </div>
+    <div class="yenote-list">
     <<if !$Phone.yenoteUsername>>
         <div class="note-rename">
             <b>开始你的旅途；记录性福生活。欢迎来到「小黄书」，告诉我们你的名字吧：</b>
@@ -555,15 +557,108 @@
                 <button onclick="smartphone.yenotePostSubmit()">确定发布</button>
             </div>
         </div>
+    <<elseif _yenoteViewId>>
+        <<set _note to smartphone.yenoteGetNote(_yenoteViewId)>>
+        <div class="yenote-detail-actions">
+            <button class="yenote-back" onclick="smartphone.yenoteBackToList()">← 返回</button>
+            <<if _note and _note.npc and _note.price and !_note.unlocked>><<link "购买文章">><<run smartphone.yenoteUnlock(_note.id)>><</link>><</if>>
+            <<if _note and !_note.npc>><button class="yenote-note-delete" @data-id="_note.id" title="删除此文章">删除</button><</if>>
+        </div>
+        <div class="yenote-list">
+        <<if _note>>
+            <<set _user to smartphone.getUser(_note.name)>>
+            <div class="yenote-content">
+                <div class="note-avatar">
+                    <img class="yenote-avatar yenote-note" @src=_user.avatar onerror="javascript:this.src='img/misc/icon/phone/avatar/pc.png'">
+                </div>
+                <div class="note-content">
+                    <div class="note-title">
+                        <b>_user.name</b>
+                        <<if _note.price>>
+                            <img class="note-premium" src="img/ui/phone/app/premium.png">
+                        <</if>>
+                    </div>
+                    <div class="note-passage">
+                        <<print _note.msg>>
+                    </div>
+                    <div class="note-image-container">
+                        <<if _note.img isnot null>>
+                            <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>>
+                            <<if _note.price>>
+                                <div class="note-locked-text">付费内容</div>
+                            <</if>>
+                        <</if>>
+                    </div>
+                    <div class="note-info">
+                        <<if _note.npc>>
+                            <span @class='"note-stat likeable"+(_note.liked? " liked":"")' @data-id="_note.id" title="点赞"><img class="note-stat-icon" @src='_note.liked? "img/ui/phone/app/note-liked.png": "img/ui/phone/app/note-like.png"'>_note.like</span>
+                            <<if _note.price>>
+                                <span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-price.png">_note.price</span>
+                            <</if>>
+                        <<else>>
+                            <span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-view.png">_note.view</span>
+                            <span @class='"note-stat likeable"+(_note.liked? " liked":"")' @data-id="_note.id" title="点赞"><img class="note-stat-icon" @src='_note.liked? "img/ui/phone/app/note-liked.png": "img/ui/phone/app/note-like.png"'>_note.like</span>
+                            <<if _note.earned>><span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-price.png">£<<print (_note.earned/100).toFixed(2)>></span><</if>>
+                        <</if>>
+                    </div>
+                    <<if asi.isvalid(_note.comments)>>
+                        <div class="note-commends">
+                            <div class="note-commends-title"><b><<print _note.comments.length+"条评论">></b></div>
+                            <<set _comments to _note.comments.slice().reverse()>>
+                            <<for _comment range _comments>>
+                                <div class="note-comment-item" @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
+                                    <div class="note-comments-name">
+                                        <span><b>_comment.name</b> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
+                                        <button class="note-comment-delete" title="删除此评论">✕</button>
+                                    </div>
+                                    <div @class='"note-comment"+(_comment.already_read? "": " comment-unread")'>
+                                        <<print _comment.text>>
+                                    </div>
+                                </div>
+                            <</for>>
+                        </div>
+                    <<else>>
+                        <div class="note-commends">
+                            <div class="note-commends-title">暂无评论，快去发布内容吸引读者吧~</div>
+                        </div>
+                    <</if>>
+                    <<if _note.npc>>
+                        <<if asi.isvalid(_note.replies)>>
+                            <div class="note-reply-options">
+                                <div class="note-commends-title"><b>发表评论：</b></div>
+                                <<for _reply range _note.replies>>
+                                    <<set _rtext to Object.keys(_reply)[0]>>
+                                    <<if smartphone.yenoteReplied(_note, _rtext)>>
+                                        <button class="note-reply-option replied" disabled>_rtext</button>
+                                    <<else>>
+                                        <button class="note-reply-option" @data-note=_note.id @data-text=_rtext>_rtext</button>
+                                    <</if>>
+                                <</for>>
+                            </div>
+                        <</if>>
+                    <<else>>
+                        <div class="note-comment-input">
+                            <input type="text" id="note_comment_input" placeholder="发表你的评论…" onkeydown="if (event.keyCode === 13) {smartphone.yenotePCCommentFromInput()}">
+                            <button onclick="smartphone.yenotePCCommentFromInput()">发送</button>
+                        </div>
+                    <</if>>
+                </div>
+            </div>
+        <<else>>
+            <p style="font-size:12px; color:#666;">文章不存在或已被删除。</p>
+        <</if>>
+        </div>
     <<else>>
         <div class="note-content-container">
             <<if asi.isvalid($Phone.Yenotes)>>
                 <<for _note range $Phone.Yenotes>>
                     <<capture _note>>
-                        <div class="yenote-content">
+                        <div class="yenote-content yenote-note-card" @data-id="_note.id">
                             <<set _user to smartphone.getUser(_note.name)>>
+                            <<set _unread to smartphone.yenoteUnreadCount(_note)>>
                             <div class="note-avatar">
                                 <img class="yenote-avatar yenote-note" @src=_user.avatar onerror="javascript:this.src='img/misc/icon/phone/avatar/pc.png'">
+                                <<if _unread gt 0>><span class="note-unread-dot">_unread</span><</if>>
                             </div>
                             <div class="note-content">
                                 <div class="note-title">
@@ -577,44 +672,25 @@
                                 </div>
                                 <div class="note-image-container">
                                     <<if _note.img isnot null>>
-                                        <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>> 
+                                        <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>>
                                         <<if _note.price>>
                                             <div class="note-locked-text">付费内容</div>
                                         <</if>>
                                     <</if>>
                                 </div>
-                                <div class="note-info"> 
+                                <div class="note-info">
                                     <<if _note.npc>>
-                                        <<print '点赞'+_note.like+"&nbsp;&nbsp;">> 
+                                        <span @class='"note-stat likeable"+(_note.liked? " liked":"")' @data-id="_note.id" title="点赞"><img class="note-stat-icon" @src='_note.liked? "img/ui/phone/app/note-liked.png": "img/ui/phone/app/note-like.png"'>_note.like</span>
                                         <<if _note.price>>
-                                            <<print '定价<span class="gold">'+_note.price+'便士</span>&nbsp;&nbsp;'>>
-                                            <<if !_note.unlocked>>
-                                                <<link "购买文章">><<run smartphone.yenoteUnlock(_note.id)>><</link>>
-                                            <</if>>
+                                            <span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-price.png">_note.price</span>
                                         <</if>>
                                     <<else>>
-                                        <<print '阅读'+_note.view+'&nbsp;&nbsp;点赞'+_note.like+"&nbsp;&nbsp;">> 
-                                        <<if _note.earned>><<print '获利<span class="gold">£'+(_note.earned/100).toFixed(2)+'</span>&nbsp;&nbsp;'>><</if>>
-                                        <br>
-                                        <<link "删除此文章">><<run smartphone.yenoteDelete(_note.id)>><</link>>&nbsp;&nbsp;
-                                        <<link "删除所有评论">><<run smartphone.yenoteDeleteComment(_note.id)>><</link>>
+                                        <span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-view.png">_note.view</span>
+                                        <span @class='"note-stat likeable"+(_note.liked? " liked":"")' @data-id="_note.id" title="点赞"><img class="note-stat-icon" @src='_note.liked? "img/ui/phone/app/note-liked.png": "img/ui/phone/app/note-like.png"'>_note.like</span>
+                                        <<if _note.earned>><span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-price.png">£<<print (_note.earned/100).toFixed(2)>></span><</if>>
                                     <</if>>
+                                    <<if asi.isvalid(_note.comments)>><span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-comment.png">_note.comments.length</span><</if>>
                                 </div>
-                                <<if asi.isvalid(_note.comments)>>
-                                    <div class="note-commends">
-                                        <details class="note-comment-foldable" open>
-                                            <summary><<print _note.comments.length+"条评论">></summary>
-                                            <<for _comment range _note.comments>>
-                                                <div class="note-comments-name">
-                                                    <b><<print _comment.name>></b> <<print _comment.last_name? "回复 "+_comment.last_name: "">>
-                                                </div>
-                                                <div @id='_note.id+"*"+_note.comments.indexOf(_comment)' class="note-comment">
-                                                    <<print _comment.text>>
-                                                </div>
-                                            <</for>>
-                                        </details>
-                                    </div>
-                                <</if>>
                             </div>
                         </div>
                     <</capture>>
@@ -624,6 +700,8 @@
             <</if>>
         </div>
     <</if>>
+    </div>
+    </div>
     <!-- <div class="yenote-tool-bar">
     </div> -->
 <</widget>>
