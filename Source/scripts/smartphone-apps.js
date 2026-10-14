@@ -1266,6 +1266,7 @@ smartphone.toggleYenote = function(open) {
     }
 }
 smartphone.yenotesCheck = function(minutesPassed) {
+    V.Phone.YenotePending = V.Phone.YenotePending || {view: 0, like: 0, comment: 0, tipCount: 0, tipMoney: 0, paid: 0}  // 待入账收益，打开手机时由yenoteFlushPending统一结算
     V.Phone.Yenotes.forEach(yenote => {
         const heat = smartphone.yenoteGetHeat(yenote) * minutesPassed;
         const viewInc = Math.floor(heat * (5 + 10 * random(100)/100));       // 5~15 * heat
@@ -1283,84 +1284,62 @@ smartphone.yenotesCheck = function(minutesPassed) {
         if (yenote.npc) {
             yenote.view += viewInc;
             yenote.like += likeInc;
-            // if (commentInc > 0) {
-            //     for (let i = 0; i < commentInc; i++) {
-            //         yenote.comments.push(smartphone.yenoteGenerateRandomComment(yenote));
-            //     }
-            // }
         } else {
-            // console.log(`heat=${heat}, viewInc=${viewInc}, likeInc=${likeInc}, commentInc=${commentInc}`);
-
             yenote.fames?.forEach(_fame => {  // 计算名声（钳制到0~2000，与原版fameclamp一致）
                 V.fame[_fame] = Math.clamp(parseFloat((V.fame[_fame] + viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1).toFixed(2)), 0, 2000)
             })
-            
-            const oldHundredsview = Math.floor(yenote.view / 100);
+
             yenote.view += viewInc;
-            const newHundredsview = Math.floor(yenote.view / 100);
-            
-            if (newHundredsview > oldHundredsview) {
-                setTimeout(() => {
-                    smartphone.msgSend(`你的文章达到了<span class="gold">${yenote.view}</span>阅读量`, "yenote", () => {
-                        if (smartphone.shouldUsePhone()){
-                            smartphone.toggleApp('yenote')
-                        }
-                    })
-                })
-            }
+            V.Phone.YenotePending.view += viewInc;
 
-            if (yenote.price) {
+            if (yenote.price) {  // 付费帖：按每次浏览结算（便士），打开手机时统一入账
                 const earned = yenote.price * viewInc
-                yenote.earned = Math.round( (yenote.earned + earned) *100)/100
-                new Wikifier(null, `<<money ${earned*100}>>`)
+                yenote.earned = Math.round(yenote.earned + earned)
+                V.Phone.YenotePending.paid += earned
             }
 
-            const oldHundredslike = Math.floor(yenote.like / 100);
             yenote.like += likeInc;
-            const newHundredslike = Math.floor(yenote.like / 100);
-            if (newHundredslike > oldHundredslike) {
-                setTimeout(() => {
-                    smartphone.msgSend(`你的文章达到了<span class="gold">${yenote.like}</span>点赞量`, "yenote", () => {
-                        if (smartphone.shouldUsePhone()){
-                            smartphone.toggleApp('yenote')
-                        }
-                    })
-                })
-            }
+            V.Phone.YenotePending.like += likeInc;
 
             if (yenote.img != null) {  // 自定义文章没有打赏和评论
-                if (!yenote.price) {  // 判定在每一位喜欢，百分之10的概率获得打赏
+                if (!yenote.price) {  // 免费帖：每一位喜欢，百分之10的概率获得打赏（便士）
                     for (let index = 0; index < likeInc; index++) {
                         if (random(100) <= smartphone.打赏概率百分之) {
-                            const earned = Math.round( Math.max((yenote.attract * 100) * 0.5 * random(100), 1) )/100
-                            yenote.earned = Math.round( (yenote.earned + earned) *100)/100
-                            new Wikifier(null, `<<money ${earned*100}>>`)
-                            setTimeout(() => {
-                                smartphone.msgSend(`你的文章收到了一笔<span class="gold">£${earned}</span>的打赏`, "yenote", () => {
-                                    if (smartphone.shouldUsePhone()){
-                                        smartphone.toggleApp('yenote')
-                                    }
-                                })
-                            }, 10);
+                            const earned = Math.round(Math.max(yenote.attract * 0.5 * random(100), 1))
+                            yenote.earned = Math.round(yenote.earned + earned)
+                            V.Phone.YenotePending.tipCount += 1
+                            V.Phone.YenotePending.tipMoney += earned
                         }
                     }
                 }
 
                 if (commentInc > 0) {
-                    setTimeout(() => {
-                        smartphone.msgSend(`你的文章收到了${commentInc}条新的评论`, "yenote", () => {
-                            if (smartphone.shouldUsePhone()){
-                                smartphone.toggleApp('yenote')
-                            }
-                        })
-                    }, 10);
                     for (let i = 0; i < commentInc; i++) {
                         yenote.comments.push(smartphone.yenoteGenerateRandomComment(yenote));
                     }
+                    V.Phone.YenotePending.comment += commentInc;
                 }
             }
         }
     })
+}
+smartphone.yenoteFlushPending = function() {  // 打开手机时一次性结算小黄书收益，同类消息合并为一条
+    const p = V.Phone.YenotePending
+    delete V.Phone.YenotePending
+    if (!p) return
+    const parts = []
+    let money = 0
+    if (p.view) parts.push(`浏览+${p.view}`)
+    if (p.like) parts.push(`点赞+${p.like}`)
+    if (p.comment) parts.push(`新评论${p.comment}条`)
+    if (p.tipCount) { money += p.tipMoney; parts.push(`打赏${p.tipCount}笔`) }
+    if (p.paid) { money += p.paid; parts.push(`付费收入`) }
+    if (parts.length === 0) return
+    if (money > 0) {
+        new Wikifier(null, `<<money ${money}>>`)
+        parts.push(`共入账<span class="gold">£${(money / 100).toFixed(2)}</span>`)
+    }
+    smartphone.msgSend(`小黄书：${parts.join('，')}`)
 }
 smartphone.yenoteGetHeat = function (yenote) {
     const ageHours = (Time.date.timeStamp - yenote.date.timeStamp) / 3600; // 小时差
@@ -1377,7 +1356,7 @@ smartphone.yenoteGetHeat = function (yenote) {
     let heat = baseHeat * Math.pow(3, fame);
     
     if (yenote.price && yenote.attract) {
-        const priceRatio = Math.min(yenote.price / (yenote.attract * 100), 1); // 限制最大为1
+        const priceRatio = Math.min(yenote.price / (yenote.attract * 10), 1); // 限制最大为1（定价单位：便士，滑杆上限为attract*10便士）
         const priceFactor = 0.15 + 0.85 * Math.exp(-7 * priceRatio);
         heat *= priceFactor;
     }
@@ -1503,7 +1482,7 @@ smartphone.yenoteChangePrice = function() {
     const range = document.getElementById('price_input');
     const price_text = document.getElementById('price_text');
     const price = parseInt(range.value)
-    price_text.innerText = price === 0 ? "免费": `£${range.value}`
+    price_text.innerText = price === 0 ? "免费": `${range.value} 便士`
     T.yenotePosting.price = price
     
     const yenote_heat = document.getElementById('yenote_heat');
@@ -1748,11 +1727,11 @@ smartphone.yenoteUnlock = function(photo_id) {
     const notes = V.Phone.Yenotes.filter(yenote => yenote.id === photo_id)
     if (notes.length > 0) {
         const note = notes[0];
-        if (V.money < note.price * 100) {
-            smartphone.confirm(`你的账户中没有足够的<span class="gold">£${note.price}</span>以购买这篇文章`, '', () => {})
+        if (V.money < note.price) {
+            smartphone.confirm(`你的账户中没有足够的<span class="gold">${note.price}便士</span>以购买这篇文章`, '', () => {})
         } else {
-            smartphone.confirm(`确定要花费<span class="gold">£${note.price}</span>购买这篇文章吗？`, '注意，这将延迟付款。支付通知我们会稍后发送给您。', () => {
-                new Wikifier(null, `<<money -${note.price * 100}>>`)
+            smartphone.confirm(`确定要花费<span class="gold">${note.price}便士</span>购买这篇文章吗？`, '注意，这将延迟付款。支付通知我们会稍后发送给您。', () => {
+                new Wikifier(null, `<<money -${note.price}>>`)
                 note.unlocked = true;
                 smartphone.PhoneUIInit(true, true)
             })

@@ -273,6 +273,9 @@ smartphone.toggleApp = function(AppName, open=true) {
 smartphone.appInit = function(togglePhone=false) {
     const AppName = V.Phone.CurrentApp
     const app = smartphone.Apps[AppName]
+    if (T.phoneopen) {
+        smartphone.yenoteFlushPending()  // 打开手机时一次性结算小黄书收益
+    }
     if (!V.Phone.AlarmTriggered && app) {
         if (app.guide) {
             smartphone.Guide.startTutorial(app.guide);

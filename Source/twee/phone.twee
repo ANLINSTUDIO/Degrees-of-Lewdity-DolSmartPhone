@@ -536,7 +536,7 @@
                     <div>
                         定价：<span id="price_text" class="gold">免费</span>
                     </div>
-                    <input type="range" id="price_input" value="0" min="0" @max="_note.attract*100" step="1" onchange="smartphone.yenoteChangePrice()">
+                    <input type="range" id="price_input" value="0" min="0" @max="_note.attract*10" step="1" onchange="smartphone.yenoteChangePrice()">
                     <<run setTimeout(smartphone.yenoteChangePrice, 10)>>
                 </div>
                 <br>
@@ -587,14 +587,14 @@
                                     <<if _note.npc>>
                                         <<print '点赞'+_note.like+"&nbsp;&nbsp;">> 
                                         <<if _note.price>>
-                                            <<print '定价<span class="gold">£'+_note.price+'</span>&nbsp;&nbsp;'>>
+                                            <<print '定价<span class="gold">'+_note.price+'便士</span>&nbsp;&nbsp;'>>
                                             <<if !_note.unlocked>>
                                                 <<link "购买文章">><<run smartphone.yenoteUnlock(_note.id)>><</link>>
                                             <</if>>
                                         <</if>>
                                     <<else>>
                                         <<print '阅读'+_note.view+'&nbsp;&nbsp;点赞'+_note.like+"&nbsp;&nbsp;">> 
-                                        <<if _note.earned>><<print '获利<span class="gold">£'+_note.earned+'</span>&nbsp;&nbsp;'>><</if>> 
+                                        <<if _note.earned>><<print '获利<span class="gold">£'+(_note.earned/100).toFixed(2)+'</span>&nbsp;&nbsp;'>><</if>>
                                         <br>
                                         <<link "删除此文章">><<run smartphone.yenoteDelete(_note.id)>><</link>>&nbsp;&nbsp;
                                         <<link "删除所有评论">><<run smartphone.yenoteDeleteComment(_note.id)>><</link>>
