@@ -179,6 +179,7 @@
 .phone-content {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;  /* 全APP禁止水平滚动条 */
     background-color: #1a1a1a;
     transition: all 0.4s ease;
     opacity: 0;
