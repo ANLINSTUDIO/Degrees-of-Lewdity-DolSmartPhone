@@ -977,13 +977,17 @@
 
 :: ========APP========
 :: Phone Shop
-<div class="phone-call-overlay">
+<div class="phone-passage-overlay">
     <h2 style="display: flex; gap: 10px;"> <img src="img/misc/icon/phone/app/taobao.png"> 淘桃网购</h2>
     <hr>
     
-    <div id="phone-call-content">
-        <<shopicon "clothing">><<link [[服装专柜|Phone Shop BuyClothes]]>><<set $Phone.ReturnWorn to $worn>><</link>><br>
-        <<supermarketicon>><<link [[小桃帮买菜|Phone Shop BuyFood]]>><</link>><br>
+    <div id="phone-shop-content">
+        <div>
+            <<shopicon "clothing">><<link [[服装专柜|Phone Shop BuyClothes]]>><<set $Phone.ReturnWorn to $worn>><</link>>
+        </div>
+        <div>
+            <<supermarketicon>><<link [[小桃帮买菜|Phone Shop BuyFood]]>><</link>>
+        </div>
     </div>
 
     <div id="phone-call-hang-up">

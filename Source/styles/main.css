@@ -586,8 +586,91 @@
     display: none;
 }
 
+/* 使用 #phone-shop-content 作为锚点 —— 所有样式都仅基于此ID作用域 */
+#phone-shop-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-grow: 1;
+}
+
+/* 每个大按钮 —— 原本是内层div，现在被改造成卡片按钮 */
+#phone-shop-content > div {
+    position: relative;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.1s;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    flex: 1 1 0;  /* 两个按钮等分空间，保持1:1 */
+    max-width: calc(40% - 10px);  /* 两个按钮加间距合计不超过容器的80% */
+    aspect-ratio: 1;  /* 高度跟随宽度，保持正方形 */
+}
+
+/* 链接绝对定位铺满整张卡片，点击卡片任意位置都能触发跳转 */
+#phone-shop-content > div a.link-internal {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 14%;
+    font-weight: 600;
+    color: var(--000);;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* 整个卡片可点（内部链接区域也会撑满） */
+#phone-shop-content > div:hover {
+    transform: translateY(-4px);
+}
+
+#phone-shop-content > div:active {
+    transform: scale(0.98);
+}
+
+/* 让图片(icon)变大、居中 */
+#phone-shop-content > div .icon {
+    width: 72px;
+    height: 72px;
+    -webkit-user-drag: none;
+}
+
+#phone-shop-content > div:hover .icon {
+    transform: scale(1.05);
+}
+
+
+/* 响应式调整：窄屏下缩小图标与间距，按钮仍保持并排与正方形 */
+@media (max-width: 480px) {
+    #phone-shop-content {
+    gap: 16px;
+    padding: 8px;
+    }
+    #phone-shop-content > div {
+    padding: 12px;
+    border-radius: 28px;
+    }
+    #phone-shop-content > div .icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+    }
+    #phone-shop-content > div a.link-internal {
+    font-size: 0.9em;
+    }
+}
+
+
+
 /*==================== 电话实现 ====================*/
-.phone-call-overlay {
+.phone-passage-overlay {
     background: #222;
     color: #eee;
     padding: 20px;
@@ -600,7 +683,7 @@
     flex-direction: column;
 }
 @media (max-width: 500px) {
-    .phone-call-overlay {
+    .phone-passage-overlay {
         height: 80%;
     }
 }
