@@ -843,13 +843,13 @@ smartphone.photoDesc = function() {
     const arousal_k = V.arousal / V.arousalmax  // 性奋
     const allure_k = V.allure / 8000  // 诱惑
     allure = arousal_k * 0.3 + allure_k * 0.7
-    allure = Math.round(allure * 1000)
+    allure = Math.clamp(Math.round(allure * 1000), 1, 1000)
 
     let quality = 0
     const photography_k = V.Phone.photography / 1000
     quality = photography_k * 0.8 + Math.random() * 0.2
     quality *= smartphone.getPhoneInfo().photography
-    quality  = Math.round(quality * 1000)
+    quality  = Math.clamp(Math.round(quality * 1000), 1, 1000)
 
     let worn_text = ""
     const sidebar_look_description = document.getElementById("sidebar-look-description")
@@ -876,7 +876,7 @@ smartphone.photoSubmit = function() {
     V.Phone.PhotoCurrent.facevariant = V.facevariant;
     V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
     smartphone.togglePhone();
-    V.Phone.photography = Math.min(V.Phone.photography + 20, 1000);
+    V.Phone.photography = Math.min(V.Phone.photography + 1, 1000);
     smartphone.msgSend("你稍微掌握了一点摄影的技巧");
 
     // 兼容极致动态
@@ -1291,8 +1291,8 @@ smartphone.yenotesCheck = function(minutesPassed) {
         } else {
             // console.log(`heat=${heat}, viewInc=${viewInc}, likeInc=${likeInc}, commentInc=${commentInc}`);
 
-            yenote.fames?.forEach(_fame => {  // 计算名声
-                V.fame[_fame] = parseFloat((V.fame[_fame] + viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1).toFixed(2))
+            yenote.fames?.forEach(_fame => {  // 计算名声（钳制到0~2000，与原版fameclamp一致）
+                V.fame[_fame] = Math.clamp(parseFloat((V.fame[_fame] + viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1).toFixed(2)), 0, 2000)
             })
             
             const oldHundredsview = Math.floor(yenote.view / 100);
@@ -1495,7 +1495,7 @@ smartphone.yenotePost = function(photo_id) {
         price: 0,
         earned: 0,
         fames: photo_base.fames,
-        date: Time.date
+        date: new DateTime(Time.date)  // 快照：Time.date是可变单例引用，直接保存会导致热度衰减失效
     }
     smartphone.toggleApp("yenote")
 }
@@ -1551,7 +1551,7 @@ smartphone.yenotePostSubmit = function() {
             price: 0,
             earned: 0,
             fames: [],
-            date: Time.date,
+            date: new DateTime(Time.date),  // 快照：Time.date是可变单例引用
 
             name: "{PC}",
             npc: false,
@@ -1734,7 +1734,7 @@ smartphone.yenoteNPCPost = function(note) {
         attract: note.attract ?? 0.5,
         price: note.price ?? 0,
         unlocked: false,
-        date: Time.date,
+        date: new DateTime(Time.date),  // 快照：Time.date是可变单例引用
 
         name: note.name,
         npc: true,

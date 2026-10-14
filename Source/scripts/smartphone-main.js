@@ -958,8 +958,8 @@ smartphone.PhoneChargeUnguarded = function(position) {
     if (phone) {
         V.Phone.Charger[position] = {
             phone: phone,
-            date: Time.date,
-            started: Time.date
+            date: new DateTime(Time.date),  // 快照：Time.date是可变单例引用，直接保存会导致时间差恒为0
+            started: new DateTime(Time.date)
         }
         V.Phone.Owned = V.Phone.Owned.filter(_phone => _phone !== phone)
         smartphone.changeUsingPhone()
@@ -1001,7 +1001,7 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
                 T.PowerBankCharging = false;
             }
             
-            V.Phone.Charger[position].date = Time.date
+            V.Phone.Charger[position].date = new DateTime(Time.date)
             
             const ageHoursFromStarted = (Time.date.timeStamp - V.Phone.Charger[position].started.timeStamp) / 3600; // 小时差
             const fromStartedText = asi.getFriendlyTimeText(ageHoursFromStarted)
@@ -1024,7 +1024,7 @@ smartphone.isPhoneChargeUnguardedIn = function(position, apply=false) {
 }
 smartphone.PhonePowerPass = function(minutesPassed) {
     if (smartphone.getUsingPhone()) {
-        asi.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} - ${V.Phone.PowerPassLast.timeStamp} = ${minutesPassed * smartphone.自然电量损失每分钟}`);
+        asi.log("SmartPhone", `自然电量损失: ${Time.date.timeStamp} = ${minutesPassed * smartphone.自然电量损失每分钟}`);
         if (minutesPassed > 0) {
             smartphone.PhoneConsumption(minutesPassed * smartphone.自然电量损失每分钟);
         } else {
@@ -1227,8 +1227,8 @@ smartphone.PowerBankChargeIn = function(position) {
             newness: V.Phone.PowerBank.newness,
             newnessmax: V.Phone.PowerBank.newnessmax,
         },
-        date: Time.date,
-        started: Time.date
+        date: new DateTime(Time.date),
+        started: new DateTime(Time.date)
     }
     delete V.Phone.PowerBank
 }
