@@ -894,6 +894,9 @@ smartphone.photoFinish = function() {
 // =================== 相册实现 ====================
 smartphone.photoDelete = function(photo_id) {
     smartphone.confirm('确定要删除这个照片吗', '你可以<span class="pink">让自己变得更加诱人</span>、<span class="green">拍照技术更好</span>或者<span class="blue">使用更好的摄像机</span>重新完成此任务以获得更好质量的照片', () => {
+        if (V.Phone.Album[photo_id]?.isUsed) {  // 已发布的照片：联动删除小黄书中的文章
+            V.Phone.Yenotes = V.Phone.Yenotes.filter(yenote => yenote.id !== photo_id)
+        }
         delete V.Phone.Album[photo_id]
         smartphone.PhoneUIInit(true, true);
     })
@@ -1178,7 +1181,9 @@ smartphone.addAlbumTask = function(taskId) {
                         <</if>>
                     </p>
                     <<if ${photo.isUsed}>>
-                        <p style="font-size:12px; color:#666;">已使用，请前往使用处删除</p>
+                        <p style="font-size:12px; color:#666;">已发布到小黄书</p>
+                        <<link 删除>><<run smartphone.photoDelete('${taskId}')>><</link>>&nbsp;
+                        <span style="font-size:12px; color:#666;">（将同时删除小黄书上的文章）</span>
                     <<else>>
                         <<link 删除>><<run smartphone.photoDelete('${taskId}')>><</link>>
                         <span style="margin-right: 30px"></span>
