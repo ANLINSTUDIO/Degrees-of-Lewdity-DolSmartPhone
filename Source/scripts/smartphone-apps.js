@@ -764,7 +764,10 @@ smartphone.photoCheck = function() {
                             not = true
                             key = key.slice(0, -1)
                         }
-                        if (key.startsWith("$")) {
+                        if (key.startsWith("$_")) {
+                            obj = V.Phone._ ?? {}
+                            key = key.slice(2)
+                        } else if (key.startsWith("$")) {
                             obj = V.Phone
                             key = key.slice(1)
                         } else if (key.startsWith("_")) {
@@ -790,7 +793,8 @@ smartphone.photoCheck = function() {
             }
 
             smartphone.checkPhoneDisabled();
-        }, 200)
+            V.Phone._ = {};
+        }, 200);
     }
 }
 smartphone.photoTakeDebug = function(id) {

@@ -65,7 +65,8 @@ smartphone.om$orgasm = function() {
     T.havingOrgasm = true;
 }
 smartphone.om$make_recipe = function() {
-    T.makingRecipe = true;
+    V.Phone._ ??= {};
+    V.Phone._.makingRecipe = true;
 }
 
 // ================== passage 注入 ==================
