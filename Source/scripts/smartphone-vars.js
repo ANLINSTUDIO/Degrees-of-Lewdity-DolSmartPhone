@@ -752,7 +752,7 @@ smartphone.PhonePhotos = {  // 摄像任务
         risk: 40,
         fames: ["social", "good", "business"],
         conditions: {
-          _makingRecipe: true,
+          $_makingRecipe: true,
           passage: "Kitchen"
         },
         comments: {
