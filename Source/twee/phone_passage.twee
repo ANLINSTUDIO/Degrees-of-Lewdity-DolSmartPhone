@@ -1808,7 +1808,7 @@
 :: ===========LIVE===========
 :: Live Bedroom
 正在开发！敬请期待！<br><br>
-<<icon "socialise.png">><<link [[与观众聊天]]>><</link>><br>
+<!-- <<icon "socialise.png">><<link [[与观众聊天]]>><</link>><br>
 <<icon "socialise_angry.png">><<link [[与观众抱怨]]>><</link>><br>
 <<icon "socialise_breakdown.png">><<link [[与观众倾诉]]>><</link>><br>
 <<icon "socialise_question.png">><<link [[向观众提问]]>><</link>><br>
@@ -1819,7 +1819,7 @@
 <br>
 <<icon "brothel.gif">><<link [[诱惑]]>><</link>><br>
 <<skinicon "masturbate">><<link [[自慰]]>><</link>><br>
-<br>
+<br> -->
 <<getouticon>><<link [[下播|Live Bedroom Finish]]>><</link>><br>
 <!-- <<effects>>
 <<if $masturbationstart is 1>>
