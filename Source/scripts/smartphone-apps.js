@@ -1314,6 +1314,12 @@ smartphone.yenoteSaveScroll = function() {  // 保存当前视图的滚动位置
 smartphone.yenoteRestoreScroll = function() {  // 恢复当前视图的滚动位置：渲染同步阶段立即生效；图片加载改变内容高度期间逐帧保持，用户主动滚动立即让位
     const list = document.querySelector("#smart-phone-container .yenote-list")  // 必须限定活动容器，否则会设到待删除的旧容器上
     if (!list) return
+    if (smartphone._yenoteScrollTop) {  // 发布文章后需要回到顶部，清除该视图的滚动记忆并置顶
+        smartphone._yenoteScrolls[T.yenoteViewId ?? "home"] = 0
+        delete smartphone._yenoteScrollTop
+        list.scrollTop = 0
+        return
+    }
     const saved = smartphone._yenoteScrolls?.[T.yenoteViewId ?? "home"] ?? 0
     if (!saved) return
     list.scrollTop = saved  // 绘制前立即生效
@@ -1771,6 +1777,7 @@ smartphone.yenotePostSubmit = function() {
         })
     }
     delete T.yenotePosting
+    smartphone._yenoteScrollTop = true  // 发布后回到主页顶部
     smartphone.PhoneUIInit(true, true)
 }
 smartphone.yenotePosting = function() {
