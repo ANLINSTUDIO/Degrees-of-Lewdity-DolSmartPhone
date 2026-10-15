@@ -794,14 +794,12 @@ smartphone.Phone = class {
 // === 手机控制 ==========================================
 smartphone.BuyPhone = function(model) { // 购买一部手机
     const phone = new smartphone.Phone().newBuy(model);
-    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     smartphone.changeUsingPhone();
     return phone;
 }
 smartphone.BuySecondPhone = function(model, newnessK) { // 购买一部二手手机
     const phone = new smartphone.Phone().newBuySecond(model, newnessK);
-    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     smartphone.changeUsingPhone();
     V.Phone.SecondPhoneShopGoods = V.Phone.SecondPhoneShopGoods.filter(item => !(item.model === model && item.newnessK === newnessK));
@@ -820,7 +818,6 @@ smartphone.RefreshSecondPhone = function() {
 }
 smartphone.StolePhone = function() { // 盗窃一部手机
     const phone = new smartphone.Phone().newStolen();
-    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     return phone;
 }
