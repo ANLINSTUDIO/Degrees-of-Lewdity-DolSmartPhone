@@ -1991,12 +1991,22 @@ smartphone.yenoteNPCReply = function(id, text) {  // NPC以自己的身份回复
         last_name: V.Phone.yenoteUsername,  // 回复玩家
     })
 }
-smartphone.yenoteLike = function(id) {  // 点赞帖子（一次性）
+smartphone.yenoteLike = function(id) {  // 点赞/取消点赞（详情页局部更新不重渲染，主页重渲染恢复滚动）
     const note = smartphone.yenoteGetNote(id)
-    if (!note || note.liked) return
+    if (!note) return
+    note.liked = !note.liked
+    note.like += note.liked ? 1 : -1
+    if (T.yenoteViewId === id) {  // 详情页：局部更新点赞图标与数字，避免重渲染导致滚动重置
+        const like = document.querySelector(`#smart-phone-container .note-stat.likeable[data-id="${id}"]`)
+        if (like) {
+            like.classList.toggle("liked", note.liked)
+            like.childNodes.forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.textContent = note.like })
+            like.querySelector(".note-stat-icon")?.setAttribute("src", note.liked ? "img/ui/phone/app/note-liked.png" : "img/ui/phone/app/note-like.png")
+        }
+        if (smartphone._yenoteScrolls) smartphone._yenoteScrolls[id] = document.querySelector("#smart-phone-container .yenote-list")?.scrollTop ?? 0
+        return
+    }
     smartphone.yenoteSaveScroll()
-    note.liked = true
-    note.like += 1
     smartphone.PhoneUIInit(true, true)
 }
 smartphone.yenoteUnlock = function(photo_id) {
