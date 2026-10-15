@@ -91,6 +91,9 @@
     margin-top: 5px;
     margin-bottom: 20px;
 }
+.note-content {
+    width: 85%;
+}
 #price_input {
     width: 90%;
 }
@@ -200,7 +203,8 @@
     border: none;
     color: #666;
     cursor: pointer;
-    font-size: 12px;
+    scale: 2;
+    font-size: 6px;
     line-height: 1;
     padding: 2px 4px;
 }
@@ -313,7 +317,6 @@
     display: flex;
     gap: 6px;
     margin-bottom: 8px;
-    width: 95%;
 }
 .note-comment-input input {
     flex: 1;
