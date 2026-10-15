@@ -601,21 +601,19 @@
                             <<if _note.earned>><span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-price.png">£<<print (_note.earned/100).toFixed(2)>></span><</if>>
                         <</if>>
                     </div>
-                    <div class="note-commends-title"><b><<print _note.comments.length+"条评论">></b></div>
-                    <<if _note.npc>>
-                        <<if asi.isvalid(_note.replies)>>
-                            <div class="note-reply-options">
-                                <div class="note-commends-title"><b>发表评论：</b></div>
-                                <<for _reply range _note.replies>>
-                                    <<set _rtext to Object.keys(_reply)[0]>>
-                                    <<if smartphone.yenoteReplied(_note, _rtext)>>
-                                        <button class="note-reply-option replied" disabled>_rtext</button>
-                                    <<else>>
-                                        <button class="note-reply-option" @data-note=_note.id @data-text=_rtext>_rtext</button>
-                                    <</if>>
-                                <</for>>
-                            </div>
-                        <</if>>
+                    <div class="note-commends-title note-comment-count"><b><<print _note.comments.length+"条评论">></b></div>
+                    <<if _note.npc and asi.isvalid(_note.replies)>>
+                        <div class="note-reply-options">
+                            <div class="note-commends-title"><b>发表评论：</b></div>
+                            <<for _reply range _note.replies>>
+                                <<set _rtext to Object.keys(_reply)[0]>>
+                                <<if smartphone.yenoteReplied(_note, _rtext)>>
+                                    <button class="note-reply-option replied" disabled>_rtext</button>
+                                <<else>>
+                                    <button class="note-reply-option" @data-note=_note.id @data-text=_rtext>_rtext</button>
+                                <</if>>
+                            <</for>>
+                        </div>
                     <<else>>
                         <div class="note-comment-input">
                             <input type="text" id="note_comment_input" placeholder="发表你的评论…" onkeydown="if (event.keyCode === 13) {smartphone.yenotePCCommentFromInput()}">
