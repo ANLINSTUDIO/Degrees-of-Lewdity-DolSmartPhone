@@ -184,7 +184,14 @@
             "modVersion": "^1.0.0",
             "params": {
                 "js": [],
-                "twee": []
+                "twee": [
+                    {
+                        "_atool": true,
+                        "from": ">\n\t<br><br>\n\t<<landryoptions>>",
+                        "to": ">\n\t<br><br>\n\t<<if $Phone.LandryWarn is 1>>\n\t\t“哦，想起来个事儿，<span class=\"teal\">你最好不要把我的名字打在社交平台上</span>，我不希望还有下次，单纯的小<<girl>>，”兰德里严肃地看着你说。\n\t\t<br><br>\n\t\t<<set $Phone.LandryWarn to 2>>\n\t<</if>>\n\t<<landryoptions>>",
+                        "passageName": "Pub Landry"
+                    }
+                ]
             }
         }
     ],
