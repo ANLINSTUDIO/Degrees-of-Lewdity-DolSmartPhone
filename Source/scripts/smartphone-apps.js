@@ -1458,6 +1458,7 @@ smartphone.yenoteDeleteComment = function(id, item) {  // 直接删除单条评�
     const el = item.querySelector(".note-comment")
     const negative = smartphone.yenoteEffectPolarity(comment.effect) < 0
     note.comments.splice(index, 1)  // 立即从存档删除，保证连续删除不出错
+    document.querySelector("#smart-phone-container .note-comment-count").innerHTML = `<b>${note.comments.length}条评论</b>`  // 同步评论数量标题
     const startRemoving = () => {
         if (!item?.isConnected) return
         item.classList.add("comment-deleting")
