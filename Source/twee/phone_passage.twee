@@ -1554,7 +1554,7 @@
         <<if _sydney_location is "library" and (
             ($Phone.SydneyLibraryChargeAsked is undefined) or 
             (Object.values(V.loveInterest).contains("Sydney") and $Phone.SydneyLibraryChargeLove is undefined and _sydneyStatus.includes("pure")))>>
-            <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>><<iconUi "love-interest.png">>
+            <<link [[询问悉尼能否为手机充电|Library Charge Ask Sydney]]>><</link>><<if Object.values(V.loveInterest).contains("Sydney")>><<iconUi "love-interest.png">><</if>>
         <<else>>
             <<link [[为手机充电|Library Charge]]>><</link>>
         <</if>>
