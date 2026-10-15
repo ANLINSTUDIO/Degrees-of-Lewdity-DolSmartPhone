@@ -268,7 +268,7 @@ smartphone.togglePhone = function(force=null) {
     smartphone.appInit(true)
 };
 smartphone.toggleApp = function(AppName, open=true) {
-    if (!smartphone.PhoneConsumption(1)) return;
+    if (!smartphone.PhoneConsumption(0.2)) return;
     if (V.Phone.CurrentApp === "yenote" && AppName !== "yenote") {
         delete T.yenotePosting  // 离开小黄书时关闭发布页（在相册点击发布后进入小黄书不受影响）
     }
