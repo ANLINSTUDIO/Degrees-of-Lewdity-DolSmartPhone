@@ -1951,6 +1951,11 @@ smartphone.yenoteNPCPost = function(note) {
 smartphone.yenoteReplied = function(note, text) {  // 玩家是否已用该选项评论过
     return note.comments.some(c => c.text === text)
 }
+smartphone.yenoteCommentRole = function(note, comment) {  // 评论人身份："pc"玩家 | "author"帖子作者 | "guest"路人
+    if (comment.name === V.Phone.yenoteUsername || comment.name === "{PC}") return "pc"
+    if (comment.name === note.name) return "author"
+    return "guest"
+}
 smartphone.yenotePCComment = function(id, text) {  // 玩家发表评论（自由输入或选项）
     const note = smartphone.yenoteGetNote(id)
     if (!note) return

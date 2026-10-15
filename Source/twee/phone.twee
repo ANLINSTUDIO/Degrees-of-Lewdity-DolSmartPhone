@@ -625,9 +625,10 @@
                             <div class="note-commends">
                                 <<set _comments to _note.comments.slice().reverse()>>
                                 <<for _comment range _comments>>
+                                    <<set _role to smartphone.yenoteCommentRole(_note, _comment)>>
                                     <div class="note-comment-item" @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
                                         <div class="note-comments-name">
-                                            <span><b>_comment.name</b> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
+                                            <span><b @class='"note-comment-name-"+_role'>_comment.name</b><span class="note-comment-role note-comment-role-_role"><<if _role is "pc">>我<<elseif _role is "author">>作者<</if>></span> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
                                             <button class="note-comment-delete" title="删除此评论">✕</button>
                                         </div>
                                         <div @class='"note-comment"+(_comment.already_read? "": " comment-unread")'>

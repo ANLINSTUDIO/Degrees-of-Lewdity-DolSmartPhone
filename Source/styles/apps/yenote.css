@@ -211,6 +211,30 @@
 .note-comment-delete:hover {
     color: #e65050;
 }
+.note-comment-name-pc {
+    color: #6ecbff;
+}
+.note-comment-name-author {
+    color: #ffd966;
+}
+.note-comment-name-guest {
+    color: #b8b8b8;
+}
+.note-comment-role {
+    font-size: 9px;
+    margin-left: 3px;
+    padding: 0 3px;
+    border-radius: 4px;
+    vertical-align: 1px;
+}
+.note-comment-role-pc {
+    background: rgba(110, 203, 255, 0.2);
+    color: #6ecbff;
+}
+.note-comment-role-author {
+    background: rgba(255, 217, 102, 0.2);
+    color: #ffd966;
+}
 .note-comment {
     line-height: normal;
     border-radius: 6px;
