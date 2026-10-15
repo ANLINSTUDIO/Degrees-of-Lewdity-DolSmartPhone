@@ -754,7 +754,7 @@ smartphone.Phone = class {
     return uniqueId
   }
   generateModel() {
-    this.setModel(smartphone.PhoneModelsMain[ smartphone.PhoneModelsMain.length * Math.random() << 0]);
+    this.setModel(smartphone.PhoneModelsMain[ Math.floor(smartphone.PhoneModelsMain.length * Math.random()) ]);
   }
   setModel(model) {
     this.model = model
@@ -768,9 +768,9 @@ smartphone.Phone = class {
   return() {
     return { ...this }
   }
-  generate() { // 生成一部手机
+  generate(newnessmaxk = 1) { // 生成一部手机
     this.generateModel();
-    this.newnessmax = Math.round(Math.random() * this.info().newnessfactory);
+    this.newnessmax = Math.round(Math.random() * this.info().newnessfactory * newnessmaxk);
     this.newness = Math.round(Math.random() * this.newnessmax);
   }
   newBuy(model) {
@@ -785,8 +785,8 @@ smartphone.Phone = class {
     this.second = true;
     return this.return();
   }
-  newStolen() {
-    this.generate();
+  newStolen(newnessmaxk = 1) {
+    this.generate(newnessmaxk);
     this.stolen = true;
     return this.return();
   }
