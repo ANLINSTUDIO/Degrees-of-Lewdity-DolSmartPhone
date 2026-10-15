@@ -1299,28 +1299,33 @@ smartphone.initYenote = function() {
         delete smartphone._yenoteAnim
     }
 }
-smartphone.yenoteUnreadCount = function(note) {  // 主页红点：玩家文章未读评论数量
-    if (note.npc || !asi.isvalid(note.comments)) return 0
-    return note.comments.filter(comment => !comment.already_read).length
+smartphone.yenoteUnreadCount = function(note) {  // 主页红点：玩家文章显示未读评论数量；NPC文章有未读回复时仅显示红点
+    if (!asi.isvalid(note.comments)) return 0
+    const count = note.comments.filter(comment => !comment.already_read).length
+    if (count === 0) return 0
+    return note.npc ? true : count  // NPC帖红点不带数字
 }
 smartphone.yenoteGetNote = function(id) {
     return V.Phone.Yenotes.find(yenote => yenote.id === id)
 }
-smartphone._yenoteScrolls = {}  // 小黄书各视图滚动位置记忆
+smartphone._yenoteScrolls = {}  // 小黄书各视图滚动位置记忆（键：详情页id或主页类别tab）
+smartphone.yenoteScrollKey = function() {  // 当前视图的滚动记忆键：发布页独立，详情页用帖子id，主页用类别tab（默认home）
+    return T.yenotePosting ? "posting" : (T.yenoteViewId ?? (T.yenoteTab ?? "home"))
+}
 smartphone.yenoteSaveScroll = function() {  // 保存当前视图的滚动位置，重渲染后由yenoteRestoreScroll恢复
     const list = document.querySelector("#smart-phone-container .yenote-list")  // 限定活动容器：重渲染后旧容器(.yenote-list)仍存在400ms
-    if (list) smartphone._yenoteScrolls[T.yenoteViewId ?? "home"] = list.scrollTop
+    if (list) smartphone._yenoteScrolls[smartphone.yenoteScrollKey()] = list.scrollTop
 }
 smartphone.yenoteRestoreScroll = function() {  // 恢复当前视图的滚动位置：渲染同步阶段立即生效；图片加载改变内容高度期间逐帧保持，用户主动滚动立即让位
     const list = document.querySelector("#smart-phone-container .yenote-list")  // 必须限定活动容器，否则会设到待删除的旧容器上
     if (!list) return
     if (smartphone._yenoteScrollTop) {  // 发布文章后需要回到顶部，清除该视图的滚动记忆并置顶
-        smartphone._yenoteScrolls[T.yenoteViewId ?? "home"] = 0
+        smartphone._yenoteScrolls[smartphone.yenoteScrollKey()] = 0
         delete smartphone._yenoteScrollTop
         list.scrollTop = 0
         return
     }
-    const saved = smartphone._yenoteScrolls?.[T.yenoteViewId ?? "home"] ?? 0
+    const saved = smartphone._yenoteScrolls?.[smartphone.yenoteScrollKey()] ?? 0
     if (!saved) return
     list.scrollTop = saved  // 绘制前立即生效
     if (!list.querySelector("img")) return  // 无图片则内容高度稳定，一次恢复即可
@@ -1346,12 +1351,29 @@ smartphone.yenoteOpenNote = function(id) {  // 进入帖子详情页
     T.yenoteViewId = id
     smartphone.PhoneUIInit(true, true)
 }
+smartphone.yenoteOpenReplyNote = function(id) {  // 回复通知点击跳转：打开小黄书并进入对应帖子（func被序列化后闭包变量丢失，只能用全局函数+id参数）
+    if (!smartphone.yenoteGetNote(id)) return
+    if (V.Phone.CurrentApp !== "yenote") smartphone.toggleApp("yenote")
+    if (T.yenoteViewId !== id) smartphone.yenoteOpenNote(id)
+}
 smartphone.yenoteBackToList = function() {  // 返回主页
     smartphone.yenoteSaveScroll()
     smartphone._yenoteAnim = "back"  // 左拉返回动画
     smartphone._keepOldContainer = true
     delete T.yenoteViewId
     smartphone.PhoneUIInit(true, true)
+}
+smartphone.yenoteSetTab = function(tab) {  // 切换主页类别：home首页 explore探索 mine我的
+    if (T.yenoteTab === tab) return
+    T.yenoteTab = tab
+    smartphone.PhoneUIInit(true, true)
+}
+smartphone.yenoteFilterTab = function(note) {  // 按类别过滤帖子列表
+    switch (T.yenoteTab) {
+        case "explore": return note.npc  // 探索：只有NPC发的
+        case "mine": return !note.npc    // 我的：只有自己发的
+        default: return true             // 首页：全部
+    }
 }
 smartphone.yenoteEffectPolarity = function(effect) {  // 评论影响极性：1正面(绿闪) -1负面(红闪) 0无影响
     if (!effect) return 0
@@ -1386,7 +1408,11 @@ smartphone.yenoteSetupComments = function() {  // 每次小黄书界面渲染后
         btn.onclick = () => smartphone.yenoteDelete(btn.dataset.id)
     })
     document.querySelectorAll(".note-reply-option[data-note]").forEach(btn => {
-        btn.onclick = () => smartphone.yenoteReplySelect(btn.dataset.note, btn.dataset.text)
+        btn.onclick = () => {
+            const note = smartphone.yenoteGetNote(btn.dataset.note)
+            const replyDef = note?.replies?.[+btn.dataset.index]
+            if (replyDef) smartphone.yenoteReplySelect(btn.dataset.note, replyDef)
+        }
     })
     document.querySelectorAll(".note-stat.likeable[data-id]").forEach(el => {
         el.onclick = (e) => {
@@ -1459,6 +1485,7 @@ smartphone.yenoteDeleteComment = function(id, item) {  // 直接删除单条评�
     const negative = smartphone.yenoteEffectPolarity(comment.effect) < 0
     note.comments.splice(index, 1)  // 立即从存档删除，保证连续删除不出错
     document.querySelector("#smart-phone-container .note-comment-count").innerHTML = `<b>${note.comments.length}条评论</b>`  // 同步评论数量标题
+    smartphone.yenoteSyncCommentUI(id)  // 立即同步发表区显隐与选项禁用态（删除主要评论后恢复发表区）
     const startRemoving = () => {
         if (!item?.isConnected) return
         item.classList.add("comment-deleting")
@@ -1565,7 +1592,7 @@ smartphone.yenoteFlushPending = function() {  // 打开手机时一次性结算�
         if (window.Dynamicest) Dynamicest.LoadMoney();
         parts.push(`共入账<span class="gold">£${(money / 100).toFixed(2)}</span>`)
     }
-    smartphone.msgSend(`小黄书：${parts.join('，')}`)
+    smartphone.msgSend(`小黄书：${parts.join('，')}`, "yenote", () => { smartphone.toggleApp("yenote"); }, true)
 }
 smartphone.yenoteGetHeat = function (yenote) {
     const ageHours = (Time.date.timeStamp - (yenote.date?.timeStamp ?? Time.date.timeStamp)) / 3600; // 小时差（旧存档文章可能无date字段，视为刚发布）
@@ -1758,7 +1785,6 @@ smartphone.yenotePostSubmit = function() {
             earned: 0,
             fames: [],
             date: new DateTime(Time.date),  // 快照：Time.date是可变单例引用
-
             name: "{PC}",
             npc: false,
             view: 0,
@@ -1778,15 +1804,23 @@ smartphone.yenotePostSubmit = function() {
         })
     }
     delete T.yenotePosting
-    smartphone._yenoteScrollTop = true  // 发布后回到主页顶部
+    smartphone._yenoteScrollTop = true  // 发布后回到列表顶部
+    T.yenoteTab = "mine"  // 发布后跳转到"我的"页面查看自己的帖子
+    smartphone._yenoteAnim = "back"  // 左拉退出发布页
+    smartphone._keepOldContainer = true
     smartphone.PhoneUIInit(true, true)
 }
 smartphone.yenotePosting = function() {
+    smartphone.yenoteSaveScroll()  // 以主页tab为键保存，取消发布后恢复
     T.yenotePosting = true;
+    smartphone._yenoteAnim = "forward"  // 右拉进入发布页
+    smartphone._keepOldContainer = true
     smartphone.PhoneUIInit(true, true)
 }
 smartphone.yenotePostCancel = function() {
     delete T.yenotePosting
+    smartphone._yenoteAnim = "back"  // 左拉退出发布页
+    smartphone._keepOldContainer = true
     smartphone.PhoneUIInit(true, true)
 }
 smartphone.yenoteDelete = function(photo_id) {
@@ -1908,14 +1942,30 @@ smartphone.getUser = function(id) {
 }
 smartphone.yenoteNPCPost = function(note) {
     // name, msg, id=null, repost=false, img=null, price=null
-    // replies: 玩家评论选项 [{回复内容: NPC回复时执行的twee}, ...]，玩家点选后发表该评论，有几率执行twee触发剧情或NPC回复
+    // replies: 玩家评论选项对象数组，每个对象字段：
+    //   condition:      ()=>bool  出现条件（函数，返回布尔；不满足则该选项不显示）
+    //   text:           string    评论文本
+    //   effect:         string    评论影响（twee代码，玩家发布时生效，通常是属性修改，尽量不要在这里做状态设置，以及语义上是发布者看到之后造成的影响也不早写在这里）
+    //   reply:          string    作者回复文本（字符串；未设置则不回复也不执行影响；为空则只执行影响但不回复）
+    //   replyCondition: ()=>bool  回复条件（函数，返回布尔；每次minutePass检测，通过后回复并移除检测，否则继续监测）
+    //   replyEffect:    string    回复影响（twee代码，作者回复后执行）
+    //   minor:          bool      是否次要评论；次要评论发送后其他评论仍可继续发送；
+    //                             主要评论发送后玩家失去在本帖再次发表评论的能力（除非在作者回复前手动删除自己的评论）；主要评论边框为金色
     // smartphone.yenoteNPCPost({
-    //     id: "LandryAD0",
+    //     id: "LandryAD-0",
     //     name: "Landry",
     //     msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
     //     repost: true,
     //     replies: [
-    //         {"我想卖掉我的旧手机": "<<run smartphone.yenoteNPCReply('LandryAD0', '好啊，带到麋鹿街来，我给你个好价钱！')>>"},
+    //         {
+    //             condition: () => V.Phone.Owned.length > 0,
+    //             text: "我想卖掉我的旧手机",
+    //             effect: "",
+    //             reply: "好啊，带到麋鹿街来，我给你个好价钱！",
+    //             replyCondition: () => V.location === "Commercial",
+    //             replyEffect: "",
+    //             minor: false,
+    //         },
     //     ],
     // })
     const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -1956,14 +2006,21 @@ smartphone.yenoteCommentRole = function(note, comment) {  // 评论人身份："
     if (comment.name === note.name) return "author"
     return "guest"
 }
-smartphone.yenotePCComment = function(id, text) {  // 玩家发表评论（自由输入或选项）
+smartphone.yenotePCComment = function(id, text, replyDef=null) {  // 玩家发表评论（自由输入或NPC选项）
     const note = smartphone.yenoteGetNote(id)
     if (!note) return
+    note.usedTexts = note.usedTexts || []  // 发布过的评论文本历史（删除评论不清除），用于判断是否首次发布
+    const raw = String(text)
+    const firstTime = !note.usedTexts.includes(raw)
+    if (firstTime) note.usedTexts.push(raw)
     note.comments.push({
         name: V.Phone.yenoteUsername ?? "我",
-        text: String(text).replace(/</g, "&lt;").replace(/>/g, "&gt;"),  // 玩家输入按纯文本转义
-        effect: "",
-        already_read: true,
+        text: raw.replace(/</g, "&lt;").replace(/>/g, "&gt;"),  // 玩家输入按纯文本转义
+        effect: replyDef?.effect ?? "",
+        already_read: !firstTime,  // 首次发布才未读（effect随视口生效），重复发布不再生效
+        pc: true,  // 玩家发布的评论
+        major: replyDef ? !replyDef.minor : false,  // NPC选项评论按定义区分主/次，自由评论视为次要
+        replyDef: replyDef ?? null,  // 保存回复定义供minutePass检测（含reply/replyCondition/replyEffect）
     })
 }
 smartphone.yenotePCCommentFromInput = function() {  // 详情页输入框发送评论（自己的帖子）
@@ -1974,26 +2031,81 @@ smartphone.yenotePCCommentFromInput = function() {  // 详情页输入框发送�
     smartphone.yenotePCComment(T.yenoteViewId, text)
     smartphone.PhoneUIInit(true, true)
 }
-smartphone.yenoteReplySelect = function(id, text) {  // NPC帖选项评论：发表后NPC有几率回复互动
+smartphone.yenoteReplySelect = function(id, replyDef) {  // NPC帖选项评论：发表玩家评论，作者回复由minutePass钩子按条件触发
     const note = smartphone.yenoteGetNote(id)
-    if (!note || smartphone.yenoteReplied(note, text)) return
-    const reply = (note.replies ?? []).find(r => Object.keys(r)[0] === text)
+    if (!note || smartphone.yenoteReplied(note, replyDef.text)) return
     smartphone.yenoteSaveScroll()
-    smartphone.yenotePCComment(id, text)
-    if (reply && random(100) < smartphone.小黄书NPC回复几率百分之) {
-        new Wikifier(null, Object.values(reply)[0])
-    }
+    smartphone.yenotePCComment(id, replyDef.text, replyDef)
+    smartphone.yenoteSyncCommentUI(id)  // 发表主要评论后立即隐藏发表区
     smartphone.PhoneUIInit(true, true)
 }
-smartphone.yenoteNPCReply = function(id, text) {  // NPC以自己的身份回复玩家评论（供replies的twee调用，注意不会主动刷新界面）
+smartphone.yenoteRepliesCheck = function() {  // 每次minutePassed检测玩家评论的作者回复条件：通过则回复并执行回复影响，然后移除检测
+    V.Phone.Yenotes.forEach(note => {
+        note.comments.forEach(comment => {
+            const def = comment.replyDef
+            if (!def || comment.replied || def.reply === undefined) return
+            if (def.replyCondition && !def.replyCondition()) return
+            comment.replied = true
+            delete comment.replyDef  // 已回复，移除检测钩子
+            if (def.reply !== "") {
+                note.comments.push({
+                    name: smartphone.getUser(note.name).name,
+                    text: def.reply,
+                    effect: "",
+                    already_read: false,
+                    npc: true,
+                    major: true,  // 作者回复玩家主要评论，同样显示金框
+                    last_name: `<b class="note-comment-name-pc">你</b>`,  // 回复玩家该条评论
+                })
+            }
+            if (def.replyEffect) new Wikifier(null, def.replyEffect)
+            // 通知点击跳转到该帖详情页：真闭包存于_msgFuncs注册表（msgClick优先查表），不再依赖序列化
+            smartphone.msgSend(
+                `<span class="gold">${smartphone.getUser(note.name).name}</span> 回复了你的评论`,
+                "yenote",
+                () => smartphone.yenoteOpenReplyNote(note.id)
+            )
+        })
+    })
+}
+smartphone.yenoteCanComment = function(note) {  // 玩家能否在该帖发表评论：发布过任意主要评论后（作者回复与否）都不能再发，除非在作者回复前删除该评论
+    return !note.comments.some(c => c.pc && c.major)
+}
+smartphone.yenoteSyncCommentUI = function(id) {  // 评论变动后立即同步发表区显隐与选项按钮禁用态（不重渲染）
+    const note = smartphone.yenoteGetNote(id)
+    if (!note) return
+    const container = document.getElementById("smart-phone-container")
+    if (!container) return
+    const can = smartphone.yenoteCanComment(note)
+    container.querySelector(".note-reply-options")?.classList.toggle("hidden", !can)
+    container.querySelector(".note-comment-input")?.classList.toggle("hidden", !can)
+    container.querySelectorAll(".note-reply-option").forEach(btn => {
+        // 按按钮文本匹配replyDef（reply.text是全链路唯一键），不依赖data属性
+        const replyDef = note.replies?.find(r => r.text === btn.textContent.trim())
+        const replied = replyDef && smartphone.yenoteReplied(note, replyDef.text)
+        btn.disabled = !!replied  // 已发表的选项禁用；发表区隐藏由上面整块控制
+        btn.classList.toggle("replied", !!replied)
+        btn.classList.toggle("note-reply-option-major", !replyDef?.minor)  // 主要评论选项金框同步
+        if (!btn.disabled && replyDef) {  // 解禁时直接以闭包绑定replyDef（onclick是JS属性赋值，无序列化，闭包有效）
+            btn.onclick = () => smartphone.yenoteReplySelect(id, replyDef)
+        }
+    })
+}
+smartphone.yenoteCanDelete = function(note, comment) {  // 删除按钮可见性：仅玩家自己发布的评论可删；玩家主要评论在作者已回复（回复影响已执行）后不可删
+    if (!comment.pc) return false
+    if (comment.major && comment.replied) return false
+    return true
+}
+smartphone.yenoteNPCReply = function(id, text, effect="") {  // NPC以自己的身份回复玩家评论（供replies的twee调用，注意不会主动刷新界面）
     const note = smartphone.yenoteGetNote(id)
     if (!note) return
     note.comments.push({
         name: note.name,
         text: text,
-        effect: "",
-        already_read: true,
-        last_name: V.Phone.yenoteUsername,  // 回复玩家
+        effect: effect,
+        already_read: false,
+        npc: true,
+        last_name: `<b class="note-comment-name-pc">你</b>`,  // 回复玩家
     })
 }
 smartphone.yenoteLike = function(id) {  // 点赞/取消点赞（详情页局部更新不重渲染，主页重渲染恢复滚动）

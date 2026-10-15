@@ -38,6 +38,8 @@ if (window.maplebirch) {
 
 // ================== 原版函数注入 ==================
 smartphone.of$minutePassed = function(minutesPassed) {
+    // 检测NPC帖作者回复条件（通过则回复并移除检测钩子）
+    smartphone.yenoteRepliesCheck()
     // 刷新手机耗电
     smartphone.PhonePowerPass(minutesPassed);
 
@@ -267,6 +269,13 @@ smartphone.togglePhone = function(force=null) {
 };
 smartphone.toggleApp = function(AppName, open=true) {
     if (!smartphone.PhoneConsumption(1)) return;
+    if (V.Phone.CurrentApp === "yenote" && AppName !== "yenote") {
+        delete T.yenotePosting  // 离开小黄书时关闭发布页（在相册点击发布后进入小黄书不受影响）
+    }
+    if (AppName === "yenote" && V.Phone.CurrentApp !== "yenote") {
+        T.yenoteTab = "home"  // 每次从其他APP进入小黄书时默认首页类别
+        delete T.yenoteViewId
+    }
     V.Phone.CurrentApp = AppName;
     smartphone.PhoneUIInit(open);
     smartphone.appInit();

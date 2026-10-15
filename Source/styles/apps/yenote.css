@@ -23,6 +23,42 @@
     display: flex;
     flex-direction: column;
 }
+.yenote-tabs {
+    display: flex;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+.yenote-posting-fullscreen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.yenote-tab {
+    flex: 1;
+    text-align: center;
+    padding: 6px 0;
+    color: #888;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+}
+.yenote-tab:hover {
+    color: white;
+}
+.yenote-tab.active {
+    color: white;
+    font-weight: bold;
+}
+.yenote-tab.active::after {  /* 选中项底部指示条 */
+    content: "";
+    position: absolute;
+    left: 30%;
+    right: 30%;
+    bottom: 0;
+    height: 3px;
+    background-color: #ff0;
+    border-radius: 2px 2px 0 0;
+}
 .yenote-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -177,6 +213,9 @@
     box-shadow: 0 0 4px red;
     z-index: 1;
 }
+.note-unread-dot.only-dot {
+    padding: unset;
+}
 .note-commends-title {
     color: #888;
     margin-bottom: 5px;
@@ -184,6 +223,9 @@
 .note-comment-item {
     border-radius: 6px;
     transition: filter 0.35s ease, opacity 0.35s ease, height 0.35s ease;
+}
+.note-comment-item.comment-major {
+    color: var(--gold);
 }
 .note-comment-item.comment-deleting {
     filter: blur(6px);
@@ -383,12 +425,18 @@
     cursor: pointer;
     transition: 0.2s;
 }
+.note-reply-option.note-reply-option-major {
+    border: 1.5px solid rgba(255, 215, 0, 0.6);
+}
 .note-reply-option:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 .note-reply-option.replied {
     opacity: 0.4;
     cursor: default;
+}
+.hidden {
+    display: none !important;
 }
 .note-stat-icon {
     width: 12px;

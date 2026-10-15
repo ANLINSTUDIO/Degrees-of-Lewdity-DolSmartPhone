@@ -477,6 +477,7 @@
 
 <<widget "phone_app_yenote">>
     <div class="yenote-app">
+    <<if !$Phone.yenoteUsername>>
     <div class="yenote-status-bar">
         <div style="width: 100%; display: flex; align-items: center;">
             <<set _user to smartphone.getUser("{PC}")>>
@@ -490,18 +491,23 @@
         <img class="yenote-add pointer" src="img/ui/phone/app/add.png" onclick="smartphone.yenotePosting()">
     </div>
     <div class="yenote-list">
-    <<if !$Phone.yenoteUsername>>
         <div class="note-rename">
             <b>开始你的旅途；记录性福生活。欢迎来到「小黄书」，告诉我们你的名字吧：</b>
             <div class="note-rename-actions">
-                <input type="text" id="new_yenote_username" 
+                <input type="text" id="new_yenote_username"
                        placeholder="输入你的名字" @value=smartphone.generateNickname()
                        onkeydown="if (event.keyCode === 13) {smartphone.yenoteSetNewName()}">
                 <button onclick="smartphone.yenoteSetNewName()">确定</button>
             </div>
         </div>
+    </div>
     <<elseif _yenotePosting>>
+    <div class="yenote-posting-fullscreen">
         <<set _note to _yenotePosting>>
+        <div class="yenote-detail-actions">
+            <button class="yenote-back" onclick="smartphone.yenotePostCancel()">← 取消</button>
+        </div>
+        <div class="yenote-list">
         <h3>发布你的文章</h3>
         <<if _note is true>>
             <textarea id="yenoteposttextarea" class="body-textarea" placeholder="写下你的故事…" aria-label="文章正文"></textarea>
@@ -509,7 +515,7 @@
                 <div class="plus-icon">+</div>
             </div>
         <<else>>
-            <div class="note-content">
+            <div>
                 <div>
                     <div>
                         吸引度：<<print Math.round(_note.attract*100)>>%
@@ -552,11 +558,12 @@
             </div>
         <</if>>
         <div class="note-rename-actions">
-            <button onclick="smartphone.yenotePostCancel()">取消</button>
             <div>
                 <button onclick="smartphone.yenotePostSubmit()">确定发布</button>
             </div>
         </div>
+        </div>
+    </div>
     <<elseif _yenoteViewId>>
         <<set _note to smartphone.yenoteGetNote(_yenoteViewId)>>
         <div class="yenote-detail-actions">
@@ -603,19 +610,20 @@
                     </div>
                     <div class="note-commends-title note-comment-count"><b><<print _note.comments.length+"条评论">></b></div>
                     <<if _note.npc and asi.isvalid(_note.replies)>>
-                        <div class="note-reply-options">
+                        <div @class='"note-reply-options"+(smartphone.yenoteCanComment(_note)? "": " hidden")'>
                             <div class="note-commends-title"><b>发表评论：</b></div>
                             <<for _reply range _note.replies>>
-                                <<set _rtext to Object.keys(_reply)[0]>>
-                                <<if smartphone.yenoteReplied(_note, _rtext)>>
-                                    <button class="note-reply-option replied" disabled>_rtext</button>
-                                <<else>>
-                                    <button class="note-reply-option" @data-note=_note.id @data-text=_rtext>_rtext</button>
+                                <<if !_reply.condition or _reply.condition()>>
+                                    <<if smartphone.yenoteReplied(_note, _reply.text)>>
+                                        <button class="note-reply-option replied" disabled>_reply.text</button>
+                                    <<else>>
+                                        <button @class='"note-reply-option"+(_reply.minor? "": " note-reply-option-major")' @data-note=_note.id @data-index="_note.replies.indexOf(_reply)">_reply.text</button>
+                                    <</if>>
                                 <</if>>
                             <</for>>
                         </div>
                     <<else>>
-                        <div class="note-comment-input">
+                        <div @class='"note-comment-input"+(smartphone.yenoteCanComment(_note)? "": " hidden")'>
                             <input type="text" id="note_comment_input" placeholder="发表你的评论…" onkeydown="if (event.keyCode === 13) {smartphone.yenotePCCommentFromInput()}">
                             <button onclick="smartphone.yenotePCCommentFromInput()">发送</button>
                         </div>
@@ -626,10 +634,10 @@
                                 <<set _comments to _note.comments.slice().reverse()>>
                                 <<for _comment range _comments>>
                                     <<set _role to smartphone.yenoteCommentRole(_note, _comment)>>
-                                    <div class="note-comment-item" @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
+                                    <div @class='"note-comment-item"+(_comment.major? " comment-major": "")' @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
                                         <div class="note-comments-name">
                                             <span><b @class='"note-comment-name-"+_role'>_comment.name</b><span class="note-comment-role note-comment-role-_role"><<if _role is "pc">>我<<elseif _role is "author">>作者<</if>></span> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
-                                            <button class="note-comment-delete" title="删除此评论">✕</button>
+                                            <<if smartphone.yenoteCanDelete(_note, _comment)>><button class="note-comment-delete" title="删除此评论">✕</button><</if>>
                                         </div>
                                         <div @class='"note-comment"+(_comment.already_read? "": " comment-unread")'>
                                             <<print _comment.text>>
@@ -648,16 +656,35 @@
         <</if>>
         </div>
     <<else>>
-        <div class="note-content-container">
-            <<if asi.isvalid($Phone.Yenotes)>>
-                <<for _note range $Phone.Yenotes>>
+    <div class="yenote-status-bar">
+        <div style="width: 100%; display: flex; align-items: center;">
+            <<set _user to smartphone.getUser("{PC}")>>
+            <img class="yenote-avatar pointer" @src=_user.avatar onclick="smartphone.yenoteResetAvatar()" onerror="javascript:this.src='img/misc/icon/phone/avatar/pc.png'">
+            <input class="file-upload" type="file" accept="image/*" name="picture" style="display: none" onchange="smartphone.handleYenoteAvatarUpload(this)"/>
+            <<if _user.name>>
+                <span class="yenote-username pointer" onclick="smartphone.yenoteRename()">_user.name</span>
+            <</if>>
+        </div>
+        <img class="yenote-title" src="img/misc/icon/phone/app/yenote-text-full.png">
+        <img class="yenote-add pointer" src="img/ui/phone/app/add.png" onclick="smartphone.yenotePosting()">
+    </div>
+    <div class="yenote-tabs">
+        <<set _tab to T.yenoteTab ?? "home">>
+        <span @class='"yenote-tab"+(_tab is "home"? " active": "")' onclick="smartphone.yenoteSetTab('home')">首页</span>
+        <span @class='"yenote-tab"+(_tab is "explore"? " active": "")' onclick="smartphone.yenoteSetTab('explore')">探索</span>
+        <span @class='"yenote-tab"+(_tab is "mine"? " active": "")' onclick="smartphone.yenoteSetTab('mine')">我的</span>
+    </div>
+        <div class="yenote-list note-content-container">
+            <<set _list to $Phone.Yenotes.filter(smartphone.yenoteFilterTab)>>
+            <<if asi.isvalid(_list)>>
+                <<for _note range _list>>
                     <<capture _note>>
                         <div class="yenote-content yenote-note-card" @data-id="_note.id">
                             <<set _user to smartphone.getUser(_note.name)>>
                             <<set _unread to smartphone.yenoteUnreadCount(_note)>>
                             <div class="note-avatar">
                                 <img class="yenote-avatar yenote-note" @src=_user.avatar onerror="javascript:this.src='img/misc/icon/phone/avatar/pc.png'">
-                                <<if _unread gt 0>><span class="note-unread-dot">_unread</span><</if>>
+                                <<if _unread is true>><span class="note-unread-dot only-dot"></span><<elseif _unread gt 0>><span class="note-unread-dot">_unread</span><</if>>
                             </div>
                             <div class="note-content">
                                 <div class="note-title">
@@ -695,11 +722,16 @@
                     <</capture>>
                 <</for>>
             <<else>>
-                <p style="font-size:12px; color:#666;">你可以成为你的圈子里第一个发小黄书的人！</p>
+                <<if T.yenoteTab is "explore">>
+                    <p style="font-size:12px; color:#666;">这里还没有任何动态。</p>
+                <<elseif T.yenoteTab is "mine">>
+                    <p style="font-size:12px; color:#666;">你还没有发布过任何内容，点击右上角的 + 开始创作吧！</p>
+                <<else>>
+                    <p style="font-size:12px; color:#666;">你可以成为你的圈子里第一个发小黄书的人！</p>
+                <</if>>
             <</if>>
         </div>
     <</if>>
-    </div>
     </div>
     <!-- <div class="yenote-tool-bar">
     </div> -->
