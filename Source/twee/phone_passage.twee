@@ -567,7 +567,7 @@
     你将黑衣人打得落花流水，并且将你的手机抢了回来。<br>
     “敢偷我的手机？” 你放下狠话。<br>
     “你他么牛逼，我服了，有必要么？”那人骂道。<br>
-    <<if smartphone.isCarryingStolenPhone()>>
+    <<if $Phone.FengStole.stolen>>
         “这手机也是我偷的，事实证明是你菜。哪有人像你这样明抢的。” 你羞辱了<<he>>一番，说明了这部手机的来历后就准备离开。
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>>
@@ -579,7 +579,7 @@
 <<else>>
     <span class="red">你一个分心，手机被黑衣人粗暴地夺走了！</span><br>
     “敢抢我的手机？” 那人放下狠话。<br>
-    <<if smartphone.isCarryingStolenPhone()>>
+    <<if $Phone.FengStole.stolen>>
         “反正这手机也是我偷的，给你就是。” 你也不服输，说明了这部手机的来历后就准备离开。
         <<set C.npc.Feng.lust to 20>><<note "+++ 老冯的欣赏" "green">>   <!-- 认为你的能力有所欠缺 -->
     <<else>><br>

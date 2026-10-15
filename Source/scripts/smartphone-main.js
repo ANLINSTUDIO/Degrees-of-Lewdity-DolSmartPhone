@@ -816,8 +816,8 @@ smartphone.RefreshSecondPhone = function() {
         V.Phone.SecondPhoneShopGoods.push({model: model, newnessK: newnessK, price: price})
     };
 }
-smartphone.StolePhone = function() { // 盗窃一部手机
-    const phone = new smartphone.Phone().newStolen();
+smartphone.StolePhone = function(newnessmaxk) { // 盗窃一部手机
+    const phone = new smartphone.Phone().newStolen(newnessmaxk);
     V.Phone.Owned.push(phone);
     return phone;
 }
@@ -841,7 +841,6 @@ smartphone.SellPhone = function(id, feng=false) { // 出售手机
     return 0
 }
 smartphone.AppendPhone = function(phone) { // 加入手机
-    V.Phone.价格调整理赔.push(phone.id);  // 3.83 | 手机价格调整
     V.Phone.Owned.push(phone);
     smartphone.changeUsingPhone();
 }
