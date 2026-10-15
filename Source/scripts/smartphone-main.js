@@ -473,61 +473,58 @@ smartphone.PhoneMarginSettingsReset = function() {
 };
 
 // =================== 弹窗信息 =====================
+smartphone._msgFuncs = {}  // 消息回调注册表：msg.func经SugarCube序列化后闭包丢失，真闭包按msg.id存于此，msgClick优先查表
 smartphone.msgSend = function(msg_text, app=null, func=null, confirmationrequired=false) {
-    setTimeout(() => {
-        const msg = {id: new Date().getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 9), msg: msg_text, app: app, func: func, confirmationrequired: confirmationrequired}
-        V.Phone.msgLine.push(msg)
-        if (smartphone.getUsingPhone()) {
-            if (!V.Phone.Settings.NotificationClose) {
-                smartphone.msgShow(msg)
-                // const phone_popup = document.querySelector(".phone-popup")
-                
-                // if (phone_popup) {
-                //     const phone_popup_content = phone_popup.querySelector(".phone-popup-content")
-                //     new Wikifier(phone_popup_content, `${phone_popup_content.innerHTML? '<br>': ''}${msg}`);
-                //     phone_popup.classList.add("active")
-                //     V.Phone.MsgApp = app
-                //     V.Phone.MsgFunc = func
-                // }
-            } else {
-                V.Phone.msgLine = []
-            }
+    const msg = {id: new Date().getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 9), msg: msg_text, app: app, func: func, confirmationrequired: confirmationrequired}
+    if (func) smartphone._msgFuncs[msg.id] = func
+    V.Phone.msgLine.push(msg)
+    if (smartphone.getUsingPhone()) {
+        if (!V.Phone.Settings.NotificationClose) {
+            smartphone.msgShow(msg)
         }
-    }, 10)
+    }
 }
 smartphone.msgShowLine = function(anim=true) {
     if (smartphone.getUsingPhone()) {
-        setTimeout(() => {
-            V.Phone.msgLine.forEach(msg_ => {
-                smartphone.msgShow(msg_, anim)
-            })
-        }, 10)
+        V.Phone.msgLine.forEach(msg_ => {
+            smartphone.msgShow(msg_, anim)
+        })
     }
 }
 smartphone.msgShow = function(msg, anim=true) {
     smartphone.msgPop(msg, anim)
 }
 smartphone.msgPop = function(msg, anim=true) {
-    T.msg = msg;
-    new Wikifier(document.querySelector("#phone-popup-container"), "<<smartphone_popup>>");
-    const phone_popup = document.querySelector(`#phone-popup-${msg.id}`)
-    if (phone_popup) {
-        if (anim) {
-            (function(id) { setTimeout(() => {
+    setTimeout(() => {
+        T.msg = msg;
+        new Wikifier(document.querySelector("#phone-popup-container"), "<<smartphone_popup>>");
+        const phone_popup = document.querySelector(`#phone-popup-${msg.id}`)
+        if (phone_popup) {
+            if (anim) {
+                (function(id) { setTimeout(() => {
+                    phone_popup.classList.add("active")
+                }, 100) })(msg.id)
+            } else {
                 phone_popup.classList.add("active")
-            }, 100) })(msg.id)
+            }
         } else {
-            phone_popup.classList.add("active")
+            setTimeout(() => { smartphone.msgPop(msg, anim) }, 100)
         }
-    }
+    }, 200)
 }
 smartphone.msgClick = function (e) {
-    const functext = e.currentTarget.dataset.func
-    if (functext && functext != "null") {
-        const func = new Function('return (' + functext + ')')();
-        func();
+    const msg_id = e.currentTarget.dataset.msg
+    const registryFunc = smartphone._msgFuncs?.[msg_id]  // 优先查注册表：真闭包，支持引用任意变量
+    if (registryFunc) {
+        registryFunc()
+    } else {
+        const functext = e.currentTarget.dataset.func  // 兼容无注册表的消息（序列化函数，不能引用闭包变量）
+        if (functext && functext != "null") {
+            const func = new Function('return (' + functext + ')')();
+            func();
+        }
     }
-    smartphone.msgClose(e.currentTarget.dataset.msg)
+    smartphone.msgClose(msg_id)
 }
 smartphone.msgCloseClick = function (e, fromclick=false) {
     if (!fromclick) {
@@ -543,6 +540,7 @@ smartphone.msgCloseClick = function (e, fromclick=false) {
         }, 200)
     }
     V.Phone.msgLine = V.Phone.msgLine.filter(msg_ => msg_.id !== e.currentTarget.dataset.msg)
+    delete smartphone._msgFuncs?.[e.currentTarget.dataset.msg]  // 清理回调注册表
 }
 smartphone.msgClose = function (id) {
     const phone_popup = document.querySelector(`#phone-popup-${id}`)
@@ -553,6 +551,7 @@ smartphone.msgClose = function (id) {
         }, 200)
     }
     V.Phone.msgLine = V.Phone.msgLine.filter(msg_ => msg_.id !== id)
+    delete smartphone._msgFuncs?.[id]  // 清理回调注册表
 }
 
 
@@ -955,9 +954,7 @@ smartphone.PhoneCheckNewness = function () {
     } else if (phone.newness / phone.newnessmax < 0.2) {
         if (!V.Phone.lowbatteryAlerted) {
             V.Phone.lowbatteryAlerted = true;
-            setTimeout(() => {
-                smartphone.msgSend("<span class='yellow'>手机电量不足，请及时充电。</span>", null, null, true);
-            }, 0);
+            smartphone.msgSend("<span class='yellow'>手机电量不足，请及时充电。</span>", null, null, true);
         }
     } else if (V.Phone.lowbatteryAlerted) {
         delete V.Phone.lowbatteryAlerted;
