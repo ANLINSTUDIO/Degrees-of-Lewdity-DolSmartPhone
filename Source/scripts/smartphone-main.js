@@ -903,8 +903,12 @@ smartphone.PhoneConsumption = function(value) {
 smartphone.PhoneCharge = function(value, phone = null) {
     if (!phone) {phone = smartphone.getUsingPhone(true)}
     const newness = phone.newness + value
-    const wear = Math.max(newness - phone.newnessmax, 0) * smartphone.充电损害每度电比
-    smartphone.PhoneWaer(wear, phone)  // 损耗手机：过度充电
+    const wear = Math.max(newness - phone.newnessmax, 0)
+    let wearP = 0
+    if (wear >= smartphone.充电损害阈值) {
+        wearP = wear * smartphone.充电损害每度电比
+        smartphone.PhoneWaer(wearP, phone)  // 损耗手机：过度充电
+    }
     phone.newness = Math.min(newness, phone.newnessmax);
     if (V.Phone.Using === 'null') {
         let newPhone = smartphone.getUsingPhone(true);
@@ -912,7 +916,7 @@ smartphone.PhoneCharge = function(value, phone = null) {
             V.Phone.Using = newPhone.id
         }
     }
-    return wear
+    return wearP
 }
 smartphone.PhoneWaer = function(value, phone = null, check = true) {
     if (!phone) {phone = smartphone.getUsingPhone()}

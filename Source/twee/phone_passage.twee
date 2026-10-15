@@ -1483,6 +1483,15 @@
             <<link [[守着充电10分钟 (0:10)|_args[1]]]>><<pass 10>><<run smartphone.PhoneCharge(smartphone.充电速度每小时/6)>><</link>> <<phonecharge _phone smartphone.充电速度每小时/6>><br>
             <<link [[守着充电30分钟 (0:30)|_args[1]]]>><<pass 30>><<run smartphone.PhoneCharge(smartphone.充电速度每小时/2)>><</link>> <<phonecharge _phone smartphone.充电速度每小时/2>><br>
             <<link [[守着充电1小时 (1:00)|_args[1]]]>><<pass 60>><<run smartphone.PhoneCharge(smartphone.充电速度每小时)>><</link>> <<phonecharge _phone smartphone.充电速度每小时>><br>
+            <<set _charge to _phone.newnessmax-_phone.newness+10>>
+            <<if _charge gt 10>>
+                <<set _chargepersent to Math.ceil(_charge/_phone.newnessmax*100)>>
+                <<set _minute to Math.ceil((_charge/smartphone.充电速度每小时)*60)>>
+                <<set _frendlytime to asi.getFriendlyTimeText(_minute/60, false)>>
+                <<capture _minute _charge>>
+                    <<link [[守着充电直到充满 (_frendlytime)|_args[1]]]>><<pass _minute>><<run smartphone.PhoneCharge(_charge)>><</link>> <<note "+_chargepersent%" "green">><br>
+                <</capture>>
+            <</if>>
         <<else>>
             这里有地方可以为你的手机充电，但是你得先有一台可用的手机。
         <</if>>

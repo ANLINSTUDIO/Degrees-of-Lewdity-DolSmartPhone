@@ -1018,6 +1018,7 @@ smartphone.评论概率百分之 = 5;
 smartphone.评论闪光间隔 = 300;  // 多条评论同时生效时，闪光提示的批量延时间隔(ms)
 smartphone.打赏概率百分之 = 10;
 smartphone.充电速度每小时 = 500;
+smartphone.充电损害阈值 = 10;
 smartphone.充电损害每度电比 = 0.01;
 smartphone.DD免费等待时间 = 10;
 smartphone.DD最大等待时间 = 30;
