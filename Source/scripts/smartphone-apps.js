@@ -1474,7 +1474,7 @@ smartphone.yenoteDeleteComment = function(id, item) {  // 直接删除单条评�
 }
 smartphone.yenotesStatApply = function(stressonly=false) {
     if (!stressonly) {
-        $('#allurecaption').replaceWith(new Wikifier(null, '<<allurecaption>>').output)
+        $('#arousalcaption').replaceWith(new Wikifier(null, '<<arousalcaption>>').output)
         $('#traumacaption').replaceWith(new Wikifier(null, '<<traumacaption>>').output)
         $('#controlcaption').replaceWith(new Wikifier(null, '<<controlcaption>>').output)
     }
