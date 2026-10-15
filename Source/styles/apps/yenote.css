@@ -312,7 +312,8 @@
 .note-comment-input {
     display: flex;
     gap: 6px;
-    margin-top: 8px;
+    margin-bottom: 8px;
+    width: 95%;
 }
 .note-comment-input input {
     flex: 1;

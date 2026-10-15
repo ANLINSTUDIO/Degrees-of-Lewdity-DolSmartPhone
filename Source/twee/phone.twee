@@ -601,27 +601,7 @@
                             <<if _note.earned>><span class="note-stat"><img class="note-stat-icon" src="img/ui/phone/app/note-price.png">£<<print (_note.earned/100).toFixed(2)>></span><</if>>
                         <</if>>
                     </div>
-                    <<if asi.isvalid(_note.comments)>>
-                        <div class="note-commends">
-                            <div class="note-commends-title"><b><<print _note.comments.length+"条评论">></b></div>
-                            <<set _comments to _note.comments.slice().reverse()>>
-                            <<for _comment range _comments>>
-                                <div class="note-comment-item" @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
-                                    <div class="note-comments-name">
-                                        <span><b>_comment.name</b> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
-                                        <button class="note-comment-delete" title="删除此评论">✕</button>
-                                    </div>
-                                    <div @class='"note-comment"+(_comment.already_read? "": " comment-unread")'>
-                                        <<print _comment.text>>
-                                    </div>
-                                </div>
-                            <</for>>
-                        </div>
-                    <<else>>
-                        <div class="note-commends">
-                            <div class="note-commends-title">暂无评论，快去发布内容吸引读者吧~</div>
-                        </div>
-                    <</if>>
+                    <div class="note-commends-title"><b><<print _note.comments.length+"条评论">></b></div>
                     <<if _note.npc>>
                         <<if asi.isvalid(_note.replies)>>
                             <div class="note-reply-options">
@@ -642,6 +622,26 @@
                             <button onclick="smartphone.yenotePCCommentFromInput()">发送</button>
                         </div>
                     <</if>>
+                    <div class="note-commends">
+                        <<if asi.isvalid(_note.comments)>>
+                            <div class="note-commends">
+                                <<set _comments to _note.comments.slice().reverse()>>
+                                <<for _comment range _comments>>
+                                    <div class="note-comment-item" @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
+                                        <div class="note-comments-name">
+                                            <span><b>_comment.name</b> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
+                                            <button class="note-comment-delete" title="删除此评论">✕</button>
+                                        </div>
+                                        <div @class='"note-comment"+(_comment.already_read? "": " comment-unread")'>
+                                            <<print _comment.text>>
+                                        </div>
+                                    </div>
+                                <</for>>
+                            </div>
+                        <<else>>
+                             <div class="note-commends-title">暂无评论，正在等待被发现哟~</div>
+                        <</if>>
+                    </div>
                 </div>
             </div>
         <<else>>
