@@ -919,12 +919,15 @@ smartphone.photoDelete = function(photo_id) {
         smartphone.PhoneUIInit(true, true);
     })
 }
-smartphone.filterMode = {
+smartphone.filterStatus = {  // 状态类筛选（完成与使用）
     "无": (taskId) => true,
     "已完成": (taskId) => taskId in V.Phone.Album,
     "未完成": (taskId) => !(taskId in V.Phone.Album),
     "未使用": (taskId) => (taskId in V.Phone.Album) && !V.Phone.Album[taskId].isUsed,
     "已使用": (taskId) => (taskId in V.Phone.Album) && V.Phone.Album[taskId].isUsed,
+}
+smartphone.filterFame = {  // 名声类筛选
+    "无": (taskId) => true,
     "人外": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("bestiality")),
     "露出": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("exhibitionism")),
     "授孕": (taskId) => (smartphone.PhonePhotos[taskId].fames.includes("impreg")),
@@ -941,13 +944,15 @@ smartphone.filterMode = {
 }
 smartphone.initAlbum = function() {
     smartphone.photoLoadCheck();
-    const nonetext = Object.keys(smartphone.filterMode)[0];
-    if(V.Phone.filterMode === undefined) {
-        V.Phone.filterMode = nonetext
+    if (smartphone.filterFame[V.Phone.filterMode]) {  // 旧存档迁移：名声筛选原来也存在filterMode里
+        V.Phone.filterFame = V.Phone.filterMode
+        delete V.Phone.filterMode
     }
+    const statusFilter = smartphone.filterStatus[V.Phone.filterMode] ?? smartphone.filterStatus["无"]
+    const fameFilter = smartphone.filterFame[V.Phone.filterFame] ?? smartphone.filterFame["无"]
     for (let taskId in smartphone.PhonePhotos) {
         if (
-            (smartphone.filterMode[V.Phone.filterMode] === undefined || smartphone.filterMode[V.Phone.filterMode](taskId)) &&
+            statusFilter(taskId) && fameFilter(taskId) &&
             (V.Phone.searchAlbumKeyword === undefined || (smartphone.PhonePhotos[taskId].msg.includes(V.Phone.searchAlbumKeyword) || smartphone.PhonePhotos[taskId].taskDesc.includes(V.Phone.searchAlbumKeyword)))
         ) {
             smartphone.addAlbumTask(taskId)
@@ -956,11 +961,14 @@ smartphone.initAlbum = function() {
 
     const filterButton = document.getElementById('album_filter');
     if (!filterButton) return;
-    filterButton.innerText = `筛选：${V.Phone.filterMode??nonetext}`;
-    if (V.Phone.filterMode === nonetext || smartphone.filterMode[V.Phone.filterMode] === undefined) {
-        filterButton.classList.remove("active")
-    } else {
+    const parts = []
+    if (smartphone.filterStatus[V.Phone.filterMode] && V.Phone.filterMode !== "无") parts.push(V.Phone.filterMode)
+    if (smartphone.filterFame[V.Phone.filterFame] && V.Phone.filterFame !== "无") parts.push(V.Phone.filterFame)
+    filterButton.innerText = parts.length ? `筛选：${parts.join("+")}` : "筛选：无";
+    if (parts.length) {
         filterButton.classList.add("active")
+    } else {
+        filterButton.classList.remove("active")
     }
 
     smartphone.reorderAlbumItems();
@@ -1063,18 +1071,41 @@ smartphone.searchAlbum = function() {
         searchInput.classList.add("active");
         searchInput.focus();
         delete V.Phone.filterMode;
+        delete V.Phone.filterFame;
     }
 };
-smartphone.filterAlbum = function() {
-    const modes = Object.keys(smartphone.filterMode);
-    let currentIndex = modes.indexOf(V.Phone.filterMode);
-    if (currentIndex === -1) {
-        currentIndex = 0;
+smartphone.filterAlbum = function() {  // 点击筛选按钮：打开/关闭隐藏筛选菜单
+    const menu = document.getElementById('album_filter_menu')
+    if (!menu) return
+    if (menu.style.display === "none") {
+        smartphone.filterAlbumMenu()
+        menu.style.display = ""
+    } else {
+        menu.style.display = "none"
     }
-    const nextIndex = (currentIndex + 1) % modes.length;
-    V.Phone.filterMode = modes[nextIndex];
-
-    smartphone.PhoneUIInit(true, true);
+};
+smartphone.filterAlbumMenu = function() {  // 渲染筛选菜单：状态与名声两组单选，叠加过滤
+    const menu = document.getElementById('album_filter_menu')
+    if (!menu) return
+    const groups = [["状态", smartphone.filterStatus, "filterMode"], ["名声", smartphone.filterFame, "filterFame"]]
+    menu.innerHTML = groups.map(([title, options, varName]) => {
+        const current = V.Phone[varName] ?? "无"
+        return `<div class="album-filter-group"><span class="album-filter-group-title">${title}</span>` +
+            Object.keys(options).map(key =>
+                `<span class="album-filter-option${current === key ? " active" : ""}" onclick="smartphone.filterAlbumPick('${varName}','${key}')">${key}</span>`
+            ).join("") + "</div>"
+    }).join("")
+};
+smartphone.filterAlbumPick = function(varName, key) {  // 选择筛选项：再点一次或点“无”取消该类筛选，菜单保持打开
+    if (key === "无" || V.Phone[varName] === key) {
+        delete V.Phone[varName]
+    } else {
+        V.Phone[varName] = key
+    }
+    smartphone.PhoneUIInit(true, true)  // 同步重渲染：initAlbum重建列表并更新按钮文本
+    smartphone.filterAlbumMenu()  // 重渲染后菜单被重建，重新渲染选中态并保持打开
+    const menu = document.getElementById('album_filter_menu')
+    if (menu) menu.style.display = ""
 };
 smartphone.photoError = function(element) {
     element.remove();

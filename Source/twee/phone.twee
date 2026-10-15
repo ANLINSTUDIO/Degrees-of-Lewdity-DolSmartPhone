@@ -238,10 +238,13 @@
 
 <<widget "phone_app_album">>
     <h2>相册</h2>
-    <div class="footer-actions">
-        <input type="text" id="album_search" placeholder="搜索任务描述或文案" onkeydown="if (event.keyCode === 13) {smartphone.searchAlbum()}">
-        <button onclick="smartphone.searchAlbum()">搜索</button>
-        <button id="album_filter" class="memo_enable_sort" onclick="smartphone.filterAlbum()">筛选：无</button>
+    <div class="album-filter-wrap">
+        <div class="footer-actions">
+            <input type="text" id="album_search" placeholder="搜索任务描述或文案" onkeydown="if (event.keyCode === 13) {smartphone.searchAlbum()}">
+            <button onclick="smartphone.searchAlbum()">搜索</button>
+            <button id="album_filter" class="memo_enable_sort" onclick="smartphone.filterAlbum()">筛选：无</button>
+        </div>
+        <div id="album_filter_menu" class="album-filter-menu" style="display:none"></div>
     </div>
     <div class="album-content-container">
         <span class="def" id="photononetip" style="display:none">某些甚至全部的摄像图像将不可见</span>
@@ -511,7 +514,7 @@
         <h3>发布你的文章</h3>
         <<if _note is true>>
             <textarea id="yenoteposttextarea" class="body-textarea" placeholder="写下你的故事…" aria-label="文章正文"></textarea>
-            <div class="upload-area" role="button" aria-label="上传照片区域" tabindex="0" onclick="smartphone.toggleApp('album')">
+            <div class="upload-area" role="button" aria-label="上传照片区域" tabindex="0" onclick="V.Phone.filterMode='未使用'; delete V.Phone.filterFame; smartphone.toggleApp('album')">
                 <div class="plus-icon">+</div>
             </div>
         <<else>>
