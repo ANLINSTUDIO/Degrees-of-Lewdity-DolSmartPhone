@@ -31,28 +31,11 @@ smartphone.patchOnPassageRender = function (ev) {
     }
     // 3.82 | NPC发文
     smartphone.yenoteNPCPost({
-        id: "Landry-AD0",
+        id: "Landry-AD1",
         name: "Landry",
         msg: "回收旧手机、旧冰箱、旧空调、旧电脑，收旧洗衣机、旧电动车、摩托车、自行车、收报纸、废品",
         attract: 2.0,
-    })
-    smartphone.yenoteNPCPost({
-        id: "A-Update382",
-        name: "A",
-        msg: "哈喽哈喽，感谢各位的支持呀！<br>给大家放一张之前没有用到的摄像图片当做福利啦！<br>如果你看不到的话，那就是没有使用最新的图包哦！",
-        img: "img/photo/submission-1772783983529-h.png",
-        price: 52,
-        attract: 10.0,
-    })
-
-    // 3.84 | 变量优化
-    if (window.modSC2DataManager.getModLoader().getModZip("DOLI") && V.Phone.Settings.Margin === undefined) {
-        V.Phone.Settings.Margin = 85;
-        document.documentElement.style.setProperty('--phone-margin', `${V.Phone.Settings.Margin}px`);
-    }
-
-    // 3.91 | NPC发帖可用评论
-    V.Phone.Yenotes.find(y => y.id == "Landry-AD0").replies = [
+        replies: [
         {
             condition: () => V.blackmoney > 0,
             text: "我这有点别人不要的东西你收吗？",
@@ -71,6 +54,24 @@ smartphone.patchOnPassageRender = function (ev) {
             minor: true,
         },
     ]
+    })
+    smartphone.yenoteNPCPost({
+        id: "A-Update382",
+        name: "A",
+        msg: "哈喽哈喽，感谢各位的支持呀！<br>给大家放一张之前没有用到的摄像图片当做福利啦！<br>如果你看不到的话，那就是没有使用最新的图包哦！",
+        img: "img/photo/submission-1772783983529-h.png",
+        price: 52,
+        attract: 10.0,
+    })
+
+    // 3.84 | 变量优化
+    if (window.modSC2DataManager.getModLoader().getModZip("DOLI") && V.Phone.Settings.Margin === undefined) {
+        V.Phone.Settings.Margin = 85;
+        document.documentElement.style.setProperty('--phone-margin', `${V.Phone.Settings.Margin}px`);
+    }
+
+    // 3.91 | 兰德里广告更新
+    V.Phone.Yenotes = V.Phone.Yenotes.filter(y => y.id !== "Landry-AD0")
 }
 
 smartphone.patchTV = smartphone.patchTransferVariables = function(oldPath, newPath) {
