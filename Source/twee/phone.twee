@@ -634,12 +634,12 @@
                     <div class="note-commends">
                         <<if asi.isvalid(_note.comments)>>
                             <div class="note-commends">
-                                <<set _comments to _note.comments.slice().reverse()>>
+                                <<set _comments to smartphone.yenoteSortedComments(_note)>>
                                 <<for _comment range _comments>>
                                     <<set _role to smartphone.yenoteCommentRole(_note, _comment)>>
-                                    <div @class='"note-comment-item"+(_comment.major? " comment-major": "")' @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
+                                    <div @class='"note-comment-item"+(_comment.major? " comment-major": "")+(_comment.replay_to? " comment-reply": "")' @data-note=_note.id @data-index="_note.comments.indexOf(_comment)">
                                         <div class="note-comments-name">
-                                            <span><b @class='"note-comment-name-"+_role'>_comment.name</b><span class="note-comment-role note-comment-role-_role"><<if _role is "pc">>我<<elseif _role is "author">>作者<</if>></span> <<print _comment.last_name? "回复 "+_comment.last_name: "">></span>
+                                            <span><b @class='"note-comment-name-"+_role'>_comment.name</b><span class="note-comment-role note-comment-role-_role"><<if _role is "pc">>我<<elseif _role is "author">>作者<</if>></span> <<print smartphone.yenoteReplyText(_comment)>></span>
                                             <<if smartphone.yenoteCanDelete(_note, _comment)>><button class="note-comment-delete" title="删除此评论">✕</button><</if>>
                                         </div>
                                         <div @class='"note-comment"+(_comment.already_read? "": " comment-unread")'>

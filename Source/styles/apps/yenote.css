@@ -227,6 +227,9 @@
 .note-comment-item.comment-major {
     color: var(--gold);
 }
+.note-comment-item.comment-reply {
+    margin-left: 16px;
+}
 .note-comment-item.comment-deleting {
     filter: blur(6px);
     opacity: 0;

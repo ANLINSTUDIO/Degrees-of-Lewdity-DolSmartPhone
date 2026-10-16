@@ -1377,6 +1377,7 @@ smartphone.yenoteRestoreScroll = function() {  // 恢复当前视图的滚动位
 }
 smartphone.yenoteOpenNote = function(id) {  // 进入帖子详情页
     smartphone.yenoteSaveScroll()  // 以当前（旧）视图为键保存
+    delete smartphone._yenoteScrolls[id]  // 每次进入详情页都回到顶部；仅详情页内操作刷新时保留滚动
     smartphone._yenoteAnim = "forward"  // 右拉进入动画
     smartphone._keepOldContainer = true  // 旧视图保留至滑入动画结束
     T.yenoteViewId = id
@@ -1916,7 +1917,7 @@ smartphone.yenoteGenerateRandomComment = function(photo) {
                                 text: comment[0],
                                 effect: comment[1],
                                 already_read: false,
-                                last_name: last_comment.name
+                                replay_to: last_comment.name
                             };
                         }
                     }
@@ -2079,15 +2080,7 @@ smartphone.yenoteRepliesCheck = function() {  // 每次minutePassed检测玩家�
             comment.replied = true
             delete comment.replyDef  // 已回复，移除检测钩子
             if (def.reply !== "") {
-                note.comments.push({
-                    name: smartphone.getUser(note.name).name,
-                    text: def.reply,
-                    effect: "",
-                    already_read: false,
-                    npc: true,
-                    major: true,  // 作者回复玩家主要评论，同样显示金框
-                    last_name: `<b class="note-comment-name-pc">你</b>`,  // 回复玩家该条评论
-                })
+                smartphone.yenoteNPCReply(note, def.reply, "", true)
             }
             if (def.replyEffect) new Wikifier(null, def.replyEffect)
             // 通知点击跳转到该帖详情页：真闭包存于_msgFuncs注册表（msgClick优先查表），不再依赖序列化
@@ -2122,22 +2115,49 @@ smartphone.yenoteSyncCommentUI = function(id) {  // 评论变动后立即同步�
         }
     })
 }
-smartphone.yenoteCanDelete = function(note, comment) {  // 删除按钮可见性：仅玩家自己发布的评论可删；玩家主要评论在作者已回复（回复影响已执行）后不可删
+smartphone.yenoteCanDelete = function(note, comment) {  // 删除权限：自己的帖子拥有管理员权限，全部评论可删；NPC帖子下只能删自己的评论，且主要评论在作者回复（影响已执行）后不可删
+    if (!note.npc) return true
     if (!comment.pc) return false
     if (comment.major && comment.replied) return false
     return true
 }
-smartphone.yenoteNPCReply = function(id, text, effect="") {  // NPC以自己的身份回复玩家评论（供replies的twee调用，注意不会主动刷新界面）
-    const note = smartphone.yenoteGetNote(id)
-    if (!note) return
+smartphone.yenoteNPCReply = function(note, text, effect="", major=false) {  // NPC以自己的身份回复玩家评论（供replies的twee调用，注意不会主动刷新界面）
     note.comments.push({
         name: note.name,
         text: text,
         effect: effect,
         already_read: false,
         npc: true,
-        last_name: `<b class="note-comment-name-pc">你</b>`,  // 回复玩家
+        major: major,
+        replay_to: "{PC}",  // 回复玩家
     })
+}
+smartphone.yenoteSortedComments = function(note) {  // 评论区排序：回复链成组，组间逆序（新的链在前），组内正序（对话按时间自然阅读）；顺带迁移旧存档last_name
+    const groups = []
+    for (const comment of note.comments) {
+        if (comment.last_name !== undefined) {  // 旧存档迁移：last_name为名字或"你"的HTML片段
+            comment.replay_to = comment.last_name.includes("<b") ? "{PC}" : comment.last_name
+            delete comment.last_name
+        }
+        let group = null
+        if (comment.replay_to) {  // 回复评论归入回复目标所在的最近一组（{PC}匹配玩家评论）
+            for (let i = groups.length - 1; i >= 0 && !group; i--) {
+                if (groups[i].some(c => c.name === comment.replay_to || (comment.replay_to === "{PC}" && c.pc))) group = groups[i]
+            }
+        }
+        if (group) group.push(comment)
+        else groups.push([comment])
+    }
+    return groups.reverse().flat()
+}
+smartphone.yenoteReplyText = function(comment) {  // 回复前缀：{PC}显示"回复 你"，否则显示"回复 名字"
+    if (comment.replay_to) {
+        if (comment.replay_to == "{PC}") {
+            return `回复 <b class="note-comment-name-pc">你</b>`
+        }
+        return "回复 "+comment.replay_to
+    }
+    return ""
 }
 smartphone.yenoteLike = function(id) {  // 点赞/取消点赞（详情页局部更新不重渲染，主页重渲染恢复滚动）
     const note = smartphone.yenoteGetNote(id)
@@ -2525,6 +2545,7 @@ smartphone.ddCheck = function() {
             } else if (V.passage === V.Phone.ddstart.passage) {
                 const Div = document.createElement("div");
                 Div.style.display = "inline";
+                Div.className = "passage";
                 let text = "<<icon 'phone/app/dd.png'>>"
                 
                 if (V.event) {
@@ -2537,7 +2558,7 @@ smartphone.ddCheck = function() {
                 $(smartphone.ev.content).first().before(Div)
             }
         }
-    }, 100)
+    })
 }
 // =================== 美食屋实现 ===================
 smartphone.getRecipes = function() {
