@@ -2330,7 +2330,7 @@ smartphone.yenoteReplied = function(note, text) {  // 玩家是否已用该选�
 }
 smartphone.yenoteCommentRole = function(note, comment) {  // 评论人身份："pc"玩家 | "author"帖子作者 | "guest"路人
     if (comment.name === V.Phone.yenoteUsername || comment.name === "{PC}") return "pc"
-    if (comment.name === note.name) return "author"
+    if (comment.name === smartphone.getUser(note.name).name) return "author"
     return "guest"
 }
 smartphone.yenotePCComment = function(id, text, replyDef=null) {  // 玩家发表评论（自由输入或NPC选项）
@@ -2418,7 +2418,7 @@ smartphone.yenoteCanDelete = function(note, comment) {  // 删除权限：自己
 }
 smartphone.yenoteNPCReply = function(note, text, effect="", major=false) {  // NPC以自己的身份回复玩家评论（供replies的twee调用，注意不会主动刷新界面）
     note.comments.push({
-        name: note.name,
+        name: smartphone.getUser(note.name).name,
         text: text,
         effect: effect,
         already_read: false,
