@@ -128,9 +128,6 @@
     .phone-main.phone-open {
         opacity: 1;
     }
-    .phone-main.phone-disabled {
-       pointer-events: none;
-    }
 }
 /* 息屏内容区 */
 .phone-screen-locked {
