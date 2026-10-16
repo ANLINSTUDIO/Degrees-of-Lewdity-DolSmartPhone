@@ -1587,7 +1587,7 @@
 :: Second Phone Shop Charge
 <<charge "SecondPhoneShop" "Second Phone Shop Charge">>
 <br><br>
-<<icon "storage-unit.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
+<<icon "phone/second-phone-shop.png">><<link [[返回|Second Phone Shop]]>><</link>><br>
 :: Library Charge
 <<sydneySchedule>>
 <<if $Phone.sydneyChargeLowBattery isnot "finished" and $Phone.sydneyChargeLowBattery lt 3 and smartphone.getPhoneBattery() lte 5 and $daily.sydneyChargeLowBattery isnot 1>>
