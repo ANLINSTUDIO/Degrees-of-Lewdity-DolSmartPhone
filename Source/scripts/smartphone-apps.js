@@ -878,7 +878,9 @@ smartphone.photoDesc = function() {
 };
 smartphone.photoSubmit = function() {
     V.Phone.PhotoCurrent.facevariant = V.facevariant;
+    V.Phone.PhotoCurrent.filter = T.cameraFilter ?? "原图";  // 保存滤镜，随照片进入相册并跟随小黄书发布
     V.Phone.Album[V.Phone.PhotoCurrentPath] = V.Phone.PhotoCurrent;
+    smartphone.PhoneConsumption(smartphone.拍照电量消耗);  // 拍摄耗电
     smartphone.togglePhone();
     V.Phone.photography = Math.min(V.Phone.photography + 1, 1000);
     smartphone.msgSend("你稍微掌握了一点摄影的技巧");
@@ -908,6 +910,260 @@ smartphone.sanitizeWornText = function(html) {  // 白名单过滤衣物描述�
     const clean = document.createElement("div")
     extract(container, clean)
     return clean.innerHTML
+}
+// =================== 摄像 APP ====================
+smartphone.cameraFilters = {  // 滤镜表（canvas ctx.filter）
+    "原图": "none",
+    "黑白": "grayscale(1) contrast(1.1)",
+    "复古": "sepia(0.6) contrast(1.05)",
+    "冷调": "hue-rotate(-20deg) saturate(1.25)",
+    "暖调": "sepia(0.35) saturate(1.4) hue-rotate(-10deg)",
+    "梦幻": "saturate(1.3) brightness(1.08) contrast(0.95)",
+}
+smartphone.cameraFilterEffects = {  // 滤镜对小黄书数据的影响（轻度档 ±10%~15%）与菜单悬浮提示
+    "原图": {},
+    "黑白": {attract: 1.1, fameMul: 0.85, tip: "热度+10%　名声-15%"},
+    "复古": {attract: 0.9, tipMul: 1.15, tip: "热度-10%　打赏+15%"},
+    "冷调": {commentMul: 0.85, tip: "评论-15%"},
+    "暖调": {commentMul: 1.15, tip: "评论+15%"},
+    "梦幻": {attract: 1.1, tipMul: 0.85, tip: "热度+10%　打赏-15%"},
+}
+smartphone.cameraFilterCSS = function(name) {  // 滤镜名→CSS filter字符串（相册与预览的内联样式共用）
+    return smartphone.cameraFilters[name] ?? "none"
+}
+smartphone.cameraFilterVar = function(name) {  // 滤镜名→CSS自定义属性；原图返回空，避免覆盖 .note-image.locked 的模糊
+    const css = smartphone.cameraFilters[name]
+    return css && css !== "none" ? `--note-img-filter:${css}` : ""
+}
+smartphone.cameraFilterLabel = function(name) {  // 滤镜展示文案：名称＋效果（供相册与小黄书展示）
+    const tip = smartphone.cameraFilterEffects[name]?.tip
+    if (!tip) return ""
+    return `${name}（${tip}）`
+}
+smartphone.cameraScene = document.createElement("canvas")  // 离屏画布：按游戏原始分辨率合成场景（滤镜前）
+smartphone.cameraBgCanvas = document.createElement("canvas")  // 背景缓存：拖拽人物时无需重绘模糊背景
+smartphone.initPhoto = function() {
+    setTimeout(() => {
+        smartphone.cameraDraw(true)  // 自由拍摄绘制取景；任务拍摄无 #camera_canvas 时自动跳过
+        const viewport = document.getElementById("camera_viewport")
+        if (viewport) {
+            viewport.addEventListener("wheel", smartphone.cameraMenuWheel, {passive: false})  // 两种模式都支持滚轮滑动滤镜菜单
+            if (document.getElementById("camera_canvas")) smartphone.cameraDragBind(viewport)  // 仅自由拍摄绑定拖拽取景
+        }
+        const bgSlider = document.querySelector(".camera-bg-slider")
+        if (bgSlider) bgSlider.value = (T.cameraBgY ?? 0) * 100
+        const zoomSlider = document.querySelector(".camera-zoom-bar input")
+        if (zoomSlider) zoomSlider.value = T.cameraZoom ?? 1
+        smartphone.cameraTaskPhotoSync()  // 任务拍摄：把已选滤镜套到预览照片上
+        smartphone.cameraShotsUpdate()  // 左上角剩余拍摄次数
+        smartphone.cameraFilterSync()
+        smartphone.cameraBlurSync()
+    }, 50)  // 等待界面渲染完成
+}
+smartphone.cameraDraw = function(forceBg=false) {  // 取景：背景缓存+人物按焦距与偏移合成，套滤镜输出到取景画布
+    const canvas = document.getElementById("camera_canvas")
+    const charSource = document.querySelector(".mainCanvas")
+    if (!canvas || !charSource) return
+    const sky = document.getElementById("canvasSkybox")?.querySelector("canvas") ?? document.getElementById("canvasSkybox")?.querySelector("img")
+    const zoom = T.cameraZoom ?? 1
+    const blur = T.cameraBlur ?? true  // 背景模糊默认开启
+    const w = charSource.width, h = Math.round(charSource.height * 1.7)  // 人物置于底部，上方留白给背景（景深构图）
+    const bgKey = `${w}x${h}|${zoom}|${T.cameraBgY ?? 0}|${blur}|${sky ? sky.src || "canvas" : "none"}`
+    if (forceBg || smartphone._cameraBgKey !== bgKey) {  // 背景重绘条件：强制/尺寸/焦距/背景垂直位置/天空盒变化
+        smartphone._cameraBgKey = bgKey
+        const bg = smartphone.cameraBgCanvas
+        bg.width = w; bg.height = h
+        const bgCtx = bg.getContext("2d")
+        bgCtx.fillStyle = "#161616"  // 天空盒缺失时的兜底底色
+        bgCtx.fillRect(0, 0, w, h)
+        if (sky) {
+            bgCtx.filter = blur ? "blur(8px)" : "none"  // 模糊开关：关闭时保留背景原始细节
+            const scale = Math.max(w / sky.width, h / sky.height) * Math.max(1, 1.15 * zoom)  // 放大留边，保证任意焦距下垂直平移仍铺满
+            const bw = sky.width * scale, bh = sky.height * scale
+            const t = Math.clamp(((T.cameraBgY ?? 0) + 0.35) / 0.7, 0, 1)  // 滑块极值(-35~35)对应背景下/上边缘
+            const by = (h - bh) * (1 - t)  // 与焦距无关：最低时背景下缘贴视口底，最高时上缘贴视口顶
+            bgCtx.drawImage(sky, (w - bw) / 2, by, bw, bh)
+            bgCtx.filter = "none"
+        }
+    }
+    const scene = smartphone.cameraScene
+    scene.width = w; scene.height = h
+    const ctx = scene.getContext("2d")
+    ctx.drawImage(smartphone.cameraBgCanvas, 0, 0)
+    const cw = w * zoom, ch = charSource.height * zoom  // 人物随焦距放大，底部中心对齐；拖拽偏移以场景尺寸为基准
+    ctx.drawImage(charSource, (w - cw) / 2 + (T.cameraCharX ?? 0) * w, h - ch + (T.cameraCharY ?? 0) * h, cw, ch)
+    const outScale = Math.min(1, 360 / w)  // 限宽输出：控制存档中dataURL的体积
+    canvas.width = Math.round(w * outScale)
+    canvas.height = Math.round(h * outScale)
+    const outCtx = canvas.getContext("2d")
+    outCtx.filter = smartphone.cameraFilters[T.cameraFilter] ?? "none"
+    outCtx.drawImage(scene, 0, 0, canvas.width, canvas.height)
+    outCtx.filter = "none"
+}
+smartphone.cameraEase = function(key, target) {  // 滑条差值缓动：T[key] 以指数缓出逼近目标值，拖动生硬感消除
+    smartphone._camEase = smartphone._camEase ?? {}
+    smartphone._camEase[key] = target
+    if (smartphone._camEaseRAF) return  // 动画进行中只更新目标值
+    const step = () => {
+        let moving = false
+        for (const k in smartphone._camEase) {
+            const goal = smartphone._camEase[k]
+            const diff = goal - (T[k] ?? goal)
+            if (Math.abs(diff) < 0.003) { T[k] = goal; continue }
+            T[k] = (T[k] ?? 0) + diff * 0.25
+            moving = true
+        }
+        smartphone.cameraDraw()  // 背景走缓存，焦距/仰角变化时自动重绘
+        smartphone._camEaseRAF = moving ? requestAnimationFrame(step) : null
+    }
+    smartphone._camEaseRAF = requestAnimationFrame(step)
+}
+smartphone.cameraDragBind = function(viewport) {  // 取景区拖拽：调整人物水平/垂直位置
+    let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0
+    viewport.addEventListener("pointerdown", (e) => {
+        if (e.target.closest("input, button, .camera-filter-menu")) return  // 滑条、按钮与滤镜菜单不触发拖拽
+        dragging = true
+        sx = e.clientX; sy = e.clientY
+        ox = T.cameraCharX ?? 0; oy = T.cameraCharY ?? 0
+        viewport.setPointerCapture(e.pointerId)
+    })
+    viewport.addEventListener("pointermove", (e) => {
+        if (!dragging) return
+        const rect = viewport.getBoundingClientRect()
+        const zoom = T.cameraZoom ?? 1
+        const keep = 0.3  // 人物至少保留30%在视角内，空白部分允许越界
+        const xLimit = 0.5 + (1 - keep) / 2 * zoom  // 由“30%宽度可见”反推的水平极限
+        const yRange = zoom / 1.7  // 人物高度/视口高度（1.7 与 cameraDraw 的构图比例一致）
+        T.cameraCharX = Math.clamp(ox + (e.clientX - sx) / rect.width, -xLimit, xLimit)
+        T.cameraCharY = Math.clamp(oy + (e.clientY - sy) / rect.height, keep * yRange - 1, (1 - keep) * yRange)
+        smartphone.cameraDraw()  // 背景走缓存，拖拽流畅
+    })
+    const stop = () => { dragging = false }
+    viewport.addEventListener("pointerup", stop)
+    viewport.addEventListener("pointercancel", stop)
+}
+smartphone.cameraFilterSync = function() {  // 滤镜按钮激活态：启用非原图滤镜时常亮
+    document.getElementById("camera_filter_btn")?.classList.toggle("active", (T.cameraFilter ?? "原图") !== "原图")
+}
+smartphone.cameraBlurSync = function() {  // 模糊按钮激活态：默认开启
+    document.getElementById("camera_blur_btn")?.classList.toggle("active", T.cameraBlur ?? true)
+}
+smartphone.cameraBlurToggle = function() {  // 切换背景模糊：开启时背景虚化，关闭时保留原图细节
+    T.cameraBlur = !(T.cameraBlur ?? true)
+    smartphone.cameraBlurSync()
+    smartphone.cameraDraw(true)
+}
+smartphone.cameraTaskPhotoSync = function() {  // 任务拍摄：把当前滤镜套到预览照片上（纯 img + CSS 滤镜，无画布污染问题）
+    const img = document.getElementById("camera_task_photo")
+    if (img) img.style.filter = smartphone.cameraFilterCSS(T.cameraFilter)
+}
+smartphone.cameraShotsUpdate = function(animate=false) {  // 左上角剩余自由拍摄次数；animate 时用旋转抖动动画切换数字
+    const badge = document.getElementById("camera_shots_badge")
+    if (!badge) return
+    badge.textContent = Math.max(0, smartphone.每天拍照次数 - (V.daily.cameraShots ?? 0))
+    if (animate) {
+        badge.classList.remove("shake")
+        void badge.offsetWidth  // 强制重排以重新触发动画
+        badge.classList.add("shake")
+    }
+}
+smartphone.cameraFilterToggle = function() {  // 滤镜菜单开合：自由拍摄用画布合成预览，任务拍摄直接用照片预览；两种模式都叠加效果提示
+    const menu = document.getElementById("camera_filter_menu")
+    if (!menu) return
+    if (smartphone._camScrollRAF) { cancelAnimationFrame(smartphone._camScrollRAF); smartphone._camScrollRAF = null }  // 丢弃上一次滚轮缓动
+    smartphone._camScroll = null
+    if (menu.style.display !== "none") {
+        menu.style.display = "none"
+        return
+    }
+    const taskImg = document.getElementById("camera_task_photo")  // 任务拍摄：以照片本身做预览
+    const scene = smartphone.cameraScene
+    menu.innerHTML = Object.keys(smartphone.cameraFilters).map(key => {
+        const tip = smartphone.cameraFilterEffects[key]?.tip
+        const preview = taskImg
+            ? `<img src="${taskImg.src}" style="filter:${smartphone.cameraFilterCSS(key)}">`
+            : `<canvas width="60" height="84"></canvas>`
+        return `<div class="camera-filter-item${key === (T.cameraFilter ?? "原图") ? " selected" : ""}" data-f="${key}">${preview}<span>${key}</span>${tip ? `<div class="camera-filter-tip">${tip}</div>` : ""}</div>`
+    }).join("")
+    menu.querySelectorAll(".camera-filter-item").forEach(item => {
+        const c = item.querySelector("canvas")
+        if (c) {  // 自由拍摄：把场景按 cover-fit 缩放进小预览
+            const ctx = c.getContext("2d")
+            ctx.filter = smartphone.cameraFilters[item.dataset.f] ?? "none"
+            const s = Math.max(c.width / scene.width, c.height / scene.height)
+            ctx.drawImage(scene, (c.width - scene.width * s) / 2, (c.height - scene.height * s) / 2, scene.width * s, scene.height * s)
+        }
+        item.onclick = () => {
+            T.cameraFilter = item.dataset.f
+            smartphone.cameraFilterToggle()  // 选择后收起
+            smartphone.cameraFilterSync()
+            smartphone.cameraTaskPhotoSync()  // 任务拍摄：就地刷新预览滤镜
+            smartphone.cameraDraw(true)
+        }
+    })
+    menu.style.display = ""
+}
+smartphone.cameraMenuWheel = function(e) {  // 滤镜菜单：垂直滚轮转横向滚动（缓动逼近，避免生硬跳变）
+    const menu = document.getElementById("camera_filter_menu")
+    if (!menu || menu.style.display === "none") return
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return  // 触控板横向滚动不干预
+    e.preventDefault()
+    const max = Math.max(0, menu.scrollWidth - menu.clientWidth)
+    smartphone._camScroll = Math.clamp((smartphone._camScroll ?? menu.scrollLeft) + e.deltaY, 0, max)
+    if (smartphone._camScrollRAF) return  // 动画进行中只更新目标
+    const step = () => {
+        const diff = smartphone._camScroll - menu.scrollLeft
+        if (Math.abs(diff) < 0.5) {
+            menu.scrollLeft = smartphone._camScroll
+            smartphone._camScrollRAF = null
+            return
+        }
+        menu.scrollLeft += diff * 0.3  // 指数缓出
+        smartphone._camScrollRAF = requestAnimationFrame(step)
+    }
+    smartphone._camScrollRAF = requestAnimationFrame(step)
+}
+smartphone.cameraShotEffects = [  // 自由拍摄的随机效果（几率均等）
+    {text: "你稍微掌握了一点摄影的技巧 <<note '+摄影' 'purple'>>", effect: () => `<<run $Phone.photography = Math.min($Phone.photography + ${1 + Math.floor(Math.random() * 3)}, 1000)>>`},
+    {text: "专注于取景，你的心绪平复了不少 <<lstress>>", effect: () => `<<stress -${1 + Math.floor(Math.random() * 5)}>>`},
+    {text: "镜头里的风景，冲淡了往日的不快 <<ltrauma>>", effect: () => `<<trauma -${1 + Math.floor(Math.random() * 3)}>>`},
+    {text: "看着镜头里的自己，你感觉特别自信 <<gcontrol>>", effect: `<<control 1>>`},
+    {text: "你随手按了几下快门，什么也没发生", effect: null},
+]
+smartphone.cameraShot = function() {  // 快门：闪白 + 耗时1分钟 + 耗电 + 随机效果，每天限次（照片不落盘）
+    if (!document.getElementById("camera_canvas")) return
+    if ((V.daily.cameraShots ?? 0) >= smartphone.每天拍照次数) {
+        smartphone.msgSend("<span class='red'>今天已经拍够了，明天再来吧</span>")
+        return
+    }
+    V.daily.cameraShots = (V.daily.cameraShots ?? 0) + 1
+    smartphone.cameraFlash()
+    smartphone.PhoneConsumption(smartphone.拍照电量消耗)  // 拍摄耗电
+    Wikifier.wikifyEval("<<pass 1>>")  // 每次拍摄耗时1分钟
+    Wikifier.wikifyEval("<<updatesidebarmoney>><<updatesidebarimg>>")  // 只局部刷新侧边栏，不重渲染段落（避免丢失事件）
+    const item = smartphone.cameraShotEffects[Math.floor(Math.random() * smartphone.cameraShotEffects.length)]
+    const code = typeof item.effect === "function" ? item.effect() : item.effect
+    if (code) Wikifier.wikifyEval(code)
+    if (window.Dynamicest) {
+        smartphone.yenotesStatApply()
+        Dynamicest.onPassageRender(Dynamicest.ev)
+    }
+    const battery = smartphone.getPhoneBattery()  // 手机状态栏时钟与电量同步（局部更新，不重渲染段落）
+    document.querySelectorAll("#battery_cover").forEach(_c => _c.style.clipPath = `inset(0 ${100 - battery}% 0 0)`)
+    document.querySelectorAll("#battery_value").forEach(_v => _v.textContent = battery)
+    const clock = document.querySelector(".phone-status-bar > span")
+    if (clock) clock.textContent = smartphone.getTimeString()
+    smartphone.cameraShotsUpdate(true)  // 剩余次数：旋转抖动更新
+    if (item.text) smartphone.msgSend(item.text)
+}
+smartphone.cameraFlash = function() {  // 快门闪白动画
+    const viewport = document.getElementById("camera_viewport")
+    if (!viewport) return
+    const flash = document.createElement("div")
+    flash.className = "camera-flash"
+    viewport.appendChild(flash)
+    requestAnimationFrame(() => flash.classList.add("fade"))
+    setTimeout(() => flash.remove(), 400)
 }
 // =================== 相册实现 ====================
 smartphone.photoDelete = function(photo_id) {
@@ -1218,6 +1474,7 @@ smartphone.addAlbumTask = function(taskId) {
                 <div class="album-photo-passage">
                     <span>${photo.msg}</span>
                     <br>
+                    ${smartphone.cameraFilterLabel(photo.filter) ? `<div class="camera-filter-text">滤镜：${smartphone.cameraFilterLabel(photo.filter)}</div>` : ''}
                     <p style="font-size:12px; color:#666;">
                         <<if ${photo.worn_text !== undefined}>>${photo.worn_text}<</if>>
                         <<if ${photo.facevariant !== false}>>
@@ -1243,7 +1500,7 @@ smartphone.addAlbumTask = function(taskId) {
                         <</if>>
                     <</if>>
                 </div>
-                <img class="album-photo-image" src='${(isFinished)? (photo.img ? photo.img : `img/photo/${taskId}.png`): "img/ui/phone/app/photo.png"}' onerror="javascript:smartphone.photoError(this)">
+                <img class="album-photo-image" style="filter:${smartphone.cameraFilterCSS(photo.filter)}" src='${(isFinished)? (photo.img ? photo.img : `img/photo/${taskId}.png`): "img/ui/phone/app/photo.png"}' onerror="javascript:smartphone.photoError(this)">
             </div>
         `);
     } else {
@@ -1560,7 +1817,7 @@ smartphone.yenotesCheck = function(minutesPassed) {
             if (random(100) <= smartphone.点赞概率百分之) {
                 likeInc += 1
             }
-            if (random(100) <= smartphone.评论概率百分之) {
+            if (random(100) <= smartphone.评论概率百分之 * (yenote.commentMul ?? 1)) {  // 滤镜评论修正（冷调-15%/暖调+15%）
                 commentInc += 1
             }
         }
@@ -1569,8 +1826,9 @@ smartphone.yenotesCheck = function(minutesPassed) {
             yenote.view += viewInc;
             yenote.like += likeInc;
         } else {
+            const fameMul = yenote.fameMul ?? 1  // 滤镜名声修正（黑白-15%）
             yenote.fames?.forEach(_fame => {  // 计算名声（钳制到0~2000，与原版fameclamp一致）
-                V.fame[_fame] = Math.clamp(parseFloat((V.fame[_fame] + viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1).toFixed(2)), 0, 2000)
+                V.fame[_fame] = Math.clamp(parseFloat((V.fame[_fame] + (viewInc * 0.01 + likeInc * 0.05 + commentInc * 0.1) * fameMul).toFixed(2)), 0, 2000)
             })
 
             yenote.view += viewInc;
@@ -1588,7 +1846,7 @@ smartphone.yenotesCheck = function(minutesPassed) {
             if (yenote.img != null) {  // 自定义文章没有打赏和评论
                 if (!yenote.price) {  // 免费帖：每一位喜欢，百分之10的概率获得打赏（便士）
                     for (let index = 0; index < likeInc; index++) {
-                        if (random(100) <= smartphone.打赏概率百分之) {
+                        if (random(100) <= smartphone.打赏概率百分之 * (yenote.tipMul ?? 1)) {  // 滤镜打赏修正（复古+15%/梦幻-15%）
                             const earned = Math.round(Math.max(yenote.attract * 0.5 * random(100), 1))
                             yenote.earned = Math.round(yenote.earned + earned)
                             V.Phone.YenotePending.tipCount += 1
@@ -1750,13 +2008,18 @@ smartphone.yenotePost = function(photo_id) {
     const photo_base = smartphone.PhonePhotos[photo_id]
     if (photo.isUsed) return
     if (photo.worn_text) photo.worn_text = smartphone.sanitizeWornText(photo.worn_text)  // 发布时再过滤一次：修复旧存档中已被其他模组污染的描述
-    const attract = (photo_base.risk / 100) * 0.2 + (photo.allure / 1000) * 0.5 + (photo.quality / 1000) * 0.3
+    const fx = smartphone.cameraFilterEffects[photo.filter ?? "原图"] ?? {}  // 滤镜对热度/名声/评论/打赏的影响
+    const attract = ((photo_base.risk / 100) * 0.2 + (photo.allure / 1000) * 0.5 + (photo.quality / 1000) * 0.3) * (fx.attract ?? 1)
     T.yenotePosting = {
         id: photo_id,
         msg: photo.msg,
         img: photo.img,
         onceUsed: photo.onceUsed,
         attract: attract,
+        filter: photo.filter ?? "原图",  // 滤镜随文章一起展示
+        fameMul: fx.fameMul,
+        commentMul: fx.commentMul,
+        tipMul: fx.tipMul,
         price: 0,
         earned: 0,
         fames: photo_base.fames,

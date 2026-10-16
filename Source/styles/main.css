@@ -709,6 +709,296 @@
     -webkit-user-drag: none;
     border-radius: 10px;
 }
+.camera-app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.camera-app [disabled] {  /* 任务拍摄模式：焦距/仰角/模糊/相册置灰且不可交互 */
+    opacity: 0.35;
+    pointer-events: none;
+}
+.camera-viewport {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #000;
+    touch-action: none;  /* 拖拽人物时不触发页面滚动 */
+}
+.camera-viewport canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.camera-bg-slider {
+    position: absolute;
+    right: -62px;
+    top: calc(50% - 75px);
+    width: 150px;   /* 旋转后为滑条视觉长度 */
+    height: 22px;   /* 旋转后为滑条视觉宽度，与模糊按钮等宽 */
+    transform: rotate(-90deg);  /* 垂直滑条：悬浮在取景区右侧 */
+    background: transparent;
+    border: none;
+    padding: 0;
+    pointer-events: auto;
+    cursor: pointer;
+}
+.camera-bg-slider[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    background: #555;  /* 覆盖游戏默认的深色粗轨道 */
+    border: none;
+    border-radius: 2px;
+}
+.camera-bg-slider[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    margin-top: -9px;  /* 轨道4px、滑块22px，垂直居中 */
+    box-sizing: border-box;
+    background: #fff;
+    border: 2px solid #888;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.camera-bg-slider[type="range"]::-moz-range-track {
+    height: 4px;
+    background: #555;
+    border: none;
+    border-radius: 2px;
+}
+.camera-bg-slider[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 2px solid #888;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.camera-blur-btn {
+    position: absolute;
+    right: 2px;               /* 与滑条视觉中心对齐（距取景区右缘 13px） */
+    top: calc(50% + 17px);    /* 紧贴滑条视觉下缘 */
+    width: 22px;
+    height: 22px;
+    padding: 2px;
+    box-sizing: border-box;
+    background: transparent;
+    border: 1.5px solid white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.camera-blur-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: white;
+}
+.camera-blur-btn.active {
+    background: #fff;
+    border-color: #fff;
+}
+.camera-blur-btn.active .camera-btn-icon {
+    filter: brightness(0);
+}
+.camera-filter-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.55);
+    touch-action: pan-x;  /* 菜单内允许横向滑动选择 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+.camera-filter-menu::-webkit-scrollbar {
+    height: 5px;
+}
+.camera-filter-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.camera-filter-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+.camera-filter-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+.camera-filter-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+}
+.camera-filter-item canvas,
+.camera-filter-item img {
+    display: block;
+    width: 52px;
+    height: 72px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    box-sizing: content-box;
+    object-fit: cover;
+}
+.camera-filter-item.selected canvas,
+.camera-filter-item.selected img {
+    border-color: #ff0;
+}
+.camera-filter-tip {  /* 滤镜效果提示：常驻在滤镜名下方，字号略小 */
+    width: 56px;
+    margin-top: 2px;
+    font-size: 9px;
+    line-height: 1.25;
+    color: #bbb;
+    text-align: center;
+    word-break: break-word;
+}
+.camera-filter-text {  /* 滤镜名称与效果说明（相册、小黄书共用） */
+    font-size: 12px;
+    color: #9c9c9c;
+}
+.camera-shots-badge {  /* 左上角：今日剩余自由拍摄次数 */
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    z-index: 2;
+    padding: 1px 7px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    pointer-events: none;
+}
+.camera-shots-badge.shake {
+    animation: camera-shots-shake 0.35s ease-out;
+}
+@keyframes camera-shots-shake {  /* 数字切换时的旋转抖动 */
+    0% { transform: rotate(0deg) scale(1); }
+    30% { transform: rotate(-14deg) scale(1.15); }
+    60% { transform: rotate(14deg) scale(1.15); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+.camera-filter-item span {
+    font-size: 11px;
+    color: #fff;
+}
+.camera-zoom-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+    padding: 0 4px;
+}
+.camera-zoom-bar input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 95%;
+    height: 4px;
+    background: #555;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.camera-zoom-bar input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #888;
+    cursor: pointer;
+}
+.camera-zoom-stops {
+    display: flex;
+    justify-content: space-between;
+        width: 95%;
+}
+.camera-zoom-stops span {
+    color: #888;
+    font-size: 10px;
+}
+.camera-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 2px 6px;
+}
+.camera-side-btn {
+    width: 44px;
+    height: 44px;
+    padding: 5px;
+    background: transparent;
+    border: 1.5px solid white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.camera-side-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+.camera-btn-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+.camera-side-btn.active {
+    background: #fff;
+    border-color: #fff;
+}
+.camera-side-btn.active .camera-btn-icon {
+    filter: brightness(0);  /* 激活态：图标着色为深色 */
+}
+.camera-flash {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    opacity: 0.9;
+    pointer-events: none;
+    transition: opacity 0.35s ease-out;
+}
+.camera-flash.fade {
+    opacity: 0;
+}
+.camera-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 2px 6px;
+}
+.camera-shutter {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #888;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.camera-shutter:active {
+    transform: scale(0.9);
+}
 
 /*==================== 相册实现 ====================*/
 .album-content-container {

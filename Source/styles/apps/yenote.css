@@ -324,10 +324,11 @@
 .note-image {
     width: 100%;
     border-radius: 10px;
+    filter: var(--note-img-filter, none);  /* 摄像滤镜走自定义属性，避免覆盖 locked 的模糊 */
     transition: filter 0.3s ease-out;
 }
 .note-image.locked {
-    filter: blur(8px);
+    filter: blur(8px) var(--note-img-filter,);  /* 空回退：未选滤镜时只保留模糊 */
     -webkit-user-drag: none;
 }
 .note-premium {

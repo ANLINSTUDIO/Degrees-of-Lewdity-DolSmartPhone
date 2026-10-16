@@ -942,7 +942,7 @@ smartphone.Apps = {  // APP
     shop: {display_name: "淘桃网购", icon: "img/misc/icon/phone/app/taobao.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
     // appstore: {display_name: "应用商店", icon: "img/misc/icon/phone/app/appstore.png", app_widget: "phone_app_appstore", init: "initAppstore"},
 
-    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", guide: "photo"},
+    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", init: "initPhoto", guide: "photo", disableinevent: true},
     album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: "photo"},
     yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", guide: "yenote"},
 
@@ -1027,6 +1027,8 @@ smartphone.DD每距离费用 = 2;
 smartphone.手机充电中被盗概率 = 0.2;
 smartphone.手机充电中安全地点 = ["Bedroom", "SecondPhoneShop"];
 smartphone.自然电量损失每分钟 = 0.3;
+smartphone.拍照电量消耗 = 30;  // 每次拍摄消耗手机电量
+smartphone.每天拍照次数 = 10;  // 自由拍摄每日次数上限
 smartphone.充电宝充电每分钟 = 5;
 smartphone.充电宝充入倍数 = 5;
 smartphone.破解费用比例 = 0.5;

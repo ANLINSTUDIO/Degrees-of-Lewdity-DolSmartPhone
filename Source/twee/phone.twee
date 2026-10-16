@@ -219,20 +219,60 @@
 :: SmartPhoneAppWidgets [widget]
 <<widget "phone_app_photo">>
     <<if $Phone.PhotoCurrent>>
-        <div class="app-content" style="overflow-y: hidden">
-            <div id="photo" style="display: flex; justify-content: space-evenly;"> 
-                <img class="photo-image" @src=$Phone.PhotoCurrent.img onerror="javascript:this.src='img/photo/photonone.png'">
+        <div class="camera-app">
+            <div class="camera-viewport" id="camera_viewport">
+                <img class="photo-image" id="camera_task_photo" @src=$Phone.PhotoCurrent.img onerror="javascript:this.src='img/photo/photonone.png'">
+                <div id="camera_filter_menu" class="camera-filter-menu" style="display:none"></div>
+                <input type="range" class="camera-bg-slider" min="-35" max="35" step="5" value="0" disabled title="调整背景垂直位置">
+                <button class="camera-blur-btn" id="camera_blur_btn" disabled title="背景模糊">
+                    <img class="camera-btn-icon" src="img/ui/phone/app/blur.png">
+                </button>
             </div>
-            <div id="photo_ui" style="display: flex; justify-content: space-evenly;"> 
-                <div id="photo_take_button_outline" style="position: absolute; bottom: 40px; width: 60px; height: 60px; background-color: transparent; border: 2px solid #fff; border-radius: 50%;">
-                    <div id="photo_take_button" onclick="smartphone.photoSubmit()" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; background-color: #fff; border-radius: 50%;"> </div>
+            <div class="camera-zoom-bar">
+                <input type="range" min="0.6" max="5" step="0.1" value="1" disabled>
+                <div class="camera-zoom-stops">
+                    <span>0.6x</span><span>1x</span><span>2x</span><span>2.6x</span><span>5x</span>
                 </div>
+            </div>
+            <div class="camera-controls">
+                <button class="camera-side-btn" disabled title="相册">
+                    <img class="camera-btn-icon" src="img/misc/icon/phone/app/album.png">
+                </button>
+                <div class="camera-shutter pointer" onclick="smartphone.photoSubmit()"></div>
+                <button class="camera-side-btn" id="camera_filter_btn" onclick="smartphone.cameraFilterToggle()" title="滤镜">
+                    <img class="camera-btn-icon" src="img/ui/phone/app/filter.png">
+                </button>
             </div>
         </div>
     <<else>>
-        <h3>摄像</h3>
-        <p style="font-size:12px; color:#666;">得找点什么拍，尝试去做一点有“意义”的事情吧！</p>
-        <<link 前往相册>><<run smartphone.toggleApp("album")>><</link>><span style="font-size:12px; color:#666;">查看值得拍照的事件</span>
+        <div class="camera-app">
+            <div class="camera-viewport" id="camera_viewport">
+                <canvas id="camera_canvas"></canvas>
+                <div class="camera-shots-badge" id="camera_shots_badge">0</div>
+                <div id="camera_filter_menu" class="camera-filter-menu" style="display:none"></div>
+                <input type="range" class="camera-bg-slider" min="-35" max="35" step="5" value="0"
+                       oninput="smartphone.cameraEase('cameraBgY', +this.value/100)"
+                       onpointerdown="event.stopPropagation()" title="调整背景垂直位置">
+                <button class="camera-blur-btn" id="camera_blur_btn" onclick="smartphone.cameraBlurToggle()" title="背景模糊">
+                    <img class="camera-btn-icon" src="img/ui/phone/app/blur.png">
+                </button>
+            </div>
+            <div class="camera-zoom-bar">
+                <input type="range" min="0.6" max="5" step="0.1" @value="(T.cameraZoom ?? 1)" oninput="smartphone.cameraEase('cameraZoom', +this.value)">
+                <div class="camera-zoom-stops">
+                    <span>0.6x</span><span>1x</span><span>2x</span><span>2.6x</span><span>5x</span>
+                </div>
+            </div>
+            <div class="camera-controls">
+                <button class="camera-side-btn" onclick="smartphone.toggleApp('album')" title="相册">
+                    <img class="camera-btn-icon" src="img/misc/icon/phone/app/album.png">
+                </button>
+                <div class="camera-shutter pointer" onclick="smartphone.cameraShot()"></div>
+                <button class="camera-side-btn" id="camera_filter_btn" onclick="smartphone.cameraFilterToggle()" title="滤镜">
+                    <img class="camera-btn-icon" src="img/ui/phone/app/filter.png">
+                </button>
+            </div>
+        </div>
     <</if>>
 <</widget>>
 
@@ -556,7 +596,8 @@
                 </div>
                 <br>
                 <div class="note-image-container">
-                    <img class="note-image" @src=_note.img onerror="javascript:this.remove()">
+                    <img class="note-image" @src=_note.img @style="smartphone.cameraFilterVar(_note.filter)" onerror="javascript:this.remove()">
+                    <<if smartphone.cameraFilterLabel(_note.filter)>><div class="camera-filter-text">滤镜：<<print smartphone.cameraFilterLabel(_note.filter)>></div><</if>>
                 </div>
             </div>
         <</if>>
@@ -593,12 +634,13 @@
                     </div>
                     <div class="note-image-container">
                         <<if _note.img isnot null>>
-                            <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>>
+                            <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" style="'+ smartphone.cameraFilterVar(_note.filter) +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>>
                             <<if _note.price>>
                                 <div class="note-locked-text">付费内容</div>
                             <</if>>
                         <</if>>
                     </div>
+                    <<if smartphone.cameraFilterLabel(_note.filter)>><div class="camera-filter-text">滤镜：<<print smartphone.cameraFilterLabel(_note.filter)>></div><</if>>
                     <div class="note-info">
                         <<if _note.npc>>
                             <span @class='"note-stat likeable"+(_note.liked? " liked":"")' @data-id="_note.id" title="点赞"><img class="note-stat-icon" @src='_note.liked? "img/ui/phone/app/note-liked.png": "img/ui/phone/app/note-like.png"'>_note.like</span>
@@ -701,7 +743,7 @@
                                 </div>
                                 <div class="note-image-container">
                                     <<if _note.img isnot null>>
-                                        <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>>
+                                        <<print '<img class="note-image'+ (_note.price? ' locked': '') +'" style="'+ smartphone.cameraFilterVar(_note.filter) +'" @data-id=_note.id @src=_note.img onerror="javascript:this.parentElement.remove()">'>>
                                         <<if _note.price>>
                                             <div class="note-locked-text">付费内容</div>
                                         <</if>>
