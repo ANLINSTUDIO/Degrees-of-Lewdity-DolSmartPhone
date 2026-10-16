@@ -315,11 +315,30 @@
         <br><<mysteryicon>><<link [[地上好像有什么东西在发光|Second Phone Shop Meet Feng First]]>><</link>>
     <<else>>
         <<if $Phone.SecondShopKnown>>
-            <br><<icon "phone/second-phone-shop.png">>
+            <br><<icon "phone/second-phone-shop.png">><<set _text to "地下手机店 (0:01)">>
             <<if $exposed gt 0>>
-                <<link [[地下手机店 (0:01)|Second Phone Shop Exposed]]>><<pass 1>><</link>>
+                <<link [[_text|Second Phone Shop Exposed]]>><<pass 1>><</link>>
             <<else>>
-                <<link [[地下手机店 (0:01)|Second Phone Shop]]>><<pass 1>><</link>>
+                <<set $Phone.Task ??= 0>><<set $Phone.TaskRun ??= 0>>
+                <<if $Phone.TaskRun is 2>>
+                    <<if $Phone.Task is 1>>
+                        <<link [[_text|Feng Task 1 Finish]]>><<pass 1>><</link>>
+                    <<else>>
+                        <<set $Phone.TaskRun to 0>>
+                        <<link [[_text|Second Phone Shop]]>><<pass 1>><</link>>
+                    <</if>>
+                <<else>>
+                    <<rng>>
+                    <<if $Phone.NoFengTasks isnot 1 and $Phone.TaskRun is 0 and C.npc.Feng.love gte 15 and C.npc.Feng.lust gte 10 and $rng lt 30>>
+                        <<if $Phone.Task is 0>>
+                            <<link [[_text|Feng Task 1 0]]>><<pass 1>><</link>> | <span class="purple">今天的店门居然在开门时间破天荒的关着。去看看发生了什么</span>
+                        <<else>>
+                            <<link [[_text|Second Phone Shop]]>><<pass 1>><</link>>
+                        <</if>>
+                    <<else>>
+                        <<link [[_text|Second Phone Shop]]>><<pass 1>><</link>>
+                    <</if>>
+                <</if>>
             <</if>>
         <<else>>
             <br><<icon "phone/second-phone-shop.png">><<link [[神秘的房子 (0:01)|Second Phone Shop Unknown]]>><<pass 1>><</link>>
@@ -640,6 +659,9 @@
             <<link [[请求一件衣服|Second Phone Shop Exposed 4]]>><</link>><br>
         <</if>><br>
     <</if>>
+    <<if $Phone.NoFengTasks is 1>>
+        <<socialiseicon "agree">><<link [[想接受委托|Feng Task Accept]]>><</link>><br><br>
+    <</if>>
     <<icon "phone/phone.png">><<link [[购买手机|Second Phone Buy]]>><</link>><br>
     <<if asi.isvalid($Phone.Owned)>>
         <<highicon>><<link [[出售二手手机|Second Phone Sell]]>><</link>><br>
@@ -658,7 +680,11 @@
         <<link [[为手机充电|Second Phone Shop Charge]]>><</link>><br><br>
     <</if>>
 <</if>>
-<<elkicon>><<link [[离开|Elk Street]]>><<endevent>><</link>>
+<<if $Phone.Task is 1 and $Phone.TaskRun is 1>>
+    <<elkicon>><<link [[离开去往酒吧|Feng Task 1 Town 0]]>><<endevent>><</link>>
+<<else>>
+    <<elkicon>><<link [[离开|Elk Street]]>><<endevent>><</link>>
+<</if>>
 :: Second Phone Shop Exposed
 <<npc Feng>>
 <<if $daily.FengAcceptExposed is 1>>
@@ -886,12 +912,19 @@
 <</if>>
 <<getouticon>><<link [[离开|Second Phone Shop]]>><</link>>
 
+
+:: Feng Task Accept
+“老冯，我想了想……”你对他说，“我还是想接受你的委托”<br><br>
+“好，没问题，以后有啥事儿我还会先想着你的。”<br><br>
+<span class="teal">现在开始老冯有几率会将委托拍给你</span><br><br>
+<<set $Phone.NoFengTasks to 0>>
+<<link [[继续|Second Phone Shop]]>><</link>>
 :: Feng Task 1 0
 你来到了地下手机店。与以往不同的是，你看到角落里堆了许多箱子，老冯正双手叉着腰对着它们沉思，一副非常伤脑的样子。听到你进来的声音，老冯转过头去。<br><br>
-“你来了啊，小扒手。”老冯浅浅地笑了笑，随后指着箱子对你说：“这几天出货有点困难，这批手机都被警方登记严抓了，我的老客户们都不敢碰。”老冯露出了一副无可奈何的表情。“你认识兰德里吗，经常在酒吧里出现的那个，处理脏货的家伙。如果你方便的话，帮我把这些东西带给他。我已经和他联系过了，你直接拿给他就行。”<br><br>
+“你来了啊，小扒手。”老冯浅浅地笑了笑，随后指着箱子对你说：“这几天出货有点困难，这批手机都被警方登记严抓了，我的老客户们都不敢碰。”老冯露出了一副无可奈何的表情。“<span class="teal">你认识兰德里吗，经常在酒吧里出现的那个</span>，处理脏货的家伙。如果你方便的话，帮我把这些东西带给他。我已经和他联系过了，你直接拿给他就行。”<br><br>
 
 这批货看起来并不安全，如果选择帮忙，你很有可能在中途被警方截获。这批脏货的价值足够你被判上相对严重的罪行。<br><br>
-<<link [[接受|Feng Task 1 1]]>><</link>>| <span class="purple">如果选择接受，玩家在街上受到警方调查的可能性将<span class="red">增加约25%</span>，并且如果被带走调查，盗窃犯罪金额将增加10000￡，这将并入罪行结算的数值。</span>
+<<link [[接受|Feng Task 1 1]]>><</link>>| <span class="purple">如果选择接受，玩家在街上受到骚扰和警方调查的可能性将<span class="red">大幅增加</span>，并且你的盗窃犯罪金额将临时增加10000￡，如果被警察带走调查，这将并入罪行结算的数值。</span>
 <br>
 <<link [[拒绝|Feng Task 1 -1]]>><</link>>| <span class="red">如果第一次选择拒绝，此后将不再主动触发老冯的委托</span>
 :: Feng Task 1 1
@@ -899,6 +932,11 @@
 “太好了。不愧是我看中的家伙。”老冯对你赞赏地点了点头，随后又想起了些什么，用叉着的手拍了拍他的腰，“事成之后，我会给你酬劳的。”<br>
 “天呐，老冯你看上去可不是这么好的人。”你为老冯这种地下人员的契约精神而感到惊讶。<br><br>
 “那可是，我老冯可不是那种坑蒙拐骗的混子，”老冯得意地拍了拍胸脯，“毕竟也是做过老大的人。”<br><br>
+<<set $Phone.Task to 1>>
+<<set $Phone.TaskRun to 1>>
+<<set $Phone.TaskDanger to 1>>
+<<set $Phone.TaskTemp to $crime.thievery.current>>
+<<set $crime.thievery.current += 10000>>
 <<link [[继续|Second Phone Shop]]>><</link>>
 :: Feng Task 1 -1
 不行，你都知道这批货很危险，还要把它们栽给我？”你摇了摇头。<br><br>
@@ -906,12 +944,38 @@
 你感到了一丝歉疚，不过也许你的安全更重要。<br><br>
 <<set $Phone.NoFengTasks to 1>>
 <<link [[继续|Second Phone Shop]]>><</link>>
+:: Feng Task 1 Town 0
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "elk">>
+你位于麋鹿街上，这里有几条通往大型工厂的道路。
+<br><br>
+可访问地点<br>
+<<harvesticon>><<link [[前往丰收街 (0:05)|Feng Task 1 Town 1]]>><<pass 5>><</link>>
+:: Feng Task 1 Town 1
+距离不远，过两个路口就到了。你是这么安慰自己的。你刚想往丰收街那边走，事情却没有那么简单。<span class="red">十字路口上有两个警察正在巡逻，你无法过去。</span><br><br>
+只能绕路了。<br><br>
+<<add_link "其他区域<br>">>
+<<nightingale>>
+<<oxford>>
+<<add_link "<br>快捷小路<br>">>
+<<industrial>>
+<<stormdrain>>
+<<displayLinks>>
 :: Feng Task 1 Landry 0
 “我有一批货要给你，”你坐到兰德里旁边的位置上，“是老冯给你的。”<br><br>
 “老冯？哦，他给我发过消息了。交给我吧。”兰德里招呼来了两个小弟，你将手机交给了他们。<br><br>
 “不过，没想到你也会认识老冯那家伙。不过想想也是。”兰德里看着小弟们带着货从酒吧后门离开，又转向你诡秘地笑了笑。<br><br>
 你对这奇怪的目光感到一丝不适。“是啊……老冯怎么了吗？”<br>
 兰德里没有说话，又转回头喝了一口闷酒。<br><br>
+<<set $Phone.TaskDanger to 0>>
+<<if $Phone.TaskTemp>>
+    <<set $crime.thievery.current to $Phone.TaskTemp>>
+    <<unset $Phone.TaskTemp>>
+<<else>>
+    <br><br><span class="red">对不起，我不小心破坏了你的存档，现在你的盗窃犯罪无法恢复，请使用作弊进行修改。</span><br><br>
+<</if>>
+<<set $Phone.TaskRun to 2>>
+<span class="gold">你已经完成了老冯的委托，要不要回去告诉他？</span>
+<br><br>
 <<link [[追问老冯的来历|Feng Task 1 Landry 1]]>><</link>><br>
 <<link [[询问老冯和兰德里的关系|Feng Task 1 Landry 2]]>><</link>><br>
 <<link [[不说话|Feng Task 1 Landry 3]]>><</link>>
@@ -933,16 +997,17 @@
 “算是吧，不过他也只是想利用我的关系。现在只要他别影响到我的生意，我们姑且也算合作吧。”兰德里思考了一会儿，回答道。<br><br>
 <<link [[继续|Pub Landry]]>><</link>>
 :: Feng Task 1 Landry 3
-“难道你还有什么事吗？” 兰德里放下酒杯看着你。<br><br>
+“你还有什么事吗？” 兰德里放下酒杯看着你。<br><br>
 <<link [[追问老冯的来历|Feng Task 1 Landry 1]]>><</link>><br>
 <<link [[询问老冯和兰德里的关系|Feng Task 1 Landry 2]]>><</link>><br>
 <<link [[离开|Pub Landry]]>><</link>>
-:: Feng Task 1 2
+:: Feng Task 1 Finish
 你推开店门，只见老冯不知从哪儿搞来了一副茶盘，提着一只瓷壶，专心致志地泡着茶。见你回来，老冯微微一笑，随即自信地一扬手，为你沏了半杯茶。你看着杯中的黄色液体，小心翼翼地抿了一口，茶的香气混合着水蒸气冲进了你的鼻中，连同口中微苦的味道一并刺激着你的感官。你感到相当舒畅。<br><br>
 “这可是中国的传统饮品，你肯定没喝过。”老冯见你陶醉的样子，露出了自豪的微笑。“这样算起来，我老冯也得是个中国人。”<br><br>
 你品鉴了几口，随后告诉老冯事情已经顺利完成了。老冯一边听一边用白色瓷盖拨弄着冲壶中浮起的茶叶，随后满意地“嗯”的一声，将瓷盖利落地一扣，提起冲壶便又沏了一杯茶，痛快地一饮而尽。<br><br>
 “不愧是我的好帮手，祝我们合作愉快。”老冯在裤兜里摸索了几下，抽出了几张钞票，点也没点地放在了你面前。“算是一点意思，也希望下次你能多多关照了。”<br><br>
 你获得了<span class="gold">￡800</span><<money 80000>>。<br><br>
+<<set $Phone.TaskRun to 0>>
 <<link [[继续|Second Phone Shop]]>><</link>>
 
 

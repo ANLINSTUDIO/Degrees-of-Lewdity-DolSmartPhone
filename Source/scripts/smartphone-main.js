@@ -98,6 +98,7 @@ smartphone.onPassageRender = function (ev) {
     smartphone.photoFinish();
     smartphone.photoCheck();  // 检测完成任务并执行拍照
     smartphone.ddCheck();
+    smartphone.taskDangerCheck();
 }
 // 【注入函数】事件软注入
 smartphone.eventsLoad = function() {
@@ -1489,4 +1490,23 @@ smartphone.SchoolLockersSneakCondition = function() {
     }
     delete V.Phone.SchoolLockersSneakOnNPC
     return false;
+}
+// === 委托 ==========================================
+smartphone.taskDangerCheck = function() {
+    setTimeout(() => {
+        if (V.Phone.TaskDanger === 1 && !document.querySelector("#taskDangerCheck")) {
+            const Div = document.createElement("div");
+            Div.style.display = "inline";
+            Div.id = "taskDangerCheck";
+            Div.className = "passage";
+            V.weekly.streetPolice = false;
+            let text = '<span class="red">你身上带着老冯给的赃物，这令你十分不安。</span>';
+            if (currentSkillValue('skulduggery') >= 699) {
+                text += '<span class="def">你的诡术能力因为如此危险的任务而被限制，你仍然可能受到警察的追捕。</span>';
+            }
+            text += "<br><br>";
+            new Wikifier(Div, text);
+            $(smartphone.ev.content).first().before(Div);
+        }
+    });
 }

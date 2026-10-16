@@ -1,0 +1,11 @@
+>
+	<br><br>
+	<<if $Phone.LandryWarn is 1>>
+		“哦，想起来个事儿，<span class="teal">你最好不要把我的名字打在社交平台上</span>，我不希望还有下次，单纯的小<<girl>>，”兰德里严肃地看着你说。
+		<<set $Phone.LandryWarn to 2>>
+		<br><br>
+	<</if>>
+	<<if $Phone.Task is 1 and $Phone.TaskRun is 1>>
+		<<icon "phone/phones.png">><<link [[交付老冯的任务|Feng Task 1 Landry 0]]>><</link>><br><br>
+	<</if>>
+	<<landryoptions>>

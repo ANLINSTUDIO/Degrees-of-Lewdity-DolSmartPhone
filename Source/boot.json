@@ -175,6 +175,12 @@
                     "findString": "$daily.motherWake is 1>>",
                     "replaceFile": "twee/game/sleepAlarm/sleepAlarmWake.twee",
                     "all": true
+                },
+                {
+                    "passage": "Pub Landry",
+                    "findString": ">\n\t<br><br>\n\t<<landryoptions>>",
+                    "replaceFile": "twee/game/passage/Pub Landry.twee",
+                    "_atool": true
                 }
             ]
         },
@@ -183,13 +189,32 @@
             "addonName": "ReplacePatcherAddon",
             "modVersion": "^1.0.0",
             "params": {
-                "js": [],
+                "js": [
+                    {
+                        "_atool": true,
+                        "from": "\tbreak;\n\t\tcase \"ph",
+                        "to": "\tif (V.Phone.TaskDanger === 1) result = Math.min(result, 699);\n\t\t\tbreak;\n\t\tcase \"ph",
+                        "fileName": "ingame.js"
+                    },
+                    {
+                        "_atool": true,
+                        "from": ";\n\treturn T.d",
+                        "to": ";\n\tif (V.Phone.TaskDanger === 1) {\n\t\tT.danger *= window.smartphone?.危险任务乘数 ?? 1;\n\t\twindow.asi?.log(\"SmartPhone\", `危险任务: ${T.danger}[x${smartphone.危险任务乘数}] >= ${floor} - ${allure} * ${mod} [${floor - allure * mod}]`, 'green', 'red');\n\t}\n\treturn T.d",
+                        "fileName": "ingame.js"
+                    }
+                ],
                 "twee": [
                     {
                         "_atool": true,
-                        "from": ">\n\t<br><br>\n\t<<landryoptions>>",
-                        "to": ">\n\t<br><br>\n\t<<if $Phone.LandryWarn is 1>>\n\t\t“哦，想起来个事儿，<span class=\"teal\">你最好不要把我的名字打在社交平台上</span>，我不希望还有下次，单纯的小<<girl>>，”兰德里严肃地看着你说。\n\t\t<br><br>\n\t\t<<set $Phone.LandryWarn to 2>>\n\t<</if>>\n\t<<landryoptions>>",
-                        "passageName": "Pub Landry"
+                        "from": "\n\n\t\t\t<<if $worn.neck.collared is 1>>",
+                        "to": "\n\t\t\t<<if $Phone.TaskDanger is 1>>\n\t\t\t\t<<addevent \"streetpolice\" 10>>\n\t\t\t<</if>>\n\n\t\t\t<<if $worn.neck.collared is 1>>",
+                        "passageName": "Widgets Events Street"
+                    },
+                    {
+                        "_atool": true,
+                        "from": "<<effects>>\n",
+                        "to": "<<effects>>\n<<if $Phone.TaskDanger is 1>>\n\t<<set $Phone.TaskDanger to 0>>\n\t<<set $crime.thievery.current to $Phone.TaskTemp>>\n\t<<unset $Phone.TaskTemp>>\n\t<<crimeUp 10000 \"thievery\">>\n\t<<set $Phone.TaskRun to 0>>\n\t<span class=\"def\">你没有完成老冯的委托，你被警察抓住了。</span><br><br>\n<</if>>\n",
+                        "passageName": "Police Cell"
                     }
                 ]
             }

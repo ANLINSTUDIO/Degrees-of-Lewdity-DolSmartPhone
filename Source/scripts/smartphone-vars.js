@@ -1030,6 +1030,7 @@ smartphone.自然电量损失每分钟 = 0.3;
 smartphone.充电宝充电每分钟 = 5;
 smartphone.充电宝充入倍数 = 5;
 smartphone.破解费用比例 = 0.5;
+smartphone.危险任务乘数 = 3;
 smartphone.debugBlackVPhone = [  // Debugger中屏蔽的V.Phone变量（通常过长）
   "Settings", "ReturnWorn", "Album",
   "Yenotes" // 必须禁用，否则内部的effect会重新作用
