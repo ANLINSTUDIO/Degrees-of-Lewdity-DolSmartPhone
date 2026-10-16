@@ -509,6 +509,7 @@ smartphone.msgPop = function(msg, anim=true) {
         new Wikifier(document.querySelector("#phone-popup-container"), "<<smartphone_popup>>");
         const phone_popup = document.querySelector(`#phone-popup-${msg.id}`)
         if (phone_popup) {
+            smartphone.msgSwipeBind(phone_popup)
             if (anim) {
                 (function(id) { setTimeout(() => {
                     phone_popup.classList.add("active")
@@ -520,6 +521,42 @@ smartphone.msgPop = function(msg, anim=true) {
             setTimeout(() => { smartphone.msgPop(msg, anim) }, 100)
         }
     }, 200)
+}
+smartphone.msgSwipeBind = function(phone_popup) {  // 通知右划关闭：所有触摸事件stopPropagation阻断冒泡，游戏本体侧边栏的左右划钩子挂在document上，事件到不了document就不会触发侧边栏
+    let xDown = null
+    phone_popup.addEventListener("touchstart", (e) => {
+        e.stopPropagation()
+        xDown = e.touches[0].clientX
+        phone_popup.style.transition = "none"  // 跟手期间禁用CSS过渡
+    }, {passive: true})
+    phone_popup.addEventListener("touchmove", (e) => {
+        e.stopPropagation()
+        e.preventDefault()  // 阻止触摸滚动页面，需passive:false
+        const dx = e.touches[0].clientX - xDown
+        if (dx > 0) phone_popup.style.transform = `translateX(${dx}px)`  // 只跟手右移
+    }, {passive: false})
+    phone_popup.addEventListener("touchend", (e) => {
+        e.stopPropagation()
+        phone_popup.style.transition = ""  // 恢复CSS过渡
+        const dx = e.changedTouches[0].clientX - xDown
+        if (dx > phone_popup.offsetWidth / 3) {  // 右划超过弹窗宽度1/3：向右滑出关闭
+            e.preventDefault()  // 阻止合成click误触msgClick
+            phone_popup.style.transform = "translateX(200px)"  // 滑回屏外（即弹出前的初始位置方向）
+            smartphone.msgClose(phone_popup.dataset.msg)  // 复用：remove active淡出+200ms移除+清理msgLine与回调注册表
+        } else {
+            phone_popup.style.transform = ""  // 回弹到active位置，小幅点按仍正常触发msgClick
+        }
+    }, {passive: false})
+    phone_popup.addEventListener("touchcancel", () => {  // 系统打断触摸：回弹
+        phone_popup.style.transition = ""
+        phone_popup.style.transform = ""
+        xDown = null
+    })
+    phone_popup.addEventListener("contextmenu", (e) => {  // 鼠标端右键快捷关闭
+        e.preventDefault()  // 阻止浏览器右键菜单
+        e.stopPropagation()
+        smartphone.msgClose(phone_popup.dataset.msg)
+    })
 }
 smartphone.msgClick = function (e) {
     const msg_id = e.currentTarget.dataset.msg
