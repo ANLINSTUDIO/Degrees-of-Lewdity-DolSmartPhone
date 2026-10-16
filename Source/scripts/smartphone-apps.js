@@ -945,6 +945,7 @@ smartphone.cameraBgCanvas = document.createElement("canvas")  // 背景缓存：
 smartphone.initPhoto = function() {
     setTimeout(() => {
         smartphone.cameraDraw(true)  // 自由拍摄绘制取景；任务拍摄无 #camera_canvas 时自动跳过
+        smartphone.cameraLiveStart()  // 取景实时刷新（任务拍摄无画布时循环会自行结束）
         const viewport = document.getElementById("camera_viewport")
         if (viewport) {
             viewport.addEventListener("wheel", smartphone.cameraMenuWheel, {passive: false})  // 两种模式都支持滚轮滑动滤镜菜单
@@ -964,11 +965,13 @@ smartphone.cameraDraw = function(forceBg=false) {  // 取景：背景缓存+人�
     const canvas = document.getElementById("camera_canvas")
     const charSource = document.querySelector(".mainCanvas")
     if (!canvas || !charSource) return
-    const sky = document.getElementById("canvasSkybox")?.querySelector("canvas") ?? document.getElementById("canvasSkybox")?.querySelector("img")
+    const skyBox = document.getElementById("canvasSkybox")
+    const sky = skyBox?.querySelector("canvas") ?? skyBox?.querySelector("img")
+    if (sky && !sky._camKey) sky._camKey = "s" + (smartphone._camSkySeq = (smartphone._camSkySeq ?? 0) + 1)  // 元素身份：天空盒被重建时能触发背景重绘
     const zoom = T.cameraZoom ?? 1
     const blur = T.cameraBlur ?? true  // 背景模糊默认开启
     const w = charSource.width, h = Math.round(charSource.height * 1.7)  // 人物置于底部，上方留白给背景（景深构图）
-    const bgKey = `${w}x${h}|${zoom}|${T.cameraBgY ?? 0}|${blur}|${sky ? sky.src || "canvas" : "none"}`
+    const bgKey = `${w}x${h}|${zoom}|${T.cameraBgY ?? 0}|${blur}|${sky ? sky._camKey + "|" + (sky.src ?? "") : "none"}`
     if (forceBg || smartphone._cameraBgKey !== bgKey) {  // 背景重绘条件：强制/尺寸/焦距/背景垂直位置/天空盒变化
         smartphone._cameraBgKey = bgKey
         const bg = smartphone.cameraBgCanvas
@@ -987,18 +990,47 @@ smartphone.cameraDraw = function(forceBg=false) {  // 取景：背景缓存+人�
         }
     }
     const scene = smartphone.cameraScene
-    scene.width = w; scene.height = h
+    if (scene.width !== w || scene.height !== h) {  // 尺寸不变时跳过重置，避免实时刷新时反复重建位图
+        scene.width = w
+        scene.height = h
+    }
     const ctx = scene.getContext("2d")
     ctx.drawImage(smartphone.cameraBgCanvas, 0, 0)
     const cw = w * zoom, ch = charSource.height * zoom  // 人物随焦距放大，底部中心对齐；拖拽偏移以场景尺寸为基准
     ctx.drawImage(charSource, (w - cw) / 2 + (T.cameraCharX ?? 0) * w, h - ch + (T.cameraCharY ?? 0) * h, cw, ch)
     const outScale = Math.min(1, 360 / w)  // 限宽输出：控制存档中dataURL的体积
-    canvas.width = Math.round(w * outScale)
-    canvas.height = Math.round(h * outScale)
+    const outW = Math.round(w * outScale), outH = Math.round(h * outScale)
+    if (canvas.width !== outW || canvas.height !== outH) {  // 尺寸不变时跳过重置
+        canvas.width = outW
+        canvas.height = outH
+    }
     const outCtx = canvas.getContext("2d")
     outCtx.filter = smartphone.cameraFilters[T.cameraFilter] ?? "none"
     outCtx.drawImage(scene, 0, 0, canvas.width, canvas.height)
     outCtx.filter = "none"
+}
+smartphone.cameraLiveStart = function() {  // 取景实时刷新：每帧重绘人物，模糊背景低频重算，跟随游戏场景即时同步
+    if (smartphone._camLiveRAF) return
+    const loop = () => {
+        const phone = document.getElementById("smart-phone-container")
+        if (!document.getElementById("camera_canvas") || !phone?.classList.contains("phone-open")) {
+            smartphone._camLiveRAF = null  // 手机收起或离开摄像界面即自动停止
+            return
+        }
+        const skyIsCanvas = !!document.getElementById("canvasSkybox")?.querySelector("canvas")
+        const forceBg = skyIsCanvas && ((smartphone._camBgTick = (smartphone._camBgTick ?? 0) + 1) % 10 === 0)  // 动画天空盒：约6帧/秒重算背景
+        smartphone.cameraDraw(forceBg)
+        smartphone._camLiveRAF = requestAnimationFrame(loop)
+    }
+    smartphone._camLiveRAF = requestAnimationFrame(loop)
+}
+smartphone.cameraLiveStop = function() {
+    if (smartphone._camLiveRAF) cancelAnimationFrame(smartphone._camLiveRAF)
+    smartphone._camLiveRAF = null
+}
+smartphone.cameraToggle = function(open) {  // 手机开合：启停取景实时刷新
+    if (open) smartphone.cameraLiveStart()
+    else smartphone.cameraLiveStop()
 }
 smartphone.cameraEase = function(key, target) {  // 滑条差值缓动：T[key] 以指数缓出逼近目标值，拖动生硬感消除
     smartphone._camEase = smartphone._camEase ?? {}

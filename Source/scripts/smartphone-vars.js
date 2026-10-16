@@ -942,7 +942,7 @@ smartphone.Apps = {  // APP
     shop: {display_name: "淘桃网购", icon: "img/misc/icon/phone/app/taobao.png", app_widget: "phone_app_shop", disable: ["Clothing Shop", "Forest Shop", "School Library Shop", "Adult Shop Store"], disableinevent: true},
     // appstore: {display_name: "应用商店", icon: "img/misc/icon/phone/app/appstore.png", app_widget: "phone_app_appstore", init: "initAppstore"},
 
-    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", init: "initPhoto", guide: "photo", disableinevent: true},
+    photo: {display_name: "摄像", icon: "img/misc/icon/camera.png", app_widget: "phone_app_photo", init: "initPhoto", toggle: "cameraToggle", guide: "photo", disableinevent: true},
     album: {display_name: "相册", icon: "img/misc/icon/phone/app/album.png", app_widget: "phone_app_album", init: "initAlbum", guide: "photo"},
     yenote: {display_name: "小黄书", icon: "img/misc/icon/phone/app/yenote.png", app_widget: "phone_app_yenote", init: "initYenote", guide: "yenote"},
 
