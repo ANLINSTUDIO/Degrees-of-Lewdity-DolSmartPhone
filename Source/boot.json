@@ -1,7 +1,7 @@
 {
     "name": "SmartPhone Alpha",
     "nickName": "万能的智能手机 尝鲜版  - 本版本处于尝鲜版本，各种剧情和设定不够完善，敬请期待后续更新。",
-    "version": "0.3.91",
+    "version": "0.3.91.1",
     "betaVersion": false,
     "minify": false,
     "styleFileList": [
@@ -134,7 +134,7 @@
                     "Tip": "网购衣服 避免盗取出现",
                     "passage": "Clothing Shop v2 Widgets",
                     "replace": "<<elseif $location isnot \"phone\" and ($1)>>",
-                    "findRegex": "<<elseif (\\(Time\\.dayState is \"night\" and (?:\\$shopName isnot \"forest\"|!\\[[^\\]\\r\\n]+\\]\\.includes\\(\\$shopName\\))\\) or _shopCloseOverride)>>"
+                    "findRegex": "<<elseif (\\(Time\\.dayState is \"night\" and [^\\r\\n<>]*\\) or _shopCloseOverride)>>"
                 },
                 {
                     "Tip": "网购超市 避免盗取出现",
